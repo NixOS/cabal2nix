@@ -10,7 +10,6 @@ import System.Environment
 import Control.Exception
 import System.Exit
 import Distribution.PackageDescription.Parse
-import Distribution.Verbosity ( silent )
 import Distribution.PackageDescription
 import Distribution.Package
 import Distribution.License
@@ -137,7 +136,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   sha256 <- case args of
               _:hash:[] -> return hash
-              _:[]      -> hashPackage cabal
+              _         -> hashPackage cabal
 
   let pkg = cabal2nix cabal sha256
   putStr (toNix pkg)
