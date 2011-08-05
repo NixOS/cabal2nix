@@ -18,6 +18,8 @@ import Data.Version
 import Data.List
 import Control.Monad
 import Data.Char
+import Network.HTTP
+import System.Process
 
 type PkgName = String
 type PkgVersion = [Int]
@@ -77,38 +79,67 @@ toNix (Pkg name ver sha256 url desc lic deps libs) =
       showLic OtherLicense                      = "unknown"
       showLic l                                 = error $ "unknown license: " ++ show l
 
-readPackage :: FilePath -> String -> IO Pkg
-readPackage cabalFile sha256 = do
-  cabal <- readPackageDescription silent cabalFile
-  let pkg = packageDescription cabal
-      PackageName pkgname = pkgName (package pkg)
-      pkgver = versionBranch (pkgVersion (package pkg))
-      lic = license pkg
-      url = homepage pkg
-      desc = synopsis pkg
-      -- globalDeps = buildDepends pkg
-      libDeps = maybe [] (\x -> [x]) (condLibrary cabal)
-      exeDeps = [ tree | (_,tree) <- condExecutables cabal ]
-      libs = concat [ extraLibs (libBuildInfo (condTreeData x)) | x <- libDeps ]
-      libs' = concat [ extraLibs (buildInfo (condTreeData x)) | x <- exeDeps ]
-  return (Pkg pkgname pkgver sha256 url desc lic (map simplify libDeps ++ map simplify exeDeps) (libs++libs'))
-    where
+cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
+cabal2nix cabal sha256 = Pkg pkgname pkgver sha256 url desc lic (map simplify libDeps ++ map simplify exeDeps) (libs++libs')
+  where
+    pkg = packageDescription cabal
+    PackageName pkgname = pkgName (package pkg)
+    pkgver = versionBranch (pkgVersion (package pkg))
+    lic = license pkg
+    url = homepage pkg
+    desc = synopsis pkg
+    -- globalDeps = buildDepends pkg
+    libDeps = maybe [] (\x -> [x]) (condLibrary cabal)
+    exeDeps = [ tree | (_,tree) <- condExecutables cabal ]
+    libs = concat [ extraLibs (libBuildInfo (condTreeData x)) | x <- libDeps ]
+    libs' = concat [ extraLibs (buildInfo (condTreeData x)) | x <- exeDeps ]
 
 simplify :: CondTree ConfVar [Dependency] a -> CondTree ConfVar [Dependency] ()
 simplify (CondNode _ deps nodes) = CondNode () deps (map simp nodes)
   where
     simp (cond,tree,mtree) = (cond, simplify tree, maybe Nothing (Just . simplify) mtree)
 
+readCabalFile :: FilePath -> IO String
+readCabalFile path
+  | "http://" `isPrefixOf` path = Network.HTTP.simpleHTTP (getRequest path) >>= getResponseBody
+  | "file://" `isPrefixOf` path = readCabalFile (drop 7 path)
+  | otherwise                   = readFile path
+
+hashPackage :: GenericPackageDescription -> IO String
+hashPackage pkg = readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ url] ""
+  where
+    url = "http://hackage.haskell.org/packages/archive/" ++ name ++ "/" ++ version ++ "/" ++ name ++ "-" ++ version ++ ".tar.gz"
+    PackageIdentifier (PackageName name) version' = package (packageDescription pkg)
+    version = showVersion version'
+
 main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   args <- getArgs
 
-  when (length args /= 2) $ do
+  let usage = "Usage: cabal2nix url-to-cabal-file [sha256-hash]"
+
+  when (length args < 1 || length args > 2) $ do
     mapM_ (hPutStrLn stderr) [ "*** invalid command line syntax"
-                             , "Usage: cabal2nix cabal-file sha256-hash"
+                             , usage
                              ]
     exitFailure
 
-  let cabalFile:sha256:[] = args
-  pkg <- readPackage cabalFile sha256
+  when ("--help" `elem` args || "-h" `elem` args) $ do
+    putStrLn usage
+    exitFailure
+
+  cabal' <- fmap parsePackageDescription (readCabalFile (head args))
+  cabal <- case cabal' of
+             ParseOk _ a -> return a
+             ParseFailed err -> do
+               hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
+               exitFailure
+
+  sha256 <- case args of
+              _:hash:[] -> return hash
+              _:[]      -> hashPackage cabal
+
+  let pkg = cabal2nix cabal sha256
   putStr (toNix pkg)
+
+

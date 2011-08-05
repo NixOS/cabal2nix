@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.2
+Version:                1.3
 Copyright:              (c) 2011 Peter Simons
 License:                BSD3
 License-File:           LICENSE
@@ -10,18 +10,25 @@ Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.6
 Build-Type:             Simple
-Tested-With:            GHC == 7.0.2
+Tested-With:            GHC == 7.0.4
 Description:            This utility converts Cabal files into Nix build
-			instructions. Run the binary as follows:
+			instructions. The commandline syntax is:
 			.
-			> cabal2nix foo.cabal 57ae0330a3d0520bae3d1e447d7d5c88de9ecbf0de133f31f2cc42961c81d47f
+			> cabal2nix cabal-file-uri [sha256-hash]
 			.
-			The first argument is the path to the cabal file
-			to be converted, the second argument is the
-			SHA256 hash of the corresponding source tarball.
+			The first argument is the path to the cabal
+			file. That path can be an HTTP URL or local file
+			path. For example:
 			.
-			The Nix build instructions will be written to
-			stdout.
+			> cabal2nix.hs http://hackage.haskell.org/packages/archive/cabal2nix/1.2/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
+			> cabal2nix.hs file:///tmp/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
+			> cabal2nix.hs /tmp/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
+			.
+			The second argument -- the hash of the source
+			tarball -- is optional. If it's not specified,
+			cabal2nix calls @nix-prefetch-url@ to determine
+			the hash automatically. This causes network
+			traffic, obviously.
 
 Source-Repository head
   Type:                 git
@@ -29,5 +36,5 @@ Source-Repository head
 
 Executable cabal2nix
   main-is:              cabal2nix.hs
-  Build-Depends:        base >= 3 && < 5, Cabal
+  Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP
   Ghc-Options:          -Wall
