@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.4
+Version:                1.5
 Copyright:              (c) 2011 Peter Simons
 License:                BSD3
 License-File:           LICENSE
@@ -20,7 +20,7 @@ Description:            This utility converts Cabal files into Nix build
 			file. That path can be an HTTP URL or local file
 			path. For example:
 			.
-			> cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.4/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
+			> cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.5/cabal2nix.cabal
 			> cabal2nix file:///tmp/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
 			> cabal2nix /tmp/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
 			.
