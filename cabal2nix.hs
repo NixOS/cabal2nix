@@ -55,15 +55,14 @@ toNix (Pkg name ver sha256 url desc lic deps libs) =
     ++ "  };\n"
     ++ "})\n"
     where
-      exprArgs = concat (intersperse "," ((if "cabal" `notElem` pkgDeps then ["cabal"] else []) ++ pkgDeps))
+      exprArgs = concat (intersperse "," ("cabal":pkgDeps))
       showVer = concat (intersperse "." (map show ver))
       depList = concat (intersperse " " pkgDeps)
       pkgDeps :: [String]
-      pkgDeps = map toNixName $
-                  nub $ sort $ libs ++
-                    [ n | dep <- deps, Dependency (PackageName n) _ <- condTreeConstraints dep
-                        , n `notElem` ["base","containers"]
-                    ]
+      pkgDeps = filter (/="cabal") $ nub $ sort $ map toNixName $
+                  libs ++ [ n | dep <- deps, Dependency (PackageName n) _ <- condTreeConstraints dep
+                              , n `notElem` ["base","containers"]
+                          ]
       showLic (GPL Nothing)                     = show "GPL"
       showLic (GPL (Just (Version [2] [])))     = "self.stdenv.lib.licenses.gpl2"
       showLic (GPL (Just (Version [3] [])))     = "self.stdenv.lib.licenses.gpl3"

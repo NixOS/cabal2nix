@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.1
+Version:                1.2
 Copyright:              (c) 2011 Peter Simons
 License:                BSD3
 License-File:           LICENSE
