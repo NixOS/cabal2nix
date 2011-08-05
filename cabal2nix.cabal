@@ -5,7 +5,7 @@ License:                BSD3
 License-File:           LICENSE
 Author:                 Peter Simons <simons@cryp.to>
 Maintainer:             Peter Simons <simons@cryp.to>
-Homepage:               https://github.com/peti/cabal2nix
+Homepage:               http://github.com/peti/cabal2nix
 Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Description:            To be written.
