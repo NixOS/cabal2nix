@@ -1,0 +1,3 @@
+# ignore build Cabal build files
+
+/dist/*
