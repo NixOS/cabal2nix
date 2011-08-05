@@ -106,7 +106,10 @@ readCabalFile path
   | otherwise                   = readFile path
 
 hashPackage :: GenericPackageDescription -> IO String
-hashPackage pkg = readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ url] ""
+hashPackage pkg = do
+    hash <- readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ url] ""
+    return (reverse (dropWhile (=='\n') (reverse hash)))
+
   where
     url = "http://hackage.haskell.org/packages/archive/" ++ name ++ "/" ++ version ++ "/" ++ name ++ "-" ++ version ++ ".tar.gz"
     PackageIdentifier (PackageName name) version' = package (packageDescription pkg)
