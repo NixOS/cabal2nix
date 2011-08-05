@@ -34,7 +34,8 @@ data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgURL PkgDescription PkgLicense Pkg
 
 toNixName :: String -> String
 toNixName [] = error "toNixName: empty string is not a valid argument"
-toNixName name = f ((toLower (head name)) : tail name)
+toNixName "Cabal" = "cabal"
+toNixName name = f name
   where
     f []                            = []
     f ('-':c:cs) | c `notElem` "-"  = toUpper c : f cs
