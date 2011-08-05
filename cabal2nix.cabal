@@ -8,10 +8,20 @@ Maintainer:             Peter Simons <simons@cryp.to>
 Homepage:               http://github.com/peti/cabal2nix
 Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
-Description:            To be written.
 Cabal-Version:          >= 1.6
 Build-Type:             Simple
 Tested-With:            GHC == 7.0.2
+Description:            This utility converts Cabal files into Nix build
+			instructions. Run the binary as follows:
+			.
+			> cabal2nix foo.cabal 57ae0330a3d0520bae3d1e447d7d5c88de9ecbf0de133f31f2cc42961c81d47f
+			.
+			The first argument is the path to the cabal file
+			to be converted, the second argument is the
+			SHA256 hash of the corresponding source tarball.
+			.
+			The Nix build instructions will be written to
+			stdout.
 
 Source-Repository head
   Type:                 git
