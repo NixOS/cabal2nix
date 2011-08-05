@@ -19,5 +19,5 @@ Source-Repository head
 
 Executable cabal2nix
   main-is:              cabal2nix.hs
-  Build-Depends:        base >= 3 && < 5
+  Build-Depends:        base >= 3 && < 5, Cabal
   Ghc-Options:          -Wall
