@@ -12,6 +12,7 @@ import System.Exit
 import Distribution.PackageDescription.Parse
 import Distribution.PackageDescription
 import Distribution.Package
+import Distribution.Text
 import Data.Version
 import Data.List
 import Data.Maybe
@@ -41,19 +42,27 @@ simplify (CondNode _ deps nodes) = CondNode () deps (map simp nodes)
   where
     simp (cond,tree,mtree) = (cond, simplify tree, maybe Nothing (Just . simplify) mtree)
 
-hackagePath :: PackageIdentifier -> String -> String
+data Ext = TarGz | Cabal deriving Eq
+
+showExt :: Ext -> String
+showExt TarGz = ".tar.gz"
+showExt Cabal = ".cabal"
+
+hackagePath :: PackageIdentifier -> Ext -> String
 hackagePath (PackageIdentifier (PackageName name) version') ext =
     "http://hackage.haskell.org/packages/archive/" ++
-    name ++ "/" ++ version ++ "/" ++ name ++ "-" ++ version ++
-    "." ++ ext
+    name ++ "/" ++ version ++ "/" ++ name ++
+    (if ext == TarGz then "-" ++ version else "") ++
+    showExt ext
   where
     version = showVersion version'
 
 readCabalFile :: FilePath -> IO String
 readCabalFile path
-  | "http://" `isPrefixOf` path = Network.HTTP.simpleHTTP (getRequest path) >>= getResponseBody
-  | "file://" `isPrefixOf` path = readCabalFile (drop 7 path)
-  | otherwise                   = readFile path
+  | "cabal://" `isPrefixOf` path = let Just pid = simpleParse (drop 8 path) in readCabalFile (hackagePath pid Cabal)
+  | "http://"  `isPrefixOf` path = Network.HTTP.simpleHTTP (getRequest path) >>= getResponseBody
+  | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
+  | otherwise                    = readFile path
 
 hashPackage :: GenericPackageDescription -> IO String
 hashPackage pkg = do
@@ -61,7 +70,7 @@ hashPackage pkg = do
     return (reverse (dropWhile (=='\n') (reverse hash)))
 
   where
-    url = hackagePath pid ".tar.gz"
+    url = hackagePath pid TarGz
     pid = package (packageDescription pkg)
 
 main :: IO ()
