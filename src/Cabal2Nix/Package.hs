@@ -57,7 +57,8 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
                   rbrace <> semi
                 ]
               ],
-              rbrace <> rparen
+              rbrace <> rparen,
+              text ""
             ]
       attr n v = text n <+> equals <+> v <> semi
       onlyIf p d = if not (null p) then d else empty
