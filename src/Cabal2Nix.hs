@@ -12,72 +12,13 @@ import System.Exit
 import Distribution.PackageDescription.Parse
 import Distribution.PackageDescription
 import Distribution.Package
-import Distribution.License
 import Data.Version
 import Data.List
 import Control.Monad
-import Data.Char
 import Network.HTTP
 import System.Process
 
-type PkgName = String
-type PkgVersion = [Int]
-type PkgSHA256 = String
-type PkgURL = String
-type PkgDescription = String
-type PkgLicense = License
-type PkgDependencies = [CondTree ConfVar [Dependency] ()]
-type PkgExtraLibs = [String]
-
-data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgURL PkgDescription PkgLicense PkgDependencies PkgExtraLibs
-  deriving (Show)
-
-toNixName :: String -> String
-toNixName [] = error "toNixName: empty string is not a valid argument"
-toNixName "Cabal" = "cabal"
-toNixName name = f name
-  where
-    f []                            = []
-    f ('-':c:cs) | c `notElem` "-"  = toUpper c : f cs
-    f ('-':_)                       = error ("unexpected package name " ++ show name)
-    f (c:cs)                        = c : f cs
-
-toNix :: Pkg -> String
-toNix (Pkg name ver sha256 url desc lic deps libs) =
-       "{" ++ exprArgs ++"}:\n\n"
-    ++ "cabal.mkDerivation (self : {\n"
-    ++ "  pname = " ++ show name ++ ";\n"
-    ++ "  version = \"" ++ showVer ++ "\";\n"
-    ++ "  sha256 = " ++ show sha256 ++ ";\n"
-    ++ "  propagatedBuildInputs = [" ++ depList ++ "];\n"
-    ++ "  meta = {\n"
-    ++ "    homepage = \"" ++ url ++ "\";\n"
-    ++ "    description = " ++ show desc ++ ";\n"
-    ++ "    license = " ++ showLic lic ++ ";\n"
-    ++ "  };\n"
-    ++ "})\n"
-    where
-      exprArgs = concat (intersperse "," ("cabal":pkgDeps))
-      showVer = concat (intersperse "." (map show ver))
-      depList = concat (intersperse " " pkgDeps)
-      pkgDeps :: [String]
-      pkgDeps = filter (/="cabal") $ nub $ sort $ map toNixName $
-                  libs ++ [ n | dep <- deps, Dependency (PackageName n) _ <- condTreeConstraints dep
-                              , n `notElem` ["base","containers"]
-                          ]
-      showLic (GPL Nothing)                     = show "GPL"
-      showLic (GPL (Just (Version [2] [])))     = "self.stdenv.lib.licenses.gpl2"
-      showLic (GPL (Just (Version [3] [])))     = "self.stdenv.lib.licenses.gpl3"
-      showLic (LGPL Nothing)                    = show "LGPL"
-      showLic (LGPL (Just (Version [2,1] [])))  = "self.stdenv.lib.licenses.lgpl21"
-      showLic (LGPL (Just (Version [3] [])))    = "self.stdenv.lib.licenses.lgpl3"
-      showLic BSD3                              = "self.stdenv.lib.licenses.bsd3"
-      showLic BSD4                              = "self.stdenv.lib.licenses.bsd4"
-      showLic MIT                               = "self.stdenv.lib.licenses.mit"
-      showLic PublicDomain                      = "self.stdenv.lib.licenses.publicDomain"
-      showLic AllRightsReserved                 = "unknown"
-      showLic OtherLicense                      = "unknown"
-      showLic l                                 = error $ "unknown license: " ++ show l
+import Cabal2Nix.Package
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
 cabal2nix cabal sha256 = Pkg pkgname pkgver sha256 url desc lic (map simplify libDeps ++ map simplify exeDeps) (libs++libs')
