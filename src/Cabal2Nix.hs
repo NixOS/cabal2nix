@@ -15,32 +15,12 @@ import Distribution.Package
 import Distribution.Text
 import Data.Version
 import Data.List
-import Data.Maybe
 import Control.Monad
 import Network.HTTP
 import System.Process
 
 import Cabal2Nix.Package
 
-cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
-cabal2nix cabal sha256 = Pkg pkgname pkgver sha256 url desc lic (map simplify libDeps ++ map simplify exeDeps) (libs++libs')
-  where
-    pkg = packageDescription cabal
-    PackageName pkgname = pkgName (package pkg)
-    pkgver = versionBranch (pkgVersion (package pkg))
-    lic = license pkg
-    url = homepage pkg
-    desc = synopsis pkg
-    -- globalDeps = buildDepends pkg
-    libDeps = maybeToList (condLibrary cabal)
-    exeDeps = [ tree | (_,tree) <- condExecutables cabal ]
-    libs = concat [ extraLibs (libBuildInfo (condTreeData x)) | x <- libDeps ]
-    libs' = concat [ extraLibs (buildInfo (condTreeData x)) | x <- exeDeps ]
-
-simplify :: CondTree ConfVar [Dependency] a -> CondTree ConfVar [Dependency] ()
-simplify (CondNode _ deps nodes) = CondNode () deps (map simp nodes)
-  where
-    simp (cond,tree,mtree) = (cond, simplify tree, maybe Nothing (Just . simplify) mtree)
 
 data Ext = TarGz | Cabal deriving Eq
 
