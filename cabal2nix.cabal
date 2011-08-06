@@ -35,6 +35,7 @@ Source-Repository head
   Location:             git://github.com/peti/cabal2nix.git
 
 Executable cabal2nix
-  main-is:              cabal2nix.hs
+  main-is:              Cabal2Nix.hs
+  hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP
   Ghc-Options:          -Wall
