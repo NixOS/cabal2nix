@@ -14,6 +14,7 @@ import Distribution.PackageDescription
 import Distribution.Package
 import Data.Version
 import Data.List
+import Data.Maybe
 import Control.Monad
 import Network.HTTP
 import System.Process
@@ -30,7 +31,7 @@ cabal2nix cabal sha256 = Pkg pkgname pkgver sha256 url desc lic (map simplify li
     url = homepage pkg
     desc = synopsis pkg
     -- globalDeps = buildDepends pkg
-    libDeps = maybe [] (\x -> [x]) (condLibrary cabal)
+    libDeps = maybeToList (condLibrary cabal)
     exeDeps = [ tree | (_,tree) <- condExecutables cabal ]
     libs = concat [ extraLibs (libBuildInfo (condTreeData x)) | x <- libDeps ]
     libs' = concat [ extraLibs (buildInfo (condTreeData x)) | x <- exeDeps ]
