@@ -41,16 +41,17 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
                 attr "pname"   $ doubleQuotes (text name),
                 attr "version" $ showVer,
                 attr "sha256"  $ doubleQuotes (text sha256),
-                sep [
-                  text "propagatedBuildInputs" <+> equals <+> lbrack,
-                  nest 2 $ fsep $ map text pkgDeps,
-                  rbrack <> semi
-                ],
+                onlyIf pkgDeps $
+                  sep [
+                    text "propagatedBuildInputs" <+> equals <+> lbrack,
+                    nest 2 $ fsep $ map text pkgDeps,
+                    rbrack <> semi
+                  ],
                 vcat [
                   text "meta" <+> equals <+> lbrace,
                   nest 2 $ vcat [
-                    attr "homepage"    $ doubleQuotes (text url),
-                    attr "description" $ doubleQuotes (text desc),
+                    onlyIf url  $ attr "homepage"    $ doubleQuotes (text url),
+                    onlyIf desc $ attr "description" $ doubleQuotes (text desc),
                     attr "license"     $ text (showLic lic)
                   ],
                   rbrace <> semi
@@ -59,6 +60,7 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
               rbrace <> rparen
             ]
       attr n v = text n <+> equals <+> v <> semi
+      onlyIf p d = if not (null p) then d else empty
       showVer = hcat (punctuate (text ".") (map int ver))
       pkgDeps :: [String]
       pkgDeps = nub $ sort $ map toNixName $
