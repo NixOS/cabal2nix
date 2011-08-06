@@ -1,8 +1,3 @@
--- cabal2nix.hs
---
--- Copyright (c) 20011 Peter Simons <simons@cryp.to>
--- See LICENSE file for licensing details.
-
 module Main ( main ) where
 
 import System.IO
