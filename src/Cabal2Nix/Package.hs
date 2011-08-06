@@ -5,6 +5,7 @@ import Data.Maybe
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.Version
+import Text.PrettyPrint
 
 import Cabal2Nix.License
 import Cabal2Nix.Name
@@ -29,28 +30,42 @@ data Pkg = Pkg PkgName
   deriving (Show)
 
 toNix :: Pkg -> String
-toNix (Pkg name ver sha256 url desc lic deps libs) =
-       "{" ++ exprArgs ++"}:\n\n"
-    ++ "cabal.mkDerivation (self : {\n"
-    ++ "  pname = " ++ show name ++ ";\n"
-    ++ "  version = \"" ++ showVer ++ "\";\n"
-    ++ "  sha256 = " ++ show sha256 ++ ";\n"
-    ++ "  propagatedBuildInputs = [" ++ depList ++ "];\n"
-    ++ "  meta = {\n"
-    ++ "    homepage = \"" ++ url ++ "\";\n"
-    ++ "    description = " ++ show desc ++ ";\n"
-    ++ "    license = " ++ showLic lic ++ ";\n"
-    ++ "  };\n"
-    ++ "})\n"
+toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
     where
-      exprArgs = concat (intersperse "," ("cabal":pkgDeps))
-      showVer = concat (intersperse "." (map show ver))
-      depList = concat (intersperse " " pkgDeps)
+      doc = braces (fsep $ punctuate comma $ map text ("cabal" : pkgDeps)) <+>
+              colon $$ text "" $$
+            vcat [
+              text "cabal.mkDerivation" <+> lparen <> text "self" <+>
+                colon <+> lbrace,
+              nest 2 $ vcat [
+                attr "pname"   $ doubleQuotes (text name),
+                attr "version" $ showVer,
+                attr "sha256"  $ doubleQuotes (text sha256),
+                sep [
+                  text "propagatedBuildInputs" <+> equals <+> lbrack,
+                  nest 2 $ fsep $ map text pkgDeps,
+                  rbrack <> semi
+                ],
+                vcat [
+                  text "meta" <+> equals <+> lbrace,
+                  nest 2 $ vcat [
+                    attr "homepage"    $ doubleQuotes (text url),
+                    attr "description" $ doubleQuotes (text desc),
+                    attr "license"     $ text (showLic lic)
+                  ],
+                  rbrace <> semi
+                ]
+              ],
+              rbrace <> rparen
+            ]
+      attr n v = text n <+> equals <+> v <> semi
+      showVer = hcat (punctuate (text ".") (map int ver))
       pkgDeps :: [String]
-      pkgDeps = filter (/="cabal") $ nub $ sort $ map toNixName $
-                  libs ++ [ n | dep <- deps, Dependency (PackageName n) _ <- condTreeConstraints dep
-                              , n `notElem` corePackages
-                          ]
+      pkgDeps = nub $ sort $ map toNixName $
+                libs ++ [ n | dep <- deps,
+                              Dependency (PackageName n) _ <- condTreeConstraints dep,
+                              n `notElem` corePackages
+                        ]
 
 -- | List of packages shipped with ghc and therefore at the moment not in
 -- nixpkgs. This should probably be configurable at first. Later, it might
