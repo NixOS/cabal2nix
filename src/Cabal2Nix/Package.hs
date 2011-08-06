@@ -39,7 +39,7 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
                 colon <+> lbrace,
               nest 2 $ vcat [
                 attr "pname"   $ doubleQuotes (text name),
-                attr "version" $ showVer,
+                attr "version" $ doubleQuotes showVer,
                 attr "sha256"  $ doubleQuotes (text sha256),
                 onlyIf pkgDeps $
                   sep [
