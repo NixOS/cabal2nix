@@ -41,6 +41,14 @@ simplify (CondNode _ deps nodes) = CondNode () deps (map simp nodes)
   where
     simp (cond,tree,mtree) = (cond, simplify tree, maybe Nothing (Just . simplify) mtree)
 
+hackagePath :: PackageIdentifier -> String -> String
+hackagePath (PackageIdentifier (PackageName name) version') ext =
+    "http://hackage.haskell.org/packages/archive/" ++
+    name ++ "/" ++ version ++ "/" ++ name ++ "-" ++ version ++
+    "." ++ ext
+  where
+    version = showVersion version'
+
 readCabalFile :: FilePath -> IO String
 readCabalFile path
   | "http://" `isPrefixOf` path = Network.HTTP.simpleHTTP (getRequest path) >>= getResponseBody
@@ -53,9 +61,8 @@ hashPackage pkg = do
     return (reverse (dropWhile (=='\n') (reverse hash)))
 
   where
-    url = "http://hackage.haskell.org/packages/archive/" ++ name ++ "/" ++ version ++ "/" ++ name ++ "-" ++ version ++ ".tar.gz"
-    PackageIdentifier (PackageName name) version' = package (packageDescription pkg)
-    version = showVersion version'
+    url = hackagePath pid ".tar.gz"
+    pid = package (packageDescription pkg)
 
 main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
