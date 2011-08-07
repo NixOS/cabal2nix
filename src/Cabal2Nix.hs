@@ -82,8 +82,9 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let uri         = args
       hash        = [ h | SHA256 h <- opts ]
-      platforms   = [ p | Platform p <- opts ]
       maintainers = [ m | Maintainer m <- opts ]
+      platforms'  = [ p | Platform p <- opts ]
+      platforms   = if null platforms' && not (null maintainers) then [ "haskellPlatforms" ] else []
 
   when (length uri /= 1) (cmdlineError "*** exactly one URI must be specified")
   when (length hash > 1) (cmdlineError "*** the --sha256 option may be specified only once")
