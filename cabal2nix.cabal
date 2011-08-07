@@ -44,5 +44,5 @@ Source-Repository head
 Executable cabal2nix
   main-is:              Cabal2Nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP, pretty
+  Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP, pretty, filepath, directory
   Ghc-Options:          -Wall
