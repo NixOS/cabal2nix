@@ -1,21 +1,19 @@
 module Main ( main ) where
 
-import System.IO
-import System.Environment
-import Control.Exception
-import System.Exit
+import System.IO ( hPutStrLn, hFlush, stdout, stderr )
+import System.Environment ( getArgs )
+import Control.Exception ( bracket )
+import System.Exit ( exitFailure )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( GenericPackageDescription, package, packageDescription )
-import Distribution.Package
-import Distribution.Text
-import Data.Version
-import Data.List
-import Control.Monad
-import Network.HTTP
-import System.Console.GetOpt
-
-import System.Process
-
+import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
+import Distribution.Text ( simpleParse )
+import Data.Version ( showVersion )
+import Data.List ( isPrefixOf )
+import Control.Monad ( when )
+import Network.HTTP ( simpleHTTP, getRequest, getResponseBody )
+import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
+import System.Process ( readProcess )
 import Cabal2Nix.Package ( showNixPkg, cabal2nix )
 
 data Ext = TarGz | Cabal deriving Eq
@@ -36,7 +34,7 @@ hackagePath (PackageIdentifier (PackageName name) version') ext =
 readCabalFile :: FilePath -> IO String
 readCabalFile path
   | "cabal://" `isPrefixOf` path = let Just pid = simpleParse (drop 8 path) in readCabalFile (hackagePath pid Cabal)
-  | "http://"  `isPrefixOf` path = Network.HTTP.simpleHTTP (getRequest path) >>= getResponseBody
+  | "http://"  `isPrefixOf` path = simpleHTTP (getRequest path) >>= getResponseBody
   | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
   | otherwise                    = readFile path
 
