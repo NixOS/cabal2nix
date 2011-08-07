@@ -68,7 +68,7 @@ showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = 
                     ],
                   onlyIf maintainers $
                     sep [
-                      text "maintainer" <+> equals <+> lbrack,
+                      text "maintainers" <+> equals <+> lbrack,
                       nest 2 $ fsep $ map text maintainers,
                       rbrack <> semi
                     ]
