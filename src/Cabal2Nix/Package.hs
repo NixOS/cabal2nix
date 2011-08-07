@@ -1,4 +1,4 @@
-module Cabal2Nix.Package where
+module Cabal2Nix.Package ( cabal2nix, showNixPkg ) where
 
 import Data.List
 import Data.Maybe
