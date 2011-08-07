@@ -40,7 +40,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
              "\n\
              \Recognized URI schemes:\n\
              \\n\
-             \  cabal:///pkgname-pkgversion      download the specified package from Hackage\n\
+             \  cabal://pkgname-pkgversion       download the specified package from Hackage\n\
              \  http://host/path                 fetch the Cabel file via HTTP\n\
              \  file:///local/path               load the Cabal file from the local disk\n\
              \  /local/path                      abbreviated version of file URI\n"
