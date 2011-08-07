@@ -64,11 +64,12 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
     onlyIf p d = if not (null p) then d else empty
     showVer = hcat (punctuate (text ".") (map int ver))
     pkgDeps :: [String]
-    pkgDeps = nub $ sort $ map toNixName $
-              libs ++ [ n | dep <- deps,
-                            Dependency (PackageName n) _ <- condTreeConstraints dep,
-                            n `notElem` corePackages
-                      ]
+    pkgDeps = map libNixName libs ++
+              (nub $ sort $ map toNixName $
+               [ n | dep <- deps,
+                     Dependency (PackageName n) _ <- condTreeConstraints dep,
+                     n `notElem` corePackages
+               ])
 
 -- | List of packages shipped with ghc and therefore at the moment not in
 -- nixpkgs. This should probably be configurable at first. Later, it might
@@ -97,8 +98,6 @@ corePackages = [
     "time",
     "unix"
   ]
-    
-  
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
 cabal2nix cabal sha256 =
