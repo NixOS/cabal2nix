@@ -22,3 +22,11 @@
 * benchpress lacks a time buildInput.
 
 * OpenAL lacks an openal build input.
+
+* SDL-image lacks SDL_image buildInput.
+
+* SDL-ttf lacks SDL_ttf buildInput.
+
+* SDL-mixer lacks SDL_mixer buildInput.
+
+* wxcore needs buildInputs: wxGTK, mesa, libX11.
