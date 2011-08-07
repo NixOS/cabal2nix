@@ -11,24 +11,31 @@ Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.6
 Build-Type:             Simple
 Tested-With:            GHC == 7.0.4
-Description:            This utility converts Cabal files into Nix build
-			instructions. The commandline syntax is:
-			.
-			> cabal2nix cabal-file-uri [sha256-hash]
-			.
-			The first argument is the path to the cabal
-			file. That path can be an HTTP URL or local file
-			path. For example:
-			.
-			> cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.8/cabal2nix.cabal
-			> cabal2nix file:///tmp/cabal2nix.cabal
-			> cabal2nix /tmp/cabal2nix.cabal 0m7zgsd1pxmw504xpvl7dg25ana6dkk1mcyjj4c1wdbkvhvbn3gn
-			.
-			The second argument -- the hash of the source
-			tarball -- is optional. If it's not specified,
-			cabal2nix calls @nix-prefetch-url@ to determine
-			the hash automatically. This causes network
-			traffic, obviously.
+Description:
+  This utility converts Cabal files into Nix build instructions. The
+  commandline syntax is:
+  .
+  > Usage: cabal2nix [options] url-to-cabal-file
+  >   -h  --help                   show this help text
+  >       --sha256=HASH            sha256 hash of source tarball
+  >       --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
+  >       --platform=PLATFORM      supported build platforms (may be specified multiple times)
+  >
+  > Recognized URI schemes:
+  >
+  >   cabal:///pkgname-pkgversion      download the specified package from Hackage
+  >   http://host/path                 fetch the Cabel file via HTTP
+  >   file:///local/path               load the Cabal file from the local disk
+  >   /local/path                      abbreviated version of file URI
+  .
+  The only required argument is the path to the cabal file. For example:
+  .
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.8/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-1.8
+  .
+  If the @--sha256@ option has not been specified, cabal2nix calls
+  @nix-prefetch-url@ to determine the hash automatically. This causes
+  network traffic, obviously.
 
 Source-Repository head
   Type:                 git
