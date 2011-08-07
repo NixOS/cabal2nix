@@ -2,8 +2,11 @@ module Cabal2Nix.Package where
 
 import Data.List
 import Data.Maybe
+import Distribution.Compiler
 import Distribution.Package
 import Distribution.PackageDescription
+import Distribution.PackageDescription.Configuration
+import Distribution.System
 import Distribution.Version
 import Text.PrettyPrint
 
@@ -16,7 +19,7 @@ type PkgSHA256       = String
 type PkgURL          = String
 type PkgDescription  = String
 type PkgLicense      = License
-type PkgDependencies = [CondTree ConfVar [Dependency] ()]
+type PkgDependencies = [Dependency] -- [CondTree ConfVar [Dependency] ()]
 type PkgExtraLibs    = [String]
 
 data Pkg = Pkg PkgName
@@ -64,12 +67,9 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
     onlyIf p d = if not (null p) then d else empty
     showVer = hcat (punctuate (text ".") (map int ver))
     pkgDeps :: [String]
-    pkgDeps = map libNixName libs ++
+    pkgDeps = (nub $ sort $ map libNixName libs) ++
               (nub $ sort $ map toNixName $
-               [ n | dep <- deps,
-                     Dependency (PackageName n) _ <- condTreeConstraints dep,
-                     n `notElem` corePackages
-               ])
+               filter (`notElem` corePackages) $ map unDep deps)
 
 -- | List of packages shipped with ghc and therefore at the moment not in
 -- nixpkgs. This should probably be configurable at first. Later, it might
@@ -102,8 +102,8 @@ corePackages = [
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
 cabal2nix cabal sha256 =
     Pkg pkgname pkgver sha256 url desc lic
-      (map simplify libDeps ++ map simplify exeDeps)
-      (libs ++ libs')
+      (buildDepends tpkg)
+      libs
   where
     pkg = packageDescription cabal
     PackageName pkgname = pkgName (package pkg)
@@ -112,10 +112,23 @@ cabal2nix cabal sha256 =
     url = homepage pkg
     desc = synopsis pkg
     -- globalDeps = buildDepends pkg
-    libDeps = maybeToList (condLibrary cabal)
-    exeDeps = [ tree | (_,tree) <- condExecutables cabal ]
-    libs = concat [ extraLibs (libBuildInfo (condTreeData x)) | x <- libDeps ]
-    libs' = concat [ extraLibs (buildInfo (condTreeData x)) | x <- exeDeps ]
+    -- Potentially dangerous: determine a default flattening of the
+    -- package description. Better approach: export the conditional
+    -- structure and reflect it in the generated file.
+    Right (tpkg, _) = finalizePackageDescription [] (const True)
+                        (Platform I386 Linux) -- shouldn't be hardcoded
+                        (CompilerId GHC (Version [7,0,4] [])) -- dito
+                        [] cabal
+    libDeps = map libBuildInfo $ maybeToList (library tpkg)
+    exeDeps = map    buildInfo $ executables tpkg
+    libsExtra =             concatMap extraLibs        (libDeps ++ exeDeps)
+    libsPkgC  = map unDep $ concatMap pkgconfigDepends (libDeps ++ exeDeps)
+    -- add pkgconfig as an extra dependency if there are any pkgconfig deps
+    libs = libsExtra ++ (if null libsPkgC then []
+                                          else ("pkgconfig" : libsPkgC))
+
+unDep :: Dependency -> String
+unDep (Dependency (PackageName x) _) = x
 
 simplify :: CondTree ConfVar [Dependency] a -> CondTree ConfVar [Dependency] ()
 simplify (CondNode _ deps nodes) = CondNode () deps (map simp nodes)

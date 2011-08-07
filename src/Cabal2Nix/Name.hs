@@ -16,10 +16,22 @@ toNixName name    = f name
 -- possibility of name clashes with Haskell libraries. I have included
 -- identity mappings to incicate that I have verified their correctness.
 libNixName :: String -> String
-libNixName "adns"     = "adns"
-libNixName "pcre"     = "pcre"
-libNixName "pq"       = "postgresql"
-libNixName "sqlite3"  = "sqlite"
-libNixName "X11"      = "libX11"
-libNixName "z"        = "zlib"
-libNixName x          = x
+libNixName "adns"      = "adns"
+libNixName "cairo"     = "cairo"
+libNixName "cairo-pdf" = "cairo"
+libNixName "cairo-ps"  = "cairo"
+libNixName "cairo-svg" = "cairo"
+libNixName "crypto"    = "openssl"
+libNixName "gnome-keyring" = "gnome_keyring"
+libNixName "gnome-keyring-1" = "gnome_keyring"
+libNixName "idn"       = "idn"
+libNixName "libidn"    = "idn"
+libNixName "libzip"    = "libzip"
+libNixName "pcre"      = "pcre"
+libNixName "pq"        = "postgresql"
+libNixName "sndfile"   = "libsndfile"
+libNixName "sqlite3"   = "sqlite"
+libNixName "xft"       = "libXft"
+libNixName "X11"       = "libX11"
+libNixName "z"         = "zlib"
+libNixName x           = x
