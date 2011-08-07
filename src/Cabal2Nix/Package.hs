@@ -120,8 +120,3 @@ cabal2nix cabal sha256 platforms maintainers =
 
 unDep :: Dependency -> String
 unDep (Dependency (PackageName x) _) = x
-
-simplify :: CondTree ConfVar [Dependency] a -> CondTree ConfVar [Dependency] ()
-simplify (CondNode _ deps nodes) = CondNode () deps (map simp nodes)
-  where
-    simp (cond,tree,mtree) = (cond, simplify tree, maybe Nothing (Just . simplify) mtree)
