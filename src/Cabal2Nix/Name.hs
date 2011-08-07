@@ -4,7 +4,6 @@ import Data.Char
 
 toNixName :: String -> String
 toNixName []      = error "toNixName: empty string is not a valid argument"
-toNixName "Cabal" = "cabal"
 toNixName name    = f name
   where
     f []                            = []

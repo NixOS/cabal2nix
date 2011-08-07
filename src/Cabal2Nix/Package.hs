@@ -2,10 +2,10 @@ module Cabal2Nix.Package where
 
 import Data.List
 import Data.Maybe
-
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.Version
+import Text.PrettyPrint
 
 import Cabal2Nix.License
 import Cabal2Nix.Name
@@ -30,31 +30,81 @@ data Pkg = Pkg PkgName
   deriving (Show)
 
 toNix :: Pkg -> String
-toNix (Pkg name ver sha256 url desc lic deps libs) =
-       "{" ++ exprArgs ++"}:\n\n"
-    ++ "cabal.mkDerivation (self : {\n"
-    ++ "  pname = " ++ show name ++ ";\n"
-    ++ "  version = \"" ++ showVer ++ "\";\n"
-    ++ "  sha256 = " ++ show sha256 ++ ";\n"
-    ++ "  propagatedBuildInputs = [" ++ depList ++ "];\n"
-    ++ "  meta = {\n"
-    ++ "    homepage = \"" ++ url ++ "\";\n"
-    ++ "    description = " ++ show desc ++ ";\n"
-    ++ "    license = " ++ showLic lic ++ ";\n"
-    ++ "  };\n"
-    ++ "})\n"
-    where
-      exprArgs = concat (intersperse "," ("cabal":pkgDeps))
-      showVer = concat (intersperse "." (map show ver))
-      depList = concat (intersperse " " pkgDeps)
-      pkgDeps :: [String]
-      pkgDeps = filter (/="cabal") $ nub $ sort $ map toNixName $
-                  libs ++ [ n | dep <- deps, Dependency (PackageName n) _ <- condTreeConstraints dep
-                              , n `notElem` ["base","containers"]
-                          ]
+toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
+  where
+    doc = braces (fsep $ punctuate comma $ map text ("cabal" : pkgDeps)) <+>
+            colon $$ text "" $$
+          vcat [
+            text "cabal.mkDerivation" <+> lparen <> text "self" <+>
+              colon <+> lbrace,
+            nest 2 $ vcat [
+              attr "pname"   $ doubleQuotes (text name),
+              attr "version" $ doubleQuotes showVer,
+              attr "sha256"  $ doubleQuotes (text sha256),
+              onlyIf pkgDeps $
+                sep [
+                  text "propagatedBuildInputs" <+> equals <+> lbrack,
+                  nest 2 $ fsep $ map text pkgDeps,
+                  rbrack <> semi
+                ],
+              vcat [
+                text "meta" <+> equals <+> lbrace,
+                nest 2 $ vcat [
+                  onlyIf url  $ attr "homepage"    $ doubleQuotes (text url),
+                  onlyIf desc $ attr "description" $ doubleQuotes (text desc),
+                  attr "license"     $ text (showLic lic)
+                ],
+                rbrace <> semi
+              ]
+            ],
+            rbrace <> rparen,
+            text ""
+          ]
+    attr n v = text n <+> equals <+> v <> semi
+    onlyIf p d = if not (null p) then d else empty
+    showVer = hcat (punctuate (text ".") (map int ver))
+    pkgDeps :: [String]
+    pkgDeps = nub $ sort $ map toNixName $
+              libs ++ [ n | dep <- deps,
+                            Dependency (PackageName n) _ <- condTreeConstraints dep,
+                            n `notElem` corePackages
+                      ]
+
+-- | List of packages shipped with ghc and therefore at the moment not in
+-- nixpkgs. This should probably be configurable at first. Later, it might
+-- be good to actually include them as dependencies, but set them to null
+-- if GHC provides them (as different GHC versions vary).
+corePackages :: [String]
+corePackages = [
+    "array",
+    "base",
+    "bytestring",
+    "Cabal",
+    "containers",
+    "directory",
+    "extensible-exceptions",
+    "filepath",
+    "ghc-prim",
+    "haskell2010",
+    "haskell98",
+    "hpc",
+    "old-locale",
+    "old-time",
+    "pretty",
+    "process",
+    "random",
+    "template-haskell",
+    "time",
+    "unix"
+  ]
+    
+  
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
-cabal2nix cabal sha256 = Pkg pkgname pkgver sha256 url desc lic (map simplify libDeps ++ map simplify exeDeps) (libs++libs')
+cabal2nix cabal sha256 =
+    Pkg pkgname pkgver sha256 url desc lic
+      (map simplify libDeps ++ map simplify exeDeps)
+      (libs ++ libs')
   where
     pkg = packageDescription cabal
     PackageName pkgname = pkgName (package pkg)
