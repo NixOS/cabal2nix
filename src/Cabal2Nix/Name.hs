@@ -1,4 +1,4 @@
-module Cabal2Nix.Name where
+module Cabal2Nix.Name ( toNixName, libNixName ) where
 
 import Data.Char
 
