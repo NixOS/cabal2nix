@@ -12,3 +12,13 @@
 
 * The ':' at the expression argument list shouldn't be separated with a
   blank.
+
+* networkBytestring doesn't exist anymore.
+
+* Hipmunk has some weird 'm' library as input.
+
+* terminfo lacks input extensibleExceptions and ncurses.
+
+* benchpress lacks a time buildInput.
+
+* OpenAL lacks an openal build input.
