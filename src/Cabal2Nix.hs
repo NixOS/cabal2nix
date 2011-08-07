@@ -5,31 +5,15 @@ import System.Environment ( getArgs )
 import Control.Exception ( bracket )
 import System.Exit ( exitFailure )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
-import Distribution.PackageDescription ( GenericPackageDescription, package, packageDescription )
-import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
+import Distribution.PackageDescription ( package, packageDescription )
 import Distribution.Text ( simpleParse )
-import Data.Version ( showVersion )
 import Data.List ( isPrefixOf )
 import Control.Monad ( when )
 import Network.HTTP ( simpleHTTP, getRequest, getResponseBody )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-import System.Process ( readProcess )
+
 import Cabal2Nix.Package ( showNixPkg, cabal2nix )
-
-data Ext = TarGz | Cabal deriving Eq
-
-showExt :: Ext -> String
-showExt TarGz = ".tar.gz"
-showExt Cabal = ".cabal"
-
-hackagePath :: PackageIdentifier -> Ext -> String
-hackagePath (PackageIdentifier (PackageName name) version') ext =
-    "http://hackage.haskell.org/packages/archive/" ++
-    name ++ "/" ++ version ++ "/" ++ name ++
-    (if ext == TarGz then "-" ++ version else "") ++
-    showExt ext
-  where
-    version = showVersion version'
+import Cabal2Nix.Hackage ( hackagePath, Ext(..), hashPackage )
 
 readCabalFile :: FilePath -> IO String
 readCabalFile path
@@ -37,14 +21,6 @@ readCabalFile path
   | "http://"  `isPrefixOf` path = simpleHTTP (getRequest path) >>= getResponseBody
   | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
   | otherwise                    = readFile path
-
-hashPackage :: GenericPackageDescription -> IO String
-hashPackage pkg = do
-    hash <- readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ url] ""
-    return (reverse (dropWhile (=='\n') (reverse hash)))
-  where
-    url = hackagePath pid TarGz
-    pid = package (packageDescription pkg)
 
 data CliOption = PrintHelp | SHA256 String | Maintainer String | Platform String
   deriving (Eq)
@@ -98,8 +74,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
                exitFailure
 
-  sha256 <- case hash of
-              h:[] -> return h
-              _    -> hashPackage cabal
+  let packageId = package (packageDescription cabal)
+
+  sha256 <- if null hash then hashPackage packageId else return (head hash)
 
   putStr (showNixPkg (cabal2nix cabal sha256 platforms maintainers))
