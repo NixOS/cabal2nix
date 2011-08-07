@@ -62,9 +62,8 @@ showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = 
                   attr "license" $ text (showLic lic),
                   onlyIf platforms $
                     sep [
-                      text "platforms" <+> equals <+> lbrack,
-                      nest 2 $ fsep $ map text platforms,
-                      rbrack <> semi
+                      text "platforms" <+> equals,
+                      nest 2 ((fsep $ punctuate (text " ++") $ map text platforms)) <> semi
                     ],
                   onlyIf maintainers $
                     sep [
