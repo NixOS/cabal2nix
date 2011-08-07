@@ -12,6 +12,7 @@ import Text.PrettyPrint
 
 import Cabal2Nix.License
 import Cabal2Nix.Name
+import Cabal2Nix.CorePackages
 
 type PkgName         = String
 type PkgVersion      = [Int]
@@ -85,35 +86,6 @@ showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = 
     pkgDeps = (nub $ sort $ map libNixName libs) ++
               (nub $ sort $ map toNixName $
                filter (`notElem` corePackages) $ map unDep deps)
-
--- | List of packages shipped with ghc and therefore at the moment not in
--- nixpkgs. This should probably be configurable at first. Later, it might
--- be good to actually include them as dependencies, but set them to null
--- if GHC provides them (as different GHC versions vary).
-corePackages :: [String]
-corePackages = [
-    "array",
-    "base",
-    "bytestring",
-    "Cabal",
-    "containers",
-    "directory",
-    "extensible-exceptions",
-    "filepath",
-    "ghc-prim",
-    "haskell2010",
-    "haskell98",
-    "hpc",
-    "old-locale",
-    "old-time",
-    "pretty",
-    "process",
-    "random",
-    "template-haskell",
-    "time",
-    "unix"
-  ]
-
 
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
