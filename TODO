@@ -1,0 +1,14 @@
+* Include build-tools field in the list of dependencies.
+
+  Example: haskell-src-exts/1.11.1/haskell-src-exts.cabal needs this.
+
+* Allow patching the cabal file before processing it. This is required
+  to enable/disable cabal flags.
+
+  Example: pandoc/1.8.2.1/pandoc.cabal
+
+* What is Integer-gmp, and is it required? Figure out what's going on in
+  'double-conversion'.
+
+* The ':' at the expression argument list shouldn't be separated with a
+  blank.
