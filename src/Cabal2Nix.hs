@@ -4,18 +4,19 @@ import System.IO
 import System.Environment
 import Control.Exception
 import System.Exit
-import Distribution.PackageDescription.Parse
-import Distribution.PackageDescription
+import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
+import Distribution.PackageDescription ( GenericPackageDescription, package, packageDescription )
 import Distribution.Package
 import Distribution.Text
 import Data.Version
 import Data.List
 import Control.Monad
 import Network.HTTP
+import System.Console.GetOpt
+
 import System.Process
 
-import Cabal2Nix.Package
-
+import Cabal2Nix.Package ( showNixPkg, cabal2nix )
 
 data Ext = TarGz | Cabal deriving Eq
 
@@ -43,39 +44,61 @@ hashPackage :: GenericPackageDescription -> IO String
 hashPackage pkg = do
     hash <- readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ url] ""
     return (reverse (dropWhile (=='\n') (reverse hash)))
-
   where
     url = hackagePath pid TarGz
     pid = package (packageDescription pkg)
 
+data CliOption = PrintHelp | SHA256 String | Maintainer String | Platform String
+  deriving (Eq)
+
 main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
-  args <- getArgs
+  let options :: [OptDescr CliOption]
+      options =
+        [ Option ['h'] ["help"]       (NoArg PrintHelp)                 "show this help text"
+        , Option []    ["sha256"]     (ReqArg SHA256 "HASH")            "sha256 hash of source tarball"
+        , Option []    ["maintainer"] (ReqArg Maintainer "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
+        , Option []    ["platform"]   (ReqArg Platform "PLATFORM")      "supported build platforms (may be specified multiple times)"
+        ]
 
-  let usage = "Usage: cabal2nix url-to-cabal-file [sha256-hash]"
+      usage :: String
+      usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++
+             "\n\
+             \Recognized URI schemes:\n\
+             \\n\
+             \  cabal:///pkgname-pkgversion      download the specified package from Hackage\n\
+             \  http://host/path                 fetch the Cabel file via HTTP\n\
+             \  file:///local/path               load the Cabal file from the local disk\n\
+             \  /local/path                      abbreviated version of file URI\n"
 
-  when (length args < 1 || length args > 2) $ do
-    mapM_ (hPutStrLn stderr) [ "*** invalid command line syntax"
-                             , usage
-                             ]
-    exitFailure
+      cmdlineError :: String -> IO a
+      cmdlineError ""     = hPutStrLn stderr usage >> exitFailure
+      cmdlineError errMsg = hPutStrLn stderr errMsg >> cmdlineError ""
 
-  when ("--help" `elem` args || "-h" `elem` args) $ do
-    putStrLn usage
-    exitFailure
+  args' <- getArgs
+  (opts,args) <- case getOpt Permute options args' of
+     (o,n,[]  ) -> return (o,n)
+     (_,_,errs) -> cmdlineError (concatMap (\e -> '*':'*':'*':' ':e) errs)
 
-  cabal' <- fmap parsePackageDescription (readCabalFile (head args))
+  when (PrintHelp `elem` opts) (cmdlineError "")
+
+  let uri         = args
+      hash        = [ h | SHA256 h <- opts ]
+      platforms   = [ p | Platform p <- opts ]
+      maintainers = [ m | Maintainer m <- opts ]
+
+  when (length uri /= 1) (cmdlineError "*** exactly one URI must be specified")
+  when (length hash > 1) (cmdlineError "*** the --sha256 option may be specified only once")
+
+  cabal' <- fmap parsePackageDescription (readCabalFile (head uri))
   cabal <- case cabal' of
              ParseOk _ a -> return a
              ParseFailed err -> do
                hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
                exitFailure
 
-  sha256 <- case args of
-              _:hash:[] -> return hash
-              _         -> hashPackage cabal
+  sha256 <- case hash of
+              h:[] -> return h
+              _    -> hashPackage cabal
 
-  let pkg = cabal2nix cabal sha256
-  putStr (toNix pkg)
-
-
+  putStr (showNixPkg (cabal2nix cabal sha256 platforms maintainers))

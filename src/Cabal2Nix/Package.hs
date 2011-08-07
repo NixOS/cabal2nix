@@ -21,6 +21,8 @@ type PkgDescription  = String
 type PkgLicense      = License
 type PkgDependencies = [Dependency] -- [CondTree ConfVar [Dependency] ()]
 type PkgExtraLibs    = [String]
+type PkgPlatforms    = [String]
+type PkgMaintainers  = [String]
 
 data Pkg = Pkg PkgName
                PkgVersion
@@ -30,10 +32,12 @@ data Pkg = Pkg PkgName
                PkgLicense
                PkgDependencies
                PkgExtraLibs
+               PkgPlatforms
+               PkgMaintainers
   deriving (Show)
 
-toNix :: Pkg -> String
-toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
+showNixPkg :: Pkg -> String
+showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = render doc
   where
     doc = braces (fsep $ punctuate comma $ map text ("cabal" : pkgDeps)) <+>
             colon $$ text "" $$
@@ -55,8 +59,20 @@ toNix (Pkg name ver sha256 url desc lic deps libs) = render doc
                 nest 2 $ vcat [
                   onlyIf url  $ attr "homepage"    $ doubleQuotes (text url),
                   onlyIf desc $ attr "description" $ doubleQuotes (text desc),
-                  attr "license"     $ text (showLic lic)
-                ],
+                  attr "license" $ text (showLic lic),
+                  onlyIf platforms $
+                    sep [
+                      text "platforms" <+> equals <+> lbrack,
+                      nest 2 $ fsep $ map text platforms,
+                      rbrack <> semi
+                    ],
+                  onlyIf maintainers $
+                    sep [
+                      text "maintainer" <+> equals <+> lbrack,
+                      nest 2 $ fsep $ map text maintainers,
+                      rbrack <> semi
+                    ]
+                  ],
                 rbrace <> semi
               ]
             ],
@@ -99,11 +115,15 @@ corePackages = [
     "unix"
   ]
 
-cabal2nix :: GenericPackageDescription -> PkgSHA256 -> Pkg
-cabal2nix cabal sha256 =
+
+
+cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
+cabal2nix cabal sha256 platforms maintainers =
     Pkg pkgname pkgver sha256 url desc lic
       (buildDepends tpkg)
       libs
+      [ "self.stdenv.lib.platforms." ++ p | p <- platforms ]
+      [ "self.stdenv.lib.maintainers." ++ m | m <- maintainers ]
   where
     pkg = packageDescription cabal
     PackageName pkgname = pkgName (package pkg)
