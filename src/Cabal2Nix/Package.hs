@@ -58,7 +58,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
     doc = sep [
             lbrace <+> (fcat $ prepunctuate (comma <> text " ") $
                         map (nest 2 . text)
-                            ("cabal" : pkgBuildTools ++ pkgDeps)),
+                            ("cabal" : pkgInputs)),
             rbrace <> colon
           ] $$
           vcat [
@@ -111,6 +111,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
                     filter (`notElem` (name : corePackages)) $ map unDep deps
     pkgBuildTools = nub $ sort $ map toNixName $
                     filter (`notElem` coreBuildTools) $ map unDep tools
+    pkgInputs     = nub $ pkgLibs ++ pkgPCs ++ pkgBuildTools ++ pkgDeps
 
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
