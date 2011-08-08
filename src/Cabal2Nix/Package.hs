@@ -21,6 +21,7 @@ type PkgURL          = String
 type PkgDescription  = String
 type PkgLicense      = License
 type PkgDependencies = [Dependency] -- [CondTree ConfVar [Dependency] ()]
+type PkgBuildTools   = [Dependency]
 type PkgExtraLibs    = [String]
 type PkgPlatforms    = [String]
 type PkgMaintainers  = [String]
@@ -32,15 +33,17 @@ data Pkg = Pkg PkgName
                PkgDescription
                PkgLicense
                PkgDependencies
+               PkgBuildTools
                PkgExtraLibs
                PkgPlatforms
                PkgMaintainers
   deriving (Show)
 
 showNixPkg :: Pkg -> String
-showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = render doc
+showNixPkg (Pkg name ver sha256 url desc lic deps tools libs platforms maintainers) = render doc
   where
-    doc = braces (fsep $ punctuate comma $ map text ("cabal" : pkgDeps)) <+>
+    doc = braces (fsep $ punctuate comma $
+                  map text ("cabal" : pkgBuildTools ++ pkgDeps)) <+>
             colon $$ text "" $$
           vcat [
             text "cabal.mkDerivation" <+> lparen <> text "self" <+>
@@ -49,6 +52,12 @@ showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = 
               attr "pname"   $ doubleQuotes (text name),
               attr "version" $ doubleQuotes showVer,
               attr "sha256"  $ doubleQuotes (text sha256),
+              onlyIf pkgBuildTools $
+                sep [
+                  text "extraBuildInputs" <+> equals <+> lbrack,
+                  nest 2 $ fsep $ map text pkgBuildTools,
+                  rbrack <> semi
+                ],
               onlyIf pkgDeps $
                 sep [
                   text "propagatedBuildInputs" <+> equals <+> lbrack,
@@ -85,13 +94,16 @@ showNixPkg (Pkg name ver sha256 url desc lic deps libs platforms maintainers) = 
     pkgDeps :: [String]
     pkgDeps = (nub $ sort $ map libNixName libs) ++
               (nub $ sort $ map toNixName $
-               filter (`notElem` corePackages) $ map unDep deps)
+               filter (`notElem` (name : corePackages)) $ map unDep deps)
+    pkgBuildTools :: [String]
+    pkgBuildTools = nub $ sort $ map toNixName $ map unDep tools
 
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
 cabal2nix cabal sha256 platforms maintainers =
     Pkg pkgname pkgver sha256 url desc lic
       (buildDepends tpkg)
+      tools
       libs
       [ "self.stdenv.lib.platforms." ++ p | p <- platforms ]
       [ "self.stdenv.lib.maintainers." ++ m | m <- maintainers ]
@@ -112,11 +124,12 @@ cabal2nix cabal sha256 platforms maintainers =
                         [] cabal
     libDeps = map libBuildInfo $ maybeToList (library tpkg)
     exeDeps = map    buildInfo $ executables tpkg
-    libsExtra =             concatMap extraLibs        (libDeps ++ exeDeps)
-    libsPkgC  = map unDep $ concatMap pkgconfigDepends (libDeps ++ exeDeps)
+    libsExtra  =             concatMap extraLibs        (libDeps ++ exeDeps)
+    libsPkgCfg = map unDep $ concatMap pkgconfigDepends (libDeps ++ exeDeps)
+    tools      =             concatMap buildTools       (libDeps ++ exeDeps)
     -- add pkgconfig as an extra dependency if there are any pkgconfig deps
-    libs = libsExtra ++ (if null libsPkgC then []
-                                          else ("pkgconfig" : libsPkgC))
+    libs    = libsExtra ++ (if null libsPkgCfg then []
+                                               else ("pkgconfig" : libsPkgCfg))
 
 unDep :: Dependency -> String
 unDep (Dependency (PackageName x) _) = x
