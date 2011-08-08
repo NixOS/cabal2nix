@@ -1,10 +1,14 @@
 * Should we use the github issue tracker for this?
 
+[[
 * Include build-tools field in the list of dependencies.
 
   Example: haskell-src-exts/1.11.1/haskell-src-exts.cabal needs this.
 
   +1, this is important.
+
+  Done.
+]]
 
 * Allow patching the cabal file before processing it. This is required
   to enable/disable cabal flags.
