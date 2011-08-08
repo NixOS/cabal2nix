@@ -69,8 +69,8 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
               attr "pname"   $ doubleQuotes (text name),
               attr "version" $ doubleQuotes showVer,
               attr "sha256"  $ doubleQuotes (text sha256),
-              boolattr "isLibrary"    True  isLib,
-              boolattr "isExecutable" False isExe,
+              boolattr "isLibrary"    (not isLib)          isLib,
+              boolattr "isExecutable" (not isLib || isExe) isExe,
               listattr "buildDepends"     pkgDeps,
               listattr "buildTools"       pkgBuildTools,
               listattr "extraLibraries"   pkgLibs,
@@ -96,7 +96,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
           ]
     attr n v = text n <+> equals <+> v <> semi
     onlyIf p d = if not (null p) then d else empty
-    boolattr n d v = if v /= d then
+    boolattr n p v = if p then
                        attr n (if v then text "true" else text "false")
                      else empty
     listattr n vs = onlyIf vs $ sep [
