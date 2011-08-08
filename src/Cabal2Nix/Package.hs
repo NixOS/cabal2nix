@@ -39,14 +39,23 @@ data Pkg = Pkg PkgName
                PkgMaintainers
   deriving (Show)
 
+prepunctuate :: Doc -> [Doc] -> [Doc]
+prepunctuate _ []     = []
+prepunctuate p (d:ds) = d : map (p <>) ds
+
+
 showNixPkg :: Pkg -> String
 showNixPkg (Pkg name ver sha256 url desc lic deps tools libs platforms maintainers) = render doc
   where
-    doc = braces (fsep $ punctuate comma $
-                  map text ("cabal" : pkgBuildTools ++ pkgDeps)) <+>
-            colon $$ text "" $$
+    doc = sep [
+            lbrace <+> (fcat $ prepunctuate (comma <> text " ") $
+                        map (nest 2 . text)
+                            ("cabal" : pkgBuildTools ++ pkgDeps)),
+            rbrace <> colon
+          ] $$
           vcat [
-            text "cabal.mkDerivation" <+> lparen <> text "self" <+>
+            text "",
+            text "cabal.mkDerivation" <+> lparen <> text "self" <>
               colon <+> lbrace,
             nest 2 $ vcat [
               attr "pname"   $ doubleQuotes (text name),
