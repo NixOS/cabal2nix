@@ -122,8 +122,8 @@ cabal2nix cabal sha256 platforms maintainers =
       tools
       libs
       pcs
-      [ "self.stdenv.lib.platforms." ++ p | p <- platforms ]
-      [ "self.stdenv.lib.maintainers." ++ m | m <- maintainers ]
+      [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | p <- platforms ]
+      [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | m <- maintainers ]
   where
     pkg = packageDescription cabal
     PackageName pkgname = pkgName (package pkg)
