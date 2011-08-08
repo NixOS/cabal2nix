@@ -105,7 +105,8 @@ showNixPkg (Pkg name ver sha256 url desc lic deps tools libs platforms maintaine
               (nub $ sort $ map toNixName $
                filter (`notElem` (name : corePackages)) $ map unDep deps)
     pkgBuildTools :: [String]
-    pkgBuildTools = nub $ sort $ map toNixName $ map unDep tools
+    pkgBuildTools = nub $ sort $ map toNixName $
+                    filter (`notElem` coreBuildTools) $ map unDep tools
 
 
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
