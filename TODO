@@ -19,12 +19,16 @@
     Then when generating the composition file, select flag choices that
     are appropriate.
 
+[[
 * What is Integer-gmp, and is it required? Figure out what's going on in
   'double-conversion'.
 
   No, integer-gmp and ghc are core packages missing from the core list.
   double-conversion needs a text version more recent than the current
   platform. I wouldn't support it for now.
+
+  Done.
+]]
 
 * The ':' at the expression argument list shouldn't be separated with a
   blank.
@@ -42,9 +46,22 @@
 
 * terminfo lacks input extensibleExceptions and ncurses.
 
+  extensible-exceptions actually is a core library. It wasn't in ghc-6.10,
+  though. I'm not sure what to do here: either remove it as a core package,
+  consequently include it where it's a dependency, but set it to null for
+  all newer GHCs. Or drop support for ghc-6.10 completely, and keep it as
+  a core package.
+
+  The ncurses dependency isn't properly specified in the Cabal file. It'll
+  have to be provided externally.
+
 * benchpress lacks a time buildInput.
 
+  Same story for time as for extensible-exceptions above.
+
 * OpenAL lacks an openal build input.
+
+  Another one that isn't specified in the Cabal files.
 
 * SDL-image lacks SDL_image buildInput.
 
@@ -57,6 +74,9 @@
 
 * wxcore needs buildInputs: wxGTK, mesa, libX11.
 
+  Also not in the Cabal file.
+
+[[
 * applications/editors/leksah/default.nix generates an infinite
   recursion because the expression expects itself as an argument. Not
   sure why that is happening.
@@ -65,3 +85,6 @@
   both library and binary can have a dependency on the library from the
   binary. That occurs with leksah. The current flattening includes that
   dep, but it shouldn't.
+
+  Done.
+]]
