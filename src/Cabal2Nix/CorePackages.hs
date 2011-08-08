@@ -35,5 +35,6 @@ corePackages = [
 
 coreBuildTools :: [String]
 coreBuildTools = [
+    "ghc",
     "hsc2hs"
   ]
