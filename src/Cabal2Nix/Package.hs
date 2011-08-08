@@ -101,7 +101,7 @@ showNixPkg (Pkg name ver sha256 url desc lic deps tools libs platforms maintaine
     onlyIf p d = if not (null p) then d else empty
     showVer = hcat (punctuate (text ".") (map int ver))
     pkgDeps :: [String]
-    pkgDeps = (nub $ sort $ map libNixName libs) ++
+    pkgDeps = (nub $ sort $ concatMap libNixName libs) ++
               (nub $ sort $ map toNixName $
                filter (`notElem` (name : corePackages)) $ map unDep deps)
     pkgBuildTools :: [String]

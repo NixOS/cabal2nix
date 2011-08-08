@@ -15,23 +15,25 @@ toNixName name    = f name
 -- TODO: This should probably be configurable. We also need to consider the
 -- possibility of name clashes with Haskell libraries. I have included
 -- identity mappings to incicate that I have verified their correctness.
-libNixName :: String -> String
-libNixName "adns"      = "adns"
-libNixName "cairo"     = "cairo"
-libNixName "cairo-pdf" = "cairo"
-libNixName "cairo-ps"  = "cairo"
-libNixName "cairo-svg" = "cairo"
-libNixName "crypto"    = "openssl"
-libNixName "gnome-keyring" = "gnome_keyring"
-libNixName "gnome-keyring-1" = "gnome_keyring"
-libNixName "idn"       = "idn"
-libNixName "libidn"    = "idn"
-libNixName "libzip"    = "libzip"
-libNixName "pcre"      = "pcre"
-libNixName "pq"        = "postgresql"
-libNixName "sndfile"   = "libsndfile"
-libNixName "sqlite3"   = "sqlite"
-libNixName "xft"       = "libXft"
-libNixName "X11"       = "libX11"
-libNixName "z"         = "zlib"
-libNixName x           = x
+libNixName :: String -> [String]
+libNixName "adns"      = return "adns"
+libNixName "cairo"     = return "cairo"
+libNixName "cairo-pdf" = return "cairo"
+libNixName "cairo-ps"  = return "cairo"
+libNixName "cairo-svg" = return "cairo"
+libNixName "crypto"    = return "openssl"
+libNixName "gnome-keyring" = return "gnome_keyring"
+libNixName "gnome-keyring-1" = return "gnome_keyring"
+libNixName "idn"       = return "idn"
+libNixName "libidn"    = return "idn"
+libNixName "libzip"    = return "libzip"
+libNixName "m"         = []  -- in stdenv
+libNixName "pcre"      = return "pcre"
+libNixName "pq"        = return "postgresql"
+libNixName "sndfile"   = return "libsndfile"
+libNixName "sqlite3"   = return "sqlite"
+libNixName "stdc++"    = []  -- in stdenv
+libNixName "xft"       = return "libXft"
+libNixName "X11"       = return "libX11"
+libNixName "z"         = return "zlib"
+libNixName x           = return x
