@@ -1,21 +1,44 @@
+* Should we use the github issue tracker for this?
+
 * Include build-tools field in the list of dependencies.
 
   Example: haskell-src-exts/1.11.1/haskell-src-exts.cabal needs this.
+
+  +1, this is important.
 
 * Allow patching the cabal file before processing it. This is required
   to enable/disable cabal flags.
 
   Example: pandoc/1.8.2.1/pandoc.cabal
 
+  Better approach 1: Allow flag settings to be specified via cabal2nix
+    command line.
+
+  Better approach 2: Allow flag choices in the generated Nix expressions.
+    Default values in Cabal translate to default values in Nix.
+    Then when generating the composition file, select flag choices that
+    are appropriate.
+
 * What is Integer-gmp, and is it required? Figure out what's going on in
   'double-conversion'.
+
+  No, integer-gmp and ghc are core packages missing from the core list.
+  double-conversion needs a text version more recent than the current
+  platform. I wouldn't support it for now.
 
 * The ':' at the expression argument list shouldn't be separated with a
   blank.
 
+  According to my coding style, it should. Colon is a binary operator.
+  Binary operators should *always* be *surrounded* by spaces.
+
 * networkBytestring doesn't exist anymore.
 
 * Hipmunk has some weird 'm' library as input.
+
+  Well, that'd be -libm. Should be added to the library translation list.
+  libm is probably in stdenv. So the type of library translation should
+  probably become String -> [String] ...
 
 * terminfo lacks input extensibleExceptions and ncurses.
 
@@ -29,8 +52,16 @@
 
 * SDL-mixer lacks SDL_mixer buildInput.
 
+  I looked at these. I think they'll have to be patched. These deps
+  aren't properly declared in the Cabal file.
+
 * wxcore needs buildInputs: wxGTK, mesa, libX11.
 
 * applications/editors/leksah/default.nix generates an infinite
   recursion because the expression expects itself as an argument. Not
   sure why that is happening.
+
+  We should remove a self-dependency of a library. A package providing
+  both library and binary can have a dependency on the library from the
+  binary. That occurs with leksah. The current flattening includes that
+  dep, but it shouldn't.
