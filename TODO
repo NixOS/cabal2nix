@@ -30,3 +30,7 @@
 * SDL-mixer lacks SDL_mixer buildInput.
 
 * wxcore needs buildInputs: wxGTK, mesa, libX11.
+
+* applications/editors/leksah/default.nix generates an infinite
+  recursion because the expression expects itself as an argument. Not
+  sure why that is happening.
