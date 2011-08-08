@@ -69,7 +69,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
               attr "pname"   $ doubleQuotes (text name),
               attr "version" $ doubleQuotes showVer,
               attr "sha256"  $ doubleQuotes (text sha256),
-              boolattr "isLibrary"    (not isLib)          isLib,
+              boolattr "isLibrary"    (not isLib || isExe) isLib,
               boolattr "isExecutable" (not isLib || isExe) isExe,
               listattr "buildDepends"     pkgDeps,
               listattr "buildTools"       pkgBuildTools,
