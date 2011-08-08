@@ -20,6 +20,8 @@ type PkgSHA256        = String
 type PkgURL           = String
 type PkgDescription   = String
 type PkgLicense       = License
+type PkgIsLib         = Bool
+type PkgIsExe         = Bool
 type PkgDependencies  = [Dependency] -- [CondTree ConfVar [Dependency] ()]
 type PkgBuildTools    = [Dependency]
 type PkgExtraLibs     = [String]
@@ -33,6 +35,8 @@ data Pkg = Pkg PkgName
                PkgURL
                PkgDescription
                PkgLicense
+               PkgIsLib
+               PkgIsExe
                PkgDependencies
                PkgBuildTools
                PkgExtraLibs
@@ -47,7 +51,9 @@ prepunctuate p (d:ds) = d : map (p <>) ds
 
 
 showNixPkg :: Pkg -> String
-showNixPkg (Pkg name ver sha256 url desc lic deps tools libs pcs platforms maintainers) = render doc
+showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
+                tools libs pcs platforms maintainers) =
+    render doc
   where
     doc = sep [
             lbrace <+> (fcat $ prepunctuate (comma <> text " ") $
@@ -63,6 +69,8 @@ showNixPkg (Pkg name ver sha256 url desc lic deps tools libs pcs platforms maint
               attr "pname"   $ doubleQuotes (text name),
               attr "version" $ doubleQuotes showVer,
               attr "sha256"  $ doubleQuotes (text sha256),
+              boolattr "isLibrary"    True  isLib,
+              boolattr "isExecutable" False isExe,
               listattr "buildDepends"     pkgDeps,
               listattr "buildTools"       pkgBuildTools,
               listattr "extraLibraries"   pkgLibs,
@@ -88,6 +96,9 @@ showNixPkg (Pkg name ver sha256 url desc lic deps tools libs pcs platforms maint
           ]
     attr n v = text n <+> equals <+> v <> semi
     onlyIf p d = if not (null p) then d else empty
+    boolattr n d v = if v /= d then
+                       attr n (if v then text "true" else text "false")
+                     else empty
     listattr n vs = onlyIf vs $ sep [
                       text n <+> equals <+> lbrack,
                       nest 2 $ fsep $ map text vs,
@@ -105,6 +116,7 @@ showNixPkg (Pkg name ver sha256 url desc lic deps tools libs pcs platforms maint
 cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
 cabal2nix cabal sha256 platforms maintainers =
     Pkg pkgname pkgver sha256 url desc lic
+      isLib isExe
       (buildDepends tpkg)
       tools
       libs
@@ -126,6 +138,8 @@ cabal2nix cabal sha256 platforms maintainers =
                         (Platform I386 Linux) -- shouldn't be hardcoded
                         (CompilerId GHC (Version [7,0,4] [])) -- dito
                         [] cabal
+    isLib   = isJust (library tpkg)
+    isExe   = not (null (executables tpkg))
     libDeps = map libBuildInfo $ maybeToList (library tpkg)
     exeDeps = map    buildInfo $ executables tpkg
     libs    =             concatMap extraLibs        (libDeps ++ exeDeps)
