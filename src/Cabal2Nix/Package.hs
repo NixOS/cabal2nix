@@ -1,4 +1,10 @@
-module Cabal2Nix.Package ( cabal2nix, showNixPkg ) where
+module Cabal2Nix.Package
+  ( cabal2nix, showNixPkg
+  , PkgName, PkgVersion, PkgSHA256, PkgURL, PkgDescription, PkgLicense
+  , PkgIsLib, PkgIsExe, PkgDependencies, PkgBuildTools, PkgExtraLibs
+  , PkgPkgconfigDeps, PkgPlatforms, PkgMaintainers
+  )
+  where
 
 import Data.List
 import Data.Maybe
