@@ -161,9 +161,12 @@ updateNixPkgs paths = do
       nix' <- io (BS.readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
         let Pkg name vers sha plats maints path = nix
+            plats'
+              | null plats && not (null maints) = ["self.ghc.meta.platforms"]
+              | otherwise                       = plats
         msgDebug ("re-generate " ++ path)
         pkg <- readCabalFile name vers
-        io $ writeFile path (showNixPkg (cabal2nix pkg sha plats maints))
+        io $ writeFile path (showNixPkg (cabal2nix pkg sha plats' maints))
         modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
   pkgset <- gets (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
