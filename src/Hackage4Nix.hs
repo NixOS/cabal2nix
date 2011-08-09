@@ -69,12 +69,6 @@ readCabalFile name vers = do
            ParseFailed err -> fail ("cannot parse cabal file " ++ cabal ++ ": " ++ show err)
   return pkg
 
-badPackages :: [String]
-badPackages =
-  [ "haskell-platform"
-  , "flapjax"
-  ]
-
 discoverNixFiles :: (FilePath -> Hackage4Nix ()) -> FilePath -> Hackage4Nix ()
 discoverNixFiles yield dirOrFile
   | "." `isPrefixOf` takeFileName dirOrFile  = msgDebug $ "ignore file or directory " ++ dirOrFile
@@ -243,3 +237,53 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
             , _hackageDb = last $ _hackageDb defaultConfiguration : [ p | HackageDB p <- opts ]
             }
   flip evalStateT cfg (updateNixPkgs args)
+
+
+
+-- Packages that we cannot regenerate automatically yet. This list
+-- should be empty.
+
+badPackages :: [String]
+badPackages =
+  [ "haskell-platform"
+  , "flapjax"
+  , "alex"
+  , "cairo"
+  , "cgi"
+  , "citeproc-hs"
+  , "editline"
+  , "glade"
+  , "glib"
+  , "GLUT"
+  , "gtk"
+  , "gtk2hs-buildtools"
+  , "gtksourceview2"
+  , "haddock"
+  , "haskell-src"
+  , "hmatrix"
+  , "hp2any-core"
+  , "hp2any-graph"
+  , "LambdaHack"
+  , "leksah"
+  , "lhs2tex"
+  , "MazesOfMonad"
+  , "OpenAL"
+  , "OpenGL"
+  , "pango"
+  , "QuickCheck"
+  , "readline"
+  , "repa-examples"
+  , "scion"
+  , "SDL"
+  , "SDL-image"
+  , "SDL-mixer"
+  , "SDL-ttf"
+  , "svgcairo"
+  , "terminfo"
+  , "vacuum"
+  , "vacuum-cairo"
+  , "wxHaskell"
+  , "X11"
+  , "X11-xft"
+  , "xmonad"
+  ]
