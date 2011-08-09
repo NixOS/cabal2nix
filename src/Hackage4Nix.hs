@@ -34,7 +34,7 @@ data Configuration = Configuration
   { _msgDebug  :: String -> IO ()
   , _msgInfo   :: String -> IO ()
   , _hackageDb :: FilePath
-  , _pkgset   :: PkgSet
+  , _pkgset    :: PkgSet
   }
 
 defaultConfiguration :: Configuration
