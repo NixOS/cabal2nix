@@ -28,7 +28,7 @@ string :: String -> Doc
 string = doubleQuotes . text
 
 version :: [Int] -> Doc
-version = hcat . punctuate (text ".") . map int
+version = doubleQuotes (hcat . punctuate (text ".") . map int)
 
 prepunctuate :: Doc -> [Doc] -> [Doc]
 prepunctuate _ []     = []
