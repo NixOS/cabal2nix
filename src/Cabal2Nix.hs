@@ -61,7 +61,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
       maintainers = [ m | Maintainer m <- opts ]
       platforms'  = [ p | Platform p <- opts ]
       platforms
-        | null platforms' = if not (null maintainers) then ["haskellPlatforms"] else []
+        | null platforms' = if not (null maintainers) then ["self.ghc.meta.platforms"] else []
         | otherwise       = platforms'
 
   when (length uri /= 1) (cmdlineError "*** exactly one URI must be specified")
