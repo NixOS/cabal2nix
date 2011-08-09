@@ -15,6 +15,7 @@ import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Version
 import Text.PrettyPrint
+import Data.Version ( showVersion )
 
 import Cabal2Nix.License
 import Cabal2Nix.Name
@@ -22,7 +23,7 @@ import Cabal2Nix.CorePackages
 import Cabal2Nix.Pretty
 
 type PkgName          = String
-type PkgVersion       = [Int]
+type PkgVersion       = String
 type PkgSHA256        = String
 type PkgURL           = String
 type PkgDescription   = String
@@ -64,7 +65,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
               colon <+> lbrace,
             nest 2 $ vcat [
               attr "pname"   $ string name,
-              attr "version" $ version ver,
+              attr "version" $ string ver,
               attr "sha256"  $ string sha256,
               boolattr "isLibrary"    (not isLib || isExe) isLib,
               boolattr "isExecutable" (not isLib || isExe) isExe,
@@ -113,7 +114,7 @@ cabal2nix cabal sha256 platforms maintainers =
   where
     pkg = packageDescription cabal
     PackageName pkgname = pkgName (package pkg)
-    pkgver = versionBranch (pkgVersion (package pkg))
+    pkgver = showVersion (pkgVersion (package pkg))
     lic = license pkg
     url = homepage pkg
     desc = synopsis pkg
