@@ -189,11 +189,11 @@ genCabal2NixCmdline (Pkg name vers _ plats maints path) = unwords $ ["cabal2nix"
       cabal = "cabal://" ++ name ++ "-" ++ vers
       maints' = [ "--maintainer=" ++ m | m <- maints ]
       plats'
-        | ["self.ghc.meta.platforms"] == plats   = []
-        | otherwise                              =  [ "--platform=" ++ p | p <- plats ]
+        | ["self.ghc.meta.platforms"] == plats     = []
+        | otherwise                                =  [ "--platform=" ++ p | p <- plats ]
       path'
-        | pack path `regmatch` "[0-9\\.]+\\.nix" = replaceFileName path (vers <.> "nix")
-        | otherwise                              = path
+        | pack path `regmatch` "/[0-9\\.]+\\.nix$" = replaceFileName path (vers <.> "nix")
+        | otherwise                                = path
 
 data CliOption = PrintHelp | Verbose | HackageDB FilePath
   deriving (Eq)
