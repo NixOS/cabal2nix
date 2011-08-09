@@ -165,6 +165,7 @@ updateNixPkgs paths = do
               | null plats && not (null maints) = ["self.ghc.meta.platforms"]
               | otherwise                       = plats
         msgDebug ("re-generate " ++ path)
+        when (null maints) (msgInfo ("warning: no maintainers configured for " ++ path))
         pkg <- readCabalFile name vers
         io $ writeFile path (showNixPkg (cabal2nix pkg sha plats' maints))
         modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
