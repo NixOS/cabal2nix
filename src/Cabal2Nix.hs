@@ -31,8 +31,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
       options =
         [ Option ['h'] ["help"]       (NoArg PrintHelp)                 "show this help text"
         , Option []    ["sha256"]     (ReqArg SHA256 "HASH")            "sha256 hash of source tarball"
-        , Option []    ["maintainer"] (ReqArg Maintainer "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
-        , Option []    ["platform"]   (ReqArg Platform "PLATFORM")      "supported build platforms (may be specified multiple times)"
+        , Option ['m'] ["maintainer"] (ReqArg Maintainer "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
+        , Option ['p'] ["platform"]   (ReqArg Platform "PLATFORM")      "supported build platforms (may be specified multiple times)"
         ]
 
       usage :: String

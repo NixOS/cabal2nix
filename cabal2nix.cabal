@@ -16,10 +16,10 @@ Description:
   commandline syntax is:
   .
   > Usage: cabal2nix [options] url-to-cabal-file
-  >   -h  --help                   show this help text
-  >       --sha256=HASH            sha256 hash of source tarball
-  >       --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
-  >       --platform=PLATFORM      supported build platforms (may be specified multiple times)
+  >   -h             --help                   show this help text
+  >                  --sha256=HASH            sha256 hash of source tarball
+  >   -m MAINTAINER  --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
+  >   -p PLATFORM    --platform=PLATFORM      supported build platforms (may be specified multiple times)
   >
   > Recognized URI schemes:
   >
