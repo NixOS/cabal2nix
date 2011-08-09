@@ -12,7 +12,7 @@ Cabal-Version:          >= 1.6
 Build-Type:             Simple
 Tested-With:            GHC == 7.0.4
 Description:
-  This utility converts Cabal files into Nix build instructions. The
+  The cabal2nix utility converts Cabal files into Nix build instructions. The
   commandline syntax is:
   .
   > Usage: cabal2nix [options] url-to-cabal-file
@@ -45,4 +45,10 @@ Executable cabal2nix
   main-is:              Cabal2Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP, pretty, filepath, directory
+  Ghc-Options:          -Wall
+
+Executable hackage4nix
+  main-is:              Hackage4Nix.hs
+  hs-source-dirs:       src
+  Build-Depends:        base >= 3 && < 5, Cabal, pretty, filepath, directory, bytestring, regex-posix, mtl
   Ghc-Options:          -Wall
