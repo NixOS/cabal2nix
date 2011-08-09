@@ -102,10 +102,12 @@ normalizeMaintainer x
 
 parseNixFile :: FilePath -> ByteString -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
-  | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
-               = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
   | True    <- (pack path) `regmatch` (concat (intersperse "|" badPackages))
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
+  | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
+               = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
+  | True    <- buf `regmatch` "noHaddock"
+               = msgDebug ("ignore non-haddock package " ++ path) >> return Nothing
   | True    <- buf =~ pack "cabal.mkDerivation"
   , [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
   , [vers]  <- buf `regsubmatch` "version *= *\"([^\"]+)\""
