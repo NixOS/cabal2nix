@@ -50,5 +50,6 @@ Executable cabal2nix
 Executable hackage4nix
   main-is:              Hackage4Nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, Cabal, pretty, filepath, directory, bytestring, regex-posix, mtl
+  Build-Depends:        base >= 3 && < 5, Cabal, pretty, filepath, directory, bytestring,
+                        regex-posix, mtl, containers
   Ghc-Options:          -Wall
