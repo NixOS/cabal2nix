@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.8
+Version:                1.9
 Copyright:              (c) 2011 Peter Simons and Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -30,8 +30,8 @@ Description:
   .
   The only required argument is the path to the cabal file. For example:
   .
-  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.8/cabal2nix.cabal
-  > cabal2nix cabal://cabal2nix-1.8
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.9/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-1.9
   .
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes
@@ -46,6 +46,12 @@ Executable cabal2nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP, pretty, filepath, directory
   Ghc-Options:          -Wall
+  other-modules:        Cabal2Nix.Pretty
+                        Cabal2Nix.License
+                        Cabal2Nix.Name
+                        Cabal2Nix.CorePackages
+                        Cabal2Nix.Package
+                        Cabal2Nix.Hackage
 
 Executable hackage4nix
   main-is:              Hackage4Nix.hs
@@ -53,3 +59,9 @@ Executable hackage4nix
   Build-Depends:        base >= 3 && < 5, Cabal, pretty, filepath, directory, bytestring,
                         regex-posix, mtl, containers
   Ghc-Options:          -Wall
+  other-modules:        Cabal2Nix.Pretty
+                        Cabal2Nix.License
+                        Cabal2Nix.Name
+                        Cabal2Nix.CorePackages
+                        Cabal2Nix.Package
+                        Cabal2Nix.Hackage
