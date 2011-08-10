@@ -265,6 +265,7 @@ badPackages = [ "/"++p++"/" | p <- names ]
           , "haddock"
           , "haskell-platform"
           , "haskell-src"
+          , "hfuse"
           , "hmatrix"
           , "hp2any-graph"
           , "idris"
