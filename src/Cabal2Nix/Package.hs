@@ -117,7 +117,7 @@ cabal2nix cabal sha256 platforms maintainers =
     pkgver = showVersion (pkgVersion (package pkg))
     lic = license pkg
     url = homepage pkg
-    desc = synopsis pkg
+    desc = normalizeDescription (synopsis pkg)
     -- globalDeps = buildDepends pkg
     -- Potentially dangerous: determine a default flattening of the
     -- package description. Better approach: export the conditional
@@ -136,3 +136,12 @@ cabal2nix cabal sha256 platforms maintainers =
 
 unDep :: Dependency -> String
 unDep (Dependency (PackageName x) _) = x
+
+normalizeDescription :: String -> String
+normalizeDescription desc
+  | last desc == '.' && length (filter ('.'==) desc) == 1 = reverse (tail (reverse desc))
+  | otherwise                                             = unwords (words desc) >>= quote
+
+quote :: Char -> [Char]
+quote '"'  = "\\\""
+quote c    = [c]
