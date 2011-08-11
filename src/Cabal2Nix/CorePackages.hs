@@ -30,7 +30,7 @@ corePackages = [
     "old-time",
     "pretty",
     "process",
-    "random",
+    -- "random",
     "template-haskell",
     -- "time",
     "unix"
