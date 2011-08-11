@@ -106,6 +106,8 @@ parseNixFile path buf
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
   | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
                = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
+  | True    <- buf `regmatch` "(patchPhase|configureFlags) ="
+               = msgDebug ("ignore patched package " ++ path) >> return Nothing
   | True    <- buf `regmatch` "noHaddock"
                = msgDebug ("ignore non-haddock package " ++ path) >> return Nothing
   | True    <- buf =~ pack "cabal.mkDerivation"
