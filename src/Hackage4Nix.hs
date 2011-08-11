@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, PatternGuards #-}
+{-# LANGUAGE PatternGuards #-}
 
 module Main ( main ) where
 
