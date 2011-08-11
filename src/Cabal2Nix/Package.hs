@@ -139,7 +139,8 @@ unDep (Dependency (PackageName x) _) = x
 
 normalizeDescription :: String -> String
 normalizeDescription desc
-  | last desc == '.' && length (filter ('.'==) desc) == 1 = reverse (tail (reverse desc))
+  | null desc                                             = []
+  | last desc == '.' && length (filter ('.'==) desc) == 1 = normalizeDescription (reverse (tail (reverse desc)))
   | otherwise                                             = unwords (words desc) >>= quote
 
 quote :: Char -> [Char]
