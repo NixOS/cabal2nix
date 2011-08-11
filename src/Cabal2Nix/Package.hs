@@ -2,7 +2,7 @@ module Cabal2Nix.Package
   ( cabal2nix, showNixPkg
   , PkgName, PkgVersion, PkgSHA256, PkgURL, PkgDescription, PkgLicense
   , PkgIsLib, PkgIsExe, PkgDependencies, PkgBuildTools, PkgExtraLibs
-  , PkgPkgconfigDeps, PkgPlatforms, PkgMaintainers
+  , PkgPkgconfigDeps, PkgPlatforms, PkgMaintainers, Pkg(..)
   )
   where
 
