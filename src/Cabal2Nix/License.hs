@@ -16,6 +16,6 @@ showLic BSD3                              = "self.stdenv.lib.licenses.bsd3"
 showLic BSD4                              = "self.stdenv.lib.licenses.bsd4"
 showLic MIT                               = "self.stdenv.lib.licenses.mit"
 showLic PublicDomain                      = "self.stdenv.lib.licenses.publicDomain"
-showLic AllRightsReserved                 = show "unknown"
+showLic AllRightsReserved                 = "self.stdenv.lib.licenses.proprietary"
 showLic OtherLicense                      = show "unknown"
 showLic l                                 = error $ "unknown license: " ++ show l
