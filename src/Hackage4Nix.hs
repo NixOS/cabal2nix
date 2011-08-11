@@ -282,7 +282,6 @@ badPackages = [ "/"++p++"/" | p <- names ]
           , "SDL-mixer"
           , "SDL-ttf"
           , "svgcairo"
-          , "tar"
           , "terminfo"
           , "threadscope"
           , "vacuum"
