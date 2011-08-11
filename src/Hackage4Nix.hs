@@ -271,7 +271,6 @@ badPackages = [ "/"++p++"/" | p <- names ]
           , "idris"
           , "LambdaHack"
           , "lhs2tex"
-          , "MazesOfMonad"
           , "OpenAL"
           , "OpenGL"
           , "pango"
