@@ -1,11 +1,10 @@
-module Hackage4Nix.Nix where
+module Hackage4Nix.Nix ( parseNixExpr, nixExpr2CabalExpr ) where
 
 import Hackage4Nix.Nix.Lex
 import Hackage4Nix.Nix.Par
 import Hackage4Nix.Nix.ErrM
 import Hackage4Nix.Nix.Abs
 import Cabal2Nix.Package
-import Cabal2Nix.License
 import Data.List
 import Distribution.Package
 import Distribution.Version
@@ -27,26 +26,52 @@ nixExpr2CabalExpr (Expr _ _ dict) =
     buildTools = [ Dependency (PackageName dep) anyVersion | dep <- getRefList "buildTools" dict ]
     extraLibs = getRefList "extraLibraries" dict
     pkgconfDeps = getRefList "pkgconfDepends" dict
-    platforms = getRefList "platforms" (getDict "meta" dict)
+    platforms = [getRef "platforms" (getDict "meta" dict)]
     maintainers = getRefList "maintainers" (getDict "meta" dict)
 
+get' :: String -> Dictionary -> [Value]
 get' ref (Dictionary attrs) = [ v | Attribute (Reference r) v <- attrs, r == [Ident ref] ]
+
+get :: String -> Dictionary -> Value
 get ref dict
   | [v] <-  get' ref dict = v
   | otherwise             = error $ "attribute " ++ ref ++ " doesn't exist in " ++ show dict
-getBool ref dict = let BoolV b = get ref dict in if b == Yes then True else False
-getString ref dict = let StringV x = get ref dict in x
-getDict ref dict = let DictionaryV x = get ref dict in x
-getURL ref dict
-  | URLV (URL x) <- get ref dict = x
-  | StringV x <- get ref dict = x
 
+getBool :: String -> Dictionary -> Bool
+getBool ref dict
+  | [] <- get' ref dict     = False
+  | BoolV b <- get ref dict = if b == Yes then True else False
+
+getString :: String -> Dictionary -> String
+getString ref dict
+  | [] <- get' ref dict          = ""
+  | StringV x <- get ref dict    = x
+  | AttributeV x <- get ref dict = flattenReference x
+  | otherwise                    = error $ "getURL: unexpected value of " ++ show ref ++ " in " ++ show dict
+
+getDict :: String -> Dictionary -> Dictionary
+getDict ref dict = let DictionaryV x = get ref dict in x
+
+getURL :: String -> Dictionary -> String
+getURL ref dict
+  | [] <- get' ref dict          = ""
+  | URLV (URL x) <- get ref dict = x
+  | StringV x    <- get ref dict = x
+  | otherwise                    = error "getURL: unexpected URL value"
+
+getRefList :: String -> Dictionary -> [String]
 getRefList ref dict =
   let vals = get' ref dict
       rs = [ refs | ListV vs <- vals, AttributeV refs <- vs ]
   in
     map flattenReference rs
 
+getRef :: String -> Dictionary -> String
+getRef ref dict
+  | [] <- get' ref dict          = ""
+  | AttributeV r <- get ref dict = flattenReference r
+
+flattenReference :: Reference -> String
 flattenReference (Reference rs) = concat (intersperse "." [ r | Ident r <- rs ])
 
 parseNixExpr :: Monad m => String -> m Expr
@@ -58,10 +83,3 @@ run :: Monad m => ParseFun a -> String -> m a
 run p s = case p (myLexer s) of
             Bad err    -> fail err
             Ok  tree   -> return tree
-
-runTest = do
-  buf <- readFile "/home/simons/.nix-defexpr/pkgs/development/libraries/haskell/hsemail/default.nix"
-  tree <- parseNixExpr buf
-  print tree
-  let pkg = nixExpr2CabalExpr tree
-  putStr (showNixPkg pkg)
