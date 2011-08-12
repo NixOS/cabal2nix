@@ -27,7 +27,7 @@ type PkgVersion       = String
 type PkgSHA256        = String
 type PkgURL           = String
 type PkgDescription   = String
-type PkgLicense       = License
+type PkgLicense       = String
 type PkgIsLib         = Bool
 type PkgIsExe         = Bool
 type PkgDependencies  = [Dependency] -- [CondTree ConfVar [Dependency] ()]
@@ -78,7 +78,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
                 nest 2 $ vcat [
                   onlyIf url  $ attr "homepage"    $ string url,
                   onlyIf desc $ attr "description" $ string desc,
-                  attr "license" $ text (showLic lic),
+                  attr "license" $ text lic,
                   onlyIf platforms $
                     sep [
                       text "platforms" <+> equals,
@@ -115,7 +115,7 @@ cabal2nix cabal sha256 platforms maintainers =
     pkg = packageDescription cabal
     PackageName pkgname = pkgName (package pkg)
     pkgver = showVersion (pkgVersion (package pkg))
-    lic = license pkg
+    lic = showLic (license pkg)
     url = homepage pkg
     desc = normalizeDescription (synopsis pkg)
     -- globalDeps = buildDepends pkg
