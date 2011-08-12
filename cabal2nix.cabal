@@ -59,7 +59,6 @@ Executable hackage4nix
   Build-Depends:        base >= 3 && < 5, Cabal >= 1.8, pretty, filepath, directory, bytestring,
                         regex-posix, mtl, containers, array
   Extensions:           PatternGuards
-  Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.Pretty
                         Cabal2Nix.License
                         Cabal2Nix.Name
