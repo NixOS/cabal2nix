@@ -1,9 +1,6 @@
 module Hackage4Nix.Nix ( parseNixExpr, nixExpr2CabalExpr ) where
 
-import Hackage4Nix.Nix.Lex
-import Hackage4Nix.Nix.Par
-import Hackage4Nix.Nix.ErrM
-import Hackage4Nix.Nix.Abs
+import Language.Nix.Expr
 import Cabal2Nix.Package
 import Data.List
 import Distribution.Package
@@ -81,10 +78,3 @@ flattenReference (Reference rs) = concat (intersperse "." [ r | Ident r <- rs ])
 
 parseNixExpr :: Monad m => String -> m Expr
 parseNixExpr = run pExpr
-
-type ParseFun a = [Token] -> Err a
-
-run :: Monad m => ParseFun a -> String -> m a
-run p s = case p (myLexer s) of
-            Bad err    -> fail err
-            Ok  tree   -> return tree

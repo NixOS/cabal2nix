@@ -1,6 +1,3 @@
--- Run "bnfc -p Hackage4Nix -d Nix.cf" to re-generate the parsers from
--- this file.
---
 -- The grammar works fine for 99% of all expressions. The remaining
 -- percent doesn't parse because of 'let' or 'with' statements, which
 -- don't support (and probably don't want to, because we can't resolve
