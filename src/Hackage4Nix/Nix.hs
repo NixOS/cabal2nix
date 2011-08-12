@@ -12,7 +12,8 @@ import Distribution.Version
 nixExpr2CabalExpr :: Expr -> Pkg
 nixExpr2CabalExpr (Expr _ _ dict) =
     Pkg name version sha256 homepage description license isLib isExe
-        deps buildTools extraLibs pkgconfDeps platforms maintainers
+        deps buildTools extraLibs pkgconfDeps noHaddock platforms
+        maintainers
   where
     name = getString "pname" dict
     version = getString "version" dict

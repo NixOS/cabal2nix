@@ -18,7 +18,8 @@ import Text.ParserCombinators.ReadP ( readP_to_S )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers )
+import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers
+                         , PkgNoHaddock )
 import qualified Cabal2Nix.Package ( Pkg(..) )
 import Hackage4Nix.Nix
 
@@ -26,9 +27,6 @@ type ByteString = BS.ByteString
 
 pack :: String -> ByteString
 pack = BS.pack
-
-unpack :: ByteString -> String
-unpack = BS.unpack
 
 type PkgSet = Set.Set Pkg
 
@@ -86,16 +84,11 @@ discoverNixFiles yield dirOrFile
          io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 type PkgVersion = String
-data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgPlatforms PkgMaintainers FilePath
+data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgNoHaddock PkgPlatforms PkgMaintainers FilePath
   deriving (Show, Eq, Ord)
 
 regmatch :: ByteString -> String -> Bool
 regmatch buf patt = match (makeRegexOpts compExtended execBlank (pack patt)) buf
-
-regsubmatch :: ByteString -> String -> [ByteString]
-regsubmatch buf patt = let (_,_,_,x) = f in x
-  where f :: (ByteString,ByteString,ByteString,[ByteString])
-        f = match (makeRegexOpts compExtended execBlank (pack patt)) buf
 
 normalizeMaintainer :: String -> String
 normalizeMaintainer x
@@ -108,14 +101,16 @@ parseNixFile path buf'
                 = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
   | (pack path) `regmatch` (concat (intersperse "|" badPackages))
                 = msgDebug ("ignore known bad package " ++ path) >> return Nothing
+  | buf' `regmatch` "preConfigure|configureFlags|postInstall|patchPhase"
+                = msgInfo ("ignore patched package " ++ path) >> return Nothing
   | otherwise   = do
       let buf = BS.unpack buf'
       tree <- parseNixExpr buf
       let pkg' = nixExpr2CabalExpr tree
-          Cabal2Nix.Package.Pkg pkgname pkgver sha256 url desc lic isLib isExe deps tools libs pcs plats maints = pkg'
-          pkg = Pkg pkgname pkgver sha256 plats (map normalizeMaintainer maints) path
-      msgDebug ("pkg = " ++ show pkg')
-      msgDebug ("pkg = " ++ show pkg)
+          Cabal2Nix.Package.Pkg pkgname pkgver sha256 _ _ _ _ _ _ _ _ _ noHaddock plats maints = pkg'
+          pkg = Pkg pkgname pkgver sha256 noHaddock plats (map normalizeMaintainer maints) path
+      msgDebug ("NixPkg = " ++ show pkg')
+      msgDebug ("CabalPkg = " ++ show pkg)
       return (Just pkg)
 
 readVersion :: String -> Version
@@ -127,10 +122,10 @@ readVersion str =
 selectLatestVersions :: PkgSet -> PkgSet
 selectLatestVersions = Set.fromList . nubBy f2 . sortBy f1 . Set.toList
   where
-    f1 (Pkg n1 v1 _ _ _ _) (Pkg n2 v2 _ _ _ _)
+    f1 (Pkg n1 v1 _ _ _ _ _) (Pkg n2 v2 _ _ _ _ _)
       | n1 == n2  = compare v2 v1
       | otherwise = compare n1 n2
-    f2 (Pkg n1 _ _ _ _ _) (Pkg n2 _ _ _ _ _)
+    f2 (Pkg n1 _ _ _ _ _ _) (Pkg n2 _ _ _ _ _ _)
       = n1 == n2
 
 discoverUpdates :: PkgName -> PkgVersion -> Hackage4Nix [PkgVersion]
@@ -147,36 +142,36 @@ updateNixPkgs paths = do
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (BS.readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
-        let Pkg name vers sha plats maints path = nix
+        let Pkg name vers sha noHaddock plats maints path = nix
             maints' = nub (sort (maints ++ ["andres","simons"]))
             plats'
               | null plats && not (null maints) = ["self.ghc.meta.platforms"]
               | otherwise                       = plats
         msgDebug ("re-generate " ++ path)
-        when (null maints) (msgInfo ("warning: no maintainers configured for " ++ path))
+        when (null maints) (msgInfo ("no maintainers configured for " ++ path))
         pkg <- readCabalFile name vers
-        io $ writeFile path (showNixPkg (cabal2nix pkg sha plats' maints'))
+        io $ writeFile path (showNixPkg (cabal2nix pkg sha noHaddock plats' maints'))
         modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
   pkgset <- gets (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
-    let Pkg name vers _ _ _ _ = pkg
+    let Pkg name vers _ _ _ _ _ = pkg
     updates <- discoverUpdates name vers
     return (pkg,updates)
   let updates = [ u | u@(_,(_:_)) <- updates' ]
   when (not (null updates)) $ do
     msgInfo "The following updates are available:"
     flip mapM_ updates $ \(pkg,versions) -> do
-      let Pkg name vers _ plats maints path = pkg
+      let Pkg name vers _ noHaddock plats maints path = pkg
       msgInfo ""
       msgInfo $ name ++ "-" ++ vers ++ ":"
       flip mapM_ versions $ \newVersion -> do
-        msgInfo $ "  " ++ genCabal2NixCmdline (Pkg name newVersion undefined plats maints path)
+        msgInfo $ "  " ++ genCabal2NixCmdline (Pkg name newVersion undefined noHaddock plats maints path)
   return ()
 
 genCabal2NixCmdline :: Pkg -> String
-genCabal2NixCmdline (Pkg name vers _ plats maints path) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
+genCabal2NixCmdline (Pkg name vers _ noHaddock plats maints path) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
     where
-      opts = [cabal] ++ maints' ++ plats'
+      opts = [cabal] ++ maints' ++ plats' ++ if noHaddock then ["--no-haddock"] else []
       cabal = "cabal://" ++ name ++ "-" ++ vers
       maints' = [ "--maintainer=" ++ m | m <- maints ]
       plats'
