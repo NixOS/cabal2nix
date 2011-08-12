@@ -66,3 +66,7 @@ Executable hackage4nix
                         Cabal2Nix.CorePackages
                         Cabal2Nix.Package
                         Cabal2Nix.Hackage
+                        Hackage4Nix.Nix.Abs
+                        Hackage4Nix.Nix.ErrM
+                        Hackage4Nix.Nix.Lex
+                        Hackage4Nix.Nix.Par
