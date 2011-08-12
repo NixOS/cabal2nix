@@ -26,7 +26,9 @@ nixExpr2CabalExpr (Expr _ _ dict) =
     buildTools = [ Dependency (PackageName dep) anyVersion | dep <- getRefList "buildTools" dict ]
     extraLibs = getRefList "extraLibraries" dict
     pkgconfDeps = getRefList "pkgconfDepends" dict
-    platforms = [getRef "platforms" (getDict "meta" dict)]
+    platform = getRef "platforms" (getDict "meta" dict)
+    platforms = if null platform then [] else [platform]
+    noHaddock = getBool "noHaddock" dict
     maintainers = getRefList "maintainers" (getDict "meta" dict)
 
 get' :: String -> Dictionary -> [Value]
@@ -41,6 +43,7 @@ getBool :: String -> Dictionary -> Bool
 getBool ref dict
   | [] <- get' ref dict     = False
   | BoolV b <- get ref dict = if b == Yes then True else False
+  | otherwise               = error $ "getBool: unexpected value of " ++ show ref ++ " in " ++ show dict
 
 getString :: String -> Dictionary -> String
 getString ref dict
@@ -70,6 +73,7 @@ getRef :: String -> Dictionary -> String
 getRef ref dict
   | [] <- get' ref dict          = ""
   | AttributeV r <- get ref dict = flattenReference r
+  | otherwise                    = error $ "getURL: unexpected value of " ++ show ref ++ " in " ++ show dict
 
 flattenReference :: Reference -> String
 flattenReference (Reference rs) = concat (intersperse "." [ r | Ident r <- rs ])
