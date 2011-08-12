@@ -235,49 +235,43 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 badPackages :: [String]
 badPackages = [ "/"++p++"/" | p <- names ]
   where names =
-          [ "alex"
-          , "CS173Tourney"
-          , "get-options"
-          , "WebServer"
+          [ "alex"              -- undeclared dependencies
+          , "CS173Tourney"      -- parser error
+          , "get-options"       -- parser error
+          , "WebServer"         -- these two are not on Hackage
           , "WebServer-Extras"
-          , "cabal"
-          , "cairo"
-          , "citeproc"
-          , "citeproc-hs"
-          , "editline"
-          , "flapjax"
-          , "ghc-events"
-          , "glade"
-          , "glib"
-          , "glut"
-          , "GLUT"
-          , "gtk"
-          , "gtksourceview2"
-          , "haddock"
-          , "haskell-platform"
-          , "haskell-src"
-          , "hfuse"
-          , "hmatrix"
-          , "hp2any-graph"
-          , "idris"
-          , "LambdaHack"
-          , "lhs2tex"
-          , "OpenAL"
-          , "OpenGL"
-          , "pango"
-          , "readline"
-          , "repa-examples"
-          , "scion"
-          , "SDL"
-          , "SDL-image"
-          , "SDL-mixer"
-          , "SDL-ttf"
-          , "svgcairo"
-          , "terminfo"
-          , "threadscope"
-          , "vacuum"
-          , "wxHaskell"
+          , "cairo"             -- undeclared dependencies
+          , "citeproc-hs"       -- undeclared dependencies
+          , "editline"          -- undeclared dependencies
+          , "flapjax"           -- parser error
+          , "glade"             -- undeclared dependencies
+          , "glib"              -- undeclared dependencies
+          , "epic"              -- undeclared dependencies
+          , "GLUT"              -- undeclared dependencies
+          , "gtk"               -- undeclared dependencies
+          , "gtksourceview2"    -- undeclared dependencies
+          , "haddock"           -- undeclared dependencies
+          , "haskell-platform"  -- not on Hackage
+          , "haskell-src"       -- undeclared dependencies
+          , "hmatrix"           -- undeclared dependencies
+          , "hp2any-graph"      -- undeclared dependencies
+          , "lhs2tex"           -- undeclared dependencies
+          , "OpenAL"            -- undeclared dependencies
+          , "OpenGL"            -- undeclared dependencies
+          , "pango"             -- undeclared dependencies
+          , "idris"             -- undeclared dependencies
+          , "readline"          -- undeclared dependencies
+          , "repa-examples"     -- undeclared dependencies
+          , "scion"             -- expects non-existent networkBytestring
+          , "SDL"               -- undeclared dependencies
+          , "SDL-image"         -- undeclared dependencies
+          , "SDL-mixer"         -- undeclared dependencies
+          , "SDL-ttf"           -- undeclared dependencies
+          , "svgcairo"          -- undeclared dependencies
+          , "terminfo"          -- undeclared dependencies
+          , "xmonad"            -- undeclared dependencies
+          , "vacuum"            -- undeclared dependencies
+          , "wxHaskell"         -- undeclared dependencies
           , "X11"
           , "X11-xft"
-          , "xmobar"
           ]
