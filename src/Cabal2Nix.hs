@@ -22,7 +22,7 @@ readCabalFile path
   | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
   | otherwise                    = readFile path
 
-data CliOption = PrintHelp | SHA256 String | Maintainer String | Platform String
+data CliOption = PrintHelp | SHA256 String | Maintainer String | Platform String | NoHaddock
   deriving (Eq)
 
 main :: IO ()
@@ -33,6 +33,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
         , Option []    ["sha256"]     (ReqArg SHA256 "HASH")            "sha256 hash of source tarball"
         , Option ['m'] ["maintainer"] (ReqArg Maintainer "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
         , Option ['p'] ["platform"]   (ReqArg Platform "PLATFORM")      "supported build platforms (may be specified multiple times)"
+        , Option []    ["no-haddock"] (NoArg NoHaddock)                 "don't run Haddock when building this package"
         ]
 
       usage :: String
@@ -58,6 +59,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let uri         = args
       hash        = [ h | SHA256 h <- opts ]
+      noHaddock   = NoHaddock `elem` opts
       maintainers = [ m | Maintainer m <- opts ]
       platforms'  = [ p | Platform p <- opts ]
       platforms
@@ -78,4 +80,4 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   sha256 <- if null hash then hashPackage packageId else return (head hash)
 
-  putStr (showNixPkg (cabal2nix cabal sha256 platforms maintainers))
+  putStr (showNixPkg (cabal2nix cabal sha256 noHaddock platforms maintainers))

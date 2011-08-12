@@ -2,7 +2,7 @@ module Cabal2Nix.Package
   ( cabal2nix, showNixPkg
   , PkgName, PkgVersion, PkgSHA256, PkgURL, PkgDescription, PkgLicense
   , PkgIsLib, PkgIsExe, PkgDependencies, PkgBuildTools, PkgExtraLibs
-  , PkgPkgconfigDeps, PkgPlatforms, PkgMaintainers, Pkg(..)
+  , PkgPkgconfigDeps, PkgPlatforms, PkgMaintainers, PkgNoHaddock, Pkg(..)
   )
   where
 
@@ -34,6 +34,7 @@ type PkgDependencies  = [Dependency] -- [CondTree ConfVar [Dependency] ()]
 type PkgBuildTools    = [Dependency]
 type PkgExtraLibs     = [String]
 type PkgPkgconfigDeps = [String]
+type PkgNoHaddock     = Bool
 type PkgPlatforms     = [String]
 type PkgMaintainers   = [String]
 
@@ -49,13 +50,14 @@ data Pkg = Pkg PkgName
                PkgBuildTools
                PkgExtraLibs
                PkgPkgconfigDeps
+               PkgNoHaddock
                PkgPlatforms
                PkgMaintainers
   deriving (Show)
 
 showNixPkg :: Pkg -> String
 showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
-                tools libs pcs platforms maintainers) =
+                tools libs pcs noHaddock platforms maintainers) =
     render doc
   where
     doc = funargs (map text ("cabal" : pkgInputs)) $$
@@ -73,6 +75,7 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
               listattr "buildTools"       pkgBuildTools,
               listattr "extraLibraries"   pkgLibs,
               listattr "pkgconfigDepends" pkgPCs,
+              boolattr "noHaddock"        noHaddock noHaddock,
               vcat [
                 text "meta" <+> equals <+> lbrace,
                 nest 2 $ vcat [
@@ -101,14 +104,15 @@ showNixPkg (Pkg name ver sha256 url desc lic isLib isExe deps
     pkgInputs     = nub $ pkgLibs ++ pkgPCs ++ pkgBuildTools ++ pkgDeps
 
 
-cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgPlatforms -> PkgMaintainers -> Pkg
-cabal2nix cabal sha256 platforms maintainers =
+cabal2nix :: GenericPackageDescription -> PkgSHA256 -> PkgNoHaddock -> PkgPlatforms -> PkgMaintainers -> Pkg
+cabal2nix cabal sha256 noHaddock platforms maintainers =
     Pkg pkgname pkgver sha256 url desc lic
       isLib isExe
       (buildDepends tpkg)
       tools
       libs
       pcs
+      noHaddock
       [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | p <- platforms ]
       [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | m <- maintainers ]
   where
