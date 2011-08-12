@@ -19,6 +19,8 @@ import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseRes
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers )
+import qualified Cabal2Nix.Package ( Pkg(..) )
+import Hackage4Nix.Nix
 
 type ByteString = BS.ByteString
 
@@ -101,33 +103,20 @@ normalizeMaintainer x
   | otherwise                                     = x
 
 parseNixFile :: FilePath -> ByteString -> Hackage4Nix (Maybe Pkg)
-parseNixFile path buf
-  | True    <- (pack path) `regmatch` (concat (intersperse "|" badPackages))
-               = msgDebug ("ignore known bad package " ++ path) >> return Nothing
-  | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
-               = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
-  | True    <- buf `regmatch` "(patchPhase|configureFlags) ="
-               = msgDebug ("ignore patched package " ++ path) >> return Nothing
-  | True    <- buf `regmatch` "noHaddock"
-               = msgDebug ("ignore non-haddock package " ++ path) >> return Nothing
-  | True    <- buf =~ pack "cabal.mkDerivation"
-  , [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
-  , [vers]  <- buf `regsubmatch` "version *= *\"([^\"]+)\""
-  , [sha]   <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
-  , plats   <- buf `regsubmatch` "platforms *= *([^;]+);"
-  , maint   <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
-              = let plats' = concatMap BS.words (map (BS.map (\c -> if c == '+' then ' ' else c)) plats)
-                    maint' = concatMap BS.words maint
-                in
-                  return $ Just $ Pkg (unpack name)
-                                      (unpack vers)
-                                      (unpack sha)
-                                      (map unpack plats')
-                                      (map (normalizeMaintainer . unpack) maint')
-                                      (path)
-  | True <- buf `regmatch` "cabal.mkDerivation"
-              = msgInfo ("failed to parse file " ++ path) >> return Nothing
-  | otherwise = return Nothing
+parseNixFile path buf'
+  | not (buf' `regmatch` "cabal.mkDerivation")
+                = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
+  | (pack path) `regmatch` (concat (intersperse "|" badPackages))
+                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
+  | otherwise   = do
+      let buf = BS.unpack buf'
+      tree <- parseNixExpr buf
+      let pkg' = nixExpr2CabalExpr tree
+          Cabal2Nix.Package.Pkg pkgname pkgver sha256 url desc lic isLib isExe deps tools libs pcs plats maints = pkg'
+          pkg = Pkg pkgname pkgver sha256 plats (map normalizeMaintainer maints) path
+      msgDebug ("pkg = " ++ show pkg')
+      msgDebug ("pkg = " ++ show pkg)
+      return (Just pkg)
 
 readVersion :: String -> Version
 readVersion str =
@@ -252,6 +241,11 @@ badPackages :: [String]
 badPackages = [ "/"++p++"/" | p <- names ]
   where names =
           [ "alex"
+          , "CS173Tourney"
+          , "get-options"
+          , "WebServer"
+          , "WebServer-Extras"
+          , "cabal"
           , "cairo"
           , "citeproc"
           , "citeproc-hs"
