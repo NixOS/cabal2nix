@@ -57,8 +57,7 @@ Executable hackage4nix
   main-is:              Hackage4Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, Cabal >= 1.8, pretty, filepath, directory, bytestring,
-                        regex-posix, mtl, containers, array
-  Build-Tools:          BNFC == 2.4.*, happy == 1.*, alex == 2.*
+                        regex-posix, mtl, containers
   Extensions:           PatternGuards
   other-modules:        Cabal2Nix.Pretty
                         Cabal2Nix.License
@@ -66,5 +65,4 @@ Executable hackage4nix
                         Cabal2Nix.CorePackages
                         Cabal2Nix.Package
                         Cabal2Nix.Hackage
-                        Hackage4Nix.Nix
-                        Language.Nix.Expr
+

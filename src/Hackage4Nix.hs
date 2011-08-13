@@ -21,12 +21,14 @@ import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageIn
 import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers
                          , PkgNoHaddock )
 import qualified Cabal2Nix.Package ( Pkg(..) )
-import Hackage4Nix.Nix
 
 type ByteString = BS.ByteString
 
 pack :: String -> ByteString
 pack = BS.pack
+
+unpack :: ByteString -> String
+unpack = BS.unpack
 
 type PkgSet = Set.Set Pkg
 
@@ -90,28 +92,49 @@ data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgNoHaddock PkgPlatforms PkgMaintai
 regmatch :: ByteString -> String -> Bool
 regmatch buf patt = match (makeRegexOpts compExtended execBlank (pack patt)) buf
 
+regsubmatch :: ByteString -> String -> [ByteString]
+regsubmatch buf patt = let (_,_,_,x) = f in x
+  where f :: (ByteString,ByteString,ByteString,[ByteString])
+        f = match (makeRegexOpts compExtended execBlank (pack patt)) buf
+
 normalizeMaintainer :: String -> String
 normalizeMaintainer x
   | "self.stdenv.lib.maintainers." `isPrefixOf` x = drop 28 x
   | otherwise                                     = x
 
 parseNixFile :: FilePath -> ByteString -> Hackage4Nix (Maybe Pkg)
-parseNixFile path buf'
-  | not (buf' `regmatch` "cabal.mkDerivation")
-                = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
-  | (pack path) `regmatch` (concat (intersperse "|" badPackages))
-                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
-  | buf' `regmatch` "preConfigure|configureFlags|postInstall|patchPhase"
-                = msgInfo ("ignore patched package " ++ path) >> return Nothing
-  | otherwise   = do
-      let buf = BS.unpack buf'
-      tree <- parseNixExpr buf
-      let pkg' = nixExpr2CabalExpr tree
-          Cabal2Nix.Package.Pkg pkgname pkgver sha256 _ _ _ _ _ _ _ _ _ noHaddock plats maints = pkg'
-          pkg = Pkg pkgname pkgver sha256 noHaddock plats (map normalizeMaintainer maints) path
-      msgDebug ("NixPkg = " ++ show pkg')
-      msgDebug ("CabalPkg = " ++ show pkg)
-      return (Just pkg)
+parseNixFile path buf
+  | not (buf `regmatch` "cabal.mkDerivation")
+               = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
+  | True    <- (pack path) `regmatch` (concat (intersperse "|" badPackages))
+               = msgDebug ("ignore known bad package " ++ path) >> return Nothing
+  | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
+               = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
+  | buf `regmatch` "preConfigure|configureFlags|postInstall|patchPhase"
+               = msgInfo ("ignore patched package " ++ path) >> return Nothing
+  | True    <- buf =~ pack "cabal.mkDerivation"
+  , [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
+  , [vers]  <- buf `regsubmatch` "version *= *\"([^\"]+)\""
+  , [sha]   <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , plats   <- buf `regsubmatch` "platforms *= *([^;]+);"
+  , maint   <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
+  , haddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
+              = let plats' = concatMap BS.words (map (BS.map (\c -> if c == '+' then ' ' else c)) plats)
+                    maint' = concatMap BS.words maint
+                    noHaddock
+                      | b:[] <- haddock, unpack b == "true" = True
+                      | otherwise                           = False
+                in
+                  return $ Just $ Pkg (unpack name)
+                                      (unpack vers)
+                                      (unpack sha)
+                                      noHaddock
+                                      (map unpack plats')
+                                      (map (normalizeMaintainer . unpack) maint')
+                                      (path)
+  | True <- buf `regmatch` "cabal.mkDerivation"
+              = msgInfo ("failed to parse file " ++ path) >> return Nothing
+  | otherwise = return Nothing
 
 readVersion :: String -> Version
 readVersion str =
