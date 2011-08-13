@@ -11,7 +11,6 @@ import Data.List
 import qualified Data.Set as Set
 import Control.Monad.State
 import Control.Exception ( bracket )
-import qualified Data.ByteString.Char8 as BS
 import Text.Regex.Posix
 import Data.Version
 import Text.ParserCombinators.ReadP ( readP_to_S )
@@ -21,14 +20,6 @@ import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageIn
 import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers
                          , PkgNoHaddock )
 import qualified Cabal2Nix.Package ( Pkg(..) )
-
-type ByteString = BS.ByteString
-
-pack :: String -> ByteString
-pack = BS.pack
-
-unpack :: ByteString -> String
-unpack = BS.unpack
 
 type PkgSet = Set.Set Pkg
 
@@ -89,49 +80,49 @@ type PkgVersion = String
 data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgNoHaddock PkgPlatforms PkgMaintainers FilePath
   deriving (Show, Eq, Ord)
 
-regmatch :: ByteString -> String -> Bool
-regmatch buf patt = match (makeRegexOpts compExtended execBlank (pack patt)) buf
+regmatch :: String -> String -> Bool
+regmatch buf patt = match (makeRegexOpts compExtended execBlank patt) buf
 
-regsubmatch :: ByteString -> String -> [ByteString]
+regsubmatch :: String -> String -> [String]
 regsubmatch buf patt = let (_,_,_,x) = f in x
-  where f :: (ByteString,ByteString,ByteString,[ByteString])
-        f = match (makeRegexOpts compExtended execBlank (pack patt)) buf
+  where f :: (String,String,String,[String])
+        f = match (makeRegexOpts compExtended execBlank patt) buf
 
 normalizeMaintainer :: String -> String
 normalizeMaintainer x
   | "self.stdenv.lib.maintainers." `isPrefixOf` x = drop 28 x
   | otherwise                                     = x
 
-parseNixFile :: FilePath -> ByteString -> Hackage4Nix (Maybe Pkg)
+parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
   | not (buf `regmatch` "cabal.mkDerivation")
                = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
-  | True    <- (pack path) `regmatch` (concat (intersperse "|" badPackages))
+  | True    <- path `regmatch` (concat (intersperse "|" badPackages))
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
   | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
                = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
   | buf `regmatch` "preConfigure|configureFlags|postInstall|patchPhase"
                = msgInfo ("ignore patched package " ++ path) >> return Nothing
-  | True    <- buf =~ pack "cabal.mkDerivation"
+  | True    <- buf =~ "cabal.mkDerivation"
   , [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
   , [vers]  <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , [sha]   <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , plats   <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint   <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , haddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
-              = let plats' = concatMap BS.words (map (BS.map (\c -> if c == '+' then ' ' else c)) plats)
-                    maint' = concatMap BS.words maint
+              = let plats' = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
+                    maint' = concatMap words maint
                     noHaddock
-                      | b:[] <- haddock, unpack b == "true" = True
-                      | otherwise                           = False
+                      | "true":[] <- haddock = True
+                      | otherwise            = False
                 in
-                  return $ Just $ Pkg (unpack name)
-                                      (unpack vers)
-                                      (unpack sha)
+                  return $ Just $ Pkg name
+                                      vers
+                                      sha
                                       noHaddock
-                                      (map unpack plats')
-                                      (map (normalizeMaintainer . unpack) maint')
-                                      (path)
+                                      plats'
+                                      (map normalizeMaintainer maint')
+                                      path
   | True <- buf `regmatch` "cabal.mkDerivation"
               = msgInfo ("failed to parse file " ++ path) >> return Nothing
   | otherwise = return Nothing
@@ -163,7 +154,7 @@ updateNixPkgs paths = do
   msgDebug $ "updating = " ++ show paths
   flip mapM_ paths $ \fileOrDir ->
     flip discoverNixFiles fileOrDir $ \file -> do
-      nix' <- io (BS.readFile file) >>= parseNixFile file
+      nix' <- io (readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
         let Pkg name vers sha noHaddock plats maints path = nix
             maints' = nub (sort (maints ++ ["andres","simons"]))
@@ -201,8 +192,8 @@ genCabal2NixCmdline (Pkg name vers _ noHaddock plats maints path) = unwords $ ["
         | ["self.ghc.meta.platforms"] == plats     = []
         | otherwise                                =  [ "--platform=" ++ p | p <- plats ]
       path'
-        | pack path `regmatch` "/[0-9\\.]+\\.nix$" = replaceFileName path (vers <.> "nix")
-        | otherwise                                = path
+        | path `regmatch` "/[0-9\\.]+\\.nix$" = replaceFileName path (vers <.> "nix")
+        | otherwise                           = path
 
 data CliOption = PrintHelp | Verbose | HackageDB FilePath
   deriving (Eq)
