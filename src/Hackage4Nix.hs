@@ -17,9 +17,7 @@ import Text.ParserCombinators.ReadP ( readP_to_S )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers
-                         , PkgNoHaddock )
-import qualified Cabal2Nix.Package ( Pkg(..) )
+import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers, PkgNoHaddock )
 
 type PkgSet = Set.Set Pkg
 
