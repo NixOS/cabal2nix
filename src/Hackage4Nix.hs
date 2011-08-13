@@ -17,7 +17,7 @@ import Text.ParserCombinators.ReadP ( readP_to_S )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgSHA256, PkgPlatforms, PkgMaintainers, PkgNoHaddock )
+import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgVersion, PkgSHA256, PkgPlatforms, PkgMaintainers, PkgNoHaddock )
 
 type PkgSet = Set.Set Pkg
 
@@ -62,24 +62,17 @@ readCabalFile name vers = do
 
 discoverNixFiles :: (FilePath -> Hackage4Nix ()) -> FilePath -> Hackage4Nix ()
 discoverNixFiles yield dirOrFile
-  | "." `isPrefixOf` takeFileName dirOrFile  = msgDebug $ "ignore file or directory " ++ dirOrFile
+  | "." `isPrefixOf` takeFileName dirOrFile  = return ()
   | otherwise                                = do
      isFile <- io (doesFileExist dirOrFile)
      case (isFile, takeExtension dirOrFile) of
-       (True,".nix") -> do
-         msgDebug ("discovered file " ++ dirOrFile)
-         yield dirOrFile
-       (True,_) -> msgDebug $ "ignore file " ++ dirOrFile
-       (False,_) -> do
-         msgDebug ("discovered dir " ++ dirOrFile)
-         io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
+       (True,".nix") -> yield dirOrFile
+       (True,_)     -> return ()
+       (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
-type PkgVersion = String
-data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgNoHaddock PkgPlatforms PkgMaintainers FilePath
+type Regenerate = Bool
+data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgNoHaddock PkgPlatforms PkgMaintainers FilePath Regenerate
   deriving (Show, Eq, Ord)
-
-regmatch :: String -> String -> Bool
-regmatch buf patt = match (makeRegexOpts compExtended execBlank patt) buf
 
 regsubmatch :: String -> String -> [String]
 regsubmatch buf patt = let (_,_,_,x) = f in x
@@ -93,16 +86,13 @@ normalizeMaintainer x
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
-  | not (buf `regmatch` "cabal.mkDerivation")
+  | not (buf =~ "cabal.mkDerivation")
                = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
-  | True    <- path `regmatch` (concat (intersperse "|" badPackages))
+  | any (`isSuffixOf`path) badPackagePaths
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
-  | True    <- buf `regmatch` "src = (fetchgit|sourceFromHead)"
+  | buf =~ "src = (fetchurl|fetchgit|sourceFromHead)"
                = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
-  | buf `regmatch` "preConfigure|configureFlags|postInstall|patchPhase"
-               = msgInfo ("ignore patched package " ++ path) >> return Nothing
-  | True    <- buf =~ "cabal.mkDerivation"
-  , [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
+  | [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
   , [vers]  <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , [sha]   <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , plats   <- buf `regsubmatch` "platforms *= *([^;]+);"
@@ -113,17 +103,13 @@ parseNixFile path buf
                     noHaddock
                       | "true":[] <- haddock = True
                       | otherwise            = False
+                    regenerate = not (name `elem` patchedPackages) &&
+                                 not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
                 in
-                  return $ Just $ Pkg name
-                                      vers
-                                      sha
-                                      noHaddock
-                                      plats'
+                  return $ Just $ Pkg name vers sha noHaddock plats'
                                       (map normalizeMaintainer maint')
-                                      path
-  | True <- buf `regmatch` "cabal.mkDerivation"
-              = msgInfo ("failed to parse file " ++ path) >> return Nothing
-  | otherwise = return Nothing
+                                      path regenerate
+  | otherwise = msgInfo ("failed to parse file " ++ path) >> return Nothing
 
 readVersion :: String -> Version
 readVersion str =
@@ -134,10 +120,10 @@ readVersion str =
 selectLatestVersions :: PkgSet -> PkgSet
 selectLatestVersions = Set.fromList . nubBy f2 . sortBy f1 . Set.toList
   where
-    f1 (Pkg n1 v1 _ _ _ _ _) (Pkg n2 v2 _ _ _ _ _)
+    f1 (Pkg n1 v1 _ _ _ _ _ _) (Pkg n2 v2 _ _ _ _ _ _)
       | n1 == n2  = compare v2 v1
       | otherwise = compare n1 n2
-    f2 (Pkg n1 _ _ _ _ _ _) (Pkg n2 _ _ _ _ _ _)
+    f2 (Pkg n1 _ _ _ _ _ _ _) (Pkg n2 _ _ _ _ _ _ _)
       = n1 == n2
 
 discoverUpdates :: PkgName -> PkgVersion -> Hackage4Nix [PkgVersion]
@@ -145,7 +131,7 @@ discoverUpdates name vers = do
   hackage <- gets _hackageDb
   versionStrings <- io $ readDirectory (hackage </> name)
   let versions = map readVersion versionStrings
-  return [ showVersion v | v <- versions, v > readVersion vers ]
+  return (sort [ showVersion v | v <- versions, v > readVersion vers ])
 
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
@@ -154,44 +140,45 @@ updateNixPkgs paths = do
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
-        let Pkg name vers sha noHaddock plats maints path = nix
-            maints' = nub (sort (maints ++ ["andres","simons"]))
-            plats'
-              | null plats && not (null maints) = ["self.ghc.meta.platforms"]
-              | otherwise                       = plats
-        msgDebug ("re-generate " ++ path)
-        when (null maints) (msgInfo ("no maintainers configured for " ++ path))
-        pkg <- readCabalFile name vers
-        io $ writeFile path (showNixPkg (cabal2nix pkg sha noHaddock plats' maints'))
+        let Pkg name vers sha noHaddock plats maints path regenerate = nix
         modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
+        when regenerate $ do
+          msgDebug ("re-generate " ++ path)
+          let maints' = nub (sort (maints ++ ["andres","simons"]))
+              plats'
+                | null plats && not (null maints) = ["self.ghc.meta.platforms"]
+                | otherwise                       = plats
+          when (null maints) (msgInfo ("no maintainers configured for " ++ path))
+          pkg <- readCabalFile name vers
+          io $ writeFile path (showNixPkg (cabal2nix pkg sha noHaddock plats' maints'))
   pkgset <- gets (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
-    let Pkg name vers _ _ _ _ _ = pkg
+    let Pkg name vers _ _ _ _ _ _ = pkg
     updates <- discoverUpdates name vers
     return (pkg,updates)
   let updates = [ u | u@(_,(_:_)) <- updates' ]
   when (not (null updates)) $ do
     msgInfo "The following updates are available:"
     flip mapM_ updates $ \(pkg,versions) -> do
-      let Pkg name vers _ noHaddock plats maints path = pkg
+      let Pkg name vers _ noHaddock plats maints path regenerate = pkg
       msgInfo ""
       msgInfo $ name ++ "-" ++ vers ++ ":"
       flip mapM_ versions $ \newVersion -> do
-        msgInfo $ "  " ++ genCabal2NixCmdline (Pkg name newVersion undefined noHaddock plats maints path)
+        msgInfo $ "  " ++ genCabal2NixCmdline (Pkg name newVersion undefined noHaddock plats maints path regenerate)
   return ()
 
 genCabal2NixCmdline :: Pkg -> String
-genCabal2NixCmdline (Pkg name vers _ noHaddock plats maints path) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
+genCabal2NixCmdline (Pkg name vers _ noHaddock plats maints path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
     where
       opts = [cabal] ++ maints' ++ plats' ++ if noHaddock then ["--no-haddock"] else []
       cabal = "cabal://" ++ name ++ "-" ++ vers
       maints' = [ "--maintainer=" ++ m | m <- maints ]
       plats'
-        | ["self.ghc.meta.platforms"] == plats     = []
-        | otherwise                                =  [ "--platform=" ++ p | p <- plats ]
+        | ["self.ghc.meta.platforms"] == plats = []
+        | otherwise                            =  [ "--platform=" ++ p | p <- plats ]
       path'
-        | path `regmatch` "/[0-9\\.]+\\.nix$" = replaceFileName path (vers <.> "nix")
-        | otherwise                           = path
+        | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (vers <.> "nix")
+        | otherwise                   = path
 
 data CliOption = PrintHelp | Verbose | HackageDB FilePath
   deriving (Eq)
@@ -240,50 +227,48 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   flip evalStateT cfg (updateNixPkgs args)
 
 
+-- Packages that we cannot parse.
+
+badPackagePaths :: [FilePath]
+badPackagePaths = ["haskell-platform/2011.2.0.1.nix"]
 
 -- Packages that we cannot regenerate automatically yet. This list
 -- should be empty.
 
-badPackages :: [String]
-badPackages = [ "/"++p++"/" | p <- names ]
-  where names =
-          [ "alex"              -- undeclared dependencies
-          , "CS173Tourney"      -- parser error
-          , "get-options"       -- parser error
-          , "WebServer"         -- these two are not on Hackage
-          , "WebServer-Extras"
-          , "cairo"             -- undeclared dependencies
-          , "citeproc-hs"       -- undeclared dependencies
-          , "editline"          -- undeclared dependencies
-          , "flapjax"           -- parser error
-          , "glade"             -- undeclared dependencies
-          , "glib"              -- undeclared dependencies
-          , "epic"              -- undeclared dependencies
-          , "GLUT"              -- undeclared dependencies
-          , "gtk"               -- undeclared dependencies
-          , "gtksourceview2"    -- undeclared dependencies
-          , "haddock"           -- undeclared dependencies
-          , "haskell-platform"  -- not on Hackage
-          , "haskell-src"       -- undeclared dependencies
-          , "hmatrix"           -- undeclared dependencies
-          , "hp2any-graph"      -- undeclared dependencies
-          , "lhs2tex"           -- undeclared dependencies
-          , "OpenAL"            -- undeclared dependencies
-          , "OpenGL"            -- undeclared dependencies
-          , "pango"             -- undeclared dependencies
-          , "idris"             -- undeclared dependencies
-          , "readline"          -- undeclared dependencies
-          , "repa-examples"     -- undeclared dependencies
-          , "scion"             -- expects non-existent networkBytestring
-          , "SDL"               -- undeclared dependencies
-          , "SDL-image"         -- undeclared dependencies
-          , "SDL-mixer"         -- undeclared dependencies
-          , "SDL-ttf"           -- undeclared dependencies
-          , "svgcairo"          -- undeclared dependencies
-          , "terminfo"          -- undeclared dependencies
-          , "xmonad"            -- undeclared dependencies
-          , "vacuum"            -- undeclared dependencies
-          , "wxHaskell"         -- undeclared dependencies
-          , "X11"
-          , "X11-xft"
-          ]
+patchedPackages :: [String]
+patchedPackages =
+   [ "alex"              -- undeclared dependencies
+   , "cairo"             -- undeclared dependencies
+   , "citeproc-hs"       -- undeclared dependencies
+   , "editline"          -- undeclared dependencies
+   , "glade"             -- undeclared dependencies
+   , "glib"              -- undeclared dependencies
+   , "epic"              -- undeclared dependencies
+   , "GLUT"              -- undeclared dependencies
+   , "gtk"               -- undeclared dependencies
+   , "gtksourceview2"    -- undeclared dependencies
+   , "haddock"           -- undeclared dependencies
+   , "haskell-src"       -- undeclared dependencies
+   , "hmatrix"           -- undeclared dependencies
+   , "hp2any-graph"      -- undeclared dependencies
+   , "lhs2tex"           -- undeclared dependencies
+   , "OpenAL"            -- undeclared dependencies
+   , "OpenGL"            -- undeclared dependencies
+   , "pango"             -- undeclared dependencies
+   , "idris"             -- undeclared dependencies
+   , "readline"          -- undeclared dependencies
+   , "repa-examples"     -- undeclared dependencies
+   , "scion"             -- expects non-existent networkBytestring
+   , "SDL"               -- undeclared dependencies
+   , "SDL-image"         -- undeclared dependencies
+   , "SDL-mixer"         -- undeclared dependencies
+   , "SDL-ttf"           -- undeclared dependencies
+   , "svgcairo"          -- undeclared dependencies
+   , "terminfo"          -- undeclared dependencies
+   , "xmonad"            -- undeclared dependencies
+   , "xmonad-extras"     -- undeclared dependencies
+   , "vacuum"            -- undeclared dependencies
+   , "wxcore"            -- undeclared dependencies
+   , "X11"               -- undeclared dependencies
+   , "X11-xft"           -- undeclared dependencies
+   ]
