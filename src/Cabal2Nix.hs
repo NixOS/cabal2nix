@@ -1,19 +1,21 @@
 module Main ( main ) where
 
 import System.IO ( hPutStrLn, hFlush, stdout, stderr )
-import System.Environment ( getArgs )
+import System.Environment -- ( getArgs )
 import Control.Exception ( bracket )
 import System.Exit ( exitFailure )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( package, packageDescription )
-import Distribution.Text ( simpleParse )
+import Distribution.Text
 import Data.List ( isPrefixOf )
 import Control.Monad ( when )
 import Network.HTTP ( simpleHTTP, getRequest, getResponseBody )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 
-import Cabal2Nix.Package ( showNixPkg, cabal2nix )
+import Cabal2Nix.Package ( cabal2nix )
 import Cabal2Nix.Hackage ( hackagePath, Ext(..), hashPackage )
+import Distribution.NixOS.Derivation.Cabal
+import Distribution.NixOS.Derivation.Meta
 
 readCabalFile :: FilePath -> IO String
 readCabalFile path
@@ -60,11 +62,11 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let uri         = args
       hash        = [ h | SHA256 h <- opts ]
       noHaddock   = NoHaddock `elem` opts
-      maintainers = [ m | Maintainer m <- opts ]
-      platforms'  = [ p | Platform p <- opts ]
-      platforms
-        | null platforms' = if not (null maintainers) then ["self.ghc.meta.platforms"] else []
-        | otherwise       = platforms'
+      maints      = [ m | Maintainer m <- opts ]
+      plats'      = [ p | Platform p <- opts ]
+      plats
+        | null plats' = if not (null maints) then ["self.ghc.meta.plats"] else []
+        | otherwise   = plats'
 
   when (length uri /= 1) (cmdlineError "*** exactly one URI must be specified")
   when (length hash > 1) (cmdlineError "*** the --sha256 option may be specified only once")
@@ -78,6 +80,15 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let packageId = package (packageDescription cabal)
 
-  sha256 <- if null hash then hashPackage packageId else return (head hash)
+  sha <- if null hash then hashPackage packageId else return (head hash)
 
-  putStr (showNixPkg (cabal2nix cabal sha256 noHaddock platforms maintainers))
+  let deriv = (cabal2nix cabal)
+              { sha256      = sha
+              , runHaddock  = not noHaddock
+              , metaSection = (metaSection deriv)
+                              { maintainers = maints
+                              , platforms   = plats
+                              }
+              }
+
+  putStr (show (disp deriv))

@@ -45,6 +45,7 @@ Executable cabal2nix
   main-is:              Cabal2Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP, pretty, filepath, directory
+  Extensions:           PatternGuards
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.Pretty
                         Cabal2Nix.License

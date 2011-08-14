@@ -8,16 +8,23 @@ import System.Directory
 import System.Environment
 import System.Exit
 import Data.List
+-- import Distribution.Package
 import qualified Data.Set as Set
 import Control.Monad.State
 import Control.Exception ( bracket )
 import Text.Regex.Posix
 import Data.Version
-import Text.ParserCombinators.ReadP ( readP_to_S )
+-- import Text.ParserCombinators.ReadP ( readP_to_S, readS_to_P )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( GenericPackageDescription() )
+import Distribution.Text
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-import Cabal2Nix.Package ( cabal2nix, showNixPkg, PkgName, PkgVersion, PkgSHA256, PkgPlatforms, PkgMaintainers, PkgNoHaddock )
+import Cabal2Nix.Package
+import Distribution.NixOS.Derivation.Cabal
+import Distribution.NixOS.Derivation.Meta
+
+data Pkg = Pkg Derivation FilePath Bool
+  deriving (Show, Eq, Ord)
 
 type PkgSet = Set.Set Pkg
 
@@ -70,19 +77,10 @@ discoverNixFiles yield dirOrFile
        (True,_)     -> return ()
        (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
-type Regenerate = Bool
-data Pkg = Pkg PkgName PkgVersion PkgSHA256 PkgNoHaddock PkgPlatforms PkgMaintainers FilePath Regenerate
-  deriving (Show, Eq, Ord)
+regenerateDerivation :: Derivation -> String -> Bool
+regenerateDerivation deriv buf = not (display (pname deriv) `elem` patchedPackages) &&
+                                 not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
 
-regsubmatch :: String -> String -> [String]
-regsubmatch buf patt = let (_,_,_,x) = f in x
-  where f :: (String,String,String,[String])
-        f = match (makeRegexOpts compExtended execBlank patt) buf
-
-normalizeMaintainer :: String -> String
-normalizeMaintainer x
-  | "self.stdenv.lib.maintainers." `isPrefixOf` x = drop 28 x
-  | otherwise                                     = x
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
@@ -92,46 +90,24 @@ parseNixFile path buf
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
   | buf =~ "src = (fetchurl|fetchgit|sourceFromHead)"
                = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
-  | [name]  <- buf `regsubmatch` "name *= *\"([^\"]+)\""
-  , [vers]  <- buf `regsubmatch` "version *= *\"([^\"]+)\""
-  , [sha]   <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
-  , plats   <- buf `regsubmatch` "platforms *= *([^;]+);"
-  , maint   <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
-  , haddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
-              = let plats' = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
-                    maint' = concatMap words maint
-                    noHaddock
-                      | "true":[] <- haddock = True
-                      | otherwise            = False
-                    regenerate = not (name `elem` patchedPackages) &&
-                                 not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
-                in
-                  return $ Just $ Pkg name vers sha noHaddock plats'
-                                      (map normalizeMaintainer maint')
-                                      path regenerate
+  | Just deriv <- parseDerivation buf
+               = return (Just (Pkg deriv path (regenerateDerivation deriv buf)))
   | otherwise = msgInfo ("failed to parse file " ++ path) >> return Nothing
-
-readVersion :: String -> Version
-readVersion str =
-  case [ v | (v,[]) <- readP_to_S parseVersion str ] of
-    [ v' ] -> v'
-    _      -> error ("invalid version specifier " ++ show str)
 
 selectLatestVersions :: PkgSet -> PkgSet
 selectLatestVersions = Set.fromList . nubBy f2 . sortBy f1 . Set.toList
   where
-    f1 (Pkg n1 v1 _ _ _ _ _ _) (Pkg n2 v2 _ _ _ _ _ _)
-      | n1 == n2  = compare v2 v1
-      | otherwise = compare n1 n2
-    f2 (Pkg n1 _ _ _ _ _ _ _) (Pkg n2 _ _ _ _ _ _ _)
-      = n1 == n2
+    f1 (Pkg deriv1 _ _) (Pkg deriv2 _ _)
+      | pname deriv1 == pname deriv2     = compare (version deriv2) (version deriv1)
+      | otherwise                        = compare (pname deriv1) (pname deriv2)
+    f2 (Pkg deriv1 _ _) (Pkg deriv2 _ _) = pname deriv1 == pname deriv2
 
-discoverUpdates :: PkgName -> PkgVersion -> Hackage4Nix [PkgVersion]
+discoverUpdates :: String -> String -> Hackage4Nix [String]
 discoverUpdates name vers = do
   hackage <- gets _hackageDb
   versionStrings <- io $ readDirectory (hackage </> name)
   let versions = map readVersion versionStrings
-  return (sort [ showVersion v | v <- versions, v > readVersion vers ])
+  return [ showVersion v | v <- versions, v > readVersion vers ]
 
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
@@ -140,45 +116,55 @@ updateNixPkgs paths = do
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
-        let Pkg name vers sha noHaddock plats maints path regenerate = nix
+        let Pkg deriv path regenerate = nix
+            maints = maintainers (metaSection deriv)
+            plats  = platforms (metaSection deriv)
+        when (null maints) (msgInfo ("no maintainers configured for " ++ path))
         modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
-          let maints' = nub (sort (maints ++ ["andres","simons"]))
+          let maints' = nub (sort (maints ++ ["self.stdenv.lib.maintainers.andres","self.stdenv.lib.maintainers.simons"]))
               plats'
                 | null plats && not (null maints) = ["self.ghc.meta.platforms"]
                 | otherwise                       = plats
-          when (null maints) (msgInfo ("no maintainers configured for " ++ path))
-          pkg <- readCabalFile name vers
-          io $ writeFile path (showNixPkg (cabal2nix pkg sha noHaddock plats' maints'))
+          pkg <- readCabalFile (display (pname deriv)) (display (version deriv))
+          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv }
+              deriv'' = deriv' { metaSection = (metaSection deriv')
+                                               { maintainers = maints'
+                                               , platforms   = plats'
+                                               }
+                               }
+          io $ writeFile path (show (disp deriv''))
   pkgset <- gets (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
-    let Pkg name vers _ _ _ _ _ _ = pkg
-    updates <- discoverUpdates name vers
+    let Pkg deriv _ _ = pkg
+    updates <- discoverUpdates (display (pname deriv)) (display (version deriv))
     return (pkg,updates)
   let updates = [ u | u@(_,(_:_)) <- updates' ]
   when (not (null updates)) $ do
     msgInfo "The following updates are available:"
     flip mapM_ updates $ \(pkg,versions) -> do
-      let Pkg name vers _ noHaddock plats maints path regenerate = pkg
+      let Pkg deriv path regenerate = pkg
       msgInfo ""
-      msgInfo $ name ++ "-" ++ vers ++ ":"
+      msgInfo $ (display (pname deriv)) ++ "-" ++ (display (version deriv)) ++ ":"
       flip mapM_ versions $ \newVersion -> do
-        msgInfo $ "  " ++ genCabal2NixCmdline (Pkg name newVersion undefined noHaddock plats maints path regenerate)
+        let deriv' = deriv { version = readVersion newVersion }
+        msgInfo $ "  " ++ genCabal2NixCmdline (Pkg deriv' path regenerate)
   return ()
 
 genCabal2NixCmdline :: Pkg -> String
-genCabal2NixCmdline (Pkg name vers _ noHaddock plats maints path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
-    where
-      opts = [cabal] ++ maints' ++ plats' ++ if noHaddock then ["--no-haddock"] else []
-      cabal = "cabal://" ++ name ++ "-" ++ vers
-      maints' = [ "--maintainer=" ++ m | m <- maints ]
-      plats'
-        | ["self.ghc.meta.platforms"] == plats = []
-        | otherwise                            =  [ "--platform=" ++ p | p <- plats ]
-      path'
-        | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (vers <.> "nix")
-        | otherwise                   = path
+genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
+  where
+    meta = metaSection deriv
+    opts = [cabal] ++ maints' ++ plats' ++ if runHaddock deriv then [] else ["--no-haddock"]
+    cabal = "cabal://" ++ display (pname deriv) ++ "-" ++ display (version deriv)
+    maints' = [ "--maintainer=" ++ m | m <- maintainers meta ]
+    plats'
+      | ["self.ghc.meta.platforms"] == platforms meta = []
+      | otherwise                                     =  [ "--platform=" ++ p | p <- platforms meta ]
+    path'
+      | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (display (version deriv) <.> "nix")
+      | otherwise                   = path
 
 data CliOption = PrintHelp | Verbose | HackageDB FilePath
   deriving (Eq)
