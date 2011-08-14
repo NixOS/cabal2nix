@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternGuards #-}
-
 module Main ( main ) where
 
 import System.IO
@@ -8,7 +6,6 @@ import System.Directory
 import System.Environment
 import System.Exit
 import Data.List
--- import Distribution.Package
 import qualified Data.Set as Set
 import Control.Monad.State
 import Control.Exception ( bracket )
