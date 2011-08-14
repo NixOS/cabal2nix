@@ -11,6 +11,7 @@ import Distribution.NixOS.Derivation.Cabal
 import Cabal2Nix.Name
 import Cabal2Nix.CorePackages
 import Data.List
+-- import Data.Char
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = MkDerivation
@@ -19,10 +20,10 @@ cabal2nix cabal = MkDerivation
   , sha256       = "cabal2nix left the she256 field undefined"
   , isLibrary    = isJust (Cabal.library tpkg)
   , isExecutable = not (null (Cabal.executables tpkg))
-  , buildDepends = pkgDeps
-  , buildTools   = pkgBuildTools
-  , extraLibs    = pkgLibs
-  , pkgConfDeps  = pkgPCs
+  , buildDepends = normalizeNixNames (filter (`notElem` (name : corePackages)) $ map unDep deps)
+  , buildTools   = normalizeNixNames (filter (`notElem` coreBuildTools) $ map unDep tools)
+  , extraLibs    = normalizeNixLibs libs
+  , pkgConfDeps  = normalizeNixLibs pcs
   , runHaddock   = True
   , metaSection  = Meta
                    { homepage    = Cabal.homepage descr
@@ -36,22 +37,16 @@ cabal2nix cabal = MkDerivation
     descr = Cabal.packageDescription cabal
     pkg   = Cabal.package descr
     Cabal.PackageName name  = Cabal.pkgName pkg
-    deps    = (Cabal.buildDepends tpkg)
-    libDeps = map Cabal.libBuildInfo $ maybeToList (Cabal.library tpkg)
-    exeDeps = map    Cabal.buildInfo $ Cabal.executables tpkg
-    tools   =             concatMap Cabal.buildTools       (libDeps ++ exeDeps)
-    libs    =             concatMap Cabal.extraLibs        (libDeps ++ exeDeps)
-    pcs     = map unDep $ concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps)
+    deps    = Cabal.buildDepends tpkg
+    libDeps = map Cabal.libBuildInfo (maybeToList (Cabal.library tpkg))
+    exeDeps = map Cabal.buildInfo (Cabal.executables tpkg)
+    tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps)
+    libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
+    pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
     Right (tpkg, _) = finalizePackageDescription [] (const True)
-                        (Platform I386 Linux) -- shouldn't be hardcoded
-                        (CompilerId GHC (Version [7,0,4] [])) -- dito
+                        (Platform I386 Linux)                   -- shouldn't be hardcoded
+                        (CompilerId GHC (Version [7,0,4] []))   -- dito
                         [] cabal
-    pkgLibs       = nub $ sort $ concatMap libNixName libs
-    pkgPCs        = nub $ sort $ concatMap libNixName pcs
-    pkgDeps       = nub $ sort $ map toNixName $
-                     filter (`notElem` (name : corePackages)) $ map unDep deps
-    pkgBuildTools = nub $ sort $ map toNixName $
-                     filter (`notElem` coreBuildTools) $ map unDep tools
 
 unDep :: Cabal.Dependency -> String
 unDep (Cabal.Dependency (Cabal.PackageName x) _) = x
@@ -65,3 +60,12 @@ normalizeDescription desc
 quote :: Char -> [Char]
 quote '"'  = "\\\""
 quote c    = [c]
+
+normalizeList :: [String] -> [String]
+normalizeList = nub . sort {- By (\x y -> compare (map toLower x) (map toLower y)) -}
+
+normalizeNixNames :: [String] -> [String]
+normalizeNixNames = normalizeList . map toNixName
+
+normalizeNixLibs :: [String] -> [String]
+normalizeNixLibs = normalizeList . concatMap libNixName
