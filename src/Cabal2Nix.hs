@@ -82,13 +82,11 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   sha <- if null hash then hashPackage packageId else return (head hash)
 
-  let deriv = (cabal2nix cabal)
-              { sha256      = sha
-              , runHaddock  = not noHaddock
-              , metaSection = (metaSection deriv)
-                              { maintainers = maints
-                              , platforms   = plats
-                              }
-              }
+  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = not noHaddock }
+      deriv' = deriv { metaSection = (metaSection deriv)
+                                     { maintainers = maints
+                                     , platforms   = plats
+                                     }
+                     }
 
-  putStr (show (disp deriv))
+  putStr (display deriv')
