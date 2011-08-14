@@ -11,7 +11,7 @@ import Distribution.NixOS.Derivation.Cabal
 import Cabal2Nix.Name
 import Cabal2Nix.CorePackages
 import Data.List
--- import Data.Char
+import Data.Char
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = MkDerivation
@@ -62,7 +62,7 @@ quote '"'  = "\\\""
 quote c    = [c]
 
 normalizeList :: [String] -> [String]
-normalizeList = nub . sort {- By (\x y -> compare (map toLower x) (map toLower y)) -}
+normalizeList = nub . sortBy (\x y -> compare (map toLower x) (map toLower y))
 
 normalizeNixNames :: [String] -> [String]
 normalizeNixNames = normalizeList . map toNixName
