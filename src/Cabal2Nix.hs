@@ -65,7 +65,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
       maints      = [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | Maintainer m <- opts ]
       plats'      = [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | Platform p <- opts ]
       plats
-        | null plats' = if not (null maints) then ["self.ghc.meta.plats"] else []
+        | null plats' = if not (null maints) then ["self.ghc.meta.platforms"] else []
         | otherwise   = plats'
 
   when (length uri /= 1) (cmdlineError "*** exactly one URI must be specified")
