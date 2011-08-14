@@ -89,4 +89,4 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      }
                      }
 
-  putStr (display deriv')
+  putStr (show (disp deriv'))
