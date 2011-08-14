@@ -1,3 +1,5 @@
+{-# LANGUAGE PatternGuards #-}
+
 module Distribution.NixOS.Derivation.Cabal
   ( Derivation(..)
   , parseDerivation
