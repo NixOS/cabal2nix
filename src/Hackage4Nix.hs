@@ -163,13 +163,18 @@ genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"
     meta = metaSection deriv
     opts = [cabal] ++ maints' ++ plats' ++ if runHaddock deriv then [] else ["--no-haddock"]
     cabal = "cabal://" ++ display (pname deriv) ++ "-" ++ display (version deriv)
-    maints' = [ "--maintainer=" ++ m | m <- maintainers meta ]
+    maints' = [ "--maintainer=" ++ normalizeMaintainer m | m <- maintainers meta ]
     plats'
       | ["self.ghc.meta.platforms"] == platforms meta = []
       | otherwise                                     =  [ "--platform=" ++ p | p <- platforms meta ]
     path'
       | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (display (version deriv) <.> "nix")
       | otherwise                   = path
+
+normalizeMaintainer :: String -> String
+normalizeMaintainer x
+  | "self.stdenv.lib.maintainers." `isPrefixOf` x = drop 28 x
+  | otherwise                                     = x
 
 data CliOption = PrintHelp | Verbose | HackageDB FilePath
   deriving (Eq)

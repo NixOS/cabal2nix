@@ -62,8 +62,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let uri         = args
       hash        = [ h | SHA256 h <- opts ]
       noHaddock   = NoHaddock `elem` opts
-      maints      = [ m | Maintainer m <- opts ]
-      plats'      = [ p | Platform p <- opts ]
+      maints      = [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | Maintainer m <- opts ]
+      plats'      = [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | Platform p <- opts ]
       plats
         | null plats' = if not (null maints) then ["self.ghc.meta.plats"] else []
         | otherwise   = plats'
