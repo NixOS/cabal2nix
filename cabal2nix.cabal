@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.10
+Version:                1.11
 Copyright:              (c) 2011 Peter Simons and Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -47,12 +47,14 @@ Executable cabal2nix
   Build-Depends:        base >= 3 && < 5, Cabal, process, HTTP, pretty, filepath, directory
   Extensions:           PatternGuards
   Ghc-Options:          -Wall
-  other-modules:        Cabal2Nix.Pretty
-                        Cabal2Nix.License
-                        Cabal2Nix.Name
-                        Cabal2Nix.CorePackages
-                        Cabal2Nix.Package
+  other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Hackage
+                        Cabal2Nix.Name
+                        Cabal2Nix.Package
+                        Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
+                        Distribution.NixOS.Derivation.PrettyPrinting
 
 Executable hackage4nix
   main-is:              Hackage4Nix.hs
@@ -60,10 +62,11 @@ Executable hackage4nix
   Build-Depends:        base >= 3 && < 5, Cabal >= 1.8, pretty, filepath, directory,
                         regex-posix, mtl, containers
   Extensions:           PatternGuards
-  other-modules:        Cabal2Nix.Pretty
-                        Cabal2Nix.License
+  Ghc-Options:          -Wall
+  other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Name
-                        Cabal2Nix.CorePackages
                         Cabal2Nix.Package
-                        Cabal2Nix.Hackage
-
+                        Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
+                        Distribution.NixOS.Derivation.PrettyPrinting
