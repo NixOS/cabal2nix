@@ -1,4 +1,12 @@
-module Distribution.NixOS.Derivation.PrettyPrinting where
+module Distribution.NixOS.Derivation.PrettyPrinting
+  ( onlyIf
+  , listattr
+  , boolattr
+  , attr
+  , string
+  , funargs
+  )
+  where
 
 import Text.PrettyPrint
 

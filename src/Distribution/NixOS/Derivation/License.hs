@@ -1,13 +1,11 @@
-module Distribution.NixOS.Derivation.License where
+module Distribution.NixOS.Derivation.License
+  ( License(..)
+  , fromCabalLicense
+  )
+  where
 
--- import qualified Distribution.Package as Cabal
--- import qualified Distribution.PackageDescription as Cabal
-import qualified Distribution.License as Cabal
--- import Distribution.Package
-import Data.Version
--- import Distribution.PackageDescription
--- import Distribution.PackageDescription.Configuration
-
+import qualified Distribution.License as Cabal ( License(..) )
+import Data.Version ( Version(..) )
 import Distribution.Text
 import Text.PrettyPrint
 

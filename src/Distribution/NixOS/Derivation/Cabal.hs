@@ -1,8 +1,13 @@
-module Distribution.NixOS.Derivation.Cabal where
+module Distribution.NixOS.Derivation.Cabal
+  ( Derivation(..)
+  , parseDerivation
+  , module Distribution.NixOS.Derivation.Meta
+  , Version(..), PackageName(..)
+  )
+  where
 
 import Distribution.NixOS.Derivation.PrettyPrinting
 import Distribution.NixOS.Derivation.Meta
-import Distribution.NixOS.Derivation.License
 import Distribution.Package
 import Distribution.Text
 import Data.Version
