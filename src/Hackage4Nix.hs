@@ -14,7 +14,7 @@ import Control.Monad.State
 import Control.Exception ( bracket )
 import Text.Regex.Posix
 import Data.Version
--- import Text.ParserCombinators.ReadP ( readP_to_S, readS_to_P )
+import Text.ParserCombinators.ReadP ( readP_to_S )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import Distribution.Text
@@ -81,6 +81,11 @@ regenerateDerivation :: Derivation -> String -> Bool
 regenerateDerivation deriv buf = not (display (pname deriv) `elem` patchedPackages) &&
                                  not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
 
+readVersion :: String -> Version
+readVersion str =
+  case [ v | (v,[]) <- readP_to_S parseVersion str ] of
+    [ v' ] -> v'
+    _      -> error ("invalid version specifier " ++ show str)
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf

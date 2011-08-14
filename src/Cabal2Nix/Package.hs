@@ -1,4 +1,4 @@
-module Cabal2Nix.Package where
+module Cabal2Nix.Package ( cabal2nix ) where
 
 import Data.Maybe
 import Distribution.Compiler
@@ -8,8 +8,6 @@ import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Version
 import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.Derivation.Meta
-import Distribution.NixOS.Derivation.License
 import Cabal2Nix.Name
 import Cabal2Nix.CorePackages
 import Data.List

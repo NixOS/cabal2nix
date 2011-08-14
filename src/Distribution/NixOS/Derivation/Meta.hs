@@ -1,9 +1,12 @@
-module Distribution.NixOS.Derivation.Meta where
+module Distribution.NixOS.Derivation.Meta
+  ( Meta(..)
+  , module Distribution.NixOS.Derivation.License
+  )
+  where
 
 import Distribution.NixOS.Derivation.PrettyPrinting
 import Distribution.NixOS.Derivation.License
 import Distribution.Text
--- import Data.Version
 import Text.PrettyPrint
 
 data Meta = Meta
