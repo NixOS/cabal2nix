@@ -12,6 +12,7 @@ import Distribution.Package
 import Distribution.Text
 import Data.Version
 import Data.List
+import Data.Char
 import Text.PrettyPrint
 import Text.ParserCombinators.ReadP ( readP_to_S )
 import Text.Regex.Posix
@@ -56,7 +57,9 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   , text ""
   ]
   where
-    inputs = nub $ sort $ filter (/="cabal") $ buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+    inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $
+              filter (/="cabal") $ filter (/="Cabal") $
+                buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
 
 parseDerivation :: String -> Maybe Derivation
 parseDerivation buf
