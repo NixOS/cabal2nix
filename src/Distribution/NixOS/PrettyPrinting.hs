@@ -1,6 +1,5 @@
 {- |
    Module      :  Distribution.NixOS.PrettyPrinting
-   Copyright   :  Peter Simons, Andres Loeh
    License     :  BSD3
 
    Maintainer  :  nix-dev@cs.uu.nl
