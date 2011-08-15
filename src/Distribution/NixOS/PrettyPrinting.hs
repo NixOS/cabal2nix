@@ -6,6 +6,8 @@
    Maintainer  :  nix-dev@cs.uu.nl
    Stability   :  provisional
    Portability :  portable
+
+   Internal pretty-printing helpers for Nix expressions.
 -}
 
 module Distribution.NixOS.PrettyPrinting
@@ -20,8 +22,6 @@ module Distribution.NixOS.PrettyPrinting
   where
 
 import Text.PrettyPrint
-
--- Pretty-printing helpers for Nix expressions.
 
 attr :: String -> Doc -> Doc
 attr n v = text n <+> equals <+> v <> semi

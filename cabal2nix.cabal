@@ -49,7 +49,7 @@ Library
   Exposed-Modules:      Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
-                        Distribution.NixOS.PrettyPrinting
+  other-modules:        Distribution.NixOS.PrettyPrinting
 
 Executable cabal2nix
   main-is:              Cabal2Nix.hs
