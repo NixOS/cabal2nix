@@ -80,10 +80,7 @@ regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
                                  not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
 
 readVersion :: String -> Version
-readVersion str =
-  case [ v | (v,[]) <- readP_to_S parseVersion str ] of
-    [ v' ] -> v'
-    _      -> error ("invalid version specifier " ++ show str)
+readVersion str = maybe (error $ "cannot parse version " ++ show str) id (simpleParse str)
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf

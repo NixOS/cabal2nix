@@ -85,7 +85,7 @@ parseDerivation buf
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
               = Just $ MkDerivation
                   { pname        = name
-                  , version      = readVersion vers
+                  , version      = maybe (error $ "cannot parse version " ++ show vers) id (simpleParse vers)
                   , sha256       = sha
                   , isLibrary    = False
                   , isExecutable = False
@@ -109,9 +109,3 @@ regsubmatch :: String -> String -> [String]
 regsubmatch buf patt = let (_,_,_,x) = f in x
   where f :: (String,String,String,[String])
         f = match (makeRegexOpts compExtended execBlank patt) buf
-
-readVersion :: String -> Version
-readVersion str =
-  case [ v | (v,[]) <- readP_to_S parseVersion str ] of
-    [ v' ] -> v'
-    _      -> error ("invalid version specifier " ++ show str)
