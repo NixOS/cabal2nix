@@ -1,6 +1,6 @@
 Name:                   cabal2nix
-Version:                1.11
-Copyright:              (c) 2011 Peter Simons and Andres Loeh
+Version:                1.12
+Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
 Author:                 Peter Simons <simons@cryp.to>, Andres Loeh <mail@andres-loeh.de>
@@ -49,7 +49,7 @@ Library
   Exposed-Modules:      Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
-  other-modules:        Distribution.NixOS.Derivation.PrettyPrinting
+                        Distribution.NixOS.PrettyPrinting
 
 Executable cabal2nix
   main-is:              Cabal2Nix.hs
@@ -65,7 +65,7 @@ Executable cabal2nix
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
-                        Distribution.NixOS.Derivation.PrettyPrinting
+                        Distribution.NixOS.PrettyPrinting
 
 Executable hackage4nix
   main-is:              Hackage4Nix.hs
@@ -80,4 +80,4 @@ Executable hackage4nix
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
-                        Distribution.NixOS.Derivation.PrettyPrinting
+                        Distribution.NixOS.PrettyPrinting

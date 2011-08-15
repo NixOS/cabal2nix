@@ -13,6 +13,7 @@ import Text.Regex.Posix
 import Data.Version
 import Text.ParserCombinators.ReadP ( readP_to_S )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
+import Distribution.Package
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import Distribution.Text
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
@@ -75,7 +76,7 @@ discoverNixFiles yield dirOrFile
        (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
-regenerateDerivation deriv buf = not (display (pname deriv) `elem` patchedPackages) &&
+regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
                                  not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
 
 readVersion :: String -> Version
@@ -129,7 +130,7 @@ updateNixPkgs paths = do
               plats'
                 | null plats && not (null maints) = ["self.ghc.meta.platforms"]
                 | otherwise                       = plats
-          pkg <- readCabalFile (display (pname deriv)) (display (version deriv))
+          pkg <- readCabalFile (pname deriv) (display (version deriv))
           let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv }
               deriv'' = deriv' { metaSection = (metaSection deriv')
                                                { maintainers = maints'
@@ -140,7 +141,7 @@ updateNixPkgs paths = do
   pkgset <- gets (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
     let Pkg deriv _ _ = pkg
-    updates <- discoverUpdates (display (pname deriv)) (display (version deriv))
+    updates <- discoverUpdates (pname deriv) (display (version deriv))
     return (pkg,updates)
   let updates = [ u | u@(_,(_:_)) <- updates' ]
   when (not (null updates)) $ do
@@ -148,7 +149,7 @@ updateNixPkgs paths = do
     flip mapM_ updates $ \(pkg,versions) -> do
       let Pkg deriv path regenerate = pkg
       msgInfo ""
-      msgInfo $ (display (pname deriv)) ++ "-" ++ (display (version deriv)) ++ ":"
+      msgInfo $ (display (packageId deriv)) ++ ":"
       flip mapM_ versions $ \newVersion -> do
         let deriv' = deriv { version = readVersion newVersion }
         msgInfo $ "  " ++ genCabal2NixCmdline (Pkg deriv' path regenerate)
@@ -159,7 +160,7 @@ genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"
   where
     meta = metaSection deriv
     opts = [cabal] ++ maints' ++ plats' ++ if runHaddock deriv then [] else ["--no-haddock"]
-    cabal = "cabal://" ++ display (pname deriv) ++ "-" ++ display (version deriv)
+    cabal = "cabal://" ++ display (packageId deriv)
     maints' = [ "--maintainer=" ++ normalizeMaintainer m | m <- maintainers meta ]
     plats'
       | ["self.ghc.meta.platforms"] == platforms meta = []

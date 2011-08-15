@@ -1,10 +1,21 @@
-module Distribution.NixOS.Derivation.PrettyPrinting
+{- |
+   Module      :  Distribution.NixOS.PrettyPrinting
+   Copyright   :  Peter Simons, Andres Loeh
+   License     :  BSD3
+
+   Maintainer  :  nix-dev@cs.uu.nl
+   Stability   :  provisional
+   Portability :  portable
+-}
+
+module Distribution.NixOS.PrettyPrinting
   ( onlyIf
   , listattr
   , boolattr
   , attr
   , string
   , funargs
+  , module Text.PrettyPrint
   )
   where
 

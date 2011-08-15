@@ -15,7 +15,7 @@ import Data.Char
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = MkDerivation
-  { pname        = Cabal.pkgName pkg
+  { pname        = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version      = Cabal.pkgVersion pkg
   , sha256       = "cabal2nix left the she256 field undefined"
   , isLibrary    = isJust (Cabal.library tpkg)
