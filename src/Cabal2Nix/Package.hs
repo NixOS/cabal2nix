@@ -1,5 +1,6 @@
 module Cabal2Nix.Package ( cabal2nix ) where
 
+import Cabal2Nix.License
 import Data.Maybe
 import Distribution.Compiler
 import qualified Distribution.Package as Cabal
