@@ -1,26 +1,34 @@
 {-# LANGUAGE PatternGuards #-}
+{- |
+   Module      :  Distribution.NixOS.Derivation.Cabal
+   Copyright   :  Peter Simons, Andres Loeh
+   License     :  BSD3
+
+   Maintainer  :  nix-dev@cs.uu.nl
+   Stability   :  provisional
+   Portability :  portable
+-}
 
 module Distribution.NixOS.Derivation.Cabal
   ( Derivation(..)
   , parseDerivation
   , module Distribution.NixOS.Derivation.Meta
-  , Version(..), PackageName(..)
+  , Version(..)
   )
   where
 
-import Distribution.NixOS.Derivation.PrettyPrinting
 import Distribution.NixOS.Derivation.Meta
-import Distribution.Package
+import Distribution.NixOS.PrettyPrinting
 import Distribution.Text
+import Distribution.Package
 import Data.Version
 import Data.List
 import Data.Char
-import Text.PrettyPrint
 import Text.ParserCombinators.ReadP ( readP_to_S )
 import Text.Regex.Posix
 
 data Derivation = MkDerivation
-  { pname        :: PackageName
+  { pname        :: String
   , version      :: Version
   , sha256       :: String
   , isLibrary    :: Bool
@@ -38,12 +46,15 @@ instance Text Derivation where
   disp  = renderDerivation
   parse = error "parsing Distribution.NixOS.Derivation.Cabal.Derivation is not supported yet"
 
+instance Package Derivation where
+  packageId deriv = PackageIdentifier (PackageName (pname deriv)) (version deriv)
+
 renderDerivation :: Derivation -> Doc
 renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   [ text ""
   , text "cabal.mkDerivation" <+> lparen <> text "self" <> colon <+> lbrace
   , nest 2 $ vcat
-    [ attr "pname"   $ doubleQuotes (disp (pname deriv))
+    [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
     , attr "sha256"  $ string (sha256 deriv)
     , boolattr "isLibrary" (not (isLibrary deriv) || (isExecutable deriv)) (isLibrary deriv)
@@ -73,7 +84,7 @@ parseDerivation buf
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
               = Just $ MkDerivation
-                  { pname        = PackageName name
+                  { pname        = name
                   , version      = readVersion vers
                   , sha256       = sha
                   , isLibrary    = False

@@ -1,13 +1,22 @@
+{- |
+   Module      :  Distribution.NixOS.Derivation.Meta
+   Copyright   :  Peter Simons, Andres Loeh
+   License     :  BSD3
+
+   Maintainer  :  nix-dev@cs.uu.nl
+   Stability   :  provisional
+   Portability :  portable
+-}
+
 module Distribution.NixOS.Derivation.Meta
   ( Meta(..)
   , module Distribution.NixOS.Derivation.License
   )
   where
 
-import Distribution.NixOS.Derivation.PrettyPrinting
+import Distribution.NixOS.PrettyPrinting
 import Distribution.NixOS.Derivation.License
 import Distribution.Text
-import Text.PrettyPrint
 
 data Meta = Meta
   { homepage    :: String

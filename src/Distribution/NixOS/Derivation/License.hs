@@ -1,3 +1,13 @@
+{- |
+   Module      :  Distribution.NixOS.Derivation.License
+   Copyright   :  Peter Simons, Andres Loeh
+   License     :  BSD3
+
+   Maintainer  :  nix-dev@cs.uu.nl
+   Stability   :  provisional
+   Portability :  portable
+-}
+
 module Distribution.NixOS.Derivation.License
   ( License(..)
   , fromCabalLicense
