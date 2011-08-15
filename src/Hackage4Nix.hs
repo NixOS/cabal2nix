@@ -249,7 +249,6 @@ patchedPackages =
    , "readline"          -- undeclared dependencies
    , "repa-examples"     -- undeclared dependencies
    , "scion"             -- expects non-existent networkBytestring
-   , "SDL"               -- undeclared dependencies
    , "SDL-image"         -- undeclared dependencies
    , "SDL-mixer"         -- undeclared dependencies
    , "SDL-ttf"           -- undeclared dependencies
