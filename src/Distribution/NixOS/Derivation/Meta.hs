@@ -1,12 +1,15 @@
 {- |
    Module      :  Distribution.NixOS.Derivation.Meta
-   Copyright   :  Peter Simons, Andres Loeh
    License     :  BSD3
 
    Maintainer  :  nix-dev@cs.uu.nl
    Stability   :  provisional
    Portability :  portable
--}
+
+   A representation of the @meta@ section used in Nix expressions. A
+   detailed description can be found in section 4, \"Meta-attributes\",
+   of the Nixpkgs manual at <http://nixos.org/nixpkgs/docs.html>.
+ -}
 
 module Distribution.NixOS.Derivation.Meta
   ( Meta(..)
@@ -18,12 +21,29 @@ import Distribution.NixOS.PrettyPrinting
 import Distribution.NixOS.Derivation.License
 import Distribution.Text
 
+-- | A representation of the @meta@ section used in Nix expressions.
+--
+-- > > putStrLn (display (Meta "http://example.org" "an example package" (Unknown Nothing)
+-- > >                   ["stdenv.lib.platforms."++x | x<-["unix","cygwin"]]
+-- > >                   ["stdenv.lib.maintainers."++x | x<-["joe","jane"]]))
+-- > meta = {
+-- >   homepage = "http://example.org";
+-- >   description = "an example package";
+-- >   license = "unknown";
+-- >   platforms =
+-- >     stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
+-- >   maintainers = [ stdenv.lib.maintainers.joe stdenv.lib.maintainers.jane ];
+-- > };
+--
+-- Note that the "Text" instance definition provides pretty-printing,
+-- but no parsing as of now!
+
 data Meta = Meta
-  { homepage    :: String
-  , description :: String
-  , license     :: License
-  , platforms   :: [String]
-  , maintainers :: [String]
+  { homepage    :: String       -- ^ URL of the package homepage
+  , description :: String       -- ^ short description of the package
+  , license     :: License      -- ^ licensing terms
+  , platforms   :: [String]     -- ^ list of supported platforms from @pkgs\/lib\/platforms.nix@
+  , maintainers :: [String]     -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   }
   deriving (Show, Eq, Ord)
 

@@ -1,19 +1,21 @@
-{-# LANGUAGE PatternGuards #-}
+{-# LANGUAGE PatternGuards, CPP #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.Cabal
-   Copyright   :  Peter Simons, Andres Loeh
    License     :  BSD3
 
    Maintainer  :  nix-dev@cs.uu.nl
    Stability   :  provisional
-   Portability :  portable
+   Portability :  PatternGuards
+
+   A represtation of Nix expressions based on Cabal builder defined in
+   @pkgs\/development\/libraries\/haskell\/cabal\/cabal.nix@.
 -}
 
 module Distribution.NixOS.Derivation.Cabal
   ( Derivation(..)
   , parseDerivation
   , module Distribution.NixOS.Derivation.Meta
-  , Version(..)
+  , module Data.Version
   )
   where
 
@@ -21,10 +23,20 @@ import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.PrettyPrinting
 import Distribution.Text
 import Distribution.Package
+#ifdef __HADDOCK__
+import Distribution.PackageDescription ( PackageDescription )
+#endif
 import Data.Version
 import Data.List
 import Data.Char
 import Text.Regex.Posix
+
+-- | A represtation of Nix expressions for building Haskell packages.
+-- The data type correspond closely to the definition of
+-- 'PackageDescription' from Cabal.
+--
+-- Note that the "Text" instance definition provides pretty-printing,
+-- but no parsing as of now!
 
 data Derivation = MkDerivation
   { pname        :: String
@@ -72,6 +84,10 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $
               filter (/="cabal") $ filter (/="Cabal") $
                 buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+
+-- | A very incomplete parser that extracts 'pname', 'version',
+-- 'sha256', 'platforms', 'maintainers', and 'runHaddock' from the given
+-- Nix expression.
 
 parseDerivation :: String -> Maybe Derivation
 parseDerivation buf
