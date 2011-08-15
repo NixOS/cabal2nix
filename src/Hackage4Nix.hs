@@ -11,7 +11,6 @@ import Control.Monad.State
 import Control.Exception ( bracket )
 import Text.Regex.Posix
 import Data.Version
-import Text.ParserCombinators.ReadP ( readP_to_S )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Package
 import Distribution.PackageDescription ( GenericPackageDescription() )

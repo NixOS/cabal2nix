@@ -24,7 +24,6 @@ import Distribution.Package
 import Data.Version
 import Data.List
 import Data.Char
-import Text.ParserCombinators.ReadP ( readP_to_S )
 import Text.Regex.Posix
 
 data Derivation = MkDerivation
