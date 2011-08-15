@@ -77,14 +77,15 @@ parseDerivation :: String -> Maybe Derivation
 parseDerivation buf
   | buf =~ "cabal.mkDerivation"
   , [name]    <- buf `regsubmatch` "pname *= *\"([^\"]+)\""
-  , [vers]    <- buf `regsubmatch` "version *= *\"([^\"]+)\""
+  , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
+  , Just vers <- simpleParse vers'
   , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
               = Just $ MkDerivation
                   { pname        = name
-                  , version      = maybe (error $ "cannot parse version " ++ show vers) id (simpleParse vers)
+                  , version      = vers
                   , sha256       = sha
                   , isLibrary    = False
                   , isExecutable = False
