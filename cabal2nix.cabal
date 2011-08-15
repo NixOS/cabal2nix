@@ -9,7 +9,7 @@ Homepage:               http://github.com/haskell4nix/cabal2nix
 Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
-Build-Type:             Simple
+Build-Type:             Custom
 Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.2.1
 Description:
   The cabal2nix utility converts Cabal files into Nix build instructions. The
@@ -44,7 +44,7 @@ Source-Repository head
 Library
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8
   hs-source-dirs:       src
-  Extensions:           PatternGuards
+  Extensions:           PatternGuards, CPP
   Ghc-Options:          -Wall
   Exposed-Modules:      Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
@@ -56,7 +56,7 @@ Executable cabal2nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
                         filepath, directory, process, HTTP
-  Extensions:           PatternGuards
+  Extensions:           PatternGuards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Hackage
@@ -72,7 +72,7 @@ Executable hackage4nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
                         mtl, containers, directory, filepath
-  Extensions:           PatternGuards
+  Extensions:           PatternGuards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Name
