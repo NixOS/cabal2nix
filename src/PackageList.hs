@@ -35,6 +35,9 @@ getHaskellPackageList = do
 stripProfilingVersions :: Pkgset -> Pkgset
 stripProfilingVersions pkgs = [ p | p@(_,_,attr) <- pkgs , not (attr =~ "ghc[0-9.]+_profiling") ]
 
+stripGhc721Versions :: Pkgset -> Pkgset
+stripGhc721Versions pkgs = [ p | p@(_,_,attr) <- pkgs , not (attr =~ "ghc721") ]
+
 selectLatestVersions :: Pkgset -> Pkgset
 selectLatestVersions = nubBy (\x y -> comparePkgByName x y == EQ) . sortBy comparePkgByVersion
 
@@ -50,5 +53,5 @@ regsubmatch buf patt = let (_,_,_,x) = f in x
 
 main :: IO ()
 main = do
-  pkgset <- fmap (selectLatestVersions . stripProfilingVersions) getHaskellPackageList
+  pkgset <- fmap (selectLatestVersions . stripGhc721Versions . stripProfilingVersions) getHaskellPackageList
   mapM_ (putStrLn . formatPackageLine) (sortBy comparePkgByName pkgset)
