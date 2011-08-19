@@ -1,7 +1,8 @@
-module Cabal2Nix.Name ( toNixName, libNixName ) where
+module Cabal2Nix.Name ( toNixName, libNixName, buildToolNixName ) where
 
 import Data.Char
 
+-- | Map Cabal names to Nix attribute names.
 toNixName :: String -> String
 toNixName []      = error "toNixName: empty string is not a valid argument"
 toNixName name    = f name
@@ -37,3 +38,8 @@ libNixName "X11"                = return "libX11"
 libNixName "xft"                = return "libXft"
 libNixName "z"                  = return "zlib"
 libNixName x                    = return x
+
+-- | Map build tool names to Nix attribute names.
+buildToolNixName :: String -> String
+buildToolNixName "cabal"        = "cabalInstall"
+buildToolNixName x              = toNixName x

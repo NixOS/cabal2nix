@@ -22,7 +22,7 @@ cabal2nix cabal = MkDerivation
   , isLibrary    = isJust (Cabal.library tpkg)
   , isExecutable = not (null (Cabal.executables tpkg))
   , buildDepends = normalizeNixNames (filter (`notElem` (name : corePackages)) $ map unDep deps)
-  , buildTools   = normalizeNixNames (filter (`notElem` coreBuildTools) $ map unDep tools)
+  , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) $ map unDep tools)
   , extraLibs    = normalizeNixLibs libs
   , pkgConfDeps  = normalizeNixLibs pcs
   , runHaddock   = True
@@ -70,3 +70,6 @@ normalizeNixNames = normalizeList . map toNixName
 
 normalizeNixLibs :: [String] -> [String]
 normalizeNixLibs = normalizeList . concatMap libNixName
+
+normalizeNixBuildTools :: [String] -> [String]
+normalizeNixBuildTools = normalizeList . map buildToolNixName
