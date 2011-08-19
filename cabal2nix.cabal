@@ -81,3 +81,9 @@ Executable hackage4nix
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
                         Distribution.NixOS.PrettyPrinting
+
+Executable packagelist
+  main-is:              PackageList.hs
+  hs-source-dirs:       src
+  Build-Depends:        base >= 3 && < 5, regex-posix, process, Cabal
+  Ghc-Options:          -Wall
