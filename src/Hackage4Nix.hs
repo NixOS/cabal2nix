@@ -183,21 +183,22 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
         ]
 
       usage :: String
-      usage = usageInfo "Usage: hackage4nix [options] [dir-or-file ...]" options ++
-        "\n\
-        \The purpose of 'hackage4nix' is to keep all Haskell packages in our\n\
-        \repository packages up-to-date. It scans a checked-out copy of\n\
-        \Nixpkgs for expressions that use 'cabal.mkDerivation', and\n\
-        \re-generates them in-place with cabal2nix.\n\
-        \\n\
-        \Because we don't want to generate a barrage of HTTP requests during\n\
-        \that procedure, the tool expects a copy of the Hackage database\n\
-        \available at some local path, i.e. \"/dev/shm/hackage\" by default.\n\
-        \That directory can be set up as follows:\n\
-        \\n\
-        \  cabal update\n\
-        \  mkdir -p /dev/shm/hackage\n\
-        \  tar xf ~/.cabal/packages/hackage.haskell.org/00-index.tar -C /dev/shm/hackage\n"
+      usage = usageInfo "Usage: hackage4nix [options] [dir-or-file ...]" options ++ unlines
+              [ ""
+              , "The purpose of 'hackage4nix' is to keep all Haskell packages in our"
+              , "repository packages up-to-date. It scans a checked-out copy of"
+              , "Nixpkgs for expressions that use 'cabal.mkDerivation', and"
+              , "re-generates them in-place with cabal2nix."
+              , ""
+              , "Because we don't want to generate a barrage of HTTP requests during"
+              , "that procedure, the tool expects a copy of the Hackage database"
+              , "available at some local path, i.e. \"/dev/shm/hackage\" by default."
+              , "That directory can be set up as follows:"
+              , ""
+              , "  cabal update"
+              , "  mkdir -p /dev/shm/hackage"
+              , "  tar xf ~/.cabal/packages/hackage.haskell.org/00-index.tar -C /dev/shm/hackage\n"
+              ]
 
       cmdlineError :: String -> IO a
       cmdlineError ""     = hPutStrLn stderr usage >> exitFailure

@@ -39,14 +39,15 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
         ]
 
       usage :: String
-      usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++
-             "\n\
-             \Recognized URI schemes:\n\
-             \\n\
-             \  cabal://pkgname-pkgversion       download the specified package from Hackage\n\
-             \  http://host/path                 fetch the Cabel file via HTTP\n\
-             \  file:///local/path               load the Cabal file from the local disk\n\
-             \  /local/path                      abbreviated version of file URI\n"
+      usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++ unlines
+              [ ""
+              , "Recognized URI schemes:"
+              , ""
+              , "  cabal://pkgname-pkgversion       download the specified package from Hackage"
+              , "  http://host/path                 fetch the Cabel file via HTTP"
+              , "  file:///local/path               load the Cabal file from the local disk"
+              , "  /local/path                      abbreviated version of file URI"
+              ]
 
       cmdlineError :: String -> IO a
       cmdlineError ""     = hPutStrLn stderr usage >> exitFailure
