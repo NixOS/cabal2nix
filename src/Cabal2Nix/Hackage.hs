@@ -1,11 +1,14 @@
-module Cabal2Nix.Hackage ( hackagePath, Ext(..), hashPackage ) where
+module Cabal2Nix.Hackage ( hashPackage, readCabalFile ) where
 
+import Control.Monad ( when )
+import Data.List ( isPrefixOf )
+import Data.Version ( showVersion )
 import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
-import System.Process ( readProcess )
+import Distribution.Text
+import Network.HTTP ( simpleHTTP, getRequest, getResponseBody )
 import System.Directory ( doesFileExist, getHomeDirectory, createDirectoryIfMissing )
 import System.FilePath ( dropFileName, (</>), (<.>) )
-import Data.Version ( showVersion )
-import Control.Monad ( when )
+import System.Process ( readProcess )
 
 data Ext = TarGz | Cabal deriving Eq
 
@@ -41,3 +44,10 @@ hashCachePath (PackageIdentifier (PackageName name) version') = do
     return $ home ++ "/.cache/cabal2nix" </> name ++ "-" ++ version <.> "sha256"
   where
     version = showVersion version'
+
+readCabalFile :: FilePath -> IO String
+readCabalFile path
+  | "cabal://" `isPrefixOf` path = let Just pid = simpleParse (drop 8 path) in readCabalFile (hackagePath pid Cabal)
+  | "http://"  `isPrefixOf` path = simpleHTTP (getRequest path) >>= getResponseBody
+  | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
+  | otherwise                    = readFile path

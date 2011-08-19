@@ -1,28 +1,19 @@
 module Main ( main ) where
 
-import System.IO ( hPutStrLn, hFlush, stdout, stderr )
-import System.Environment -- ( getArgs )
-import Control.Exception ( bracket )
-import System.Exit ( exitFailure )
-import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
-import Distribution.PackageDescription ( package, packageDescription )
-import Distribution.Text
-import Data.List ( isPrefixOf )
-import Control.Monad ( when )
-import Network.HTTP ( simpleHTTP, getRequest, getResponseBody )
-import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-
+import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Package ( cabal2nix )
-import Cabal2Nix.Hackage ( hackagePath, Ext(..), hashPackage )
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.Derivation.Meta
 
-readCabalFile :: FilePath -> IO String
-readCabalFile path
-  | "cabal://" `isPrefixOf` path = let Just pid = simpleParse (drop 8 path) in readCabalFile (hackagePath pid Cabal)
-  | "http://"  `isPrefixOf` path = simpleHTTP (getRequest path) >>= getResponseBody
-  | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
-  | otherwise                    = readFile path
+import Control.Exception ( bracket )
+import Control.Monad ( when )
+import Distribution.PackageDescription ( package, packageDescription )
+import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
+import Distribution.Text ( disp )
+import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
+import System.Environment ( getArgs )
+import System.Exit ( exitFailure )
+import System.IO ( hPutStrLn, hFlush, stdout, stderr )
 
 data CliOption = PrintHelp | SHA256 String | Maintainer String | Platform String | NoHaddock
   deriving (Eq)
