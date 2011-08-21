@@ -1,13 +1,14 @@
 module Main ( main ) where
 
 import Control.Exception ( assert )
-import Data.Char
-import Data.List
-import Data.Version
-import Distribution.Package
-import Distribution.Text
-import System.Process
-import Text.Regex.Posix
+import Data.Char ( toLower )
+import Data.List ( nubBy, sortBy )
+import Data.Ord ( comparing )
+import Data.Version ( Version(..) )
+import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
+import Distribution.Text ( simpleParse, display )
+import System.Process ( readProcess )
+import Text.Regex.Posix ( (=~), match, makeRegexOpts, compExtended, execBlank )
 
 type Pkg    = (String,Version,String) -- (Name, Version, Attribute)
 type Pkgset = [Pkg]
@@ -18,7 +19,7 @@ comparePkgByVersion (n1,v1,a1) (n2,v2,a2)
   | otherwise   = compare a2 a1
 
 comparePkgByName :: Pkg -> Pkg-> Ordering
-comparePkgByName (n1,_,_) (n2,_,_) = compare (map toLower n1) (map toLower n2)
+comparePkgByName (n1,_,_) (n2,_,_) = comparing (map toLower) n1 n2
 
 parseHaskellPackageName :: String -> Maybe Pkg
 parseHaskellPackageName name =
@@ -47,7 +48,7 @@ selectLatestVersions :: Pkgset -> Pkgset
 selectLatestVersions = nubBy (\x y -> comparePkgByName x y == EQ) . sortBy comparePkgByVersion
 
 formatPackageLine :: Pkg -> String
-formatPackageLine (name,version,attr) = show (name, showVersion version, Just url)
+formatPackageLine (name,version,attr) = show (name, display version, Just url)
   where
     url = "http://hydra.nixos.org/job/nixpkgs/trunk/" ++ attr
 
