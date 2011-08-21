@@ -1,12 +1,13 @@
 module Main ( main ) where
 
+import Control.Exception ( assert )
 import Data.Char
 import Data.List
 import Data.Version
+import Distribution.Package
 import Distribution.Text
 import System.Process
 import Text.Regex.Posix
-import Control.Exception ( assert )
 
 type Pkg    = (String,Version,String) -- (Name, Version, Attribute)
 type Pkgset = [Pkg]
@@ -21,11 +22,15 @@ comparePkgByName (n1,_,_) (n2,_,_) = compare (map toLower n1) (map toLower n2)
 
 parseHaskellPackageName :: String -> Maybe Pkg
 parseHaskellPackageName name =
-  case name `regsubmatch` "^(haskellPackages[^ \t]+)[ \t]+haskell-(.*)-ghc[0-9.]+-(.*)$" of
-    [attr,name',version] -> case simpleParse version of
-                              Just version' -> Just (name',version',attr)
-                              _             -> Nothing
-    _               -> Nothing
+  case name `regsubmatch` "^(haskellPackages[^ \t]+)[ \t]+(.+)$" of
+    [attr,name'] -> case name' `regsubmatch` "^haskell-(.+)-ghc[0-9.]+-(.+)$" of
+                      [name'',version] -> case simpleParse version of
+                                            Just version' -> Just (name'',version',attr)
+                                            _             -> error ("cannot parse " ++ show name)
+                      _                -> case simpleParse name' of
+                                            Just (PackageIdentifier (PackageName n) v) -> Just (n,v,attr)
+                                            _                                          -> error ("cannot parse " ++ show name)
+    _            -> Nothing
 
 getHaskellPackageList :: IO Pkgset
 getHaskellPackageList = do
