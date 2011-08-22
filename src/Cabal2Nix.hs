@@ -7,63 +7,77 @@ import Distribution.NixOS.Derivation.Meta
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )
+import Data.List ( nub, sort )
 import Distribution.PackageDescription ( package, packageDescription )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text ( disp )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
-import System.Exit ( exitFailure )
+import System.Exit ( exitFailure, exitSuccess )
 import System.IO ( hPutStrLn, hFlush, stdout, stderr )
 
-data CliOption = PrintHelp | SHA256 String | Maintainer String | Platform String | NoHaddock
-  deriving (Eq)
+data Configuration = Configuration
+  { optPrintHelp :: Bool
+  , optPrintVersion :: Bool
+  , optSha256 :: String
+  , optMaintainer :: [String]
+  , optPlatform :: [String]
+  , optHaddock :: Bool
+  }
+  deriving (Show)
+
+defaultConfiguration :: Configuration
+defaultConfiguration = Configuration
+  { optPrintHelp = False
+  , optPrintVersion = False
+  , optSha256 = ""
+  , optMaintainer = []
+  , optPlatform = []
+  , optHaddock = True
+  }
+
+options :: [OptDescr (Configuration -> Configuration)]
+options =
+  [ Option ['h'] ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
+  , Option []    ["sha256"]     (ReqArg (\x o -> o { optSha256 = x }) "HASH")                              "sha256 hash of source tarball"
+  , Option ['m'] ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
+  , Option ['p'] ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
+  , Option []    ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
+  ]
+
+usage :: String
+usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++ unlines
+        [ ""
+        , "Recognized URI schemes:"
+        , ""
+        , "  cabal://pkgname-pkgversion       download the specified package from Hackage"
+        , "  http://host/path                 fetch the Cabel file via HTTP"
+        , "  file:///local/path               load the Cabal file from the local disk"
+        , "  /local/path                      abbreviated version of file URI"
+        ]
+
+cmdlineError :: String -> IO a
+cmdlineError ""     = hPutStrLn stderr usage >> exitFailure
+cmdlineError errMsg = hPutStrLn stderr errMsg >> cmdlineError ""
 
 main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
-  let options :: [OptDescr CliOption]
-      options =
-        [ Option ['h'] ["help"]       (NoArg PrintHelp)                 "show this help text"
-        , Option []    ["sha256"]     (ReqArg SHA256 "HASH")            "sha256 hash of source tarball"
-        , Option ['m'] ["maintainer"] (ReqArg Maintainer "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
-        , Option ['p'] ["platform"]   (ReqArg Platform "PLATFORM")      "supported build platforms (may be specified multiple times)"
-        , Option []    ["no-haddock"] (NoArg NoHaddock)                 "don't run Haddock when building this package"
-        ]
-
-      usage :: String
-      usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++ unlines
-              [ ""
-              , "Recognized URI schemes:"
-              , ""
-              , "  cabal://pkgname-pkgversion       download the specified package from Hackage"
-              , "  http://host/path                 fetch the Cabel file via HTTP"
-              , "  file:///local/path               load the Cabal file from the local disk"
-              , "  /local/path                      abbreviated version of file URI"
-              ]
-
-      cmdlineError :: String -> IO a
-      cmdlineError ""     = hPutStrLn stderr usage >> exitFailure
-      cmdlineError errMsg = hPutStrLn stderr errMsg >> cmdlineError ""
-
   args' <- getArgs
-  (opts,args) <- case getOpt Permute options args' of
-     (o,n,[]  ) -> return (o,n)
-     (_,_,errs) -> cmdlineError (concatMap (\e -> '*':'*':'*':' ':e) errs)
+  (cfg',args) <- case getOpt Permute options args' of
+                    (o,n,[]  ) -> return (foldl (flip ($)) defaultConfiguration o,n)
+                    (_,_,errs) -> cmdlineError (concatMap ("*** "++) errs)
 
-  when (PrintHelp `elem` opts) (cmdlineError "")
+  when (optPrintHelp cfg') (putStr usage >> exitSuccess)
+  when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
 
-  let uri         = args
-      hash        = [ h | SHA256 h <- opts ]
-      noHaddock   = NoHaddock `elem` opts
-      maints      = [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | Maintainer m <- opts ]
-      plats'      = [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | Platform p <- opts ]
-      plats
-        | null plats' = if not (null maints) then ["self.ghc.meta.platforms"] else []
-        | otherwise   = plats'
+  let maints = [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | m <- optMaintainer cfg' ]
+      plats  = [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | p <- optPlatform cfg' ]
+      cfg = cfg'
+            { optMaintainer = nub (sort maints)
+            , optPlatform   = nub (sort (if null plats then ["self.ghc.meta.platforms"] else plats))
+            }
 
-  when (length uri /= 1) (cmdlineError "*** exactly one URI must be specified")
-  when (length hash > 1) (cmdlineError "*** the --sha256 option may be specified only once")
-
-  cabal' <- fmap parsePackageDescription (readCabalFile (head uri))
+  cabal' <- fmap parsePackageDescription (readCabalFile (head args))
   cabal <- case cabal' of
              ParseOk _ a -> return a
              ParseFailed err -> do
@@ -72,12 +86,12 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let packageId = package (packageDescription cabal)
 
-  sha <- if null hash then hashPackage packageId else return (head hash)
+  sha <- if null (optSha256 cfg) then hashPackage packageId else return (optSha256 cfg)
 
-  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = not noHaddock }
+  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
-                                     { maintainers = maints
-                                     , platforms   = plats
+                                     { maintainers = optMaintainer cfg
+                                     , platforms   = optPlatform cfg
                                      }
                      }
 
