@@ -2,15 +2,6 @@
 
 module Cabal2Nix.Normalize ( normalize ) where
 
-import Cabal2Nix.License
-import Cabal2Nix.PostProcess
-import Data.Maybe
-import Distribution.Compiler
-import qualified Distribution.Package as Cabal
-import qualified Distribution.PackageDescription as Cabal
-import Distribution.PackageDescription.Configuration
-import Distribution.System
-import Distribution.Version
 import Distribution.NixOS.Derivation.Cabal
 import Cabal2Nix.Name
 import Cabal2Nix.CorePackages

@@ -8,7 +8,6 @@ import Distribution.NixOS.Derivation.Meta
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )
-import Data.List ( nub, sort )
 import Distribution.PackageDescription ( package, packageDescription )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text ( disp )

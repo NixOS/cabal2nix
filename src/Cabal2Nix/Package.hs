@@ -11,10 +11,6 @@ import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Version
 import Distribution.NixOS.Derivation.Cabal
-import Cabal2Nix.Name
-import Cabal2Nix.CorePackages
-import Data.List
-import Data.Char
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = normalize $ postProcess $ MkDerivation
@@ -39,7 +35,6 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
   where
     descr = Cabal.packageDescription cabal
     pkg   = Cabal.package descr
-    Cabal.PackageName name  = Cabal.pkgName pkg
     deps    = Cabal.buildDepends tpkg
     libDeps = map Cabal.libBuildInfo (maybeToList (Cabal.library tpkg))
     exeDeps = map Cabal.buildInfo (Cabal.executables tpkg)
