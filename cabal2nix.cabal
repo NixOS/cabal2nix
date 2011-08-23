@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.12
+Version:                1.13
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -71,10 +71,3 @@ Executable hackage4nix
                         Cabal2Nix.Normalize
                         Cabal2Nix.Package
                         Cabal2Nix.PostProcess
-
-Executable packagelist
-  main-is:              PackageList.hs
-  hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, process, Cabal,
-                        filepath, directory
-  Ghc-Options:          -Wall
