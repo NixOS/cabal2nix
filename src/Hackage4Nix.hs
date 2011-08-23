@@ -65,14 +65,12 @@ readCabalFile name vers = do
   return pkg
 
 discoverNixFiles :: (FilePath -> Hackage4Nix ()) -> FilePath -> Hackage4Nix ()
-discoverNixFiles yield dirOrFile
-  | "." `isPrefixOf` takeFileName dirOrFile  = return ()
-  | otherwise                                = do
-     isFile <- io (doesFileExist dirOrFile)
-     case (isFile, takeExtension dirOrFile) of
-       (True,".nix") -> yield dirOrFile
-       (True,_)     -> return ()
-       (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
+discoverNixFiles yield dirOrFile = do
+  isFile <- io (doesFileExist dirOrFile)
+  case (isFile, takeExtension dirOrFile) of
+    (True,".nix") -> yield dirOrFile
+    (True,_)     -> return ()
+    (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
 regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
