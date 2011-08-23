@@ -17,6 +17,7 @@ import Distribution.PackageDescription ( GenericPackageDescription() )
 import Distribution.Text
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import Cabal2Nix.Package
+import Cabal2Nix.Normalize
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.Derivation.Meta
 
@@ -116,22 +117,19 @@ updateNixPkgs paths = do
         let Pkg deriv path regenerate = nix
             maints = maintainers (metaSection deriv)
             plats  = platforms (metaSection deriv)
-        when (null maints) (msgInfo ("no maintainers configured for " ++ path))
         modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
-          let maints' = nub (sort (maints ++ ["self.stdenv.lib.maintainers.andres","self.stdenv.lib.maintainers.simons"]))
-              plats'
-                | null plats && not (null maints) = ["self.ghc.meta.platforms"]
-                | otherwise                       = plats
           pkg <- readCabalFile (pname deriv) (display (version deriv))
           let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv }
-              deriv'' = deriv' { metaSection = (metaSection deriv')
-                                               { maintainers = maints'
+              meta    = metaSection deriv'
+              plats'  = if null plats then platforms meta else plats
+              deriv'' = deriv' { metaSection = meta
+                                               { maintainers = maints ++ ["simons","andres"]
                                                , platforms   = plats'
                                                }
                                }
-          io $ writeFile path (show (disp deriv''))
+          io $ writeFile path (show (disp (normalize (deriv''))))
   pkgset <- gets (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
     let Pkg deriv _ _ = pkg
