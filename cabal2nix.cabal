@@ -89,5 +89,6 @@ Executable hackage4nix
 Executable packagelist
   main-is:              PackageList.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, process, Cabal
+  Build-Depends:        base >= 3 && < 5, regex-posix, process, Cabal,
+                        filepath, directory
   Ghc-Options:          -Wall
