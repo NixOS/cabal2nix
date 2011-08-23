@@ -1,0 +1,30 @@
+Name:                   nixos-types
+Version:                1.0
+Copyright:              Peter Simons, Andres Loeh
+License:                BSD3
+License-File:           LICENSE
+Author:                 Peter Simons <simons@cryp.to>, Andres Loeh <mail@andres-loeh.de>
+Maintainer:             Nix Developers <nix-dev@cs.uu.nl>
+Homepage:               http://github.com/haskell4nix/nixos-types
+Category:               Distribution
+Synopsis:               Data types representing the Nix language
+Cabal-Version:          >= 1.8
+Build-Type:             Custom
+Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.2.1
+Description:
+  This library provides a collection of data types that represent the
+  Nix language <http://nixos.org/>.
+
+Source-Repository head
+  Type:                 git
+  Location:             git://github.com/haskell4nix/nixos-types.git
+
+Library
+  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8
+  hs-source-dirs:       src
+  Extensions:           PatternGuards, CPP
+  Ghc-Options:          -Wall
+  Exposed-Modules:      Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
+  other-modules:        Distribution.NixOS.PrettyPrinting
