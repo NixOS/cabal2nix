@@ -59,6 +59,7 @@ Executable cabal2nix
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
+                        Cabal2Nix.Flags
                         Cabal2Nix.Hackage
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
@@ -77,6 +78,7 @@ Executable hackage4nix
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
+                        Cabal2Nix.Flags
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
                         Cabal2Nix.Package

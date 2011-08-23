@@ -3,6 +3,7 @@ module Cabal2Nix.Package ( cabal2nix ) where
 import Cabal2Nix.License
 import Cabal2Nix.PostProcess
 import Cabal2Nix.Normalize
+import Cabal2Nix.Flags
 import Data.Maybe
 import Distribution.Compiler
 import qualified Distribution.Package as Cabal
@@ -41,7 +42,9 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
     tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps)
     libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
     pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
-    Right (tpkg, _) = finalizePackageDescription [] (const True)
+    Right (tpkg, _) = finalizePackageDescription
+                        (configureFlags pkg)
+                        (const True)
                         (Platform I386 Linux)                   -- shouldn't be hardcoded
                         (CompilerId GHC (Version [7,0,4] []))   -- dito
                         [] cabal
