@@ -73,4 +73,4 @@ normalizeNixLibs :: [String] -> [String]
 normalizeNixLibs = normalizeList . concatMap libNixName
 
 normalizeNixBuildTools :: [String] -> [String]
-normalizeNixBuildTools = normalizeList . map buildToolNixName
+normalizeNixBuildTools = normalizeList . concatMap buildToolNixName

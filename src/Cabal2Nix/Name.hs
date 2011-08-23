@@ -23,12 +23,20 @@ libNixName "cairo-ps"           = return "cairo"
 libNixName "cairo"              = return "cairo"
 libNixName "cairo-svg"          = return "cairo"
 libNixName "crypto"             = return "openssl"
+libNixName "glib-2.0"           = return "glib"
 libNixName "gnome-keyring-1"    = return "gnome_keyring"
 libNixName "gnome-keyring"      = return "gnome_keyring"
+libNixName "gobject-2.0"        = return "glib"
+libNixName "gthread-2.0"        = return "glib"
+libNixName "gtk+-2.0"           = return "gtk"
+libNixName "gtksourceview-2.0"  = return "gtksourceview"
 libNixName "idn"                = return "idn"
+libNixName "libglade-2.0"       = return "libglade"
 libNixName "libidn"             = return "idn"
+libNixName "librsvg-2.0"        = return "librsvg"
 libNixName "libzip"             = return "libzip"
 libNixName "m"                  = []  -- in stdenv
+libNixName "pangocairo"         = return "pango"
 libNixName "pcre"               = return "pcre"
 libNixName "pq"                 = return "postgresql"
 libNixName "sndfile"            = return "libsndfile"
@@ -40,6 +48,9 @@ libNixName "z"                  = return "zlib"
 libNixName x                    = return x
 
 -- | Map build tool names to Nix attribute names.
-buildToolNixName :: String -> String
-buildToolNixName "cabal"        = "cabalInstall"
-buildToolNixName x              = toNixName x
+buildToolNixName :: String -> [String]
+buildToolNixName "cabal"                = return "cabalInstall"
+buildToolNixName "gtk2hsC2hs"           = return "gtk2hsBuildtools"
+buildToolNixName "gtk2hsHookGenerator"  = return "gtk2hsBuildtools"
+buildToolNixName "gtk2hsTypeGen"        = return "gtk2hsBuildtools"
+buildToolNixName x                      = return (toNixName x)
