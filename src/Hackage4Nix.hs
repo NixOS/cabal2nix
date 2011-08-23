@@ -76,7 +76,7 @@ discoverNixFiles yield dirOrFile
 
 regenerateDerivation :: Derivation -> String -> Bool
 regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
-                                 not (buf =~ "preConfigure|configureFlags|postInstall|patchPhase")
+                                 not (buf =~ "(pre|post)Configure|configureFlags|(pre|post)Install|patchPhase")
 
 readVersion :: String -> Version
 readVersion str = maybe (error $ "cannot parse version " ++ show str) id (simpleParse str)
