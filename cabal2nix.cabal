@@ -56,7 +56,7 @@ Executable cabal2nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
                         filepath, directory, process, HTTP
-  Extensions:           PatternGuards, CPP
+  Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Hackage
@@ -73,7 +73,7 @@ Executable hackage4nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
                         mtl, containers, directory, filepath
-  Extensions:           PatternGuards, CPP
+  Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Name
