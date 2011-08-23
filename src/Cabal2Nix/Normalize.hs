@@ -37,11 +37,13 @@ normalizeDescription :: String -> String
 normalizeDescription desc
   | null desc                                             = []
   | last desc == '.' && length (filter ('.'==) desc) == 1 = normalizeDescription (reverse (tail (reverse desc)))
-  | otherwise                                             = unwords (words desc) >>= quote
+  | otherwise                                             = quote (unwords (words desc))
 
-quote :: Char -> [Char]
-quote '"'  = "\\\""
-quote c    = [c]
+quote :: String -> String
+quote ('\\':c:cs) = '\\' : c : quote cs
+quote ('"':cs)    = '\\' : '"' : quote cs
+quote (c:cs)      = c : quote cs
+quote []          = []
 
 normalizeList :: [String] -> [String]
 normalizeList = nub . sortBy (\x y -> compare (map toLower x) (map toLower y))
