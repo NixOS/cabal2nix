@@ -228,37 +228,6 @@ badPackagePaths = ["haskell-platform/2011.2.0.1.nix"]
 
 patchedPackages :: [String]
 patchedPackages =
-   [ "alex"              -- undeclared dependencies
-   , "cairo"             -- undeclared dependencies
-   , "citeproc-hs"       -- undeclared dependencies
-   , "editline"          -- undeclared dependencies
-   , "glade"             -- undeclared dependencies
-   , "glib"              -- undeclared dependencies
-   , "epic"              -- undeclared dependencies
-   , "GLUT"              -- undeclared dependencies
-   , "gtk"               -- undeclared dependencies
-   , "gtksourceview2"    -- undeclared dependencies
-   , "haddock"           -- undeclared dependencies
-   , "haskell-src"       -- undeclared dependencies
-   , "hmatrix"           -- undeclared dependencies
-   , "hp2any-graph"      -- undeclared dependencies
-   , "lhs2tex"           -- undeclared dependencies
-   , "OpenAL"            -- undeclared dependencies
-   , "OpenGL"            -- undeclared dependencies
-   , "pango"             -- undeclared dependencies
-   , "idris"             -- undeclared dependencies
-   , "readline"          -- undeclared dependencies
-   , "repa-examples"     -- undeclared dependencies
-   , "scion"             -- expects non-existent networkBytestring
-   , "SDL-image"         -- undeclared dependencies
-   , "SDL-mixer"         -- undeclared dependencies
-   , "SDL-ttf"           -- undeclared dependencies
-   , "svgcairo"          -- undeclared dependencies
-   , "terminfo"          -- undeclared dependencies
-   , "xmonad"            -- undeclared dependencies
-   , "xmonad-extras"     -- undeclared dependencies
-   , "vacuum"            -- undeclared dependencies
-   , "wxcore"            -- undeclared dependencies
-   , "X11"               -- undeclared dependencies
-   , "X11-xft"           -- undeclared dependencies
+   [ "X11"               -- expression uses function arguments to determine feature set
+   , "xmonad-extras"     -- the generated expression doesn't build, don't know why
    ]
