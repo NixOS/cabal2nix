@@ -2,6 +2,7 @@ module Main ( main ) where
 
 import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Package ( cabal2nix )
+import Cabal2Nix.Normalize ( normalize )
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.Derivation.Meta
 
@@ -63,19 +64,12 @@ cmdlineError errMsg = hPutStrLn stderr errMsg >> cmdlineError ""
 main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   args' <- getArgs
-  (cfg',args) <- case getOpt Permute options args' of
-                    (o,n,[]  ) -> return (foldl (flip ($)) defaultConfiguration o,n)
-                    (_,_,errs) -> cmdlineError (concatMap ("*** "++) errs)
+  (cfg,args) <- case getOpt Permute options args' of
+                  (o,n,[]  ) -> return (foldl (flip ($)) defaultConfiguration o,n)
+                  (_,_,errs) -> cmdlineError (concatMap ("*** "++) errs)
 
-  when (optPrintHelp cfg') (putStr usage >> exitSuccess)
+  when (optPrintHelp cfg) (putStr usage >> exitSuccess)
   when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
-
-  let maints = [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | m <- optMaintainer cfg' ]
-      plats  = [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | p <- optPlatform cfg' ]
-      cfg = cfg'
-            { optMaintainer = nub (sort maints)
-            , optPlatform   = nub (sort (if null plats then ["self.ghc.meta.platforms"] else plats))
-            }
 
   cabal' <- fmap parsePackageDescription (readCabalFile (head args))
   cabal <- case cabal' of
@@ -85,7 +79,6 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                exitFailure
 
   let packageId = package (packageDescription cabal)
-
   sha <- if null (optSha256 cfg) then hashPackage packageId else return (optSha256 cfg)
 
   let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg }
@@ -95,4 +88,4 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      }
                      }
 
-  putStr (show (disp deriv'))
+  putStr (show (disp (normalize (deriv'))))

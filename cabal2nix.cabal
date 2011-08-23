@@ -61,6 +61,7 @@ Executable cabal2nix
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Hackage
                         Cabal2Nix.Name
+                        Cabal2Nix.Normalize
                         Cabal2Nix.Package
                         Cabal2Nix.PostProcess
                         Distribution.NixOS.Derivation.Cabal
@@ -77,6 +78,7 @@ Executable hackage4nix
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Name
+                        Cabal2Nix.Normalize
                         Cabal2Nix.Package
                         Cabal2Nix.PostProcess
                         Distribution.NixOS.Derivation.Cabal
