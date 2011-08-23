@@ -62,6 +62,7 @@ Executable cabal2nix
                         Cabal2Nix.Hackage
                         Cabal2Nix.Name
                         Cabal2Nix.Package
+                        Cabal2Nix.PostProcess
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
@@ -77,6 +78,7 @@ Executable hackage4nix
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Name
                         Cabal2Nix.Package
+                        Cabal2Nix.PostProcess
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta

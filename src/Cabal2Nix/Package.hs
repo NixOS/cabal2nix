@@ -1,6 +1,7 @@
 module Cabal2Nix.Package ( cabal2nix ) where
 
 import Cabal2Nix.License
+import Cabal2Nix.PostProcess
 import Data.Maybe
 import Distribution.Compiler
 import qualified Distribution.Package as Cabal
@@ -15,7 +16,7 @@ import Data.List
 import Data.Char
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
-cabal2nix cabal = MkDerivation
+cabal2nix cabal = postProcess $ MkDerivation
   { pname        = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version      = Cabal.pkgVersion pkg
   , sha256       = "cabal2nix left the she256 field undefined"
