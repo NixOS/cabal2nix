@@ -1,25 +1,26 @@
 module Main ( main ) where
 
-import System.IO
-import System.FilePath
-import System.Directory
-import System.Environment
-import System.Exit
-import Data.List
-import qualified Data.Set as Set
-import Control.Monad.State
+import Cabal2Nix.Normalize
+import Cabal2Nix.Package
 import Control.Exception ( bracket )
-import Text.Regex.Posix
+import Control.Monad.RWS
+import Data.List
+import Data.Maybe
+import qualified Data.Set as Set
 import Data.Version
-import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
+import qualified Distribution.Hackage.DB as DB
+import Distribution.NixOS.Derivation.Cabal
+import Distribution.NixOS.Derivation.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import Distribution.Text
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
-import Cabal2Nix.Package
-import Cabal2Nix.Normalize
-import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.Derivation.Meta
+import System.Directory
+import System.Environment
+import System.Exit
+import System.FilePath
+import System.IO
+import Text.Regex.Posix
 
 data Pkg = Pkg Derivation FilePath Bool
   deriving (Show, Eq, Ord)
@@ -29,7 +30,7 @@ type PkgSet = Set.Set Pkg
 data Configuration = Configuration
   { _msgDebug  :: String -> IO ()
   , _msgInfo   :: String -> IO ()
-  , _hackageDb :: FilePath
+  , _hackageDb :: DB.Hackage
   , _pkgset    :: PkgSet
   }
 
@@ -37,11 +38,11 @@ defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
   { _msgDebug  = hPutStrLn stderr
   , _msgInfo   = hPutStrLn stderr
-  , _hackageDb = "/dev/shm/hackage"
+  , _hackageDb = DB.empty
   , _pkgset    = Set.empty
   }
 
-type Hackage4Nix a = StateT Configuration IO a
+type Hackage4Nix a = RWST Configuration () PkgSet IO a
 
 io :: (MonadIO m) => IO a -> m a
 io = liftIO
@@ -52,18 +53,17 @@ readDirectory dirpath = do
   return [ x | x <- entries, x /= ".", x /= ".." ]
 
 msgDebug, msgInfo :: String -> Hackage4Nix ()
-msgDebug msg = get >>= \s -> io (_msgDebug s msg)
-msgInfo msg = get >>= \s -> io (_msgInfo s msg)
+msgDebug msg = ask >>= \s -> io (_msgDebug s msg)
+msgInfo msg = ask >>= \s -> io (_msgInfo s msg)
 
-readCabalFile :: String -> String -> Hackage4Nix GenericPackageDescription
-readCabalFile name vers = do
-  hackageDir <- gets _hackageDb
-  let cabal = hackageDir </> name </> vers </> name <.> "cabal"
-  pkg' <- fmap parsePackageDescription (io (readFile cabal))
-  pkg <- case pkg' of
-           ParseOk _ a -> return a
-           ParseFailed err -> fail ("cannot parse cabal file " ++ cabal ++ ": " ++ show err)
-  return pkg
+getCabalPackage :: String -> Version -> Hackage4Nix GenericPackageDescription
+getCabalPackage name vers = do
+  db <- asks _hackageDb
+  case DB.lookup name db of
+    Just db' -> case DB.lookup vers db' of
+                  Just pkg -> return pkg
+                  Nothing  -> fail ("hackage doesn't know about " ++ name ++ " version " ++ display vers)
+    Nothing  -> fail ("hackage doesn't know about " ++ show name)
 
 discoverNixFiles :: (FilePath -> Hackage4Nix ()) -> FilePath -> Hackage4Nix ()
 discoverNixFiles yield dirOrFile = do
@@ -76,9 +76,6 @@ discoverNixFiles yield dirOrFile = do
 regenerateDerivation :: Derivation -> String -> Bool
 regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
                                  not (buf =~ "(pre|post)Configure|configureFlags|(pre|post)Install|patchPhase")
-
-readVersion :: String -> Version
-readVersion str = maybe (error $ "cannot parse version " ++ show str) id (simpleParse str)
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
@@ -100,12 +97,11 @@ selectLatestVersions = Set.fromList . nubBy f2 . sortBy f1 . Set.toList
       | otherwise                        = compare (pname deriv1) (pname deriv2)
     f2 (Pkg deriv1 _ _) (Pkg deriv2 _ _) = pname deriv1 == pname deriv2
 
-discoverUpdates :: String -> String -> Hackage4Nix [String]
+discoverUpdates :: String -> Version -> Hackage4Nix [Version]
 discoverUpdates name vers = do
-  hackage <- gets _hackageDb
-  versionStrings <- io $ readDirectory (hackage </> name)
-  let versions = map readVersion versionStrings
-  return [ showVersion v | v <- versions, v > readVersion vers ]
+  db <- asks _hackageDb
+  let versions = DB.keys (fromJust (DB.lookup name db))
+  return (filter (>vers) versions)
 
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
@@ -117,10 +113,10 @@ updateNixPkgs paths = do
         let Pkg deriv path regenerate = nix
             maints = maintainers (metaSection deriv)
             plats  = platforms (metaSection deriv)
-        modify $ \cfg -> cfg { _pkgset = Set.insert nix (_pkgset cfg) }
+        modify (Set.insert nix)
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
-          pkg <- readCabalFile (pname deriv) (display (version deriv))
+          pkg <- getCabalPackage (pname deriv) (version deriv)
           let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv }
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats
@@ -130,10 +126,10 @@ updateNixPkgs paths = do
                                                }
                                }
           io $ writeFile path (show (disp (normalize (deriv''))))
-  pkgset <- gets (selectLatestVersions . _pkgset)
+  pkgset <- asks (selectLatestVersions . _pkgset)
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
     let Pkg deriv _ _ = pkg
-    updates <- discoverUpdates (pname deriv) (display (version deriv))
+    updates <- discoverUpdates (pname deriv) (version deriv)
     return (pkg,updates)
   let updates = [ u | u@(_,(_:_)) <- updates' ]
   when (not (null updates)) $ do
@@ -143,7 +139,7 @@ updateNixPkgs paths = do
       msgInfo ""
       msgInfo $ (display (packageId deriv)) ++ ":"
       flip mapM_ versions $ \newVersion -> do
-        let deriv' = deriv { version = readVersion newVersion }
+        let deriv' = deriv { version = newVersion }
         msgInfo $ "  " ++ genCabal2NixCmdline (Pkg deriv' path regenerate)
   return ()
 
@@ -185,15 +181,6 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               , "repository packages up-to-date. It scans a checked-out copy of"
               , "Nixpkgs for expressions that use 'cabal.mkDerivation', and"
               , "re-generates them in-place with cabal2nix."
-              , ""
-              , "Because we don't want to generate a barrage of HTTP requests during"
-              , "that procedure, the tool expects a copy of the Hackage database"
-              , "available at some local path, i.e. \"/dev/shm/hackage\" by default."
-              , "That directory can be set up as follows:"
-              , ""
-              , "  cabal update"
-              , "  mkdir -p /dev/shm/hackage"
-              , "  tar xf ~/.cabal/packages/hackage.haskell.org/00-index.tar -C /dev/shm/hackage\n"
               ]
 
       cmdlineError :: String -> IO a
@@ -207,11 +194,13 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   when (PrintHelp `elem` opts) (cmdlineError "")
 
+  hackage <- DB.readHackage
   let cfg = defaultConfiguration
             { _msgDebug  = if Verbose `elem` opts then _msgDebug defaultConfiguration else const (return ())
-            , _hackageDb = last $ _hackageDb defaultConfiguration : [ p | HackageDB p <- opts ]
+            , _hackageDb = hackage
             }
-  flip evalStateT cfg (updateNixPkgs args)
+  ((),_,()) <- runRWST (updateNixPkgs args) cfg Set.empty
+  return ()
 
 
 -- Packages that we cannot parse.
