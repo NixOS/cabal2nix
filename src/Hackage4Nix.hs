@@ -31,7 +31,6 @@ data Configuration = Configuration
   { _msgDebug  :: String -> IO ()
   , _msgInfo   :: String -> IO ()
   , _hackageDb :: DB.Hackage
-  , _pkgset    :: PkgSet
   }
 
 defaultConfiguration :: Configuration
@@ -39,7 +38,6 @@ defaultConfiguration = Configuration
   { _msgDebug  = hPutStrLn stderr
   , _msgInfo   = hPutStrLn stderr
   , _hackageDb = DB.empty
-  , _pkgset    = Set.empty
   }
 
 type Hackage4Nix a = RWST Configuration () PkgSet IO a
@@ -126,7 +124,7 @@ updateNixPkgs paths = do
                                                }
                                }
           io $ writeFile path (show (disp (normalize (deriv''))))
-  pkgset <- asks (selectLatestVersions . _pkgset)
+  pkgset <- gets selectLatestVersions
   updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
     let Pkg deriv _ _ = pkg
     updates <- discoverUpdates (pname deriv) (version deriv)
