@@ -11,5 +11,7 @@ configureFlags (PackageIdentifier (PackageName name) _)
 enable :: String -> (FlagName,Bool)
 enable name = (FlagName name, True)
 
-disable :: String -> (FlagName,Bool)
-disable name = (FlagName name, False)
+-- Uncommend this function when it's actually used.
+--
+-- disable :: String -> (FlagName,Bool)
+-- disable name = (FlagName name, False)
