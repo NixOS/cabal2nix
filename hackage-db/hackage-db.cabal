@@ -1,0 +1,51 @@
+Name:                   hackage-db
+Version:                1.0
+Copyright:              Peter Simons
+License:                BSD3
+License-File:           LICENSE
+Author:                 Peter Simons <simons@cryp.to>
+Maintainer:             Peter Simons <simons@cryp.to>
+Homepage:               http://github.com/peti/hackage-db
+Category:               Distribution
+Synopsis:               provide access to the Hackage database via Data.Map
+Cabal-Version:          >= 1.8
+Build-Type:             Simple
+Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.2.1
+Description:
+   This module provides simple access to the Hackage database by means
+   of @Data.Map@. Suppose you wanted to implement a utility that queries
+   the set of available versions for a given package, the following
+   program would do the trick:
+   .
+   > import qualified Distribution.Hackage.DB as DB
+   > import Distribution.Text ( display )
+   > import System.Environment ( getArgs )
+   >
+   > main :: IO ()
+   > main = do
+   >   pkgs <- getArgs
+   >   db <- DB.readHackage
+   >   let getVersions name = maybe [] DB.keys (DB.lookup name db)
+   >   mapM_ (putStrLn . unwords . map display . getVersions) pkgs
+   .
+   When run, it would produce the following output:
+   .
+   > ./a.out containers deepseq cabal-install
+   > 0.1.0.0 0.1.0.1 0.2.0.0 0.2.0.1 0.3.0.0 0.4.0.0
+   > 1.0.0.0 1.1.0.0 1.1.0.1 1.1.0.2
+   > 0.4.0 0.5.0 0.5.1 0.5.2 0.6.0 0.6.2 0.6.4 0.8.0 0.8.2 0.10.0 0.10.2
+   .
+   Note that once the database has been parsed, it can be accessed
+   quickly, but the inital cost of reading @00-index.tar@ is fairly
+   high.
+
+Source-Repository head
+  Type:                 git
+  Location:             git://github.com/peti/hackage-db.git
+
+Library
+  Build-Depends:        base >= 3 && < 5, tar, Cabal, containers,
+                        directory, filepath, bytestring
+  hs-source-dirs:       src
+  Ghc-Options:          -Wall
+  Exposed-Modules:      Distribution.Hackage.DB
