@@ -1,5 +1,5 @@
 Name:                   hackage-db
-Version:                1.0
+Version:                1.1
 Copyright:              Peter Simons
 License:                BSD3
 License-File:           LICENSE
@@ -8,7 +8,7 @@ Maintainer:             Peter Simons <simons@cryp.to>
 Homepage:               http://github.com/peti/hackage-db
 Category:               Distribution
 Synopsis:               provide access to the Hackage database via Data.Map
-Cabal-Version:          >= 1.8
+Cabal-Version:          >= 1.6
 Build-Type:             Simple
 Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.2.1
 Description:
