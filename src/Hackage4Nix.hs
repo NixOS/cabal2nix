@@ -1,7 +1,7 @@
 module Main ( main ) where
 
 import Cabal2Nix.Normalize
-import Cabal2Nix.Package
+import Cabal2Nix.Generate
 import Control.Exception ( bracket )
 import Control.Monad.RWS
 import Data.List

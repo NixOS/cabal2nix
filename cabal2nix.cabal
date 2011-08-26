@@ -50,11 +50,11 @@ Executable cabal2nix
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
+                        Cabal2Nix.Generate
                         Cabal2Nix.Hackage
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
-                        Cabal2Nix.Package
                         Cabal2Nix.PostProcess
 
 Executable hackage4nix
@@ -67,8 +67,8 @@ Executable hackage4nix
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
+                        Cabal2Nix.Generate
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
-                        Cabal2Nix.Package
                         Cabal2Nix.PostProcess

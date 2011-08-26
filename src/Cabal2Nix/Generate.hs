@@ -1,4 +1,4 @@
-module Cabal2Nix.Package ( cabal2nix ) where
+module Cabal2Nix.Generate ( cabal2nix ) where
 
 import Cabal2Nix.License
 import Cabal2Nix.PostProcess
