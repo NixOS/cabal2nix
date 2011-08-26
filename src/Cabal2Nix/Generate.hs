@@ -15,17 +15,18 @@ import Distribution.NixOS.Derivation.Cabal
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = normalize $ postProcess $ MkDerivation
-  { pname        = let Cabal.PackageName x = Cabal.pkgName pkg in x
-  , version      = Cabal.pkgVersion pkg
-  , sha256       = "cabal2nix left the she256 field undefined"
-  , isLibrary    = isJust (Cabal.library tpkg)
-  , isExecutable = not (null (Cabal.executables tpkg))
-  , buildDepends = map unDep deps
-  , buildTools   = map unDep tools
-  , extraLibs    = libs
-  , pkgConfDeps  = pcs
-  , runHaddock   = True
-  , metaSection  = Meta
+  { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
+  , version        = Cabal.pkgVersion pkg
+  , sha256         = "cabal2nix left the she256 field undefined"
+  , isLibrary      = isJust (Cabal.library tpkg)
+  , isExecutable   = not (null (Cabal.executables tpkg))
+  , buildDepends   = map unDep deps
+  , buildTools     = map unDep tools
+  , extraLibs      = libs
+  , pkgConfDeps    = pcs
+  , configureFlags = pkgConfigureFlags pkg
+  , runHaddock     = True
+  , metaSection    = Meta
                    { homepage    = Cabal.homepage descr
                    , description = Cabal.synopsis descr
                    , license     = fromCabalLicense (Cabal.license descr)
@@ -34,8 +35,8 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
                    }
   }
   where
-    descr = Cabal.packageDescription cabal
-    pkg   = Cabal.package descr
+    descr   = Cabal.packageDescription cabal
+    pkg     = Cabal.package descr
     deps    = Cabal.buildDepends tpkg
     libDeps = map Cabal.libBuildInfo (maybeToList (Cabal.library tpkg))
     exeDeps = map Cabal.buildInfo (Cabal.executables tpkg)
@@ -43,7 +44,7 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
     libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
     pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
     Right (tpkg, _) = finalizePackageDescription
-                        (configureFlags pkg)
+                        (fst (pkgConfigureFlags pkg))
                         (const True)
                         (Platform I386 Linux)                   -- shouldn't be hardcoded
                         (CompilerId GHC (Version [7,0,4] []))   -- dito
