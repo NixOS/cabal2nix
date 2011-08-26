@@ -61,7 +61,7 @@ Executable hackage4nix
   main-is:              Hackage4Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
-                        mtl, containers, directory, filepath, nixos-types,
+                        mtl, containers, directory, filepath, nixos-types >= 1.1,
                         hackage-db
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
