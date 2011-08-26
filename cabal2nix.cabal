@@ -12,7 +12,7 @@ Cabal-Version:          >= 1.8
 Build-Type:             Simple
 Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.2.1
 Description:
-  The cabal2nix utility converts Cabal files into Nix build instructions. The
+  The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
   commandline syntax is:
   .
   > Usage: cabal2nix [options] url-to-cabal-file
@@ -30,8 +30,8 @@ Description:
   .
   The only required argument is the path to the cabal file. For example:
   .
-  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.9/cabal2nix.cabal
-  > cabal2nix cabal://cabal2nix-1.9
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.13/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-1.13
   .
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes
