@@ -26,10 +26,11 @@ import Distribution.Package
 #ifdef __HADDOCK__
 import Distribution.PackageDescription ( PackageDescription )
 #endif
+import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Data.Version
 import Data.List
 import Data.Char
-import Text.Regex.Posix
+import Text.Regex.Posix hiding ( empty )
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -39,17 +40,18 @@ import Text.Regex.Posix
 -- but no parsing as of now!
 
 data Derivation = MkDerivation
-  { pname        :: String
-  , version      :: Version
-  , sha256       :: String
-  , isLibrary    :: Bool
-  , isExecutable :: Bool
-  , buildDepends :: [String]
-  , buildTools   :: [String]
-  , extraLibs    :: [String]
-  , pkgConfDeps  :: [String]
-  , runHaddock   :: Bool
-  , metaSection  :: Meta
+  { pname               :: String
+  , version             :: Version
+  , sha256              :: String
+  , isLibrary           :: Bool
+  , isExecutable        :: Bool
+  , buildDepends        :: [String]
+  , buildTools          :: [String]
+  , extraLibs           :: [String]
+  , pkgConfDeps         :: [String]
+  , configureFlags      :: (FlagAssignment,[String])
+  , runHaddock          :: Bool
+  , metaSection         :: Meta
   }
   deriving (Show, Eq, Ord)
 
@@ -74,6 +76,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , listattr "buildTools" (buildTools deriv)
     , listattr "extraLibraries" (extraLibs deriv)
     , listattr "pkgconfigDepends" (pkgConfDeps deriv)
+    , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , disp (metaSection deriv)
     ]
@@ -84,6 +87,11 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $
               filter (/="cabal") $ filter (/="Cabal") $
                 buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+
+    (flags,extraFlags) = configureFlags deriv
+    renderedFlags = renderedFlagAssignment ++ renderedExtraFlags
+    renderedFlagAssignment = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- flags ]
+    renderedExtraFlags = map text extraFlags
 
 -- | A very incomplete parser that extracts 'pname', 'version',
 -- 'sha256', 'platforms', 'maintainers', and 'runHaddock' from the given
@@ -100,17 +108,18 @@ parseDerivation buf
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
               = Just $ MkDerivation
-                  { pname        = name
-                  , version      = vers
-                  , sha256       = sha
-                  , isLibrary    = False
-                  , isExecutable = False
-                  , buildDepends = []
-                  , buildTools   = []
-                  , extraLibs    = []
-                  , pkgConfDeps  = []
-                  , runHaddock   = case noHaddock of "true":[] -> False
-                                                     _         -> True
+                  { pname          = name
+                  , version        = vers
+                  , sha256         = sha
+                  , isLibrary      = False
+                  , isExecutable   = False
+                  , buildDepends   = []
+                  , buildTools     = []
+                  , extraLibs      = []
+                  , pkgConfDeps    = []
+                  , configureFlags = ([],[])
+                  , runHaddock     = case noHaddock of "true":[] -> False
+                                                       _         -> True
                   , metaSection  = Meta
                                    { homepage    = ""
                                    , description = ""
