@@ -22,6 +22,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
   | pname == "pango"            = deriv { extraLibs = "pkgconfig":"glibc":extraLibs }
+  | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
