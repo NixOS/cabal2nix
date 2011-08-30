@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.13
+Version:                1.14
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -11,6 +11,7 @@ Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
 Build-Type:             Simple
 Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.2.1
+Data-files:             README.md
 Description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
   commandline syntax is:
