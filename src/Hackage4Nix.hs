@@ -160,7 +160,7 @@ normalizeMaintainer x
   | "self.stdenv.lib.maintainers." `isPrefixOf` x = drop 28 x
   | otherwise                                     = x
 
-data CliOption = PrintHelp | Verbose | HackageDB FilePath
+data CliOption = PrintHelp | Verbose
   deriving (Eq)
 
 main :: IO ()
@@ -169,7 +169,6 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
       options =
         [ Option ['h'] ["help"]     (NoArg PrintHelp)                 "show this help text"
         , Option ['v'] ["verbose"]  (NoArg Verbose)                   "enable noisy debug output"
-        , Option []    ["hackage"]  (ReqArg HackageDB "HACKAGE-DIR")  "path to hackage database"
         ]
 
       usage :: String
