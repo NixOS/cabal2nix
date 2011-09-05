@@ -32,6 +32,4 @@ postProcess deriv@(MkDerivation {..})
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs }
-  | pname == "xmonad"           = deriv { extraLibs = delete "libmpd" extraLibs }
-  | pname == "xmonad-extras"    = deriv { buildDepends = delete "libmpd" buildDepends }
   | otherwise                   = deriv

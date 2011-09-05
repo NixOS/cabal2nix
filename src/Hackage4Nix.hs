@@ -211,5 +211,4 @@ badPackagePaths = ["haskell-platform/2011.2.0.1.nix"]
 patchedPackages :: [String]
 patchedPackages =
    [ "X11"               -- expression uses function arguments to determine feature set
-   , "xmonad-extras"     -- the generated expression doesn't build, don't know why
    ]
