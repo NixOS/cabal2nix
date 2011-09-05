@@ -150,7 +150,7 @@ genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"
     maints' = [ "--maintainer=" ++ normalizeMaintainer m | m <- maintainers meta ]
     plats'
       | ["self.ghc.meta.platforms"] == platforms meta = []
-      | otherwise                                     =  [ "--platform=" ++ p | p <- platforms meta ]
+      | otherwise                                     = [ "--platform=" ++ p | p <- platforms meta ]
     path'
       | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (display (version deriv) <.> "nix")
       | otherwise                   = path
@@ -209,6 +209,4 @@ badPackagePaths = ["haskell-platform/2011.2.0.1.nix"]
 -- should be empty.
 
 patchedPackages :: [String]
-patchedPackages =
-   [ "X11"               -- expression uses function arguments to determine feature set
-   ]
+patchedPackages = []
