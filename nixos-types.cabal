@@ -1,10 +1,10 @@
 Name:                   nixos-types
-Version:                1.1
+Version:                1.2
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
 Author:                 Peter Simons <simons@cryp.to>, Andres Loeh <mail@andres-loeh.de>
-Maintainer:             Nix Developers <nix-dev@cs.uu.nl>
+Maintainer:             Nix Developers <nix-dev@lists.science.uu.nl>
 Homepage:               http://github.com/haskell4nix/nixos-types
 Category:               Distribution
 Synopsis:               Data types representing the Nix language
