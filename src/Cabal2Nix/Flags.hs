@@ -9,6 +9,7 @@ pkgConfigureFlags (PackageIdentifier (PackageName name) _)
  | name == "threadscope"        = ([], ["--ghc-options=-rtsopts"])
  | name == "X11-xft"            = ([], ["--extra-include-dirs=${freetype}/include/freetype2"])
  | name == "xmonad-extras"      = ([disable "with_hlist", disable "with_mpd"], [])
+ | name == "xmobar"             = ([enable "with_xft"], [])
  | otherwise                    = ([],[])
 
 enable :: String -> (FlagName,Bool)
