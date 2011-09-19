@@ -49,7 +49,8 @@ data Derivation = MkDerivation
   , buildTools          :: [String]
   , extraLibs           :: [String]
   , pkgConfDeps         :: [String]
-  , configureFlags      :: (FlagAssignment,[String])
+  , configureFlags      :: [String]
+  , cabalFlags          :: FlagAssignment
   , runHaddock          :: Bool
   , metaSection         :: Meta
   }
@@ -87,11 +88,8 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $
               filter (/="cabal") $ filter (/="Cabal") $
                 buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
-
-    (flags,extraFlags) = configureFlags deriv
-    renderedFlags = renderedFlagAssignment ++ renderedExtraFlags
-    renderedFlagAssignment = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- flags ]
-    renderedExtraFlags = map text extraFlags
+    renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
+                  ++ map text (configureFlags deriv)
 
 -- | A very incomplete parser that extracts 'pname', 'version',
 -- 'sha256', 'platforms', 'maintainers', and 'runHaddock' from the given
@@ -117,7 +115,8 @@ parseDerivation buf
                   , buildTools     = []
                   , extraLibs      = []
                   , pkgConfDeps    = []
-                  , configureFlags = ([],[])
+                  , configureFlags = []
+                  , cabalFlags     = []
                   , runHaddock     = case noHaddock of "true":[] -> False
                                                        _         -> True
                   , metaSection  = Meta
