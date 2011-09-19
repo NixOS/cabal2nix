@@ -1,16 +1,14 @@
-module Cabal2Nix.Flags ( pkgConfigureFlags ) where
+module Cabal2Nix.Flags ( configureCabalFlags ) where
 
 import Distribution.Package
 import Distribution.PackageDescription
 
-pkgConfigureFlags :: PackageIdentifier -> (FlagAssignment,[String])
-pkgConfigureFlags (PackageIdentifier (PackageName name) _)
- | name == "pandoc"             = ([enable "highlighting", enable "threaded"],[])
- | name == "threadscope"        = ([], ["--ghc-options=-rtsopts"])
- | name == "X11-xft"            = ([], ["--extra-include-dirs=${freetype}/include/freetype2"])
- | name == "xmonad-extras"      = ([disable "with_hlist", disable "with_mpd"], [])
- | name == "xmobar"             = ([enable "with_xft"], [])
- | otherwise                    = ([],[])
+configureCabalFlags :: PackageIdentifier -> FlagAssignment
+configureCabalFlags (PackageIdentifier (PackageName name) _)
+ | name == "pandoc"             = [enable "highlighting", enable "threaded"]
+ | name == "xmonad-extras"      = [disable "with_hlist", disable "with_mpd"]
+ | name == "xmobar"             = [enable "with_xft"]
+ | otherwise                    = []
 
 enable :: String -> (FlagName,Bool)
 enable name = (FlagName name, True)

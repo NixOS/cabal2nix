@@ -24,7 +24,8 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
   , buildTools     = map unDep tools
   , extraLibs      = libs
   , pkgConfDeps    = pcs
-  , configureFlags = pkgConfigureFlags pkg
+  , configureFlags = []
+  , cabalFlags     = configureCabalFlags pkg
   , runHaddock     = True
   , metaSection    = Meta
                    { homepage    = Cabal.homepage descr
@@ -44,7 +45,7 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
     libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
     pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
     Right (tpkg, _) = finalizePackageDescription
-                        (fst (pkgConfigureFlags pkg))
+                        (configureCabalFlags pkg)
                         (const True)
                         (Platform I386 Linux)                   -- shouldn't be hardcoded
                         (CompilerId GHC (Version [7,0,4] []))   -- dito

@@ -30,8 +30,11 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
+  | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
-  | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs }
+  | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs
+                                        , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
+                                        }
   | otherwise                   = deriv

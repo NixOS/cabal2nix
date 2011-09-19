@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.17
+Version:                1.18
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -46,7 +46,7 @@ Executable cabal2nix
   main-is:              Cabal2Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
-                        filepath, directory, process, HTTP, nixos-types
+                        filepath, directory, process, HTTP, nixos-types >= 1.2
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
@@ -62,7 +62,7 @@ Executable hackage4nix
   main-is:              Hackage4Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
-                        mtl, containers, directory, filepath, nixos-types >= 1.1,
+                        mtl, containers, directory, filepath, nixos-types >= 1.2,
                         hackage-db
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
