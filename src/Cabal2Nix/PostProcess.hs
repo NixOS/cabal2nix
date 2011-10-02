@@ -16,6 +16,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
   | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs, buildDepends = delete "gio" buildDepends }
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
+  | pname == "haddock"          = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
