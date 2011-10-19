@@ -5,6 +5,7 @@ import Distribution.PackageDescription
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier (PackageName name) _)
+ | name == "hmatrix"            = [enable "vector"]
  | name == "pandoc"             = [enable "highlighting", enable "threaded"]
  | name == "xmonad-extras"      = [disable "with_hlist", disable "with_mpd"]
  | name == "xmobar"             = [enable "with_xft"]
