@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.18
+Version:                1.19
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -31,8 +31,8 @@ Description:
   .
   The only required argument is the path to the cabal file. For example:
   .
-  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.13/cabal2nix.cabal
-  > cabal2nix cabal://cabal2nix-1.13
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.19/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-1.19
   .
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes
