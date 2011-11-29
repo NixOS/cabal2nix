@@ -5,7 +5,8 @@ import Data.List ( isPrefixOf )
 import Data.Version ( showVersion )
 import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
 import Distribution.Text
-import Network.HTTP ( simpleHTTP, getRequest, getResponseBody )
+import Network.HTTP ( getRequest, rspBody )
+import Network.Browser ( browse, request, setCheckForProxy, setDebugLog, setOutHandler )
 import System.Directory ( doesFileExist, getHomeDirectory, createDirectoryIfMissing )
 import System.FilePath ( dropFileName, (</>), (<.>) )
 import System.Process ( readProcess )
@@ -48,6 +49,15 @@ hashCachePath (PackageIdentifier (PackageName name) version') = do
 readCabalFile :: FilePath -> IO String
 readCabalFile path
   | "cabal://" `isPrefixOf` path = let Just pid = simpleParse (drop 8 path) in readCabalFile (hackagePath pid Cabal)
-  | "http://"  `isPrefixOf` path = simpleHTTP (getRequest path) >>= getResponseBody
+  | "http://"  `isPrefixOf` path = fetchUrl path
   | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
   | otherwise                    = readFile path
+
+fetchUrl :: String -> IO String
+fetchUrl url = do
+  (_,rsp) <- Network.Browser.browse $ do
+     setCheckForProxy True
+     setDebugLog Nothing
+     setOutHandler (\_ -> return ())
+     request (getRequest url)
+  return (rspBody rsp)
