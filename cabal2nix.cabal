@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.19
+Version:                1.20
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
