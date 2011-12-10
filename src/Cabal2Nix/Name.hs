@@ -47,6 +47,7 @@ libNixName "sqlite3"            = return "sqlite"
 libNixName "stdc++"             = []  -- in stdenv
 libNixName "X11"                = return "libX11"
 libNixName "xft"                = return "libXft"
+libNixName "Xrandr"             = return "libXrandr"
 libNixName "z"                  = return "zlib"
 libNixName x                    = return x
 
