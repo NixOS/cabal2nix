@@ -49,6 +49,7 @@ libNixName "X11"                = return "libX11"
 libNixName "xft"                = return "libXft"
 libNixName "Xrandr"             = return "libXrandr"
 libNixName "z"                  = return "zlib"
+libNixName "zmq"                = return "zeromq"
 libNixName x                    = return x
 
 -- | Map build tool names to Nix attribute names.
