@@ -45,6 +45,7 @@ libNixName "pq"                 = return "postgresql"
 libNixName "sndfile"            = return "libsndfile"
 libNixName "sqlite3"            = return "sqlite"
 libNixName "stdc++"             = []  -- in stdenv
+libNixName "ssl"                = return "openssl"
 libNixName "X11"                = return "libX11"
 libNixName "xft"                = return "libXft"
 libNixName "xml2"               = return "libxml2"
