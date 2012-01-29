@@ -26,6 +26,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "pango"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
+  | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
