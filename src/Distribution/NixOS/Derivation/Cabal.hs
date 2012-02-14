@@ -85,9 +85,8 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   , text ""
   ]
   where
-    inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $
-              filter (/="cabal") $ filter (/="Cabal") $
-                buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+    inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $ filter (/="cabal") $
+              buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
 
