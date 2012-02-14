@@ -44,7 +44,7 @@ Source-Repository head
   Location:             git://github.com/peti/hackage-db.git
 
 Library
-  Build-Depends:        base >= 3 && < 5, tar, Cabal, containers,
+  Build-Depends:        base >= 3 && < 5, tar >= 0.4, Cabal, containers,
                         directory, filepath, bytestring
   hs-source-dirs:       src
   Ghc-Options:          -Wall

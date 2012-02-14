@@ -59,7 +59,7 @@ readHackage' = fmap parseHackage . BS.readFile
 -- | Parse the contents of Hackage's @00-index.tar@ into a 'Hackage' map.
 
 parseHackage :: ByteString -> Hackage
-parseHackage = Tar.foldEntries addEntry empty error . Tar.read
+parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
   where
     addEntry :: Tar.Entry -> Hackage -> Hackage
     addEntry e db = case splitDirectories (Tar.entryPath e) of
