@@ -9,7 +9,7 @@ Homepage:               http://github.com/haskell4nix/cabal2nix
 Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
-Build-Type:             Simple
+Build-Type:             Custom
 Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.4.1
 Data-files:             README.md
 Description:
@@ -46,7 +46,7 @@ Executable cabal2nix
   main-is:              Cabal2Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
-                        filepath, directory, process, HTTP, nixos-types >= 1.2
+                        filepath, directory, process, HTTP
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
@@ -57,13 +57,16 @@ Executable cabal2nix
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
                         Cabal2Nix.PostProcess
+                        Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
+                        Distribution.NixOS.PrettyPrinting
 
 Executable hackage4nix
   main-is:              Hackage4Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
-                        mtl, containers, directory, filepath, nixos-types >= 1.2,
-                        hackage-db
+                        mtl, containers, directory, filepath, hackage-db
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
@@ -73,3 +76,7 @@ Executable hackage4nix
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
                         Cabal2Nix.PostProcess
+                        Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
+                        Distribution.NixOS.PrettyPrinting
