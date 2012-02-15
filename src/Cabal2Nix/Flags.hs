@@ -5,7 +5,6 @@ import Distribution.PackageDescription
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier (PackageName name) _)
- | name == "hmatrix"            = [enable "vector"]
  | name == "xmobar"             = [enable "with_xft"]
  | otherwise                    = []
 
