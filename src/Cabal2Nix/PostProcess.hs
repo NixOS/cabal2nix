@@ -19,6 +19,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haddock"          = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
+  | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
