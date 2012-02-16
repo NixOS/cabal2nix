@@ -10,7 +10,7 @@ import Data.Char
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
-  { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) $ ("Cabal" : buildDepends))
+  { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) $ buildDepends)
   , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) $ buildTools)
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
