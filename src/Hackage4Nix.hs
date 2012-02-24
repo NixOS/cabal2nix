@@ -73,7 +73,7 @@ discoverNixFiles yield dirOrFile = do
 
 regenerateDerivation :: Derivation -> String -> Bool
 regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
-                                 not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase")
+                                 not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf

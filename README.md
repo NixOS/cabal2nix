@@ -129,6 +129,7 @@ Cabal files. The exceptions are:
         (pre|post)Configure
         (pre|post)Install
         patchPhase
+        patches
 
     are considered "patched". That list of attributes is hard-coded in
     [`hackage4nix.hs`](http://github.com/NixOS/cabal2nix/blob/master/src/Hackage4Nix.hs)
