@@ -1,3 +1,10 @@
 # ignore build Cabal build files
 
 /dist/*
+Setup.o
+Setup.hi
+Setup
+
+# vim tmp files
+*.swo
+*.swp
