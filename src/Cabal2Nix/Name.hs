@@ -46,14 +46,14 @@ libNixName "png"                = return "libpng"
 libNixName "pq"                 = return "postgresql"
 libNixName "sndfile"            = return "libsndfile"
 libNixName "sqlite3"            = return "sqlite"
-libNixName "stdc++"             = []  -- in stdenv
 libNixName "ssl"                = return "openssl"
+libNixName "stdc++"             = []  -- in stdenv
 libNixName "X11"                = return "libX11"
 libNixName "xft"                = return "libXft"
 libNixName "xml2"               = return "libxml2"
 libNixName "Xrandr"             = return "libXrandr"
-libNixName "z"                  = return "zlib"
 libNixName "zmq"                = return "zeromq"
+libNixName "z"                  = return "zlib"
 libNixName x                    = return x
 
 -- | Map build tool names to Nix attribute names.
