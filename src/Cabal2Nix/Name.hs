@@ -23,6 +23,7 @@ libNixName "cairo-ps"           = return "cairo"
 libNixName "cairo"              = return "cairo"
 libNixName "cairo-svg"          = return "cairo"
 libNixName "crypto"             = return "openssl"
+libNixName "gio-2.0"            = return "glib"
 libNixName "glib-2.0"           = return "glib"
 libNixName "GL"                 = return "mesa"
 libNixName "GLU"                = ["freeglut","mesa"]
