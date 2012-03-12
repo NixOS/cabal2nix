@@ -26,6 +26,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
   | pname == "pango"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
+  | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
