@@ -11,6 +11,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
+  | pname == "ghc-mod"          = deriv { postInstall = ghcModPostInstall, buildTools = "emacs":buildTools }
   | pname == "glade"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs, pkgConfDeps = "gtkC":delete "gtk" pkgConfDeps }
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
@@ -42,3 +43,15 @@ postProcess deriv@(MkDerivation {..})
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
                                         }
   | otherwise                   = deriv
+
+ghcModPostInstall :: String
+ghcModPostInstall = unlines
+                    [ "postInstall = ''"
+                    , "    cd $out/share/$pname-$version"
+                    , "    make"
+                    , "    rm Makefile"
+                    , "    cd .."
+                    , "    ensureDir \"$out/share/emacs\""
+                    , "    mv $pname-$version emacs/site-lisp"
+                    , "  '';"
+                    ]
