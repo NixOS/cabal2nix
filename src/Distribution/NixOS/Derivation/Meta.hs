@@ -60,7 +60,7 @@ renderMeta meta = vcat
     , attr "license" $ disp (license meta)
     , onlyIf (platforms meta) $ sep
       [ text "platforms" <+> equals
-      , nest 2 ((fsep $ punctuate (text " ++") $ map text (platforms meta))) <> semi
+      , nest 2 (fsep $ punctuate (text " ++") $ map text (platforms meta)) <> semi
       ]
     , listattr "maintainers" (maintainers meta)
     ]

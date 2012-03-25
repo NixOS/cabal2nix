@@ -1,6 +1,6 @@
 module Cabal2Nix.Hackage ( hashPackage, readCabalFile ) where
 
-import Control.Monad ( when )
+import Control.Monad ( unless )
 import Data.List ( isPrefixOf )
 import Data.Version ( showVersion )
 import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
@@ -21,7 +21,7 @@ hackagePath :: PackageIdentifier -> Ext -> String
 hackagePath (PackageIdentifier (PackageName name) version') ext =
     "http://hackage.haskell.org/packages/archive/" ++
     name ++ "/" ++ version ++ "/" ++ name ++
-    (if ext == TarGz then "-" ++ version else "") ++
+    (if ext == TarGz then '-' : version else "") ++
     showExt ext
   where
     version = showVersion version'
@@ -30,11 +30,11 @@ hashPackage :: PackageIdentifier -> IO String
 hashPackage pkg = do
     cachePath <- hashCachePath pkg
     exists <- doesFileExist cachePath
-    hash' <- case exists of
-              True -> readFile cachePath
-              False -> readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ hackagePath pkg TarGz] ""
+    hash' <- if exists
+               then readFile cachePath
+               else readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ hackagePath pkg TarGz] ""
     let hash = reverse (dropWhile (=='\n') (reverse hash'))
-    when (not exists) $ do
+    unless exists $ do
       createDirectoryIfMissing True (dropFileName cachePath)
       writeFile cachePath hash
     return hash

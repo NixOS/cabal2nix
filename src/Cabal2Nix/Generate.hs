@@ -14,7 +14,7 @@ import Distribution.Version
 import Distribution.NixOS.Derivation.Cabal
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
-cabal2nix cabal = normalize $ postProcess $ MkDerivation
+cabal2nix cabal = normalize $ postProcess MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
   , sha256         = "cabal2nix left the she256 field undefined"

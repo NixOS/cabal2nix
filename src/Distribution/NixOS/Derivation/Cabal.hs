@@ -30,6 +30,7 @@ import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Data.Version
 import Data.List
 import Data.Char
+import Data.Function
 import Text.Regex.Posix hiding ( empty )
 
 -- | A represtation of Nix expressions for building Haskell packages.
@@ -72,8 +73,8 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
     , attr "sha256"  $ string (sha256 deriv)
-    , boolattr "isLibrary" (not (isLibrary deriv) || (isExecutable deriv)) (isLibrary deriv)
-    , boolattr "isExecutable" (not (isLibrary deriv) || (isExecutable deriv)) (isExecutable deriv)
+    , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
+    , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" (buildDepends deriv)
     , listattr "buildTools" (buildTools deriv)
     , listattr "extraLibraries" (extraLibs deriv)
@@ -87,7 +88,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   , text ""
   ]
   where
-    inputs = nub $ sortBy (\x y -> compare (map toLower x) (map toLower y)) $ filter (/="cabal") $
+    inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $
               buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
@@ -106,7 +107,7 @@ parseDerivation buf
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
-              = Just $ MkDerivation
+              = Just MkDerivation
                   { pname          = name
                   , version        = vers
                   , sha256         = sha

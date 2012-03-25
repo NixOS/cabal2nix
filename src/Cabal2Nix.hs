@@ -86,4 +86,4 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      }
                      }
 
-  putStr (show (disp (normalize (deriv'))))
+  putStr (show (disp (normalize deriv')))

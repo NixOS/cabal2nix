@@ -7,11 +7,12 @@ import Cabal2Nix.Name
 import Cabal2Nix.CorePackages
 import Data.List
 import Data.Char
+import Data.Function
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
-  { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) $ buildDepends)
-  , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) $ buildTools)
+  { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) buildDepends)
+  , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) buildTools)
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
   , metaSection  = normalizeMeta metaSection
@@ -27,7 +28,7 @@ normalizeMeta meta@(Meta {..}) = meta
 normalizeDescription :: String -> String
 normalizeDescription desc
   | null desc                                             = []
-  | last desc == '.' && length (filter ('.'==) desc) == 1 = normalizeDescription (reverse (tail (reverse desc)))
+  | last desc == '.' && length (filter ('.'==) desc) == 1 = normalizeDescription (init desc)
   | otherwise                                             = quote (unwords (words desc))
 
 quote :: String -> String
@@ -37,7 +38,7 @@ quote (c:cs)      = c : quote cs
 quote []          = []
 
 normalizeList :: [String] -> [String]
-normalizeList = nub . sortBy (\x y -> compare (map toLower x) (map toLower y))
+normalizeList = nub . sortBy (compare `on` map toLower)
 
 normalizeNixNames :: [String] -> [String]
 normalizeNixNames = normalizeList . map toNixName

@@ -71,7 +71,7 @@ discoverNixFiles yield dirOrFile = do
     (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
-regenerateDerivation deriv buf = not (pname deriv `elem` patchedPackages) &&
+regenerateDerivation deriv buf = (pname deriv `notElem` patchedPackages) &&
                                  not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
@@ -103,7 +103,7 @@ discoverUpdates name vers = do
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
   msgDebug $ "updating = " ++ show paths
-  flip mapM_ paths $ \fileOrDir ->
+  forM_ paths $ \fileOrDir ->
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
@@ -122,26 +122,26 @@ updateNixPkgs paths = do
                                                , platforms   = plats'
                                                }
                                }
-          io $ writeFile path (show (disp (normalize (deriv''))))
+          io $ writeFile path (show (disp (normalize deriv'')))
   pkgset <- gets selectLatestVersions
-  updates' <- flip mapM (Set.elems pkgset) $ \pkg -> do
+  updates' <- forM (Set.elems pkgset) $ \pkg -> do
     let Pkg deriv _ _ = pkg
     updates <- discoverUpdates (pname deriv) (version deriv)
     return (pkg,updates)
-  let updates = [ u | u@(_,(_:_)) <- updates' ]
-  when (not (null updates)) $ do
+  let updates = [ u | u@(_,_:_) <- updates' ]
+  unless (null updates) $ do
     msgInfo "The following updates are available:"
-    flip mapM_ updates $ \(pkg,versions) -> do
+    forM_ updates $ \(pkg,versions) -> do
       let Pkg deriv path regenerate = pkg
       msgInfo ""
-      msgInfo $ (display (packageId deriv)) ++ ":"
-      flip mapM_ versions $ \newVersion -> do
+      msgInfo $ display (packageId deriv) ++ ":"
+      forM_ versions $ \newVersion -> do
         let deriv' = deriv { version = newVersion }
         msgInfo $ "  " ++ genCabal2NixCmdline (Pkg deriv' path regenerate)
   return ()
 
 genCabal2NixCmdline :: Pkg -> String
-genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ [">"++path']
+genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ ['>':path']
   where
     meta = metaSection deriv
     opts = [cabal] ++ maints' ++ plats' ++ if runHaddock deriv then [] else ["--no-haddock"]
