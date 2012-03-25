@@ -4,7 +4,6 @@ import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Generate ( cabal2nix )
 import Cabal2Nix.Normalize ( normalize )
 import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.Derivation.Meta
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )

@@ -10,7 +10,6 @@ import qualified Data.Set as Set
 import Data.Version
 import qualified Distribution.Hackage.DB as DB
 import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.Derivation.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( GenericPackageDescription() )
 import Distribution.Text
