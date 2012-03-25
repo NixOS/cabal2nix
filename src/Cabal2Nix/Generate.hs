@@ -27,6 +27,7 @@ cabal2nix cabal = normalize $ postProcess $ MkDerivation
   , configureFlags = []
   , cabalFlags     = configureCabalFlags pkg
   , runHaddock     = True
+  , postInstall    = ""
   , metaSection    = Meta
                    { homepage    = Cabal.homepage descr
                    , description = Cabal.synopsis descr

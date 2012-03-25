@@ -52,6 +52,7 @@ data Derivation = MkDerivation
   , configureFlags      :: [String]
   , cabalFlags          :: FlagAssignment
   , runHaddock          :: Bool
+  , postInstall         :: String
   , metaSection         :: Meta
   }
   deriving (Show, Eq, Ord)
@@ -79,6 +80,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , listattr "pkgconfigDepends" (pkgConfDeps deriv)
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
+    , onlyIf (postInstall deriv) $ text (postInstall deriv)
     , disp (metaSection deriv)
     ]
   , rbrace <> rparen
@@ -118,6 +120,7 @@ parseDerivation buf
                   , cabalFlags     = []
                   , runHaddock     = case noHaddock of "true":[] -> False
                                                        _         -> True
+                  , postInstall    = ""
                   , metaSection  = Meta
                                    { homepage    = ""
                                    , description = ""
