@@ -38,6 +38,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
+  | pname == "X11" && version >= (Version [1,6] [])
+                                = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
   | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
   | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
