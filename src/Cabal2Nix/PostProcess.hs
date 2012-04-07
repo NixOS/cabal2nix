@@ -23,13 +23,14 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools }
+  | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
+  | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
   | pname == "pango"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
-  | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
+  | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
-  | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
