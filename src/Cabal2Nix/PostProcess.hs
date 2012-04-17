@@ -39,7 +39,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
-  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
+  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, postInstall = wxcPostInstall }
   | pname == "X11" && version >= (Version [1,6] [])
                                 = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
   | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
@@ -59,3 +59,10 @@ ghcModPostInstall = unlines
                     , "    mv $pname-$version emacs/site-lisp"
                     , "  '';"
                     ]
+
+wxcPostInstall :: String
+wxcPostInstall = unlines
+                 [ "postInstall = ''"
+                 , "    cp -v dist/build/libwxc.so.${self.version} $out/lib/libwxc.so"
+                 , "  '';"
+                 ]
