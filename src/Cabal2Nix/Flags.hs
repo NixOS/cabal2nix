@@ -5,6 +5,7 @@ import Distribution.PackageDescription
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier (PackageName name) _)
+ | name == "haskeline"          = [enable "terminfo"]
  | name == "xmobar"             = [enable "with_xft"]
  | otherwise                    = []
 
