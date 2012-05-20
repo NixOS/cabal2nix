@@ -9,9 +9,10 @@ postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
   | pname == "alex"             = deriv { buildTools = "perl":buildTools }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
+  | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
-  | pname == "ghc-mod"          = deriv { postInstall = ghcModPostInstall, buildTools = "emacs":buildTools }
+  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":buildTools }
   | pname == "glade"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs, pkgConfDeps = "gtkC":delete "gtk" pkgConfDeps }
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
@@ -23,6 +24,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools }
+  | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
@@ -39,7 +41,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
-  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, postInstall = wxcPostInstall }
+  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
   | pname == "X11" && version >= (Version [1,6] [])
                                 = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
   | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
@@ -47,6 +49,37 @@ postProcess deriv@(MkDerivation {..})
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
                                         }
   | otherwise                   = deriv
+
+cudaConfigurePhase :: String
+cudaConfigurePhase = unlines
+  [ "# Perhaps this should be the default in cabal.nix ..."
+  , "#"
+  , "# The cudatoolkit provides both 64 and 32-bit versions of the"
+  , "# library. GHC's linker fails if the wrong version is found first."
+  , "# We solve this by eliminating lib64 from the path on 32-bit"
+  , "# platforms and putting lib64 first on 64-bit platforms."
+  , ""
+  , "libPaths = if self.stdenv.is64bit then \"lib64 lib\" else \"lib\";"
+  , ""
+  , "configurePhase = ''"
+  , "  for i in Setup.hs Setup.lhs; do"
+  , "    test -f $i && ghc --make $i"
+  , "  done"
+  , ""
+  , "  for p in $extraBuildInputs $propagatedBuildNativeInputs; do"
+  , "    if [ -d \"$p/include\" ]; then"
+  , "      extraLibDirs=\"$extraLibDirs --extra-include-dir=$p/include\""
+  , "    fi"
+  , "    for d in $libPaths; do"
+  , "      if [ -d \"$p/$d\" ]; then"
+  , "        extraLibDirs=\"$extraLibDirs --extra-lib-dir=$p/$d\""
+  , "      fi"
+  , "    done"
+  , "  done"
+  , ""
+  , "  ./Setup configure --verbose --prefix=\"$out\" $libraryProfiling $extraLibDirs $configureFlags"
+  , "'';"
+  ]
 
 ghcModPostInstall :: String
 ghcModPostInstall = unlines

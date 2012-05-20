@@ -53,7 +53,7 @@ data Derivation = MkDerivation
   , configureFlags      :: [String]
   , cabalFlags          :: FlagAssignment
   , runHaddock          :: Bool
-  , postInstall         :: String
+  , phaseOverrides      :: String
   , metaSection         :: Meta
   }
   deriving (Show, Eq, Ord)
@@ -81,14 +81,14 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , listattr "pkgconfigDepends" (pkgConfDeps deriv)
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
-    , onlyIf (postInstall deriv) $ text (postInstall deriv)
+    , onlyIf (phaseOverrides deriv) $ vcat ((map text . lines) (phaseOverrides deriv))
     , disp (metaSection deriv)
     ]
   , rbrace <> rparen
   , text ""
   ]
   where
-    inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $
+    inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
               buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
@@ -121,7 +121,7 @@ parseDerivation buf
                   , cabalFlags     = []
                   , runHaddock     = case noHaddock of "true":[] -> False
                                                        _         -> True
-                  , postInstall    = ""
+                  , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage    = ""
                                    , description = ""
