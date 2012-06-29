@@ -3,9 +3,9 @@ Version:                1.36
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
-Author:                 Peter Simons, Andres Loeh
-Maintainer:             Peter Simons <simons@cryp.to>
-Homepage:               http://github.com/peti/cabal2nix
+Author:                 Peter Simons <simons@cryp.to>, Andres Loeh <mail@andres-loeh.de>
+Maintainer:             Nix Developers <nix-dev@lists.science.uu.nl>
+Homepage:               http://github.com/NixOS/cabal2nix
 Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
@@ -40,7 +40,7 @@ Description:
 
 Source-Repository head
   Type:                 git
-  Location:             git://github.com/peti/cabal2nix.git
+  Location:             git://github.com/NixOS/cabal2nix.git
 
 Executable cabal2nix
   main-is:              Cabal2Nix.hs
