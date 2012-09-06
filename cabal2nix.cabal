@@ -46,7 +46,7 @@ Executable cabal2nix
   main-is:              Cabal2Nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.8,
-                        filepath, directory, process, HTTP
+                        filepath, directory, process, HTTP, hackage-db
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages

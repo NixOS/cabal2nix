@@ -2,7 +2,8 @@ module Cabal2Nix.Hackage ( hashPackage, readCabalFile ) where
 
 import Control.Monad ( unless )
 import Data.List ( isPrefixOf )
-import Data.Version ( showVersion )
+import Data.Maybe ( fromJust )
+import Data.Version ( showVersion, versionBranch )
 import Distribution.Package ( PackageIdentifier(..), PackageName(..) )
 import Distribution.Text
 import Network.HTTP ( getRequest, rspBody )
@@ -10,6 +11,8 @@ import Network.Browser ( browse, request, setCheckForProxy, setDebugLog, setOutH
 import System.Directory ( doesFileExist, getHomeDirectory, createDirectoryIfMissing )
 import System.FilePath ( dropFileName, (</>), (<.>) )
 import System.Process ( readProcess )
+
+import qualified Distribution.Hackage.DB as DB
 
 data Ext = TarGz | Cabal deriving Eq
 
@@ -48,7 +51,17 @@ hashCachePath (PackageIdentifier (PackageName name) version') = do
 
 readCabalFile :: FilePath -> IO String
 readCabalFile path
-  | "cabal://" `isPrefixOf` path = let Just pid = simpleParse (drop 8 path) in readCabalFile (hackagePath pid Cabal)
+  | "cabal://" `isPrefixOf` path = do let pid p = fromJust $ simpleParse p
+                                          packageName = drop 8 path
+                                      case versionBranch $ pkgVersion $ pid packageName of
+                                        [] -> do
+                                          packageDescription <- DB.lookup packageName `fmap` DB.readHackage
+                                          case packageDescription of
+                                            Just d -> do
+                                              let version = showVersion $ last $ DB.keys d
+                                              readCabalFile $ hackagePath (pid $ packageName ++ "-" ++ version) Cabal
+                                            Nothing -> error "No such package"
+                                        _  -> readCabalFile $ hackagePath (pid packageName) Cabal
   | "http://"  `isPrefixOf` path = fetchUrl path
   | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
   | otherwise                    = readFile path
