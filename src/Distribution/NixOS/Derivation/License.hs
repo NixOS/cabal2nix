@@ -46,6 +46,6 @@ data License = Known String
 
 instance Text License where
   disp (Known x)   = text x
-  disp (Unknown x) = string (maybe "unknown" id x)
+  disp (Unknown x) = string $ maybe "unknown" id x
   parse = error "parsing Distribution.NixOS.Derivation.License is not supported yet"
 

@@ -64,20 +64,20 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   args' <- getArgs
   (cfg,args) <- case getOpt Permute options args' of
                   (o,n,[]  ) -> return (foldl (flip ($)) defaultConfiguration o,n)
-                  (_,_,errs) -> cmdlineError (concatMap ("*** "++) errs)
+                  (_,_,errs) -> cmdlineError $ concatMap ("*** "++) errs
 
-  when (optPrintHelp cfg) (putStr usage >> exitSuccess)
-  when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
+  when (optPrintHelp cfg) $ putStr usage >> exitSuccess
+  when (length args /= 1) $ cmdlineError "*** exactly one url-to-cabal-file must be specified\n"
 
-  cabal' <- fmap parsePackageDescription (readCabalFile (head args))
+  cabal' <- fmap parsePackageDescription $ readCabalFile $ head args
   cabal <- case cabal' of
              ParseOk _ a -> return a
              ParseFailed err -> do
                hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
                exitFailure
 
-  let packageId = package (packageDescription cabal)
-  sha <- if null (optSha256 cfg) then hashPackage packageId else return (optSha256 cfg)
+  let packageId = package $ packageDescription cabal
+  sha <- if null (optSha256 cfg) then hashPackage packageId else return $ optSha256 cfg
 
   let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
@@ -86,4 +86,4 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      }
                      }
 
-  putStr (show (disp (normalize deriv')))
+  putStr $ show $ disp $ normalize deriv'
