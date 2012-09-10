@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.38
+Version:                1.39
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
 Build-Type:             Custom
-Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.4.1
+Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.4.1, GHC == 7.4.2
 Data-files:             README.md
 Description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
@@ -25,14 +25,15 @@ Description:
   > Recognized URI schemes:
   >
   >   cabal://pkgname-pkgversion       download the specified package from Hackage
+  >   cabal://pkgname                  download latest version of the specified package from Hackage
   >   http://host/path                 fetch the Cabal file via HTTP
   >   file:///local/path               load the Cabal file from the local disk
   >   /local/path                      abbreviated version of file URI
   .
   The only required argument is the path to the cabal file. For example:
   .
-  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.38/cabal2nix.cabal
-  > cabal2nix cabal://cabal2nix-1.38
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.39/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-1.39
   .
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes
