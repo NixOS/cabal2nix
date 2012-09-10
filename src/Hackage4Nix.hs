@@ -114,7 +114,7 @@ updateNixPkgs paths = do
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
           pkg <- getCabalPackage (pname deriv) (version deriv)
-          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv }
+          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv, jailbreak = jailbreak deriv }
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats
               deriv'' = deriv' { metaSection = meta

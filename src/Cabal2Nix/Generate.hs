@@ -27,6 +27,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , configureFlags = []
   , cabalFlags     = configureCabalFlags pkg
   , runHaddock     = True
+  , jailbreak      = False
   , phaseOverrides = ""
   , metaSection    = Meta
                    { homepage    = Cabal.homepage descr

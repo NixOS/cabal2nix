@@ -53,6 +53,7 @@ data Derivation = MkDerivation
   , configureFlags      :: [String]
   , cabalFlags          :: FlagAssignment
   , runHaddock          :: Bool
+  , jailbreak           :: Bool
   , phaseOverrides      :: String
   , metaSection         :: Meta
   }
@@ -81,6 +82,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , listattr "pkgconfigDepends" (pkgConfDeps deriv)
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
+    , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
     , onlyIf (phaseOverrides deriv) $ vcat ((map text . lines) (phaseOverrides deriv))
     , disp (metaSection deriv)
     ]
@@ -107,6 +109,7 @@ parseDerivation buf
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
+  , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
@@ -119,8 +122,8 @@ parseDerivation buf
                   , pkgConfDeps    = []
                   , configureFlags = []
                   , cabalFlags     = []
-                  , runHaddock     = case noHaddock of "true":[] -> False
-                                                       _         -> True
+                  , runHaddock     = noHaddock /= ["true"]
+                  , jailbreak      = jailBreak == ["true"]
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage    = ""
