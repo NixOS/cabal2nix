@@ -10,7 +10,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "haskeline"          = [enable "terminfo"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "xmobar"             = [enable "with_xft", enable "with_iwlib"]
- | name == "xmonad-extras"      = [disable "with_hlist"]
+ | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
  | otherwise                    = []
 
 enable :: String -> (FlagName,Bool)
