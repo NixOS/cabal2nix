@@ -8,6 +8,8 @@ import Data.List
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
   | pname == "alex"             = deriv { buildTools = "perl":buildTools }
+  | pname == "cabal-install" && version >= (Version [0,14] [])
+                                = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
@@ -99,3 +101,11 @@ wxcPostInstall = unlines
                  , "    cp -v dist/build/libwxc.so.${self.version} $out/lib/libwxc.so"
                  , "  '';"
                  ]
+
+cabalInstallPostInstall :: String
+cabalInstallPostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir $out/etc"
+  , "  mv bash-completion $out/etc/bash_completion.d"
+  , "'';"
+  ]
