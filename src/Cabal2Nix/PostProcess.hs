@@ -12,6 +12,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
+  | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":buildTools }
@@ -107,5 +108,13 @@ cabalInstallPostInstall = unlines
   [ "postInstall = ''"
   , "  mkdir $out/etc"
   , "  mv bash-completion $out/etc/bash_completion.d"
+  , "'';"
+  ]
+
+darcsInstallPostInstall :: String
+darcsInstallPostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir -p $out/etc/bash_completion.d"
+  , "  mv contrib/darcs_completion $out/etc/bash_completion.d/darcs"
   , "'';"
   ]
