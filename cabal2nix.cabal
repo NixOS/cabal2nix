@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
 Build-Type:             Custom
-Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.4.1, GHC == 7.4.2
+Tested-With:            GHC == 6.12.3, GHC == 7.0.4, GHC == 7.4.1, GHC == 7.4.2, GHC == 7.6.1
 Data-files:             README.md
 Description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
