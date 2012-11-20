@@ -65,7 +65,7 @@ parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
     addEntry e db = case splitDirectories (Tar.entryPath e) of
                         path@[name,vers,_] -> case Tar.entryContent e of
                                                 Tar.NormalFile buf _ -> add name vers buf db
-                                                _                    -> error ("unexpected content of " ++ show path)
+                                                _                    -> error ("Hackage.DB.parseHackage: unexpected content type for " ++ show path)
                         _                  -> db
 
     add :: String -> String -> ByteString -> Hackage -> Hackage
@@ -74,7 +74,7 @@ parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
     pPackage :: String -> ByteString -> GenericPackageDescription
     pPackage name buf = case parsePackageDescription (BS.unpack buf) of
                           ParseOk _ a     -> a
-                          ParseFailed err -> error ("cannot parse cabal file " ++ show name ++ ": " ++ show err)
+                          ParseFailed err -> error ("Hackage.DB.parseHackage: cannot parse cabal file " ++ show name ++ ": " ++ show err)
 
     pVersion :: String -> Version
-    pVersion str = fromMaybe (error $ "cannot parse version " ++ show str) (simpleParse str)
+    pVersion str = fromMaybe (error $ "Hackage.DB.parseHackage: cannot parse version " ++ show str) (simpleParse str)
