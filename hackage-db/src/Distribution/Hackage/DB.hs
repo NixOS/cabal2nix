@@ -63,6 +63,7 @@ parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
   where
     addEntry :: Tar.Entry -> Hackage -> Hackage
     addEntry e db = case splitDirectories (Tar.entryPath e) of
+                        [".",".","@LongLink"] -> db
                         path@[name,vers,_] -> case Tar.entryContent e of
                                                 Tar.NormalFile buf _ -> add name vers buf db
                                                 _                    -> error ("Hackage.DB.parseHackage: unexpected content type for " ++ show path)
