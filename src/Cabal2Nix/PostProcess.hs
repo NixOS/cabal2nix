@@ -25,6 +25,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
+  | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
@@ -118,3 +119,9 @@ darcsInstallPostInstall = unlines
   , "  mv contrib/darcs_completion $out/etc/bash_completion.d/darcs"
   , "'';"
   ]
+
+highlightingKatePostProcessing :: Derivation -> Derivation
+highlightingKatePostProcessing deriv@(MkDerivation {..}) = deriv
+  { phaseOverrides = "prePatch = \"sed -i -e 's|regex-pcre-builtin|regex-pcre|' highlighting-kate.cabal\";"
+  , buildDepends = "regex-pcre" : filter (/="regex-pcre-builtin") buildDepends
+  }
