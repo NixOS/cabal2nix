@@ -30,6 +30,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "idris"            = deriv { buildTools = "happy":buildTools }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
+  | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
