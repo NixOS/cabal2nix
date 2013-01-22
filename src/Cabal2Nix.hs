@@ -50,6 +50,7 @@ usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++ unli
         , "Recognized URI schemes:"
         , ""
         , "  cabal://pkgname-pkgversion       download the specified package from Hackage"
+        , "  cabal://pkgname                  download latest version of the specified package from Hackage"
         , "  http://host/path                 fetch the Cabal file via HTTP"
         , "  file:///local/path               load the Cabal file from the local disk"
         , "  /local/path                      abbreviated version of file URI"
