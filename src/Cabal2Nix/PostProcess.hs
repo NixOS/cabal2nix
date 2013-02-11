@@ -53,6 +53,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
                                         }
+  | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
   | otherwise                   = deriv
 
 cudaConfigurePhase :: String
@@ -126,3 +127,11 @@ highlightingKatePostProcessing deriv@(MkDerivation {..}) = deriv
   { phaseOverrides = "prePatch = \"sed -i -e 's|regex-pcre-builtin|regex-pcre|' highlighting-kate.cabal\";"
   , buildDepends = "regex-pcre" : filter (/="regex-pcre-builtin") buildDepends
   }
+
+xmonadPostInstall :: String
+xmonadPostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir -p $out/share/man/man1"
+  , "  mv $out/share/xmonad-*/man/*.1 $out/share/man/man1/"
+  , "'';"
+  ]
