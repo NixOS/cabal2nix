@@ -41,12 +41,13 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   where
     descr   = Cabal.packageDescription cabal
     pkg     = Cabal.package descr
-    deps    = Cabal.buildDepends tpkg
+    deps    = Cabal.buildDepends tpkg ++ concatMap Cabal.targetBuildDepends (libDeps ++ exeDeps ++ tstDeps)
     libDeps = map Cabal.libBuildInfo (maybeToList (Cabal.library tpkg))
     exeDeps = map Cabal.buildInfo (Cabal.executables tpkg)
-    tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps)
-    libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
-    pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
+    tstDeps = map Cabal.testBuildInfo (filter Cabal.testEnabled (Cabal.testSuites tpkg))
+    tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps ++ tstDeps)
+    libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps ++ tstDeps)
+    pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps ++ tstDeps))
     Right (tpkg, _) = finalizePackageDescription
                         (configureCabalFlags pkg)
                         (const True)
