@@ -7,6 +7,7 @@ configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "pandoc"             = [enable "blaze_html_0_5"]
+ | name == "git-annex"          = [enable "S3", enable "WebDAV", enable "Inotify", enable "Dbus", enable "Assistant", enable "Webapp", enable "Pairing", enable "XMPP", enable "DNS"]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "xmobar"             = [enable "with_xft", enable "with_iwlib"]
