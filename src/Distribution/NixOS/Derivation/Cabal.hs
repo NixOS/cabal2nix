@@ -54,6 +54,7 @@ data Derivation = MkDerivation
   , cabalFlags          :: FlagAssignment
   , runHaddock          :: Bool
   , jailbreak           :: Bool
+  , doCheck             :: Bool
   , phaseOverrides      :: String
   , metaSection         :: Meta
   }
@@ -83,6 +84,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
+    , boolattr "doCheck" (doCheck deriv) (doCheck deriv)
     , onlyIf (phaseOverrides deriv) $ vcat ((map text . lines) (phaseOverrides deriv))
     , disp (metaSection deriv)
     ]
@@ -110,6 +112,7 @@ parseDerivation buf
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
+  , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
@@ -124,6 +127,7 @@ parseDerivation buf
                   , cabalFlags     = []
                   , runHaddock     = noHaddock /= ["true"]
                   , jailbreak      = jailBreak == ["true"]
+                  , doCheck        = docheck == ["true"]
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage    = ""
