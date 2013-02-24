@@ -84,7 +84,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
-    , boolattr "doCheck" (doCheck deriv) (doCheck deriv)
+    , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
     , onlyIf (phaseOverrides deriv) $ vcat ((map text . lines) (phaseOverrides deriv))
     , disp (metaSection deriv)
     ]
