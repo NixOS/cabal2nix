@@ -12,6 +12,7 @@ import Data.Function
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
   { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) buildDepends)
+  , testDepends  = normalizeNixNames (filter (`notElem` (pname : corePackages)) testDepends)
   , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) buildTools)
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps

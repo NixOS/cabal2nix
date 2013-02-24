@@ -47,6 +47,7 @@ data Derivation = MkDerivation
   , isLibrary           :: Bool
   , isExecutable        :: Bool
   , buildDepends        :: [String]
+  , testDepends         :: [String]
   , buildTools          :: [String]
   , extraLibs           :: [String]
   , pkgConfDeps         :: [String]
@@ -78,6 +79,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" (buildDepends deriv)
+    , listattr "testDepends" (testDepends deriv)
     , listattr "buildTools" (buildTools deriv)
     , listattr "extraLibraries" (extraLibs deriv)
     , listattr "pkgconfigDepends" (pkgConfDeps deriv)
@@ -93,7 +95,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   ]
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
-              buildDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
 
@@ -120,6 +122,7 @@ parseDerivation buf
                   , isLibrary      = False
                   , isExecutable   = False
                   , buildDepends   = []
+                  , testDepends    = []
                   , buildTools     = []
                   , extraLibs      = []
                   , pkgConfDeps    = []
