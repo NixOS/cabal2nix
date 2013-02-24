@@ -144,7 +144,7 @@ genCabal2NixCmdline :: Pkg -> String
 genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ ['>':path']
   where
     meta = metaSection deriv
-    opts = [cabal] ++ maints' ++ plats' ++ if runHaddock deriv then [] else ["--no-haddock"]
+    opts = [cabal] ++ maints' ++ plats' ++ (if runHaddock deriv then [] else ["--no-haddock"]) ++ (if doCheck deriv then [] else ["--no-check"])
     cabal = "cabal://" ++ display (packageId deriv)
     maints' = [ "--maintainer=" ++ normalizeMaintainer m | m <- maintainers meta ]
     plats'
