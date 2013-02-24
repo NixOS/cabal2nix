@@ -22,6 +22,7 @@ data Configuration = Configuration
   , optMaintainer :: [String]
   , optPlatform :: [String]
   , optHaddock :: Bool
+  , optDoCheck :: Bool
   }
   deriving (Show)
 
@@ -33,6 +34,7 @@ defaultConfiguration = Configuration
   , optMaintainer = []
   , optPlatform = []
   , optHaddock = True
+  , optDoCheck = True
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
@@ -42,6 +44,7 @@ options =
   , Option ['m'] ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option ['p'] ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
   , Option []    ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
+  , Option []    ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
   ]
 
 usage :: String
