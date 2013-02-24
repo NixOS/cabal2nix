@@ -166,8 +166,8 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let options :: [OptDescr CliOption]
       options =
-        [ Option ['h'] ["help"]     (NoArg PrintHelp)                 "show this help text"
-        , Option ['v'] ["verbose"]  (NoArg Verbose)                   "enable noisy debug output"
+        [ Option "h" ["help"]     (NoArg PrintHelp)                 "show this help text"
+        , Option "v" ["verbose"]  (NoArg Verbose)                   "enable noisy debug output"
         ]
 
       usage :: String
