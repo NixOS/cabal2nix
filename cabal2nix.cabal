@@ -81,3 +81,9 @@ Executable hackage4nix
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
                         Distribution.NixOS.PrettyPrinting
+
+Test-Suite doctest-cabal2nix
+  type:                 exitcode-stdio-1.0
+  main-is:              doc-test.hs
+  hs-source-dirs:       test
+  build-depends:        base, doctest
