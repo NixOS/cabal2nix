@@ -21,6 +21,7 @@ Description:
   >                  --sha256=HASH            sha256 hash of source tarball
   >   -m MAINTAINER  --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
   >   -p PLATFORM    --platform=PLATFORM      supported build platforms (may be specified multiple times)
+  >                  --no-check               don't run regression test suites of this package
   >
   > Recognized URI schemes:
   >
