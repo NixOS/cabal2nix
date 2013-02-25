@@ -21,7 +21,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
   , buildDepends   = map unDep deps
-  , testDepends    = map unDep (concatMap Cabal.targetBuildDepends tstDeps)
+  , testDepends    = map unDep tstDeps ++ concatMap Cabal.extraLibs tests
   , buildTools     = map unDep tools
   , extraLibs      = libs
   , pkgConfDeps    = pcs
@@ -43,12 +43,14 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
     descr   = Cabal.packageDescription cabal
     pkg     = Cabal.package descr
     deps    = Cabal.buildDepends tpkg
+    tests   = map Cabal.testBuildInfo (Cabal.testSuites tpkg)
     libDeps = map Cabal.libBuildInfo (maybeToList (Cabal.library tpkg))
     exeDeps = map Cabal.buildInfo (Cabal.executables tpkg)
-    tstDeps = map Cabal.testBuildInfo (Cabal.testSuites tpkg)
-    tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps ++ tstDeps)
-    libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps ++ tstDeps)
-    pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps ++ tstDeps))
+    tstDeps = concatMap Cabal.buildTools tests ++ concatMap Cabal.pkgconfigDepends tests ++
+              concatMap Cabal.targetBuildDepends tests
+    tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps)
+    libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
+    pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
     Right (tpkg, _) = finalizePackageDescription
                         (configureCabalFlags pkg)
                         (const True)
