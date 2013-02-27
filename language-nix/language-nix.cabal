@@ -9,7 +9,7 @@ author:                 Peter Simons <simons@cryp.to>
 maintainer:             Peter Simons <simons@cryp.to>
 category:               Language
 build-type:             Simple
-cabal-version:          >=1.8
+cabal-version:          >= 1.8
 
 Source-Repository head
   Type:                 git
@@ -17,9 +17,9 @@ Source-Repository head
 
 executable language-nix
   main-is:              NixParser.hs
-  build-depends:        base >= 2 && < 5, transformers, parsec, QuickCheck, hspec, doctest, wl-pprint
+  build-depends:        base >= 2 && < 5, transformers, parsec, QuickCheck, hspec, doctest, wl-pprint, HUnit
 
 Test-Suite test-language-nix
   type:                 exitcode-stdio-1.0
   main-is:              NixParser.hs
-  build-depends:        base, transformers, parsec, QuickCheck, hspec, doctest, wl-pprint
+  build-depends:        base, transformers, parsec, QuickCheck, hspec, doctest, wl-pprint, HUnit

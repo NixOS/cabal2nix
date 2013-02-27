@@ -18,6 +18,7 @@ import Text.Parsec.Expr
 import Text.PrettyPrint.Leijen ( Pretty(..) )
 import qualified Text.PrettyPrint.Leijen as Pretty
 import Test.QuickCheck
+import Test.HUnit.Base ( assertFailure, assertEqual )
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.DocTest
@@ -313,7 +314,8 @@ letAssignment = (,) <$> Parse.identifier nixLexer <* assign <*> expr <* semi
 ----- test program ------------------------------------------------------------
 
 gives :: (Eq a, Show a) => Either ParseError a -> a -> Expectation
-gives x y = x `shouldSatisfy` either (const False) (==y)
+gives x y = either (assertFailure . msg) (assertEqual "" y) x
+  where msg z = "expected: " ++ show y ++ "\nbut got parser error: " ++ show z
 
 parse' :: NixParser a -> String -> FilePath -> Either ParseError a
 parse' = Parse.parse
