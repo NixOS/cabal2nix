@@ -1,4 +1,4 @@
-module NixParser where
+module Main where
 
 import Data.Functor.Identity
 import Control.Applicative ( (<$>), (<*>), (<$), (<*), (*>) )
