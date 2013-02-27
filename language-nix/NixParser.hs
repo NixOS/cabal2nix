@@ -9,6 +9,7 @@ module Main where
 
 import Data.Functor.Identity
 import Control.Applicative ( (<$>), (<*>), (<$), (<*), (*>) )
+import Control.Monad
 import Text.Parsec hiding ( parse )
 import qualified Text.Parsec as Parse
 import qualified Text.Parsec.Language as Parse ( emptyDef )
@@ -37,9 +38,9 @@ nixLanguage = Parse.emptyDef
   , Parse.identStart      = letter
   , Parse.identLetter     = alphaNum <|> oneOf "-_"
   , Parse.opStart         = Parse.opLetter nixLanguage
-  , Parse.opLetter        = oneOf ".!:{}[]+=?&|/"
-  , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=",":","//","==","!="]
-  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or","...","@"]
+  , Parse.opLetter        = oneOf ".!{}[]+=?&|/"
+  , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=","//","==","!="]
+  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or","...","@",":"]
   , Parse.caseSensitive   = True
   }
 
@@ -67,8 +68,8 @@ braces = Parse.braces nixLexer
 brackets :: NixParser a -> NixParser a
 brackets = Parse.brackets nixLexer
 
-comma :: NixParser String
-comma = Parse.comma nixLexer
+-- comma :: NixParser String
+-- comma = Parse.comma nixLexer
 
 assign :: NixParser String
 assign = symbol "="
@@ -94,7 +95,7 @@ newtype ScopedIdent = SIdent [String]
   deriving (Read, Show, Eq)
 
 genIdentifier :: Gen String
-genIdentifier = (:) <$> elements alpha <*> listOf (elements tok) `suchThat` (`notElem` Parse.reservedNames nixLanguage)
+genIdentifier = ((:) <$> elements alpha <*> listOf (elements tok)) `suchThat` (`notElem` Parse.reservedNames nixLanguage)
   where alpha = ['a'..'z'] ++ ['A'..'Z']
         tok   = alpha ++ ['0'..'9'] ++ "-_"
 
@@ -126,22 +127,24 @@ data Expr = Lit String
           | Fun Binding Expr
           | Let [(String,Expr)] Expr
           | Apply Expr Expr
+          | Import String
   deriving (Read, Show, Eq)
 
 expr :: NixParser Expr
 expr = whitespace >> buildExpressionParser operatorTable term
 
 listExpr :: NixParser Expr
-listExpr = whitespace >> buildExpressionParser listOperatorTable term
+listExpr = buildExpressionParser listOperatorTable term
 
 term :: NixParser Expr
 term = choice [ parens expr
-              , stringLiteral
               , list
               , try function
-              , try letExpr
               , record
+              , try letExpr
+              , try literal
               , identifier
+              , reserved "import" >> Import <$> relativeURI
               ]
 
 operatorTable :: [[NixOperator]]
@@ -172,8 +175,109 @@ listOperatorTable = [ [ binary "." Deref AssocLeft ]
 identifier :: NixParser Expr
 identifier = Ident <$> Parse.identifier nixLexer
 
-stringLiteral :: NixParser Expr
-stringLiteral = Lit <$> Parse.stringLiteral nixLexer
+literal :: NixParser Expr
+literal = Lit <$> (Parse.stringLiteral nixLexer <|> literalURL)
+
+literalURL :: NixParser String
+literalURL = try absoluteURI <|> relativeURI
+
+absoluteURI :: NixParser String
+absoluteURI = lexeme $ scheme >> char ':' >> (try hierPart <|> opaquePart)
+
+relativeURI :: NixParser String
+relativeURI = lexeme $ (absPath <|> relPath) >> option "" (char '?' >> query)
+
+absPath :: NixParser String
+absPath = (:) <$> char '/' <*> pathSegments
+
+authority :: NixParser String
+authority = try server <|> regName
+
+domainlabel :: NixParser Char
+domainlabel = (alphaNum >> many (alphaNum <|> char '-') >> alphaNum) <|> alphaNum
+              -- try ((++) <$> ((:) <$> alphaNum <*> try (many (try alphaNum <|> char '-'))) <*> fmap return alphaNum) <|> (return <$> alphaNum)
+
+escapedChars :: NixParser Char
+escapedChars = char '%' >> hexDigit >> hexDigit
+
+hierPart :: NixParser String
+hierPart = (void (try netPath) <|> void absPath) >> option "" (char '?' >> query)
+
+host :: NixParser String
+host = try hostname <|> ipv4address
+
+hostname :: NixParser String
+hostname = many (domainlabel >> char '.') >> toplabel >> option "" (string ".")
+
+hostport :: NixParser String
+hostport = (++) <$> host <*> option "" ((:) <$> char ':' <*> port)
+
+ipv4address :: NixParser String
+ipv4address = many1 digit >> char '.' >> many1 digit >> char '.' >> many1 digit >> char '.' >> many1 digit
+
+markChars :: NixParser Char
+markChars = oneOf "-_.!~*'()"
+
+netPath :: NixParser String
+netPath = (++) <$> ((++) <$> string "//" <*> authority) >> option "" absPath
+
+opaquePart :: NixParser String
+opaquePart = uricNoSlash >> many uric
+
+param :: NixParser String
+param = many pchar
+
+pathSegments :: NixParser String
+pathSegments = (++) <$> segment <*> (concat <$> many (char '/' >> segment))
+
+pchar :: NixParser Char
+pchar = try unreservedChars <|> try escapedChars <|> oneOf ":@&=+$,"
+
+port :: NixParser String
+port = many1 digit
+
+query :: NixParser String
+query = many uric
+
+regName :: NixParser String
+regName = many1 (try unreservedChars <|> try escapedChars <|> oneOf "$,;:@&=+")
+
+relPath :: NixParser String
+relPath = (++) <$> relSegment <*> absPath
+
+relSegment :: NixParser String
+relSegment = many1 (unreservedChars <|> escapedChars <|> oneOf ";@&=+$,")
+
+reservedChars :: NixParser Char
+reservedChars = oneOf ";/?:@&=+$,"
+
+scheme :: NixParser String
+scheme = letter >> many (alphaNum <|> oneOf "+-.")
+
+segment :: NixParser String
+segment = (++) <$> many pchar <*> (concat <$> many ((:) <$> char ';' <*> param))
+
+server :: NixParser String
+server = option "" (option "" ((++) <$> userinfo <*> string "@") >> hostport)
+
+toplabel :: NixParser Char
+toplabel = try letter <|> (letter >> many (alphaNum <|> char '-') >> alphaNum)
+
+unreservedChars :: NixParser Char
+unreservedChars = try alphaNum <|> markChars
+
+uric :: NixParser Char
+uric = try reservedChars <|> try unreservedChars <|> escapedChars
+
+uricNoSlash :: NixParser Char
+uricNoSlash = try unreservedChars <|> try escapedChars <|> oneOf ";?:@&=+$,"
+
+userinfo :: NixParser String
+userinfo = many (try unreservedChars <|> try escapedChars <|> oneOf ";:&=+$,")
+
+--    controlChars    = void $ oneOf $ map chr $ [0x0..0x1f] ++ [0x7F]
+--    delimChars      = void $ oneOf "<>#%\""
+--    unwiseChars     = void $ oneOf "{}|\\^[]`"
 
 record :: NixParser Expr
 record = Record <$> option False (True <$ reserved "rec") <*> braces (many recordAssignment)
@@ -252,6 +356,14 @@ main = do
         mapM_ (parseFail scopedIdentifier) (Parse.reservedNames nixLanguage)
       it "accepts identifiers that are a prefix of a reserved word" $
         parse scopedIdentifier "lett" `gives` SIdent ["lett"]
+
+    describe "literal" $ do
+      prop "parses all randomly generated literal strings" $
+        \str -> either (const False) (Lit str ==) (parse literal (show str))
+      it "parses paths" $
+        parse literal "claus/ist/der/beste" `gives` Lit "claus/ist/der/beste"
+      it "parses URIs" $
+        parse literal "http://example.org" `gives` Lit "http://example.org"
 
     describe "record" $ do
       it "parses an empty record" $ do
@@ -343,7 +455,7 @@ main = do
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = parse' expr path <$> readFile path
 
-allPackages, top :: IO (Either ParseError Expr)
+allPackages, top, nixos :: IO (Either ParseError Expr)
 allPackages = parseNixFile "/home/simons/.nix-defexpr/pkgs/top-level/all-packages.nix"
 top = parseNixFile "/home/simons/.nix-defexpr/default.nix"
 nixos = parseNixFile "/etc/nixos/configuration.nix"
