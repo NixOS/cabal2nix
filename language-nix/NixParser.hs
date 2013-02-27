@@ -1,3 +1,10 @@
+{- |
+   Module      :  Main
+   Copyright   :  (c) 2013 Peter Simons
+   License     :  BSD3
+   Maintainer  :  simons@cryp.to
+ -}
+
 module Main where
 
 import Data.Functor.Identity
@@ -16,12 +23,12 @@ import Test.DocTest
 
 ----- Nix Language Definition for Parsec --------------------------------------
 
-type TokenParser st = Parse.GenTokenParser String st Identity
-type LanguageDef st = Parse.GenLanguageDef String st Identity
-type NixParser st a = ParsecT String st Identity a
-type NixOperator st = Operator String st Identity Expr
+type TokenParser = Parse.GenTokenParser String () Identity
+type LanguageDef = Parse.GenLanguageDef String () Identity
+type NixParser a = ParsecT String () Identity a
+type NixOperator = Operator String () Identity Expr
 
-nixLanguage :: LanguageDef st
+nixLanguage :: LanguageDef
 nixLanguage = Parse.emptyDef
   { Parse.commentStart    = "/*"
   , Parse.commentEnd      = "*/"
@@ -32,53 +39,53 @@ nixLanguage = Parse.emptyDef
   , Parse.opStart         = Parse.opLetter nixLanguage
   , Parse.opLetter        = oneOf ".!:{}[]+=?&|/"
   , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=",":","//","==","!="]
-  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or"]
+  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or","...","@"]
   , Parse.caseSensitive   = True
   }
 
-nixLexer :: TokenParser st
+nixLexer :: TokenParser
 nixLexer = Parse.makeTokenParser nixLanguage
 
-symbol :: String -> NixParser st String
+symbol :: String -> NixParser String
 symbol = Parse.symbol nixLexer
 
-reserved :: String -> NixParser st ()
+reserved :: String -> NixParser ()
 reserved = Parse.reserved nixLexer
 
-reservedOp :: String -> NixParser st ()
+reservedOp :: String -> NixParser ()
 reservedOp = Parse.reservedOp nixLexer
 
-lexeme :: NixParser st a -> NixParser st a
+lexeme :: NixParser a -> NixParser a
 lexeme = Parse.lexeme nixLexer
 
-parens :: NixParser st a -> NixParser st a
+parens :: NixParser a -> NixParser a
 parens = Parse.parens nixLexer
 
-braces :: NixParser st a -> NixParser st a
+braces :: NixParser a -> NixParser a
 braces = Parse.braces nixLexer
 
-brackets :: NixParser st a -> NixParser st a
+brackets :: NixParser a -> NixParser a
 brackets = Parse.brackets nixLexer
 
-comma :: NixParser st String
+comma :: NixParser String
 comma = Parse.comma nixLexer
 
-assign :: NixParser st String
+assign :: NixParser String
 assign = symbol "="
 
-semi :: NixParser st String
+semi :: NixParser String
 semi = Parse.semi nixLexer
 
-dot :: NixParser st String
+dot :: NixParser String
 dot = Parse.dot nixLexer
 
-commaSep :: NixParser st a -> NixParser st [a]
+commaSep :: NixParser a -> NixParser [a]
 commaSep = Parse.commaSep nixLexer
 
-colon :: NixParser st String
+colon :: NixParser String
 colon = Parse.colon nixLexer
 
-whitespace :: NixParser st ()
+whitespace :: NixParser ()
 whitespace = Parse.whiteSpace nixLexer
 
 ----- Nix Expressions ---------------------------------------------------------
@@ -87,7 +94,7 @@ newtype ScopedIdent = SIdent [String]
   deriving (Read, Show, Eq)
 
 genIdentifier :: Gen String
-genIdentifier = (:) <$> elements alpha <*> listOf (elements tok)
+genIdentifier = (:) <$> elements alpha <*> listOf (elements tok) `suchThat` (`notElem` Parse.reservedNames nixLanguage)
   where alpha = ['a'..'z'] ++ ['A'..'Z']
         tok   = alpha ++ ['0'..'9'] ++ "-_"
 
@@ -98,7 +105,7 @@ instance Pretty ScopedIdent where
   pretty (SIdent xs) = Pretty.hcat $ Pretty.punctuate Pretty.dot (map Pretty.text xs)
 
 data Binding = Lambda String
-             | RecB [(String, Maybe Expr)]
+             | RecB (Maybe String) [(String, Maybe Expr)]
   deriving (Read, Show, Eq)
 
 data Expr = Lit String
@@ -121,13 +128,13 @@ data Expr = Lit String
           | Apply Expr Expr
   deriving (Read, Show, Eq)
 
-expr :: NixParser st Expr
+expr :: NixParser Expr
 expr = whitespace >> buildExpressionParser operatorTable term
 
-listExpr :: NixParser st Expr
+listExpr :: NixParser Expr
 listExpr = whitespace >> buildExpressionParser listOperatorTable term
 
-term :: NixParser st Expr
+term :: NixParser Expr
 term = choice [ parens expr
               , stringLiteral
               , list
@@ -137,11 +144,11 @@ term = choice [ parens expr
               , identifier
               ]
 
-operatorTable :: [[NixOperator st]]
+operatorTable :: [[NixOperator]]
 operatorTable = x : [ Infix (Apply <$ whitespace) AssocRight ] : xs
   where (x:xs) = listOperatorTable
 
-listOperatorTable :: [[NixOperator st]]
+listOperatorTable :: [[NixOperator]]
 listOperatorTable = [ [ binary "." Deref AssocLeft ]
                 {-  , [ Infix (Apply <$ whitespace) AssocRight ] -}
                     , [ binary "?" HasAttr AssocNone ]
@@ -156,43 +163,47 @@ listOperatorTable = [ [ binary "." Deref AssocLeft ]
                     , [ binary "->" Implies AssocNone ]
                     ]
   where
-    binary :: String -> (Expr -> Expr -> Expr) -> Assoc -> NixOperator st
+    binary :: String -> (Expr -> Expr -> Expr) -> Assoc -> NixOperator
     binary op fun = Infix (fun <$ reservedOp op)
 
-    prefix :: String -> (Expr -> Expr) -> NixOperator st
+    prefix :: String -> (Expr -> Expr) -> NixOperator
     prefix op fun = Prefix (fun <$ reservedOp op)
 
-identifier :: NixParser st Expr
+identifier :: NixParser Expr
 identifier = Ident <$> Parse.identifier nixLexer
 
-stringLiteral :: NixParser st Expr
+stringLiteral :: NixParser Expr
 stringLiteral = Lit <$> Parse.stringLiteral nixLexer
 
-record :: NixParser st Expr
+record :: NixParser Expr
 record = Record <$> option False (True <$ reserved "rec") <*> braces (many recordAssignment)
 
-scopedIdentifier :: NixParser st ScopedIdent
+scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parse.identifier nixLexer) dot
 
-recordAssignment :: NixParser st (ScopedIdent, Expr)
+recordAssignment :: NixParser (ScopedIdent, Expr)
 recordAssignment = (,) <$> scopedIdentifier <* assign <*> expr <* semi
 
-list :: NixParser st Expr
+list :: NixParser Expr
 list = List <$> brackets (many listExpr)
 
-function :: NixParser st Expr
-function = Fun <$> (recordBinding <|> simpleBinding) <* colon <*> expr
+function :: NixParser Expr
+function = Fun <$> (try recordBinding <|> simpleBinding) <* colon <*> expr
 
-simpleBinding :: NixParser st Binding
+simpleBinding :: NixParser Binding
 simpleBinding = Lambda <$> Parse.identifier nixLexer
 
-recordBinding :: NixParser st Binding
-recordBinding = fmap RecB $ braces $ commaSep $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr)
+recordBinding :: NixParser Binding
+recordBinding = RecB <$> optionMaybe atPattern <*> attrSetPattern
+  where
+    atPattern      = Parse.identifier nixLexer <* reserved "@"
+    attrSetPattern = braces $ commaSep $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr) <|> ellipsis
+    ellipsis       = ("...",Nothing) <$ reserved "..."
 
-letExpr :: NixParser st Expr
+letExpr :: NixParser Expr
 letExpr = Let <$> (reserved "let" *> many1 letAssignment) <*> (reserved "in" *> expr)
 
-letAssignment :: NixParser st (String, Expr)
+letAssignment :: NixParser (String, Expr)
 letAssignment = (,) <$> Parse.identifier nixLexer <* assign <*> expr <* semi
 
 ----- test program ------------------------------------------------------------
@@ -200,10 +211,13 @@ letAssignment = (,) <$> Parse.identifier nixLexer <* assign <*> expr <* semi
 gives :: (Eq a, Show a) => Either ParseError a -> a -> Expectation
 gives x y = x `shouldSatisfy` either (const False) (==y)
 
-parse :: NixParser () a -> String -> Either ParseError a
-parse p input = Parse.parse (p <* eof) (show input) input
+parse' :: NixParser a -> String -> FilePath -> Either ParseError a
+parse' = Parse.parse
 
-parseFail :: Show a => NixParser () a -> String -> Expectation
+parse :: NixParser a -> String -> Either ParseError a
+parse p input = parse' (p <* eof) (show input) input
+
+parseFail :: Show a => NixParser a -> String -> Expectation
 parseFail p input = parse p input `shouldSatisfy` either (const True) (const False)
 
 main :: IO ()
@@ -278,8 +292,8 @@ main = do
         parse function "x: {}" `gives` Fun (Lambda "x") (Record False [])
         parse function "x: y: rec{}" `gives` Fun (Lambda "x") (Fun (Lambda "y") (Record True []))
       it "parses record bindings" $ do
-        parse function "{}: {}" `gives` Fun (RecB []) (Record False [])
-        parse function "{a ? b, c}: {}" `gives` Fun (RecB [("a",Just (Ident "b")),("c",Nothing)]) (Record False [])
+        parse function "{}: {}" `gives` Fun (RecB Nothing []) (Record False [])
+        parse function "{a ? b, c}: {}" `gives` Fun (RecB Nothing [("a",Just (Ident "b")),("c",Nothing)]) (Record False [])
 
     describe "expr" $ do
       it "parses an empty record" $ do
@@ -309,10 +323,12 @@ main = do
         parse expr "(a -> b) -> c" `gives` Implies (Implies (Ident "a") (Ident "b")) (Ident "c")
       it "parses functions" $ do
         parse expr "{ id = x: x; }" `gives` Record False [(SIdent ["id"], Fun (Lambda "x") (Ident "x"))]
-        parse expr "{}: {}" `gives` Fun (RecB []) (Record False [])
-        parse expr "{}: rec {}" `gives` Fun (RecB []) (Record True [])
-        parse expr "{ a?null, b }: {}" `gives` Fun (RecB [("a",Just (Ident "null")),("b",Nothing)]) (Record False [])
-        parse expr "{ a?c.d }: {}" `gives` Fun (RecB [("a",Just (Deref (Ident "c") (Ident "d")))]) (Record False [])
+        parse expr "{}: {}" `gives` Fun (RecB Nothing []) (Record False [])
+        parse expr "{}: rec {}" `gives` Fun (RecB Nothing []) (Record True [])
+        parse expr "{ a?null, b }: {}" `gives` Fun (RecB Nothing [("a",Just (Ident "null")),("b",Nothing)]) (Record False [])
+        parse expr "{ a?c.d }: {}" `gives` Fun (RecB Nothing [("a",Just (Deref (Ident "c") (Ident "d")))]) (Record False [])
+        parse expr "{ a?c.d, ... }: {}" `gives` Fun (RecB Nothing [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (Record False [])
+        parse expr "e@{ a?c.d, ... }: {}" `gives` Fun (RecB (Just "e") [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (Record False [])
       it "ignores leading/trailing whitespace" $ do
         parse expr "   {}" `gives` Record False []
         parse expr "{}   " `gives` Record False []
@@ -325,8 +341,9 @@ main = do
         parse expr "a{b=c.d;}" `gives` Apply (Ident "a") (Record False [(SIdent ["b"],Deref (Ident "c") (Ident "d"))])
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
-parseNixFile path = parse expr <$> readFile path
+parseNixFile path = parse' expr path <$> readFile path
 
 allPackages, top :: IO (Either ParseError Expr)
 allPackages = parseNixFile "/home/simons/.nix-defexpr/pkgs/top-level/all-packages.nix"
 top = parseNixFile "/home/simons/.nix-defexpr/default.nix"
+nixos = parseNixFile "/etc/nixos/configuration.nix"
