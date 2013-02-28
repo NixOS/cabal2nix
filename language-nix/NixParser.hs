@@ -121,6 +121,7 @@ data Expr = Lit String
           | List [Expr]
           | Deref Expr Expr
           | HasAttr Expr Expr
+          | DefAttr Expr Expr
           | Concat Expr Expr
           | Append Expr Expr
           | Not Expr
@@ -134,6 +135,7 @@ data Expr = Lit String
           | Let [(String,Expr)] Expr
           | Apply Expr Expr
           | Import Expr
+          | With Expr
           | IfThenElse Expr Expr Expr
   deriving (Read, Show, Eq)
 
@@ -151,16 +153,18 @@ term = choice [ parens expr
               , try letExpr
               , try literal
               , try (reserved "import" >> Import <$> expr)
+              , try (reserved "with" >> With <$> expr)
               , try (IfThenElse <$> (reserved "if" *> expr) <*> (reserved "then" *> expr) <*> (reserved "else" *> expr))
               , identifier
               ]
 
 operatorTable :: [[NixOperator]]
-operatorTable = x : [ Infix (Apply <$ whitespace) AssocRight ] : xs
-  where (x:xs) = listOperatorTable
+operatorTable = x1 : x2 : [ Infix (Apply <$ whitespace) AssocRight ] : xs
+  where (x1:x2:xs) = listOperatorTable
 
 listOperatorTable :: [[NixOperator]]
 listOperatorTable = [ [ binary "." Deref AssocLeft ]
+                    , [ binary "or" DefAttr AssocNone ]
                 {-  , [ Infix (Apply <$ whitespace) AssocRight ] -}
                     , [ binary "?" HasAttr AssocNone ]
                     , [ binary "++" Concat AssocRight ]
