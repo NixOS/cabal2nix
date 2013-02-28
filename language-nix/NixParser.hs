@@ -21,6 +21,7 @@ import Test.HUnit.Base ( assertFailure, assertEqual )
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.DocTest
+import Data.List
 
 ----- Nix Language Definition for Parsec --------------------------------------
 
@@ -38,9 +39,9 @@ nixLanguage = Parse.emptyDef
   , Parse.identStart      = letter
   , Parse.identLetter     = alphaNum <|> oneOf "-_"
   , Parse.opStart         = Parse.opLetter nixLanguage
-  , Parse.opLetter        = oneOf ".!{}[]+=?&|/"
+  , Parse.opLetter        = oneOf ".!{}[]+=?&|/@:"
   , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=","//","==","!="]
-  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or","...","@",":"]
+  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or","if","then","else"]
   , Parse.caseSensitive   = True
   }
 
@@ -68,8 +69,8 @@ braces = Parse.braces nixLexer
 brackets :: NixParser a -> NixParser a
 brackets = Parse.brackets nixLexer
 
--- comma :: NixParser String
--- comma = Parse.comma nixLexer
+natural :: NixParser String
+natural = show <$> Parse.natural nixLexer
 
 assign :: NixParser String
 assign = symbol "="
@@ -127,7 +128,8 @@ data Expr = Lit String
           | Fun Binding Expr
           | Let [(String,Expr)] Expr
           | Apply Expr Expr
-          | Import String
+          | Import Expr
+          | IfThenElse Expr Expr Expr
   deriving (Read, Show, Eq)
 
 expr :: NixParser Expr
@@ -143,7 +145,8 @@ term = choice [ parens expr
               , record
               , try letExpr
               , try literal
-              , try (reserved "import" >> Import <$> relativeURI)
+              , try (reserved "import" >> Import <$> expr)
+              , try (IfThenElse <$> (reserved "if" *> expr) <*> (reserved "then" *> expr) <*> (reserved "else" *> expr))
               , identifier
               ]
 
@@ -176,7 +179,10 @@ identifier :: NixParser Expr
 identifier = Ident <$> Parse.identifier nixLexer
 
 literal :: NixParser Expr
-literal = Lit <$> (Parse.stringLiteral nixLexer <|> literalURL)
+literal = Lit <$> (Parse.stringLiteral nixLexer <|> nixString <|> natural <|> literalURL)
+
+nixString :: NixParser String
+nixString = lexeme $ between (string "''") (string "''") (many (try (noneOf "'" <|> (char '\'' >> notFollowedBy (char '\'') >> return '\''))))
 
 literalURL :: NixParser String
 literalURL = try absoluteURI <|> relativeURI
@@ -274,10 +280,6 @@ uricNoSlash = try unreservedChars <|> try escapedChars <|> oneOf ";?:@&=+$,"
 userinfo :: NixParser String
 userinfo = many (try unreservedChars <|> try escapedChars <|> oneOf ";:&=+$,")
 
---    controlChars    = void $ oneOf $ map chr $ [0x0..0x1f] ++ [0x7F]
---    delimChars      = void $ oneOf "<>#%\""
---    unwiseChars     = void $ oneOf "{}|\\^[]`"
-
 record :: NixParser Expr
 record = Record <$> option False (True <$ reserved "rec") <*> braces (many recordAssignment)
 
@@ -285,7 +287,19 @@ scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parse.identifier nixLexer) dot
 
 recordAssignment :: NixParser (ScopedIdent, Expr)
-recordAssignment = (,) <$> scopedIdentifier <* assign <*> expr <* semi
+recordAssignment = ((,) <$> scopedIdentifier <* assign <*> expr <* semi) <|> try inheritance1 <|> inheritance2
+  where
+    inheritance1 :: NixParser (ScopedIdent, Expr)
+    inheritance1 = do e <- symbol "inherit" >> (Parse.identifier nixLexer)
+                      _ <- semi
+                      return (SIdent [e], Ident e)
+
+    inheritance2 :: NixParser (ScopedIdent, Expr)
+    inheritance2 = do SIdent e <- symbol "inherit" >> parens scopedIdentifier
+                      xs <- many1 (Parse.identifier nixLexer)
+                      _ <- semi
+                      let prefix = intercalate "." e
+                      return (SIdent [], Ident "")
 
 list :: NixParser Expr
 list = List <$> brackets (many listExpr)
@@ -360,6 +374,8 @@ main = do
     describe "literal" $ do
       prop "parses all randomly generated literal strings" $
         \str -> either (const False) (Lit str ==) (parse literal (show str))
+      prop "parses all randomly generated integers" $
+        \n -> either (const False) (Lit (show (abs (n::Int))) ==) (parse literal (show (abs n)))
       it "parses paths" $
         parse literal "claus/ist/der/beste" `gives` Lit "claus/ist/der/beste"
       it "parses URIs" $
@@ -381,6 +397,10 @@ main = do
         parse record "{ /* foo */ a = /* bar */ b; # foobar\n }" `gives` Record False [(SIdent ["a"],Ident "b")]
       it "parses recursive records" $
         parse record "rec { a = b; b = a; }" `gives` Record True [(SIdent ["a"],Ident "b"),(SIdent ["b"],Ident "a")]
+      it "parses inherit statements" $ do
+        parse record "{ inherit a; }" `gives` Record False [(SIdent ["a"],Ident "a")]
+        parse record "{ inherit a; inherit b; }" `gives` Record False [(SIdent ["a"],Ident "a"),(SIdent ["b"],Ident "b")]
+        parse record "{ inherit (a) b c d; }" `gives` Record False [(SIdent ["a"],Ident "a"),(SIdent ["b"],Ident "b")]
 
     describe "list" $ do
       it "parses an empty list" $
@@ -389,6 +409,7 @@ main = do
         parse list "[ a b c ]" `gives` List [Ident "a",Ident "b",Ident "c"]
         parse list "[ \"b\" { a = [\"c\"]; } d ]" `gives` List [Lit "b",Record False [(SIdent ["a"],List [Lit "c"])],Ident "d"]
         parse list "[ (a b) c ]" `gives` List [Apply (Ident "a") (Ident "b"),Ident "c"]
+        parse list "[ 12 8 a 0 ]" `gives` List [Lit "12", Lit "8", Ident "a", Lit "0"]
 
     describe "reserved" $ do
       it "parses a specific reserved name" $ do
@@ -452,8 +473,10 @@ main = do
         parse expr "a.b c" `gives` Apply (Deref (Ident "a") (Ident "b")) (Ident "c")
         parse expr "a{b=c.d;}" `gives` Apply (Ident "a") (Record False [(SIdent ["b"],Deref (Ident "c") (Ident "d"))])
       it "parses import statements" $ do
-        parse expr "(import ../some/function.nix) c" `gives` Apply (Import "../some/function.nix") (Ident "c")
-        parse expr "let x = import ../some/function.nix; in x" `gives` Let [("x",Import "../some/function.nix")] (Ident "x")
+        parse expr "(import ../some/function.nix) c" `gives` Apply (Import (Lit "../some/function.nix")) (Ident "c")
+        parse expr "let x = import ../some/function.nix; in x" `gives` Let [("x",Import (Lit "../some/function.nix"))] (Ident "x")
+      it "parses if-then-else statements" $ do
+        parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (Record False [(SIdent ["d"],Ident "d")])) (Ident "e")
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = parse' expr path <$> readFile path
