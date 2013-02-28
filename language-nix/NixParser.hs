@@ -36,12 +36,12 @@ nixLanguage = Parse.emptyDef
   , Parse.commentEnd      = "*/"
   , Parse.commentLine     = "#"
   , Parse.nestedComments  = False
-  , Parse.identStart      = letter
+  , Parse.identStart      = letter <|> oneOf "_"
   , Parse.identLetter     = alphaNum <|> oneOf "-_"
   , Parse.opStart         = Parse.opLetter nixLanguage
-  , Parse.opLetter        = oneOf ".!{}[]+=?&|/@:"
+  , Parse.opLetter        = oneOf ".!{}[]+=?&|/"
   , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=","//","==","!="]
-  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","or","if","then","else"]
+  , Parse.reservedNames   = ["rec","let","in","import","with","inherit","assert","or","if","then","else"]
   , Parse.caseSensitive   = True
   }
 
@@ -96,14 +96,13 @@ newtype ScopedIdent = SIdent [String]
   deriving (Read, Show, Eq)
 
 data Attr = Assign ScopedIdent Expr
-          | Inherit String
-          | InheritL ScopedIdent [String]
+          | Inherit ScopedIdent [String]
   deriving (Read, Show, Eq)
 
 genIdentifier :: Gen String
-genIdentifier = ((:) <$> elements alpha <*> listOf (elements tok)) `suchThat` (`notElem` Parse.reservedNames nixLanguage)
-  where alpha = ['a'..'z'] ++ ['A'..'Z']
-        tok   = alpha ++ ['0'..'9'] ++ "-_"
+genIdentifier = ((:) <$> elements firstChar <*> listOf (elements identChar)) `suchThat` (`notElem` Parse.reservedNames nixLanguage)
+  where firstChar = ['a'..'z'] ++ ['A'..'Z'] ++ "_"
+        identChar = firstChar ++ ['0'..'9'] ++ "-"
 
 instance Arbitrary ScopedIdent where
   arbitrary = SIdent <$> listOf1 genIdentifier
@@ -136,6 +135,7 @@ data Expr = Lit String
           | Apply Expr Expr
           | Import Expr
           | With Expr
+          | Assert Expr
           | IfThenElse Expr Expr Expr
   deriving (Read, Show, Eq)
 
@@ -153,7 +153,8 @@ term = choice [ parens expr
               , try letExpr
               , try literal
               , try (reserved "import" >> Import <$> expr)
-              , try (reserved "with" >> With <$> expr)
+              , try (reserved "with" >> With <$> expr <* semi)
+              , try (reserved "assert" >> Assert <$> expr <* semi)
               , try (IfThenElse <$> (reserved "if" *> expr) <*> (reserved "then" *> expr) <*> (reserved "else" *> expr))
               , identifier
               ]
@@ -296,10 +297,9 @@ scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parse.identifier nixLexer) dot
 
 attribute :: NixParser Attr
-attribute = choice [ Assign <$> scopedIdentifier <* assign <*> expr <* semi
-                   , Inherit <$> try (symbol "inherit" *> Parse.identifier nixLexer <* semi)
-                   , InheritL <$> (symbol "inherit" >> parens scopedIdentifier) <*> (many1 (Parse.identifier nixLexer) <* semi)
-                   ]
+attribute =  ((\x -> Assign (SIdent [x])) <$> (Parse.stringLiteral nixLexer) <* assign <*> expr <* semi)
+         <|> (Assign <$> scopedIdentifier <* assign <*> expr <* semi)
+         <|> (Inherit <$> (symbol "inherit" *> option (SIdent []) (parens scopedIdentifier)) <*> (many1 (Parse.identifier nixLexer) <* semi))
 
 list :: NixParser Expr
 list = List <$> brackets (many listExpr)
@@ -346,6 +346,7 @@ main = do
       it "parses hand-picked sample inputs" $ do
         parse identifier "abc" `gives` Ident "abc"
         parse identifier "abc  " `gives` Ident "abc"
+        parse identifier "__a-b-c-__  " `gives` Ident "__a-b-c-__"
       prop "parses all randomly generated samples" $
         forAll genIdentifier $ \input -> either (const False) (Ident input ==) (parse identifier input)
       it "does not swallow leading whitespace" $
@@ -398,9 +399,10 @@ main = do
       it "parses recursive attribute sets" $
         parse attrSet "rec { a = b; b = a; }" `gives` AttrSet True [Assign (SIdent ["a"]) (Ident "b"), Assign (SIdent ["b"]) (Ident "a")]
       it "parses inherit statements" $ do
-        parse attrSet "{ inherit a; }" `gives` AttrSet False [Inherit "a"]
-        parse attrSet "{ inherit a; inherit b; }" `gives` AttrSet False [Inherit "a",Inherit "b"]
-        parse attrSet "{ inherit (a) b c d; }" `gives` AttrSet False [InheritL (SIdent ["a"]) ["b","c","d"]];
+        parse attrSet "{ inherit a; }" `gives` AttrSet False [Inherit (SIdent []) ["a"]]
+        parse attrSet "{ inherit a; inherit b; }" `gives` AttrSet False [Inherit (SIdent []) ["a"],Inherit (SIdent []) ["b"]]
+        parse attrSet "{ inherit a b; }" `gives` AttrSet False [Inherit (SIdent []) ["a","b"]]
+        parse attrSet "{ inherit (a) b c d; }" `gives` AttrSet False [Inherit (SIdent ["a"]) ["b","c","d"]];
 
     describe "list" $ do
       it "parses an empty list" $
@@ -476,7 +478,10 @@ main = do
         parse expr "(import ../some/function.nix) c" `gives` Apply (Import (Lit "../some/function.nix")) (Ident "c")
         parse expr "let x = import ../some/function.nix; in x" `gives` Let [("x",Import (Lit "../some/function.nix"))] (Ident "x")
       it "parses if-then-else statements" $
-        parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (AttrSet False [Inherit "d"])) (Ident "e")
+        parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (AttrSet False [Inherit (SIdent []) ["d"]])) (Ident "e")
+      it "parses with statements" $
+        parse expr "with a; a" `gives` Apply (With (Ident "a")) (Ident "a")
+
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = parse' expr path <$> readFile path
