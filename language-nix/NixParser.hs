@@ -95,6 +95,11 @@ whitespace = Parse.whiteSpace nixLexer
 newtype ScopedIdent = SIdent [String]
   deriving (Read, Show, Eq)
 
+data Attr = Assign ScopedIdent Expr
+          | Inherit String
+          | InheritL ScopedIdent [String]
+  deriving (Read, Show, Eq)
+
 genIdentifier :: Gen String
 genIdentifier = ((:) <$> elements alpha <*> listOf (elements tok)) `suchThat` (`notElem` Parse.reservedNames nixLanguage)
   where alpha = ['a'..'z'] ++ ['A'..'Z']
@@ -106,13 +111,13 @@ instance Arbitrary ScopedIdent where
 instance Pretty ScopedIdent where
   pretty (SIdent xs) = Pretty.hcat $ Pretty.punctuate Pretty.dot (map Pretty.text xs)
 
-data Binding = Lambda String
-             | RecB (Maybe String) [(String, Maybe Expr)]
+data Pattern = Lambda String
+             | AttrSetP (Maybe String) [(String, Maybe Expr)]
   deriving (Read, Show, Eq)
 
 data Expr = Lit String
           | Ident String
-          | Record Bool [(ScopedIdent,Expr)]
+          | AttrSet Bool [Attr]
           | List [Expr]
           | Deref Expr Expr
           | HasAttr Expr Expr
@@ -125,7 +130,7 @@ data Expr = Lit String
           | And Expr Expr
           | Or Expr Expr
           | Implies Expr Expr
-          | Fun Binding Expr
+          | Fun Pattern Expr
           | Let [(String,Expr)] Expr
           | Apply Expr Expr
           | Import Expr
@@ -142,7 +147,7 @@ term :: NixParser Expr
 term = choice [ parens expr
               , list
               , try function
-              , record
+              , attrSet
               , try letExpr
               , try literal
               , try (reserved "import" >> Import <$> expr)
@@ -280,38 +285,29 @@ uricNoSlash = try unreservedChars <|> try escapedChars <|> oneOf ";?:@&=+$,"
 userinfo :: NixParser String
 userinfo = many (try unreservedChars <|> try escapedChars <|> oneOf ";:&=+$,")
 
-record :: NixParser Expr
-record = Record <$> option False (True <$ reserved "rec") <*> braces (many recordAssignment)
+attrSet :: NixParser Expr
+attrSet = AttrSet <$> option False (True <$ reserved "rec") <*> braces (many attribute)
 
 scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parse.identifier nixLexer) dot
 
-recordAssignment :: NixParser (ScopedIdent, Expr)
-recordAssignment = ((,) <$> scopedIdentifier <* assign <*> expr <* semi) <|> try inheritance1 <|> inheritance2
-  where
-    inheritance1 :: NixParser (ScopedIdent, Expr)
-    inheritance1 = do e <- symbol "inherit" >> (Parse.identifier nixLexer)
-                      _ <- semi
-                      return (SIdent [e], Ident e)
-
-    inheritance2 :: NixParser (ScopedIdent, Expr)
-    inheritance2 = do SIdent e <- symbol "inherit" >> parens scopedIdentifier
-                      xs <- many1 (Parse.identifier nixLexer)
-                      _ <- semi
-                      let prefix = intercalate "." e
-                      return (SIdent [], Ident "")
+attribute :: NixParser Attr
+attribute = choice [ Assign <$> scopedIdentifier <* assign <*> expr <* semi
+                   , Inherit <$> try (symbol "inherit" *> Parse.identifier nixLexer <* semi)
+                   , InheritL <$> (symbol "inherit" >> parens scopedIdentifier) <*> (many1 (Parse.identifier nixLexer) <* semi)
+                   ]
 
 list :: NixParser Expr
 list = List <$> brackets (many listExpr)
 
 function :: NixParser Expr
-function = Fun <$> (try recordBinding <|> simpleBinding) <* colon <*> expr
+function = Fun <$> (try attrSetPattern <|> simplePattern) <* colon <*> expr
 
-simpleBinding :: NixParser Binding
-simpleBinding = Lambda <$> Parse.identifier nixLexer
+simplePattern :: NixParser Pattern
+simplePattern = Lambda <$> Parse.identifier nixLexer
 
-recordBinding :: NixParser Binding
-recordBinding = RecB <$> optionMaybe atPattern <*> attrSetPattern
+attrSetPattern :: NixParser Pattern
+attrSetPattern = AttrSetP <$> optionMaybe atPattern <*> attrSetPattern
   where
     atPattern      = Parse.identifier nixLexer <* reserved "@"
     attrSetPattern = braces $ commaSep $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr) <|> ellipsis
@@ -381,33 +377,33 @@ main = do
       it "parses URIs" $
         parse literal "http://example.org" `gives` Lit "http://example.org"
 
-    describe "record" $ do
-      it "parses an empty record" $ do
-        parse record "{}" `gives` Record False []
-        parse record "rec {}" `gives` Record True []
+    describe "attrSet" $ do
+      it "parses an empty attribute set" $ do
+        parse attrSet "{}" `gives` AttrSet False []
+        parse attrSet "rec {}" `gives` AttrSet True []
       it "parses hand-picked sample inputs" $ do
-        parse record "{ a = b; }" `gives` Record False [(SIdent ["a"],Ident "b")]
-        parse record "{ a = b.c; }" `gives` Record False [(SIdent ["a"], Deref (Ident "b") (Ident "c"))]
-        parse record "{ a = \"b\"; }" `gives` Record False [(SIdent ["a"],Lit "b")]
-      it "parses records as values of records" $
-        parse record "{ a = { b = c; }; }" `gives` Record False [(SIdent ["a"],Record False [(SIdent ["b"],Ident "c")])]
+        parse attrSet "{ a = b; }" `gives` AttrSet False [Assign (SIdent ["a"]) (Ident "b")]
+        parse attrSet "{ a = b.c; }" `gives` AttrSet False [Assign (SIdent ["a"]) (Deref (Ident "b") (Ident "c"))]
+        parse attrSet "{ a = \"b\"; }" `gives` AttrSet False [Assign (SIdent ["a"]) (Lit "b")]
+      it "parses attribute sets as values of attribute sets" $
+        parse attrSet "{ a = { b = c; }; }" `gives` AttrSet False [Assign (SIdent ["a"]) (AttrSet False [Assign (SIdent ["b"]) (Ident "c")])]
       it "expects assignments to terminated by a semicolon" $
-        parseFail record "{ a = b }"
+        parseFail attrSet "{ a = b }"
       it "ignores comments" $
-        parse record "{ /* foo */ a = /* bar */ b; # foobar\n }" `gives` Record False [(SIdent ["a"],Ident "b")]
-      it "parses recursive records" $
-        parse record "rec { a = b; b = a; }" `gives` Record True [(SIdent ["a"],Ident "b"),(SIdent ["b"],Ident "a")]
+        parse attrSet "{ /* foo */ a = /* bar */ b; # foobar\n }" `gives` AttrSet False [Assign (SIdent ["a"]) (Ident "b")]
+      it "parses recursive attribute sets" $
+        parse attrSet "rec { a = b; b = a; }" `gives` AttrSet True [Assign (SIdent ["a"]) (Ident "b"), Assign (SIdent ["b"]) (Ident "a")]
       it "parses inherit statements" $ do
-        parse record "{ inherit a; }" `gives` Record False [(SIdent ["a"],Ident "a")]
-        parse record "{ inherit a; inherit b; }" `gives` Record False [(SIdent ["a"],Ident "a"),(SIdent ["b"],Ident "b")]
-        parse record "{ inherit (a) b c d; }" `gives` Record False [(SIdent ["a"],Ident "a"),(SIdent ["b"],Ident "b")]
+        parse attrSet "{ inherit a; }" `gives` AttrSet False [Inherit "a"]
+        parse attrSet "{ inherit a; inherit b; }" `gives` AttrSet False [Inherit "a",Inherit "b"]
+        parse attrSet "{ inherit (a) b c d; }" `gives` AttrSet False [InheritL (SIdent ["a"]) ["b","c","d"]];
 
     describe "list" $ do
       it "parses an empty list" $
         parse list "[]" `gives` List []
       it "parses hand-picked sample inputs" $ do
         parse list "[ a b c ]" `gives` List [Ident "a",Ident "b",Ident "c"]
-        parse list "[ \"b\" { a = [\"c\"]; } d ]" `gives` List [Lit "b",Record False [(SIdent ["a"],List [Lit "c"])],Ident "d"]
+        parse list "[ \"b\" { a = [\"c\"]; } d ]" `gives` List [Lit "b",AttrSet False [Assign (SIdent ["a"]) (List [Lit "c"])],Ident "d"]
         parse list "[ (a b) c ]" `gives` List [Apply (Ident "a") (Ident "b"),Ident "c"]
         parse list "[ 12 8 a 0 ]" `gives` List [Lit "12", Lit "8", Ident "a", Lit "0"]
 
@@ -422,23 +418,23 @@ main = do
 
     describe "function" $ do
       it "parses simple lambda expressions" $ do
-        parse function "x: {}" `gives` Fun (Lambda "x") (Record False [])
-        parse function "x: y: rec{}" `gives` Fun (Lambda "x") (Fun (Lambda "y") (Record True []))
-      it "parses record bindings" $ do
-        parse function "{}: {}" `gives` Fun (RecB Nothing []) (Record False [])
-        parse function "{a ? b, c}: {}" `gives` Fun (RecB Nothing [("a",Just (Ident "b")),("c",Nothing)]) (Record False [])
+        parse function "x: {}" `gives` Fun (Lambda "x") (AttrSet False [])
+        parse function "x: y: rec{}" `gives` Fun (Lambda "x") (Fun (Lambda "y") (AttrSet True []))
+      it "parses attribute set patterns" $ do
+        parse function "{}: {}" `gives` Fun (AttrSetP Nothing []) (AttrSet False [])
+        parse function "{a ? b, c}: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Ident "b")),("c",Nothing)]) (AttrSet False [])
 
     describe "expr" $ do
-      it "parses an empty record" $ do
-        parse expr "{}" `gives` Record False []
-        parse expr "rec {}" `gives` Record True []
+      it "parses an empty attribute set" $ do
+        parse expr "{}" `gives` AttrSet False []
+        parse expr "rec {}" `gives` AttrSet True []
       it "parses an empty list" $
         parse expr "[]" `gives` List []
       it "parses a de-referencing expression" $ do
         parse expr "abc.def" `gives` Deref (Ident "abc") (Ident "def")
         parse expr "a.b.c" `gives` Deref (Deref (Ident "a") (Ident "b")) (Ident "c")
-      it "parses recursive records" $
-        parse expr "rec { id = x: x; }" `gives` Record True [(SIdent ["id"], Fun (Lambda "x") (Ident "x"))]
+      it "parses recursive attribute sets" $
+        parse expr "rec { id = x: x; }" `gives` AttrSet True [Assign (SIdent ["id"]) (Fun (Lambda "x") (Ident "x"))]
       it "parses boolean expressions" $ do
         parse expr "true" `gives` Ident "true"
         parse expr "false" `gives` Ident "false"
@@ -455,28 +451,28 @@ main = do
         parse expr "a || b && c" `gives` Or (Ident "a") (And (Ident "b") (Ident "c"))
         parse expr "(a -> b) -> c" `gives` Implies (Implies (Ident "a") (Ident "b")) (Ident "c")
       it "parses functions" $ do
-        parse expr "{ id = x: x; }" `gives` Record False [(SIdent ["id"], Fun (Lambda "x") (Ident "x"))]
-        parse expr "{}: {}" `gives` Fun (RecB Nothing []) (Record False [])
-        parse expr "{}: rec {}" `gives` Fun (RecB Nothing []) (Record True [])
-        parse expr "{ a?null, b }: {}" `gives` Fun (RecB Nothing [("a",Just (Ident "null")),("b",Nothing)]) (Record False [])
-        parse expr "{ a?c.d }: {}" `gives` Fun (RecB Nothing [("a",Just (Deref (Ident "c") (Ident "d")))]) (Record False [])
-        parse expr "{ a?c.d, ... }: {}" `gives` Fun (RecB Nothing [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (Record False [])
-        parse expr "e@{ a?c.d, ... }: {}" `gives` Fun (RecB (Just "e") [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (Record False [])
+        parse expr "{ id = x: x; }" `gives` AttrSet False [Assign (SIdent ["id"]) (Fun (Lambda "x") (Ident "x"))]
+        parse expr "{}: {}" `gives` Fun (AttrSetP Nothing []) (AttrSet False [])
+        parse expr "{}: rec {}" `gives` Fun (AttrSetP Nothing []) (AttrSet True [])
+        parse expr "{ a?null, b }: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Ident "null")),("b",Nothing)]) (AttrSet False [])
+        parse expr "{ a?c.d }: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Deref (Ident "c") (Ident "d")))]) (AttrSet False [])
+        parse expr "{ a?c.d, ... }: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (AttrSet False [])
+        parse expr "e@{ a?c.d, ... }: {}" `gives` Fun (AttrSetP (Just "e") [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (AttrSet False [])
       it "ignores leading/trailing whitespace" $ do
-        parse expr "   {}" `gives` Record False []
-        parse expr "{}   " `gives` Record False []
-        parse expr " { } " `gives` Record False []
+        parse expr "   {}" `gives` AttrSet False []
+        parse expr "{}   " `gives` AttrSet False []
+        parse expr " { } " `gives` AttrSet False []
       it "ignores comments" $
-        parse expr "# foo\n/* bar \n */ { /* bla */ }" `gives` Record False []
+        parse expr "# foo\n/* bar \n */ { /* bla */ }" `gives` AttrSet False []
       it "parses function application" $ do
         parse expr "a b c" `gives` Apply (Ident "a") (Apply (Ident "b") (Ident "c"))
         parse expr "a.b c" `gives` Apply (Deref (Ident "a") (Ident "b")) (Ident "c")
-        parse expr "a{b=c.d;}" `gives` Apply (Ident "a") (Record False [(SIdent ["b"],Deref (Ident "c") (Ident "d"))])
+        parse expr "a{b=c.d;}" `gives` Apply (Ident "a") (AttrSet False [Assign (SIdent ["b"]) (Deref (Ident "c") (Ident "d"))])
       it "parses import statements" $ do
         parse expr "(import ../some/function.nix) c" `gives` Apply (Import (Lit "../some/function.nix")) (Ident "c")
         parse expr "let x = import ../some/function.nix; in x" `gives` Let [("x",Import (Lit "../some/function.nix"))] (Ident "x")
-      it "parses if-then-else statements" $ do
-        parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (Record False [(SIdent ["d"],Ident "d")])) (Ident "e")
+      it "parses if-then-else statements" $
+        parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (AttrSet False [Inherit "d"])) (Ident "e")
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = parse' expr path <$> readFile path
