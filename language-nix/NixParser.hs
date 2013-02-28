@@ -9,7 +9,6 @@ module Main where
 
 import Data.Functor.Identity
 import Control.Applicative ( (<$>), (<*>), (<$), (<*), (*>) )
-import Control.Monad
 import Text.Parsec hiding ( parse )
 import qualified Text.Parsec as Parse
 import qualified Text.Parsec.Language as Parse ( emptyDef )
@@ -144,8 +143,8 @@ term = choice [ parens expr
               , record
               , try letExpr
               , try literal
+              , try (reserved "import" >> Import <$> relativeURI)
               , identifier
-              , reserved "import" >> Import <$> relativeURI
               ]
 
 operatorTable :: [[NixOperator]]
@@ -183,10 +182,10 @@ literalURL :: NixParser String
 literalURL = try absoluteURI <|> relativeURI
 
 absoluteURI :: NixParser String
-absoluteURI = lexeme $ scheme >> char ':' >> (try hierPart <|> opaquePart)
+absoluteURI = lexeme $ (++) <$> scheme <*> ((:) <$> char ':' <*> (try hierPart <|> opaquePart))
 
 relativeURI :: NixParser String
-relativeURI = lexeme $ (absPath <|> relPath) >> option "" (char '?' >> query)
+relativeURI = lexeme $ (++) <$> (absPath <|> relPath) <*> option "" (char '?' >> query)
 
 absPath :: NixParser String
 absPath = (:) <$> char '/' <*> pathSegments
@@ -194,15 +193,14 @@ absPath = (:) <$> char '/' <*> pathSegments
 authority :: NixParser String
 authority = try server <|> regName
 
-domainlabel :: NixParser Char
-domainlabel = (alphaNum >> many (alphaNum <|> char '-') >> alphaNum) <|> alphaNum
-              -- try ((++) <$> ((:) <$> alphaNum <*> try (many (try alphaNum <|> char '-'))) <*> fmap return alphaNum) <|> (return <$> alphaNum)
+domainlabel :: NixParser String
+domainlabel = (:) <$> alphaNum <*> option "" ((++) <$> many (char '-') <*> domainlabel)
 
 escapedChars :: NixParser Char
 escapedChars = char '%' >> hexDigit >> hexDigit
 
 hierPart :: NixParser String
-hierPart = (void (try netPath) <|> void absPath) >> option "" (char '?' >> query)
+hierPart = (++) <$> (try netPath <|> absPath) <*> option "" (char '?' >> query)
 
 host :: NixParser String
 host = try hostname <|> ipv4address
@@ -217,10 +215,10 @@ ipv4address :: NixParser String
 ipv4address = many1 digit >> char '.' >> many1 digit >> char '.' >> many1 digit >> char '.' >> many1 digit
 
 markChars :: NixParser Char
-markChars = oneOf "-_.!~*'()"
+markChars = oneOf "-_.!~*'" -- Note that "()" have been removed here!
 
 netPath :: NixParser String
-netPath = (++) <$> ((++) <$> string "//" <*> authority) >> option "" absPath
+netPath = (++) <$> ((++) <$> string "//" <*> authority) <*> option "" absPath
 
 opaquePart :: NixParser String
 opaquePart = uricNoSlash >> many uric
@@ -229,7 +227,7 @@ param :: NixParser String
 param = many pchar
 
 pathSegments :: NixParser String
-pathSegments = (++) <$> segment <*> (concat <$> many (char '/' >> segment))
+pathSegments = (++) <$> segment <*> (concat <$> many ((:) <$> char '/' <*> segment))
 
 pchar :: NixParser Char
 pchar = try unreservedChars <|> try escapedChars <|> oneOf ":@&=+$,"
@@ -241,22 +239,22 @@ query :: NixParser String
 query = many uric
 
 regName :: NixParser String
-regName = many1 (try unreservedChars <|> try escapedChars <|> oneOf "$,;:@&=+")
+regName = many1 (try unreservedChars <|> try escapedChars <|> oneOf "$,:@&=+") -- Note that ';' has been removed here!
 
 relPath :: NixParser String
 relPath = (++) <$> relSegment <*> absPath
 
 relSegment :: NixParser String
-relSegment = many1 (unreservedChars <|> escapedChars <|> oneOf ";@&=+$,")
+relSegment = many1 (unreservedChars <|> escapedChars <|> oneOf "@&=+$,") -- Note that ';' has been removed here!
 
 reservedChars :: NixParser Char
-reservedChars = oneOf ";/?:@&=+$,"
+reservedChars = oneOf "/?:@&=+$," -- Note that ';' has been removed here!
 
 scheme :: NixParser String
-scheme = letter >> many (alphaNum <|> oneOf "+-.")
+scheme = (:) <$> letter <*> many (alphaNum <|> oneOf "+-.")
 
 segment :: NixParser String
-segment = (++) <$> many pchar <*> (concat <$> many ((:) <$> char ';' <*> param))
+segment = {- (++) <$> -} many pchar {- <*> (concat <$> many ((:) <$> char ';' <*> param)) -}
 
 server :: NixParser String
 server = option "" (option "" ((++) <$> userinfo <*> string "@") >> hostport)
@@ -453,6 +451,9 @@ main = do
         parse expr "a b c" `gives` Apply (Ident "a") (Apply (Ident "b") (Ident "c"))
         parse expr "a.b c" `gives` Apply (Deref (Ident "a") (Ident "b")) (Ident "c")
         parse expr "a{b=c.d;}" `gives` Apply (Ident "a") (Record False [(SIdent ["b"],Deref (Ident "c") (Ident "d"))])
+      it "parses import statements" $ do
+        parse expr "(import ../some/function.nix) c" `gives` Apply (Import "../some/function.nix") (Ident "c")
+        parse expr "let x = import ../some/function.nix; in x" `gives` Let [("x",Import "../some/function.nix")] (Ident "x")
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = parse' expr path <$> readFile path
