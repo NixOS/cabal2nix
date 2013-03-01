@@ -38,8 +38,8 @@ nixLanguage = Parse.emptyDef
   , Parse.identStart      = letter <|> oneOf "_"
   , Parse.identLetter     = alphaNum <|> oneOf "-_"
   , Parse.opStart         = Parse.opLetter nixLanguage
-  , Parse.opLetter        = oneOf ".!{}[]+=?&|/"
-  , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=","//","==","!="]
+  , Parse.opLetter        = oneOf ".!{}[]+=?&|/:"
+  , Parse.reservedOpNames = [".","!","+","++","&&","||","?","=","//","==","!=",":"]
   , Parse.reservedNames   = ["rec","let","in","import","with","inherit","assert","or","if","then","else"]
   , Parse.caseSensitive   = True
   }
@@ -80,8 +80,8 @@ semi = Parse.semi nixLexer
 dot :: NixParser String
 dot = Parse.dot nixLexer
 
-commaSep :: NixParser a -> NixParser [a]
-commaSep = Parse.commaSep nixLexer
+commaSep1 :: NixParser a -> NixParser [a]
+commaSep1 = Parse.commaSep1 nixLexer
 
 colon :: NixParser String
 colon = Parse.colon nixLexer
@@ -109,13 +109,10 @@ instance Arbitrary ScopedIdent where
 instance Pretty ScopedIdent where
   pretty (SIdent xs) = Pretty.hcat $ Pretty.punctuate Pretty.dot (map Pretty.text xs)
 
-data Pattern = Lambda String
-             | AttrSetP (Maybe String) [(String, Maybe Expr)]
-  deriving (Read, Show, Eq)
-
 data Expr = Lit String
           | Ident String
           | AttrSet Bool [Attr]
+          | AttrSetP (Maybe String) [(String, Maybe Expr)]
           | List [Expr]
           | Deref Expr Expr
           | HasAttr Expr Expr
@@ -129,7 +126,7 @@ data Expr = Lit String
           | And Expr Expr
           | Or Expr Expr
           | Implies Expr Expr
-          | Fun Pattern Expr
+          | Fun Expr Expr
           | Let [(String,Expr)] Expr
           | Apply Expr Expr
           | Import Expr
@@ -147,7 +144,7 @@ listExpr = buildExpressionParser listOperatorTable term
 term :: NixParser Expr
 term = choice [ parens expr
               , list
-              , try function
+              , try attrSetPattern
               , attrSet
               , letExpr
               , reserved "import" >> Import <$> expr
@@ -159,11 +156,12 @@ term = choice [ parens expr
               ]
 
 operatorTable :: [[NixOperator]]
-operatorTable = x1 : x2 : [ Infix (Apply <$ whitespace) AssocRight ] : xs
-  where (x1:x2:xs) = listOperatorTable
+operatorTable = x1 : x2 : x3 : [ Infix (Apply <$ whitespace) AssocRight ] : xs
+  where (x1:x2:x3:xs) = listOperatorTable
 
 listOperatorTable :: [[NixOperator]]
-listOperatorTable = [ [ binary "." Deref AssocLeft ]
+listOperatorTable = [ [ binary ":" Fun AssocRight ]
+                    , [ binary "." Deref AssocLeft ]
                     , [ binary "or" DefAttr AssocNone ]
                 {-  , [ Infix (Apply <$ whitespace) AssocRight ] -}
                     , [ binary "?" HasAttr AssocNone ]
@@ -302,17 +300,11 @@ attribute =  (Assign <$> (SIdent . return <$> Parse.stringLiteral nixLexer <|> s
 list :: NixParser Expr
 list = List <$> brackets (many listExpr)
 
-function :: NixParser Expr
-function = Fun <$> (try attrSetPattern <|> simplePattern) <* colon <*> expr
-
-simplePattern :: NixParser Pattern
-simplePattern = Lambda <$> Parse.identifier nixLexer
-
-attrSetPattern :: NixParser Pattern
+attrSetPattern :: NixParser Expr
 attrSetPattern = AttrSetP <$> optionMaybe atPattern <*> setPattern
   where
     atPattern  = Parse.identifier nixLexer <* reserved "@"
-    setPattern = braces $ commaSep $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr) <|> ellipsis
+    setPattern = braces $ commaSep1 $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr) <|> ellipsis
     ellipsis   = ("...",Nothing) <$ reserved "..."
 
 letExpr :: NixParser Expr
@@ -420,14 +412,6 @@ main = do
       it "recognizes if the keyword is actually just a prefix of the input string" $
          parseFail (reserved "in") "input"
 
-    describe "function" $ do
-      it "parses simple lambda expressions" $ do
-        parse function "x: {}" `gives` Fun (Lambda "x") (AttrSet False [])
-        parse function "x: y: rec{}" `gives` Fun (Lambda "x") (Fun (Lambda "y") (AttrSet True []))
-      it "parses attribute set patterns" $ do
-        parse function "{}: {}" `gives` Fun (AttrSetP Nothing []) (AttrSet False [])
-        parse function "{a ? b, c}: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Ident "b")),("c",Nothing)]) (AttrSet False [])
-
     describe "expr" $ do
       it "parses an empty attribute set" $ do
         parse expr "{}" `gives` AttrSet False []
@@ -438,7 +422,7 @@ main = do
         parse expr "abc.def" `gives` Deref (Ident "abc") (Ident "def")
         parse expr "a.b.c" `gives` Deref (Deref (Ident "a") (Ident "b")) (Ident "c")
       it "parses recursive attribute sets" $
-        parse expr "rec { id = x: x; }" `gives` AttrSet True [Assign (SIdent ["id"]) (Fun (Lambda "x") (Ident "x"))]
+        parse expr "rec { id = x: x; }" `gives` AttrSet True [Assign (SIdent ["id"]) (Fun (Ident "x") (Ident "x"))]
       it "parses boolean expressions" $ do
         parse expr "true" `gives` Ident "true"
         parse expr "false" `gives` Ident "false"
@@ -454,11 +438,14 @@ main = do
         parse expr "a && b || c" `gives` Or (And (Ident "a") (Ident "b")) (Ident "c")
         parse expr "a || b && c" `gives` Or (Ident "a") (And (Ident "b") (Ident "c"))
         parse expr "(a -> b) -> c" `gives` Implies (Implies (Ident "a") (Ident "b")) (Ident "c")
-      it "parses functions" $ do
-        parse expr "{ id = x: x; }" `gives` AttrSet False [Assign (SIdent ["id"]) (Fun (Lambda "x") (Ident "x"))]
-        parse expr "{}: {}" `gives` Fun (AttrSetP Nothing []) (AttrSet False [])
-        parse expr "{}: rec {}" `gives` Fun (AttrSetP Nothing []) (AttrSet True [])
-        parse expr "{ a?null, b }: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Ident "null")),("b",Nothing)]) (AttrSet False [])
+      it "parses simple lambda expressions" $ do
+        parse expr "x: {}" `gives` Fun (Ident "x") (AttrSet False [])
+        parse expr "x: y: rec{}" `gives` Fun (Ident "x") (Fun (Ident "y") (AttrSet True []))
+      it "parses attribute set patterns" $ do
+        parse expr "{}: {}" `gives` Fun (AttrSet False []) (AttrSet False [])
+        parse expr "{a ? b, c}: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Ident "b")),("c",Nothing)]) (AttrSet False [])
+        parse expr "{ id = x: x; }" `gives` AttrSet False [Assign (SIdent ["id"]) (Fun (Ident "x") (Ident "x"))]
+        parse expr "{ a?null, b }: rec {}" `gives` Fun (AttrSetP Nothing [("a",Just (Ident "null")),("b",Nothing)]) (AttrSet True [])
         parse expr "{ a?c.d }: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Deref (Ident "c") (Ident "d")))]) (AttrSet False [])
         parse expr "{ a?c.d, ... }: {}" `gives` Fun (AttrSetP Nothing [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (AttrSet False [])
         parse expr "e@{ a?c.d, ... }: {}" `gives` Fun (AttrSetP (Just "e") [("a",Just (Deref (Ident "c") (Ident "d"))),("...",Nothing)]) (AttrSet False [])
