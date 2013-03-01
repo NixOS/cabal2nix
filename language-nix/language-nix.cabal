@@ -20,8 +20,14 @@ Library
   Build-Depends:        base >= 3 && < 5, parsec, wl-pprint, transformers, QuickCheck
   Ghc-Options:          -Wall
 
+Executable parse-nix
+  main-is:              parse-nix.hs
+  Build-Depends:        base, language-nix, parsec, wl-pprint, transformers, QuickCheck
+  Ghc-Options:          -Wall
+
 Test-Suite self-test
   type:                 exitcode-stdio-1.0
   main-is:              self-test.hs
   build-depends:        base, language-nix, parsec, wl-pprint, transformers,
                         doctest, QuickCheck, hspec, HUnit
+  Ghc-Options:          -Wall
