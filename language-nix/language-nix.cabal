@@ -1,7 +1,7 @@
 name:                   language-nix
 version:                1.0
 synopsis:               Haskell AST and Parsers for th Nix language
-description:		This library provides parsec combinators that parse Nix into an AST.
+description:            This library provides parsec combinators that parse Nix into an AST.
 homepage:               https://github.com/peti/language-nix
 license:                BSD3
 license-file:           LICENSE
@@ -15,11 +15,13 @@ Source-Repository head
   Type:                 git
   Location:             git://github.com/peti/language-nix.git
 
-executable language-nix
-  main-is:              NixParser.hs
-  build-depends:        base >= 2 && < 5, transformers, parsec, QuickCheck, hspec, doctest, wl-pprint, HUnit
+Library
+  Exposed-Modules:      Language.Nix
+  Build-Depends:        base >= 3 && < 5, parsec, wl-pprint, transformers, QuickCheck
+  Ghc-Options:          -Wall
 
-Test-Suite test-language-nix
+Test-Suite self-test
   type:                 exitcode-stdio-1.0
-  main-is:              NixParser.hs
-  build-depends:        base, transformers, parsec, QuickCheck, hspec, doctest, wl-pprint, HUnit
+  main-is:              self-test.hs
+  build-depends:        base, language-nix, parsec, wl-pprint, transformers,
+                        doctest, QuickCheck, hspec, HUnit
