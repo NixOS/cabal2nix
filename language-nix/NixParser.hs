@@ -290,14 +290,14 @@ userinfo :: NixParser String
 userinfo = many (unreservedChars <|> escapedChars <|> oneOf ";:&=+$,")
 
 attrSet :: NixParser Expr
-attrSet = AttrSet <$> option False (True <$ reserved "rec") <*> braces (many attribute)
+attrSet = AttrSet <$> option False (True <$ reserved "rec") <*> braces (attribute `endBy` semi)
 
 scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parse.identifier nixLexer) dot
 
 attribute :: NixParser Attr
-attribute =  (Assign <$> (SIdent . return <$> Parse.stringLiteral nixLexer <|> scopedIdentifier) <* assign <*> expr <* semi)
-         <|> (Inherit <$> (symbol "inherit" *> option (SIdent []) (parens scopedIdentifier)) <*> (many1 (Parse.identifier nixLexer) <* semi))
+attribute =  (Assign <$> (SIdent . return <$> Parse.stringLiteral nixLexer <|> scopedIdentifier) <* assign <*> expr)
+         <|> (Inherit <$> (symbol "inherit" *> option (SIdent []) (parens scopedIdentifier)) <*> many1 (Parse.identifier nixLexer))
 
 list :: NixParser Expr
 list = List <$> brackets (many listExpr)
