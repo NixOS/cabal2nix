@@ -156,8 +156,3 @@ main = do
         parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (AttrSet False [Inherit (SIdent []) ["d"]])) (Ident "e")
       it "parses with statements" $
         parse expr "with a; a" `gives` Apply (With (Ident "a")) (Ident "a")
-
-allPackages, top, nixos :: IO (Either ParseError Expr)
-allPackages = parseNixFile "/home/simons/.nix-defexpr/pkgs/top-level/all-packages.nix"
-top = parseNixFile "/home/simons/.nix-defexpr/default.nix"
-nixos = parseNixFile "/etc/nixos/configuration.nix"
