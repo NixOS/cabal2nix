@@ -21,7 +21,6 @@ import Test.HUnit.Base ( assertFailure, assertEqual )
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.DocTest
-import Data.List
 
 ----- Nix Language Definition for Parsec --------------------------------------
 
@@ -311,11 +310,11 @@ simplePattern :: NixParser Pattern
 simplePattern = Lambda <$> Parse.identifier nixLexer
 
 attrSetPattern :: NixParser Pattern
-attrSetPattern = AttrSetP <$> optionMaybe atPattern <*> attrSetPattern
+attrSetPattern = AttrSetP <$> optionMaybe atPattern <*> setPattern
   where
-    atPattern      = Parse.identifier nixLexer <* reserved "@"
-    attrSetPattern = braces $ commaSep $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr) <|> ellipsis
-    ellipsis       = ("...",Nothing) <$ reserved "..."
+    atPattern  = Parse.identifier nixLexer <* reserved "@"
+    setPattern = braces $ commaSep $ (,) <$> Parse.identifier nixLexer <*> optionMaybe (reservedOp "?" >> expr) <|> ellipsis
+    ellipsis   = ("...",Nothing) <$ reserved "..."
 
 letExpr :: NixParser Expr
 letExpr = Let <$> (reserved "let" *> many1 letAssignment) <*> (reserved "in" *> expr)
