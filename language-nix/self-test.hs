@@ -61,6 +61,8 @@ main = do
         parse literal "claus/ist/der/beste" `gives` Lit "claus/ist/der/beste"
       it "parses URIs" $
         parse literal "http://example.org" `gives` Lit "http://example.org"
+      it "parses antiquotation" $
+        parse literal "\"nvidia-x11-${versionNumber}${optionalString (!libsOnly) \"-${kernel.version}\"}\"" `gives` Lit ""
 
     describe "attrSet" $ do
       it "parses an empty attribute set" $ do
