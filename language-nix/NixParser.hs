@@ -149,12 +149,12 @@ term = choice [ parens expr
               , list
               , try function
               , attrSet
-              , try letExpr
+              , letExpr
+              , reserved "import" >> Import <$> expr
+              , reserved "with" >> With <$> expr <* semi
+              , reserved "assert" >> Assert <$> expr <* semi
+              , IfThenElse <$> (reserved "if" *> expr) <*> (reserved "then" *> expr) <*> (reserved "else" *> expr)
               , try literal
-              , try (reserved "import" >> Import <$> expr)
-              , try (reserved "with" >> With <$> expr <* semi)
-              , try (reserved "assert" >> Assert <$> expr <* semi)
-              , try (IfThenElse <$> (reserved "if" *> expr) <*> (reserved "then" *> expr) <*> (reserved "else" *> expr))
               , identifier
               ]
 
@@ -188,25 +188,25 @@ identifier :: NixParser Expr
 identifier = Ident <$> Parse.identifier nixLexer
 
 literal :: NixParser Expr
-literal = Lit <$> (Parse.stringLiteral nixLexer <|> nixString <|> natural <|> literalURL)
+literal = Lit <$> (Parse.stringLiteral nixLexer <|> nixString <|> natural <|> literalURI)
 
 nixString :: NixParser String
-nixString = lexeme $ between (string "''") (string "''") (many (try (noneOf "'" <|> (char '\'' >> notFollowedBy (char '\'') >> return '\''))))
+nixString = lexeme $ between (string "''") (string "''") (many (noneOf "'" <|> try (char '\'' <* notFollowedBy (char '\''))))
 
-literalURL :: NixParser String
-literalURL = try absoluteURI <|> relativeURI
+literalURI :: NixParser String
+literalURI = lexeme $ try absoluteURI <|> relativeURI
 
 absoluteURI :: NixParser String
-absoluteURI = lexeme $ (++) <$> scheme <*> ((:) <$> char ':' <*> (try hierPart <|> opaquePart))
+absoluteURI = (++) <$> scheme <*> ((:) <$> char ':' <*> (hierPart <|> opaquePart))
 
 relativeURI :: NixParser String
-relativeURI = lexeme $ (++) <$> (absPath <|> relPath) <*> option "" (char '?' >> query)
+relativeURI = (++) <$> (absPath <|> relPath) <*> option "" (char '?' >> query)
 
 absPath :: NixParser String
 absPath = (:) <$> char '/' <*> pathSegments
 
 authority :: NixParser String
-authority = try server <|> regName
+authority = server <|> regName
 
 domainlabel :: NixParser String
 domainlabel = (:) <$> alphaNum <*> option "" ((++) <$> many (char '-') <*> domainlabel)
@@ -218,7 +218,7 @@ hierPart :: NixParser String
 hierPart = (++) <$> (try netPath <|> absPath) <*> option "" (char '?' >> query)
 
 host :: NixParser String
-host = try hostname <|> ipv4address
+host = hostname <|> ipv4address
 
 hostname :: NixParser String
 hostname = many (domainlabel >> char '.') >> toplabel >> option "" (string ".")
@@ -245,7 +245,7 @@ pathSegments :: NixParser String
 pathSegments = (++) <$> segment <*> (concat <$> many ((:) <$> char '/' <*> segment))
 
 pchar :: NixParser Char
-pchar = try unreservedChars <|> try escapedChars <|> oneOf ":@&=+$,"
+pchar = unreservedChars <|> escapedChars <|> oneOf ":@&=+$,"
 
 port :: NixParser String
 port = many1 digit
@@ -254,7 +254,7 @@ query :: NixParser String
 query = many uric
 
 regName :: NixParser String
-regName = many1 (try unreservedChars <|> try escapedChars <|> oneOf "$,:@&=+") -- Note that ';' has been removed here!
+regName = many1 (unreservedChars <|> escapedChars <|> oneOf "$,:@&=+") -- Note that ';' has been removed here!
 
 relPath :: NixParser String
 relPath = (++) <$> relSegment <*> absPath
@@ -275,19 +275,19 @@ server :: NixParser String
 server = option "" (option "" ((++) <$> userinfo <*> string "@") >> hostport)
 
 toplabel :: NixParser Char
-toplabel = try letter <|> (letter >> many (alphaNum <|> char '-') >> alphaNum)
+toplabel = letter <|> (letter >> many (alphaNum <|> char '-') >> alphaNum)
 
 unreservedChars :: NixParser Char
-unreservedChars = try alphaNum <|> markChars
+unreservedChars = alphaNum <|> markChars
 
 uric :: NixParser Char
-uric = try reservedChars <|> try unreservedChars <|> escapedChars
+uric = reservedChars <|> unreservedChars <|> escapedChars
 
 uricNoSlash :: NixParser Char
-uricNoSlash = try unreservedChars <|> try escapedChars <|> oneOf ";?:@&=+$,"
+uricNoSlash = unreservedChars <|> escapedChars <|> oneOf ";?:@&=+$,"
 
 userinfo :: NixParser String
-userinfo = many (try unreservedChars <|> try escapedChars <|> oneOf ";:&=+$,")
+userinfo = many (unreservedChars <|> escapedChars <|> oneOf ";:&=+$,")
 
 attrSet :: NixParser Expr
 attrSet = AttrSet <$> option False (True <$ reserved "rec") <*> braces (many attribute)
@@ -296,8 +296,7 @@ scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parse.identifier nixLexer) dot
 
 attribute :: NixParser Attr
-attribute =  ((\x -> Assign (SIdent [x])) <$> (Parse.stringLiteral nixLexer) <* assign <*> expr <* semi)
-         <|> (Assign <$> scopedIdentifier <* assign <*> expr <* semi)
+attribute =  (Assign <$> (SIdent . return <$> Parse.stringLiteral nixLexer <|> scopedIdentifier) <* assign <*> expr <* semi)
          <|> (Inherit <$> (symbol "inherit" *> option (SIdent []) (parens scopedIdentifier)) <*> (many1 (Parse.identifier nixLexer) <* semi))
 
 list :: NixParser Expr
