@@ -323,7 +323,7 @@ letAssignment = (,) <$> Parsec.identifier nixLexer <* assign <*> expr <* semi
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = Parsec.parse expr path <$> readFile path
 
-parse' :: NixParser a -> String -> FilePath -> Either ParseError a
+parse' :: NixParser a -> SourceName -> String -> Either ParseError a
 parse' = Parsec.parse
 
 parse :: NixParser a -> String -> Either ParseError a
