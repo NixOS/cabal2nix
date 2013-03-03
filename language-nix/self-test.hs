@@ -3,6 +3,7 @@
 module Main ( main ) where
 
 import Language.Nix
+import Data.Map
 import Text.PrettyPrint.Leijen ( pretty )
 import qualified Text.Parsec.Token as Parsec ( reservedNames )
 import Test.DocTest
@@ -168,4 +169,6 @@ main = do
         run "http://example.org" `gives` StrV "http://example.org"
       it "can evaluate hand-picked Nix expressions" $ do
         run "rec { y = \"bar\"; f = x: \"foo\" + x; v = f y; }.v" `gives` StrV "foobar"
-        run "bla or false" `gives` BoolV False
+        run "{ a.a.a=1; a.a.b=2; a.b=3; }" `gives` AttrSetV (fromList [("a",AttrSetV (fromList [("a",AttrSetV (fromList [("a",StrV "1"),("b",StrV "2")])),("b",StrV "3")]))])
+        run "{ a.a.a=1; a.a.b=2; a.b=3; }.a.a.a" `gives` StrV "1"
+--      run "bla or false" `gives` BoolV False
