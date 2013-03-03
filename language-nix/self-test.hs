@@ -11,7 +11,7 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.HUnit.Base ( assertFailure, assertEqual )
 
-gives :: (Eq a, Show a) => Either ParseError a -> a -> Expectation
+gives :: (Show err, Eq a, Show a) => Either err a -> a -> Expectation
 gives x y = either (assertFailure . msg) (assertEqual "" y) x
   where msg z = "expected: " ++ show y ++ "\nbut got parser error: " ++ show z
 
