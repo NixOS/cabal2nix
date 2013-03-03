@@ -159,3 +159,12 @@ main = do
         parse expr "if a b then c { inherit d; } else e" `gives` IfThenElse (Apply (Ident "a") (Ident "b")) (Apply (Ident "c") (AttrSet False [Inherit (SIdent []) ["d"]])) (Ident "e")
       it "parses with statements" $
         parse expr "with a; a" `gives` Apply (With (Ident "a")) (Ident "a")
+
+    describe "run" $ do
+      it "can evaluate simple data types" $ do
+        run "null" `gives` NullV
+        run "\"null\"" `gives` StrV "null"
+        run "123" `gives` StrV "123"
+        run "http://example.org" `gives` StrV "http://example.org"
+      it "can evaluate recursive attribute sets" $
+        run "rec { y = \"bar\"; f = x: \"foo\" ++ x; v = f y; }.v" `gives` StrV "foobar"

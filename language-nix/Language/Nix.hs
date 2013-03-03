@@ -9,7 +9,7 @@
 module Language.Nix
   (
     -- * Evaluating the Nix Language
-    Value(..), run,
+    Value(..), run, run', eval, builtins,
 
     -- * Running the Parser
     parseNixFile, parse, parse', ParseError,
@@ -349,6 +349,16 @@ data Value = NullV
            | FunV (Value -> Value)
   deriving (Show)
 
+instance Eq Value where
+  NullV == NullV                = True
+  StrV x == StrV y              = x == y
+  BoolV x == BoolV y            = x == y
+  AttrSetV x == AttrSetV y      = x == y
+  ListV x == ListV y            = x == y
+  FunV _ == _                   = error "cannot compare function types"
+  _ == FunV _                   = error "cannot compare function types"
+  _ == _                        = False
+
 coerceDict :: Value -> Dict
 coerceDict (AttrSetV e) = e
 coerceDict e            = error ("cannot coerce expression to attribute set: " ++ show e)
@@ -379,18 +389,28 @@ eval :: Expr -> Reader Dict Value
 eval (Lit v)                    = return (StrV v)
 eval (Ident v)                  = getVar v
 eval (AttrSet False attrs)      = AttrSetV . unionsWith mergeDicts <$> map fromList <$> mapM evalAttr attrs
+-- eval (AttrSet True attrs)       = mdo r@(AttrSetV dict) <- local (`union` dict) (eval (AttrSet False attrs))
+--                                       return r
+
 eval (AttrSet True attrs)       = mdo r@(AttrSetV dict) <- local (`union` dict) (eval (AttrSet False attrs))
                                       return r
+
 eval (Fun (Ident x) y)          = do { env <- ask; return (FunV (\v -> runReader (eval y) (insert x v env))) }
+-- eval (Fun (AttrSetP a as) y)    = undefined
 eval (Apply x y)                = coerceFun <$> eval x <*> eval y
 eval (Concat x y)               = StrV <$> ((++) <$> (coerceStr <$> eval x) <*> (coerceStr <$> eval y))
+eval (Deref x (Ident y))        = coerceDict <$> eval x >>= \x' -> local (const x') (getVar y)
+
 eval e                          = fail ("unsupported: " ++ show e)
 
 mergeDicts :: Value -> Value -> Value
 mergeDicts x y = AttrSetV (unionWith mergeDicts (coerceDict x) (coerceDict y))
 
-run :: Expr -> Value
-run e = runReader (eval e) builtins
+run :: String -> Either ParseError Value
+run input = parse expr input >>= Right <$> run'
+
+run' :: Expr -> Value
+run' e = runReader (eval e) builtins
 
 builtins :: Dict
 builtins = fromList
@@ -398,7 +418,3 @@ builtins = fromList
            , ("false", BoolV False)
            , ("null", NullV)
            ]
-
-foo :: IO Expr
-foo = do Right r <- parseNixFile "/home/simons/.nix-defexpr/pkgs/development/libraries/haskell/hsemail/default.nix"
-         return r
