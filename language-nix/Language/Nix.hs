@@ -1,3 +1,4 @@
+{-# LANGUAGE RecursiveDo #-}
 {- |
    Module      :  Language.Nix
    Copyright   :  (c) 2013 Peter Simons
@@ -6,7 +7,11 @@
  -}
 
 module Language.Nix
-  ( -- * Running the Parser
+  (
+    -- * Evaluating the Nix Language
+    Value(..), run,
+
+    -- * Running the Parser
     parseNixFile, parse, parse', ParseError,
 
     -- * Nix Language AST
@@ -34,6 +39,11 @@ import Text.Parsec.Expr
 import Text.PrettyPrint.Leijen ( Pretty(..) )
 import qualified Text.PrettyPrint.Leijen as Pretty
 import Test.QuickCheck
+
+import Text.Show.Functions ( )
+import Control.Monad.Reader
+import qualified Data.Map as Map
+import Data.Map hiding ( map )
 
 ----- Nix Language Definition for Parsec --------------------------------------
 
@@ -166,12 +176,11 @@ term = choice [ parens expr
               ]
 
 operatorTable :: [[NixOperator]]
-operatorTable = x1 : x2 : x3 : [ Infix (Apply <$ whitespace) AssocRight ] : xs
-  where (x1:x2:x3:xs) = listOperatorTable
+operatorTable = x1 : x2 : [ Infix (Apply <$ whitespace) AssocRight ] : xs
+  where (x1:x2:xs) = listOperatorTable
 
 listOperatorTable :: [[NixOperator]]
-listOperatorTable = [ [ binary ":" Fun AssocRight ]
-                    , [ binary "." Deref AssocLeft ]
+listOperatorTable = [ [ binary "." Deref AssocLeft ]
                     , [ binary "or" DefAttr AssocNone ]
                 {-  , [ Infix (Apply <$ whitespace) AssocRight ] -}
                     , [ binary "?" HasAttr AssocNone ]
@@ -184,6 +193,7 @@ listOperatorTable = [ [ binary ":" Fun AssocRight ]
                     , [ binary "&&" And AssocLeft ]
                     , [ binary "||" Or AssocLeft ]
                     , [ binary "->" Implies AssocNone ]
+                    , [ binary ":" Fun AssocRight ]
                     ]
   where
     binary :: String -> (Expr -> Expr -> Expr) -> Assoc -> NixOperator
@@ -328,3 +338,67 @@ parse' = Parsec.parse
 
 parse :: NixParser a -> String -> Either ParseError a
 parse p input = parse' (p <* eof) (show input) input
+
+type Dict = Map String Value
+
+data Value = NullV
+           | StrV String
+           | BoolV Bool
+           | AttrSetV Dict
+           | ListV [Value]
+           | FunV (Value -> Value)
+  deriving (Show)
+
+coerceDict :: Value -> Dict
+coerceDict (AttrSetV e) = e
+coerceDict e            = error ("cannot coerce expression to attribute set: " ++ show e)
+
+coerceFun :: Value -> (Value -> Value)
+coerceFun (FunV f) = f
+coerceFun e        = error ("cannot coerce expression to function: " ++ show e)
+
+coerceStr :: Value -> String
+coerceStr (StrV x) = x
+coerceStr e        = error ("cannot coerce expression to string: " ++ show e)
+
+getVar :: String -> Reader Dict Value
+getVar v = ask >>= maybe (fail ("undefined identifier " ++ show v)) return . Map.lookup v
+
+getScopedVar :: [String] -> Reader Dict Value
+getScopedVar   []   = fail "invalid empty scoped variable"
+getScopedVar (k:[]) = getVar k
+getScopedVar (k:ks) = getVar k >>= \e -> local (union (coerceDict e)) (getScopedVar ks)
+
+evalAttr :: Attr -> Reader Dict [(String,Value)]
+evalAttr (Inherit (SIdent k) is)    = forM is $ \i -> (,) i <$> getScopedVar (k++[i])
+evalAttr (Assign (SIdent   []) _)   = fail "invalid empty scoped identifier in assignment"
+evalAttr (Assign (SIdent (k:[])) e) = eval e >>= return . return . (,) k
+evalAttr (Assign (SIdent (k:ks)) e) = evalAttr (Assign (SIdent ks) e) >>= return . return . (,) k . AttrSetV . fromList
+
+eval :: Expr -> Reader Dict Value
+eval (Lit v)                    = return (StrV v)
+eval (Ident v)                  = getVar v
+eval (AttrSet False attrs)      = AttrSetV . unionsWith mergeDicts <$> map fromList <$> mapM evalAttr attrs
+eval (AttrSet True attrs)       = mdo r@(AttrSetV dict) <- local (`union` dict) (eval (AttrSet False attrs))
+                                      return r
+eval (Fun (Ident x) y)          = do { env <- ask; return (FunV (\v -> runReader (eval y) (insert x v env))) }
+eval (Apply x y)                = coerceFun <$> eval x <*> eval y
+eval (Concat x y)               = StrV <$> ((++) <$> (coerceStr <$> eval x) <*> (coerceStr <$> eval y))
+eval e                          = fail ("unsupported: " ++ show e)
+
+mergeDicts :: Value -> Value -> Value
+mergeDicts x y = AttrSetV (unionWith mergeDicts (coerceDict x) (coerceDict y))
+
+run :: Expr -> Value
+run e = runReader (eval e) builtins
+
+builtins :: Dict
+builtins = fromList
+           [ ("true", BoolV True)
+           , ("false", BoolV False)
+           , ("null", NullV)
+           ]
+
+foo :: IO Expr
+foo = do Right r <- parseNixFile "/home/simons/.nix-defexpr/pkgs/development/libraries/haskell/hsemail/default.nix"
+         return r

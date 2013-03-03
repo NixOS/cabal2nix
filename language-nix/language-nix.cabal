@@ -17,17 +17,20 @@ Source-Repository head
 
 Library
   Exposed-Modules:      Language.Nix
-  Build-Depends:        base >= 3 && < 5, parsec, wl-pprint, transformers, QuickCheck
+  Build-Depends:        base >= 3 && < 5, parsec, wl-pprint, transformers, QuickCheck,
+                        containers, mtl
+  Extensions:           RecursiveDo
   Ghc-Options:          -Wall
 
 Executable parse-nix
   main-is:              parse-nix.hs
-  Build-Depends:        base, language-nix, parsec, wl-pprint, transformers, QuickCheck
+  Build-Depends:        base, language-nix, parsec, wl-pprint, transformers, QuickCheck,
+                        containers, mtl
   Ghc-Options:          -Wall
 
 Test-Suite self-test
   type:                 exitcode-stdio-1.0
   main-is:              self-test.hs
   build-depends:        base, language-nix, parsec, wl-pprint, transformers,
-                        doctest, QuickCheck, hspec, HUnit
+                        containers, mtl, doctest, QuickCheck, hspec, HUnit
   Ghc-Options:          -Wall
