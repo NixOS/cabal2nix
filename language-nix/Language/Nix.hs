@@ -9,7 +9,7 @@
 module Language.Nix
   (
     -- * Evaluating the Nix Language
-    Value(..), run, run', eval, builtins,
+    Value(..), run, run', runEval, eval, builtins,
 
     -- * Running the Parser
     parseNixFile, parse, parse', ParseError,
@@ -40,6 +40,7 @@ import Text.PrettyPrint.Leijen ( Pretty(..) )
 import qualified Text.PrettyPrint.Leijen as Pretty
 import Test.QuickCheck
 
+-- import Debug.Trace
 import Text.Show.Functions ( )
 import Control.Monad.Reader
 import qualified Data.Map as Map
@@ -339,7 +340,11 @@ parse' = Parsec.parse
 parse :: NixParser a -> String -> Either ParseError a
 parse p input = parse' (p <* eof) (show input) input
 
+----- Nix Evaluation ----------------------------------------------------------
+
 type Dict = Map String Value
+
+type Eval a = Reader Dict a
 
 data Value = NullV
            | StrV String
@@ -371,34 +376,30 @@ coerceStr :: Value -> String
 coerceStr (StrV x) = x
 coerceStr e        = error ("cannot coerce expression to string: " ++ show e)
 
-getVar :: String -> Reader Dict Value
+getVar :: String -> Eval Value
 getVar v = ask >>= maybe (fail ("undefined identifier " ++ show v)) return . Map.lookup v
 
-getScopedVar :: [String] -> Reader Dict Value
+getScopedVar :: [String] -> Eval Value
 getScopedVar   []   = fail "invalid empty scoped variable"
 getScopedVar (k:[]) = getVar k
 getScopedVar (k:ks) = getVar k >>= \e -> local (union (coerceDict e)) (getScopedVar ks)
 
-evalAttr :: Attr -> Reader Dict [(String,Value)]
-evalAttr (Inherit (SIdent k) is)    = forM is $ \i -> (,) i <$> getScopedVar (k++[i])
+evalAttr :: Attr -> Eval Dict
+evalAttr (Inherit (SIdent k) is)    = fromList <$> forM is (\i -> (,) i <$> getScopedVar (k++[i]))
 evalAttr (Assign (SIdent   []) _)   = fail "invalid empty scoped identifier in assignment"
-evalAttr (Assign (SIdent (k:[])) e) = eval e >>= return . return . (,) k
-evalAttr (Assign (SIdent (k:ks)) e) = evalAttr (Assign (SIdent ks) e) >>= return . return . (,) k . AttrSetV . fromList
+evalAttr (Assign (SIdent (k:[])) e) = singleton k <$> eval e
+evalAttr (Assign (SIdent (k:ks)) e) = (singleton k . AttrSetV) <$> evalAttr (Assign (SIdent ks) e)
 
-eval :: Expr -> Reader Dict Value
+eval :: Expr -> Eval Value
+-- eval e | trace ("eval: " ++ show e) False = undefined
 eval (Lit v)                    = return (StrV v)
 eval (Ident v)                  = getVar v
-eval (AttrSet False attrs)      = AttrSetV . unionsWith mergeDicts <$> map fromList <$> mapM evalAttr attrs
--- eval (AttrSet True attrs)       = mdo r@(AttrSetV dict) <- local (`union` dict) (eval (AttrSet False attrs))
---                                       return r
-
-eval (AttrSet True attrs)       = mdo r@(AttrSetV dict) <- local (`union` dict) (eval (AttrSet False attrs))
-                                      return r
-
-eval (Fun (Ident x) y)          = do { env <- ask; return (FunV (\v -> runReader (eval y) (insert x v env))) }
+eval (AttrSet False as)         = AttrSetV . unionsWith mergeDicts <$> mapM evalAttr as
+eval (AttrSet True as)          = mdo { r@(AttrSetV d) <- local (`union` d) (eval (AttrSet False as)); return r }
+eval (Fun (Ident x) y)          = do { env <- ask; return (FunV (\v -> run' y (insert x v env))) }
 -- eval (Fun (AttrSetP a as) y)    = undefined
 eval (Apply x y)                = coerceFun <$> eval x <*> eval y
-eval (Concat x y)               = StrV <$> ((++) <$> (coerceStr <$> eval x) <*> (coerceStr <$> eval y))
+eval (Append x y)               = StrV <$> ((++) <$> (coerceStr <$> eval x) <*> (coerceStr <$> eval y))
 eval (Deref x (Ident y))        = coerceDict <$> eval x >>= \x' -> local (const x') (getVar y)
 
 eval e                          = fail ("unsupported: " ++ show e)
@@ -407,10 +408,13 @@ mergeDicts :: Value -> Value -> Value
 mergeDicts x y = AttrSetV (unionWith mergeDicts (coerceDict x) (coerceDict y))
 
 run :: String -> Either ParseError Value
-run input = parse expr input >>= Right <$> run'
+run = parse expr >=> Right <$> (`run'` builtins)
 
-run' :: Expr -> Value
-run' e = runReader (eval e) builtins
+run' :: Expr -> Dict -> Value
+run' = runEval . eval
+
+runEval :: Eval a -> Dict -> a
+runEval = runReader
 
 builtins :: Dict
 builtins = fromList
