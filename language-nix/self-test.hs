@@ -166,5 +166,6 @@ main = do
         run "\"null\"" `gives` StrV "null"
         run "123" `gives` StrV "123"
         run "http://example.org" `gives` StrV "http://example.org"
-      it "can evaluate recursive attribute sets" $
-        run "rec { y = \"bar\"; f = x: \"foo\" ++ x; v = f y; }.v" `gives` StrV "foobar"
+      it "can evaluate hand-picked Nix expressions" $ do
+        run "rec { y = \"bar\"; f = x: \"foo\" + x; v = f y; }.v" `gives` StrV "foobar"
+        run "bla or false" `gives` BoolV False
