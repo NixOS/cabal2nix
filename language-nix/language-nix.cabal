@@ -19,7 +19,6 @@ Library
   Exposed-Modules:      Language.Nix
   Build-Depends:        base >= 3 && < 5, parsec, wl-pprint, transformers, QuickCheck,
                         containers, mtl
-  Extensions:           RecursiveDo
   Ghc-Options:          -Wall
 
 Executable parse-nix

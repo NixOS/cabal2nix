@@ -1,4 +1,3 @@
-{-# LANGUAGE RecursiveDo #-}
 {- |
    Module      :  Language.Nix
    Copyright   :  (c) 2013 Peter Simons
@@ -40,11 +39,16 @@ import Text.PrettyPrint.Leijen ( Pretty(..) )
 import qualified Text.PrettyPrint.Leijen as Pretty
 import Test.QuickCheck
 
--- import Debug.Trace
 import Text.Show.Functions ( )
 import Control.Monad.Reader
+-- import qualified Control.Monad.Error as ErrT
+import Control.Monad.Error ( ErrorT, runErrorT )
 import qualified Data.Map as Map
 import Data.Map hiding ( map )
+
+-- import Debug.Trace
+trace :: a -> b -> b
+trace _ b = b
 
 ----- Nix Language Definition for Parsec --------------------------------------
 
@@ -344,7 +348,9 @@ parse p input = parse' (p <* eof) (show input) input
 
 type Dict = Map String Value
 
-type Eval a = Reader Dict a
+type Error = String
+
+type Eval a = ErrorT Error (Reader Dict) a
 
 data Value = NullV
            | StrV String
@@ -379,42 +385,77 @@ coerceStr e        = error ("cannot coerce expression to string: " ++ show e)
 getVar :: String -> Eval Value
 getVar v = ask >>= maybe (fail ("undefined identifier " ++ show v)) return . Map.lookup v
 
-getScopedVar :: [String] -> Eval Value
-getScopedVar   []   = fail "invalid empty scoped variable"
-getScopedVar (k:[]) = getVar k
-getScopedVar (k:ks) = getVar k >>= \e -> local (union (coerceDict e)) (getScopedVar ks)
+-- getScopedVar :: [String] -> Eval Value
+-- getScopedVar   []   = fail "invalid empty scoped variable"
+-- getScopedVar (k:[]) = getVar k
+-- getScopedVar (k:ks) = getVar k >>= \e -> local (union (coerceDict e)) (getScopedVar ks)
 
-evalAttr :: Attr -> Eval Dict
-evalAttr (Inherit (SIdent k) is)    = fromList <$> forM is (\i -> (,) i <$> getScopedVar (k++[i]))
-evalAttr (Assign (SIdent   []) _)   = fail "invalid empty scoped identifier in assignment"
-evalAttr (Assign (SIdent (k:[])) e) = singleton k <$> eval e
-evalAttr (Assign (SIdent (k:ks)) e) = (singleton k . AttrSetV) <$> evalAttr (Assign (SIdent ks) e)
+-- evalAttr :: Attr -> Eval Dict
+-- evalAttr (Inherit (SIdent k) is)    = fromList <$> forM is (\i -> (,) i <$> getScopedVar (k++[i]))
+-- evalAttr (Assign (SIdent   []) _)   = fail "invalid empty scoped identifier in assignment"
+-- evalAttr (Assign (SIdent (k:[])) e) = singleton k <$> eval e
+-- evalAttr (Assign (SIdent (k:ks)) e) = (singleton k . AttrSetV) <$> evalAttr (Assign (SIdent ks) e)
+
+simplifyAttr :: Attr -> Map String Expr
+simplifyAttr (Inherit (SIdent _) [])    = error "invalid empty inherit statement"
+simplifyAttr (Inherit (SIdent k) is)    = unions [ singleton i (foldl1 Deref (map Ident (k++[i]))) | i <- is]
+simplifyAttr (Assign (SIdent   []) _)   = error "invalid empty scoped identifier in assignment"
+simplifyAttr (Assign (SIdent (k:[])) e) = singleton k e
+simplifyAttr (Assign (SIdent (k:ks)) e) = singleton k (AttrSet False [Assign (SIdent ks) e])
+
+evalAttr' :: (String, Expr) -> Eval Dict
+evalAttr' (k, e) = singleton k <$> eval e
+
+evalDict :: Map String Expr -> Eval Dict
+evalDict as = unionsWith mergeDicts <$> mapM evalAttr' (assocs as)
+
+-- -- (Inherit (SIdent k) is)    = fromList <$> forM is (\i -> (,) i <$> getScopedVar (k++[i]))
+-- evalAttr' (Assign (SIdent   []) _)   = fail "invalid empty scoped identifier in assignment"
+-- evalAttr' (Assign (SIdent (k:[])) e) = singleton k <$> eval e
+-- evalAttr' (Assign (SIdent (k:ks)) e) = (singleton k . AttrSetV) <$> evalAttr (Assign (SIdent ks) e)
 
 eval :: Expr -> Eval Value
--- eval e | trace ("eval: " ++ show e) False = undefined
+eval e | trace ("eval: " ++ show e) False = undefined
 eval (Lit v)                    = return (StrV v)
 eval (Ident v)                  = getVar v
-eval (AttrSet False as)         = AttrSetV . unionsWith mergeDicts <$> mapM evalAttr as
-eval (AttrSet True as)          = mdo { r@(AttrSetV d) <- local (`union` d) (eval (AttrSet False as)); return r }
-eval (Fun (Ident x) y)          = do { env <- ask; return (FunV (\v -> run' y (insert x v env))) }
--- eval (Fun (AttrSetP a as) y)    = undefined
+eval (AttrSet False as)         = AttrSetV . unionsWith mergeDicts <$> (mapM (evalDict . simplifyAttr) as)
+
+eval (AttrSet True as)          = do
+  env <- ask
+  let e :: Map String Expr
+      e = unionsWith mergeAttrSets (map simplifyAttr as)
+  return (AttrSetV (resolve env e))
+
+-- mdo { r@(AttrSetV d) <- local (`union` d) (eval (AttrSet False as)); return r }
+
+-- eval (AttrSet False as)         = AttrSetV . unionsWith mergeDicts <$> mapM evalAttr as
+-- eval (AttrSet True as)          = mdo { r@(AttrSetV d) <- local (`union` d) (eval (AttrSet False as)); return r }
+eval (Fun (Ident x) y)          = do { env <- ask; return (FunV (\v -> runEval' (eval y) (insert x v env))) }
 eval (Apply x y)                = coerceFun <$> eval x <*> eval y
 eval (Append x y)               = StrV <$> ((++) <$> (coerceStr <$> eval x) <*> (coerceStr <$> eval y))
 eval (Deref x (Ident y))        = coerceDict <$> eval x >>= \x' -> local (const x') (getVar y)
-
+-- default catch-all to report the un-expected expression
 eval e                          = fail ("unsupported: " ++ show e)
 
 mergeDicts :: Value -> Value -> Value
 mergeDicts x y = AttrSetV (unionWith mergeDicts (coerceDict x) (coerceDict y))
 
-run :: String -> Either ParseError Value
-run = parse expr >=> Right <$> (`run'` builtins)
+mergeAttrSets :: Expr -> Expr -> Expr
+mergeAttrSets (AttrSet False x) (AttrSet False y) = AttrSet False (x++y)
+mergeAttrSets x y = error ("mergeAttrSets: cannot merge expressions " ++ show x ++ " and " ++ show y)
 
-run' :: Expr -> Dict -> Value
+run :: String -> Either Error Value
+run = either (fail . show) (`run'` builtins) . parse expr
+
+run' :: Expr -> Dict -> Either Error Value
 run' = runEval . eval
 
-runEval :: Eval a -> Dict -> a
-runEval = runReader
+runEval :: Eval a -> Dict -> Either Error a
+runEval = runReader . runErrorT
+
+runEval' :: Eval a -> Dict -> a
+runEval' f = either error id . runReader (runErrorT f)
+
 
 builtins :: Dict
 builtins = fromList
@@ -422,3 +463,17 @@ builtins = fromList
            , ("false", BoolV False)
            , ("null", NullV)
            ]
+
+resolve :: Dict -> Map String Expr -> Dict
+resolve env as = resolve' (removeKeys (keys as) env) as empty
+
+resolve' :: Dict -> Map String Expr -> Dict -> Dict
+resolve' env as dict | trace ("resolve in " ++ show env ++ " attributes " ++ show as ++ " in state " ++ show dict) False = undefined
+resolve' env as dict | Map.null as              = trace ("--> " ++ show dict) dict
+                     | Map.null dict'           = error "infinite recursion"
+                     | otherwise                = resolve' env (removeKeys ks' as) (dict'`union`dict)
+  where dict' = fromList [ (k, v) | (k,e) <- assocs as, Right v <- [runEval (eval e) (dict`union`env)] ]
+        ks'   = keys dict'
+
+removeKeys :: Ord k => [k] -> Map k a -> Map k a
+removeKeys = flip (Prelude.foldr delete)
