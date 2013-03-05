@@ -2,10 +2,15 @@
 
 module Main ( main ) where
 
-import Language.Nix ( parseNixFile )
+import Prelude ( fmap, either )
+import Language.Nix ( parseNixFile, parseNix )
 import System.Environment ( getArgs )
-import System.IO ( hPrint, stderr )
-import Control.Monad ( (>=>) )
+import System.IO ( IO, getContents, hPrint, print, stderr )
+import Control.Monad ( mapM_, (>>=), (>=>) )
 
 main :: IO ()
-main = getArgs >>= mapM_ (parseNixFile >=> either (hPrint stderr) print)
+main = do
+  args <- getArgs
+  case args of
+    [] -> fmap parseNix getContents >>= either (hPrint stderr) print
+    _  -> mapM_ (parseNixFile >=> either (hPrint stderr) print) args
