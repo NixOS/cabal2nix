@@ -1,6 +1,6 @@
 name:                   language-nix
 version:                1.0
-synopsis:               Haskell AST and Parsers for th Nix language
+synopsis:               Haskell AST and Parsers for the Nix language
 description:            This library provides parsec combinators that parse Nix into an AST.
 homepage:               https://github.com/peti/language-nix
 license:                BSD3
