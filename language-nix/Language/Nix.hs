@@ -345,7 +345,7 @@ parse' :: NixParser a -> SourceName -> String -> Either ParseError a
 parse' = Parsec.parse
 
 parse :: NixParser a -> String -> Either ParseError a
-parse p input = parse' (p <* eof) (show input) input
+parse p = parse' (p <* eof) "<string>"
 
 ----- Nix Evaluation ----------------------------------------------------------
 
@@ -421,7 +421,7 @@ eval :: Expr -> Eval Value
 eval e | trace ("eval: " ++ show e) False = undefined
 eval (Lit v)                    = return (StrV v)
 eval (Ident v)                  = getVar v
-eval (AttrSet False as)         = AttrSetV . unionsWith mergeDicts <$> (mapM (evalDict . simplifyAttr) as)
+eval (AttrSet False as)         = AttrSetV . unionsWith mergeDicts <$> mapM (evalDict . simplifyAttr) as
 
 eval (AttrSet True as)          = do
   env <- ask
