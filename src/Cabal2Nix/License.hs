@@ -10,6 +10,7 @@ fromCabalLicense (GPL (Just (Version [2] [])))     = Known "self.stdenv.lib.lice
 fromCabalLicense (GPL (Just (Version [3] [])))     = Known "self.stdenv.lib.licenses.gpl3"
 fromCabalLicense (LGPL Nothing)                    = Unknown (Just "LGPL")
 fromCabalLicense (LGPL (Just (Version [2,1] [])))  = Known "self.stdenv.lib.licenses.lgpl21"
+fromCabalLicense (LGPL (Just (Version [2] [])))  = Known "self.stdenv.lib.licenses.lgpl2"
 fromCabalLicense (LGPL (Just (Version [3] [])))    = Known "self.stdenv.lib.licenses.gpl3"
 fromCabalLicense BSD3                              = Known "self.stdenv.lib.licenses.bsd3"
 fromCabalLicense BSD4                              = Known "self.stdenv.lib.licenses.bsd4"
