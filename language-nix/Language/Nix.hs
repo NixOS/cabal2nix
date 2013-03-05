@@ -11,7 +11,7 @@ module Language.Nix
     Value(..), run, run', runEval, eval, builtins,
 
     -- * Running the Parser
-    parseNixFile, parse, parse', ParseError,
+    parseNixFile, parseNix, parse, parse', ParseError,
 
     -- * Nix Language AST
     Expr(..), ScopedIdent(..), Attr(..), genIdentifier,
@@ -337,6 +337,9 @@ letAssignment = (,) <$> Parsec.identifier nixLexer <* assign <*> expr <* semi
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = Parsec.parse expr path <$> readFile path
+
+parseNix :: String -> Either ParseError Expr
+parseNix = parse expr
 
 parse' :: NixParser a -> SourceName -> String -> Either ParseError a
 parse' = Parsec.parse
