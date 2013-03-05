@@ -15,6 +15,7 @@ module Distribution.NixOS.Derivation.License ( License(..) ) where
 
 import Distribution.NixOS.PrettyPrinting
 import Distribution.Text
+import Data.Maybe
 
 -- | The representation for licenses used in Nix derivations. Known
 -- licenses are Nix expressions -- such as @stdenv.lib.licenses.bsd3@
@@ -46,6 +47,5 @@ data License = Known String
 
 instance Text License where
   disp (Known x)   = text x
-  disp (Unknown x) = string (maybe "unknown" id x)
+  disp (Unknown x) = string (fromMaybe "unknown" x)
   parse = error "parsing Distribution.NixOS.Derivation.License is not supported yet"
-

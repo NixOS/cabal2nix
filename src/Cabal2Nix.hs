@@ -39,12 +39,12 @@ defaultConfiguration = Configuration
 
 options :: [OptDescr (Configuration -> Configuration)]
 options =
-  [ Option ['h'] ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
-  , Option []    ["sha256"]     (ReqArg (\x o -> o { optSha256 = x }) "HASH")                              "sha256 hash of source tarball"
-  , Option ['m'] ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
-  , Option ['p'] ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
-  , Option []    ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
-  , Option []    ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
+  [ Option "h" ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
+  , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = x }) "HASH")                              "sha256 hash of source tarball"
+  , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
+  , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
+  , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
+  , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
   ]
 
 usage :: String

@@ -130,7 +130,7 @@ parseDerivation buf
                   , cabalFlags     = []
                   , runHaddock     = noHaddock /= ["true"]
                   , jailbreak      = jailBreak == ["true"]
-                  , doCheck        = docheck == ["true"] || docheck == []
+                  , doCheck        = docheck == ["true"] || null docheck
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage    = ""
