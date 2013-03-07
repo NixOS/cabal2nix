@@ -3,7 +3,6 @@
 module Main ( main ) where
 
 import Language.Nix
-import Data.Map
 import Text.PrettyPrint.Leijen ( pretty )
 import qualified Text.Parsec.Token as Parsec ( reservedNames )
 import Test.DocTest
@@ -163,12 +162,15 @@ main = do
 
     describe "run" $ do
       it "can evaluate simple data types" $ do
-        run "null" `gives` NullV
-        run "\"null\"" `gives` StrV "null"
-        run "123" `gives` StrV "123"
-        run "http://example.org" `gives` StrV "http://example.org"
+        run "null" `gives` Null
+        run "true" `gives` Boolean True
+        run "false" `gives` Boolean False
+        run "\"null\"" `gives` Lit "null"
+        run "123" `gives` Lit "123"
+        run "http://example.org" `gives` Lit "http://example.org"
       it "can evaluate hand-picked Nix expressions" $ do
-        run "rec { y = \"bar\"; f = x: \"foo\" + x; v = f y; }.v" `gives` StrV "foobar"
-        run "{ a.a.a=1; a.a.b=2; a.b=3; }" `gives` AttrSetV (fromList [("a",AttrSetV (fromList [("a",AttrSetV (fromList [("a",StrV "1"),("b",StrV "2")])),("b",StrV "3")]))])
-        run "{ a.a.a=1; a.a.b=2; a.b=3; }.a.a.a" `gives` StrV "1"
---      run "bla or false" `gives` BoolV False
+        -- run "rec { y = \"bar\"; f = x: \"foo\" + x; v = f y; }.v" `gives` Lit "foobar"
+        -- run "{ a.a.a=1; a.a.b=2; a.b=3; }" `gives` AttrSetV (fromList [("a",AttrSetV (fromList [("a",AttrSetV (fromList [("a",StrV "1"),("b",StrV "2")])),("b",StrV "3")]))])
+        -- run "{ a.a.a=1; a.a.b=2; a.b=3; }.a.a.a" `gives` Lit "1"
+        run "bla or false" `gives` Boolean False
+        run "let a = \"foo\"; b = a; f = x: x+\"bar\"; in f b" `gives` Lit "foobar"
