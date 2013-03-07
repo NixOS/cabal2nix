@@ -181,7 +181,7 @@ term = choice [ parens expr
               ]
 
 operatorTable :: [[NixOperator]]
-operatorTable = x1 : x2 : [ Infix (Apply <$ whitespace) AssocRight ] : xs
+operatorTable = x1 : x2 : [ Infix (Apply <$ whitespace) AssocLeft ] : xs
   where (x1:x2:xs) = listOperatorTable
 
 listOperatorTable :: [[NixOperator]]

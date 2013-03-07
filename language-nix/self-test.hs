@@ -150,7 +150,7 @@ main = do
       it "ignores comments" $
         parse expr "# foo\n/* bar \n */ { /* bla */ }" `gives` AttrSet False []
       it "parses function application" $ do
-        parse expr "a b c" `gives` Apply (Ident "a") (Apply (Ident "b") (Ident "c"))
+        parse expr "a b c" `gives` Apply (Apply (Ident "a") (Ident "b")) (Ident "c")
         parse expr "a.b c" `gives` Apply (Deref (Ident "a") (Ident "b")) (Ident "c")
         parse expr "a{b=c.d;}" `gives` Apply (Ident "a") (AttrSet False [Assign (SIdent ["b"]) (Deref (Ident "c") (Ident "d"))])
       it "parses import statements" $ do
