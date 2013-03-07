@@ -27,6 +27,12 @@ Executable parse-nix
                         containers, mtl
   Ghc-Options:          -Wall
 
+Executable run-nix
+  main-is:              run-nix.hs
+  Build-Depends:        base, language-nix, parsec, wl-pprint, transformers, QuickCheck,
+                        containers, mtl
+  Ghc-Options:          -Wall
+
 Test-Suite self-test
   type:                 exitcode-stdio-1.0
   main-is:              self-test.hs
