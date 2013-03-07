@@ -1,4 +1,4 @@
--- self-test.hs
+-- parse-nix.hs
 
 module Main ( main ) where
 
