@@ -70,7 +70,7 @@ cudaConfigurePhase = unlines
   , "  for i in Setup.hs Setup.lhs; do"
   , "    test -f $i && ghc --make $i"
   , "  done"
-  , "  for p in $extraBuildInputs $propagatedBuildNativeInputs; do"
+  , "  for p in $extraBuildInputs $propagatedNativeBuildInputs; do"
   , "    if [ -d \"$p/include\" ]; then"
   , "      extraLibDirs=\"$extraLibDirs --extra-include-dir=$p/include\""
   , "    fi"
