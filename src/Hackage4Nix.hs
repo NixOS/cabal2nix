@@ -204,7 +204,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 badPackagePaths :: [FilePath]
 badPackagePaths = [ "haskell-platform/2011.2.0.1.nix", "haskell-platform/2011.4.0.0.nix"
                   , "haskell-platform/2012.2.0.0.nix", "haskell-platform/2012.4.0.0.nix"
-                  , "top-level/all-packages.nix"
+                  , "top-level/all-packages.nix",      "top-level/haskell-packages.nix"
                   ]
 
 -- Packages that we cannot regenerate automatically yet. This list
