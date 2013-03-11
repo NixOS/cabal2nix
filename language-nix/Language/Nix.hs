@@ -45,7 +45,7 @@ import Control.Monad.Reader
 import qualified Control.Monad.Error as ErrT
 import Control.Monad.Error hiding ( Error )
 import qualified Data.Map as Map ( )
-import Data.Map hiding ( map )
+import Data.Map hiding ( map, foldr )
 
 -- import Debug.Trace
 trace :: a -> b -> b
@@ -407,24 +407,33 @@ evalString (Append x y) = (++) <$> evalString x <*> evalString y
 evalString (Ident v)    = getEnv v >>= evalString
 evalString e            = throwError (CannotCoerceToString e)
 
+evalAttribute :: Attr -> Eval [(VarName,Expr)]
+evalAttribute (Assign (SIdent [k]) v)  = (return . (,) k) <$> eval v
+evalAttribute (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs ]
+evalAttribute e                        = throwError (Unsupported (AttrSet False [e]))
+
 eval :: Expr -> Eval Expr
 eval e | trace ("eval " ++ show e) False = undefined
-eval e@(Lit _)                  = return e
-eval e@(Boolean _)              = return e
-eval (Ident v)                  = getEnv v
-eval e@(Append _ _)             = Lit <$> evalString e
-eval e@(And _ _)                = Boolean <$> evalBool e
-eval e@(Or _ _)                 = Boolean <$> evalBool e
-eval e@(Not _)                  = Boolean <$> evalBool e
-eval e@(Equal _ _)              = Boolean <$> evalBool e
-eval e@(Inequal _ _)            = Boolean <$> evalBool e
-eval (IfThenElse b x y)         = evalBool b >>= \b' -> eval (if b' then x else y)
-eval (DefAttr x y)              = eval x `onError` (isUndefinedVariable, eval y)
-eval (Let env e)                = trace ("add to env: " ++ show env) $ local (union (fromList env)) (eval e)
-eval (Apply (Fun (Ident v) x) y)= eval y >>= \y' -> local (insert v y') (eval x)
-eval (Apply (Ident v) y)        = getEnv v >>= \x' -> eval (Apply x' y)
-eval (Apply x@(Apply _ _) y)    = eval x >>= \x' -> eval (Apply x' y)
-eval e                          = throwError (Unsupported e)
+eval e@(Lit _)                                  = return e
+eval e@(Boolean _)                              = return e
+eval (Ident v)                                  = getEnv v
+eval e@(Append _ _)                             = Lit <$> evalString e
+eval e@(And _ _)                                = Boolean <$> evalBool e
+eval e@(Or _ _)                                 = Boolean <$> evalBool e
+eval e@(Not _)                                  = Boolean <$> evalBool e
+eval e@(Equal _ _)                              = Boolean <$> evalBool e
+eval e@(Inequal _ _)                            = Boolean <$> evalBool e
+eval (IfThenElse b x y)                         = evalBool b >>= \b' -> eval (if b' then x else y)
+eval (DefAttr x y)                              = eval x `onError` (isUndefinedVariable, eval y)
+eval (Let env e)                                = trace ("add to env: " ++ show env) $ local (union (fromList env)) (eval e)
+eval (Apply (Fun (Ident v) x) y)                = eval y >>= \y' -> local (insert v y') (eval x)
+eval (Apply (Ident v) y)                        = getEnv v >>= \x' -> eval (Apply x' y)
+eval (Apply x@(Apply _ _) y)                    = eval x >>= \x' -> eval (Apply x' y)
+eval (AttrSet False as)                         = (AttrSet False . map (\(k,v) -> Assign (SIdent [k]) v) . concat) <$> mapM evalAttribute as
+eval (Deref (Ident v) y)                        = getEnv v >>= \v' -> eval (Deref v' y)
+eval (Deref (AttrSet False as) y@(Ident _))     = concat <$> mapM evalAttribute as >>= \as' -> local (\env -> foldr (uncurry insert) env as') (eval y)
+eval e@(Deref _ _)                              = throwError (TypeMismatch e)
+eval e                                          = throwError (Unsupported e)
 
 --
 -- eval (Apply (Lambda v x) y)     = eval y >>= \y' -> trace ("add to env: " ++ show (v,y')) $ local ((v,y'):) (eval x)

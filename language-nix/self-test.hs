@@ -174,3 +174,5 @@ main = do
         -- run "{ a.a.a=1; a.a.b=2; a.b=3; }.a.a.a" `gives` Lit "1"
         run "bla or false" `gives` Boolean False
         run "let a = \"foo\"; b = a; f = x: x+\"bar\"; in f b" `gives` Lit "foobar"
+        run "let a = { b = \"claus\"; };  b = \"bar\"; in { a = \"foo\"; inherit b; c = a.b; }" `gives` AttrSet False [Assign (SIdent ["a"]) (Lit "foo"),Assign (SIdent ["b"]) (Lit "bar"),Assign (SIdent ["c"]) (Lit "claus")]
+        run "let a = { b = \"claus\"; };  b = \"bar\"; in { a = \"foo\"; inherit b; c = a.b; }.c" `gives` Lit "claus"
