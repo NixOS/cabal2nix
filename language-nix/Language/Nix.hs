@@ -412,6 +412,10 @@ evalAttribute (Assign (SIdent [k]) v)  = (return . (,) k) <$> eval v
 evalAttribute (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs ]
 evalAttribute e                        = throwError (Unsupported (AttrSet False [e]))
 
+attrSetToEnv :: Attr -> Eval [(VarName,Expr)]
+attrSetToEnv (Assign (SIdent [k]) v)  = return [(k,v)]
+attrSetToEnv (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs ]
+
 eval :: Expr -> Eval Expr
 eval e | trace ("eval " ++ show e) False = undefined
 eval e@(Lit _)                                  = return e
@@ -430,6 +434,7 @@ eval (Apply (Fun (Ident v) x) y)                = eval y >>= \y' -> local (inser
 eval (Apply (Ident v) y)                        = getEnv v >>= \x' -> eval (Apply x' y)
 eval (Apply x@(Apply _ _) y)                    = eval x >>= \x' -> eval (Apply x' y)
 eval (AttrSet False as)                         = (AttrSet False . map (\(k,v) -> Assign (SIdent [k]) v) . concat) <$> mapM evalAttribute as
+eval e@(AttrSet True as)                        = concat <$> mapM attrSetToEnv as >>= \as' -> local (union (fromList as')) (eval (AttrSet False as))
 eval (Deref (Ident v) y)                        = getEnv v >>= \v' -> eval (Deref v' y)
 eval (Deref (AttrSet False as) y@(Ident _))     = concat <$> mapM evalAttribute as >>= \as' -> local (\env -> foldr (uncurry insert) env as') (eval y)
 eval e@(Deref _ _)                              = throwError (TypeMismatch e)
