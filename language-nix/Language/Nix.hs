@@ -349,10 +349,12 @@ attrSetPattern = AttrSetP <$> optionMaybe atPattern <*> setPattern
     ellipsis   = ("...",Nothing) <$ reserved "..."
 
 letExpr :: NixParser Expr
-letExpr = Let <$> (reserved "let" *> (try attribute) `endBy1` semi) <*> (reserved "in" *> expr)
+letExpr = choice [ try $ Let <$> (reserved "let" *> try attribute `endBy1` semi) <*> (reserved "in" *> expr)
+                 , (`Let` Ident "body") <$> (reserved "let" *> braces (try attribute `endBy1` semi))
+                 ]
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
-parseNixFile path = Parsec.parse expr path <$> readFile path
+parseNixFile path = parse' (expr <* eof) path <$> readFile path
 
 parseNix :: String -> Either ParseError Expr
 parseNix = parse expr

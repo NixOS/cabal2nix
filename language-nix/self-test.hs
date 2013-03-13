@@ -181,3 +181,4 @@ main = do
         run "let a = { b = \"claus\"; };  b = \"bar\"; in { a = \"foo\"; inherit b; c = a.b; }" `gives` AttrSet False [Assign (SIdent ["a"]) (Lit "foo"),Assign (SIdent ["b"]) (Lit "bar"),Assign (SIdent ["c"]) (Lit "claus")]
         run "let a = { b = \"claus\"; };  b = \"bar\"; in { a = \"foo\"; inherit b; c = a.b; }.c" `gives` Lit "claus"
         run "let b = \"bar\"; in rec { a = \"foo\"; inherit b; c = a + b; }" `gives` AttrSet False [Assign (SIdent ["a"]) (Lit "foo"),Assign (SIdent ["b"]) (Lit "bar"),Assign (SIdent ["c"]) (Lit "foobar")]
+        run "let { a = \"foo\"; b = a; f = x: x+\"bar\"; body = f b; }" `gives` Lit "foobar"
