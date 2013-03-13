@@ -371,7 +371,7 @@ instance ErrT.Error Error where
 type Eval a = ErrorT Error (Reader Env) a
 
 getEnv :: VarName -> Eval Expr
-getEnv v = reader (lookup v) >>= maybe (throwError (UndefinedVariable v)) return
+getEnv v = ask >>= maybe (throwError (UndefinedVariable v)) return . lookup v
 
 onError :: Eval a -> (Error -> Bool, Eval a) -> Eval a
 onError f (p,g) = catchError f (\e -> if p e then g else throwError e)
