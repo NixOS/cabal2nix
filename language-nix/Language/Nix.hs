@@ -19,7 +19,7 @@ module Language.Nix
     -- * Nix Language Parsers
     expr, listExpr, term, operatorTable, listOperatorTable, identifier, literal,
     nixString, literalURI, attrSet, scopedIdentifier, attribute, list, letExpr,
-    letAssignment, attrSetPattern,
+    attrSetPattern,
 
     -- * Parsec Language Specification
     TokenParser, LanguageDef, NixParser, NixOperator, nixLanguage, nixLexer,
@@ -155,7 +155,7 @@ data Expr = Null
           | Or Expr Expr
           | Implies Expr Expr
           | Fun Expr Expr
-          | Let [(String,Expr)] Expr
+          | Let [Attr] Expr
           | Apply Expr Expr
           | Import Expr
           | With Expr
@@ -214,10 +214,26 @@ identifier :: NixParser Expr
 identifier = Ident <$> Parsec.identifier nixLexer
 
 literal :: NixParser Expr
-literal = Lit <$> (Parsec.stringLiteral nixLexer <|> nixString <|> natural <|> literalURI)
+literal = Lit <$> (stringLiteral <|> nixString <|> natural <|> literalURI)
+
+stringLiteral :: NixParser String
+stringLiteral = lexeme $ between (string "\"") (string "\"") (concat <$> many stringChar)
+  where
+    stringChar :: NixParser String
+    stringChar = choice [ many1 (noneOf "$\\\"")
+                        , try $ char '$' >> braces expr >> return ""
+                        , return <$> char '$'
+                        , char '\\' >> anyChar >>= \c -> return ['\\',c]
+                        ]
 
 nixString :: NixParser String
-nixString = lexeme $ between (string "''") (string "''") (many (noneOf "'" <|> try (char '\'' <* notFollowedBy (char '\''))))
+nixString = lexeme $ between (string "''") (string "''") (concat <$> many stringChar)
+  where
+    stringChar :: NixParser String
+    stringChar = choice [ many1 (noneOf "'")
+                        , try $ (return <$> char '\'') <* notFollowedBy (char '\'')
+                        , try $ string "''" >> string "${"
+                        ]
 
 literalURI :: NixParser String
 literalURI = lexeme $ try absoluteURI <|> relativeURI
@@ -319,7 +335,7 @@ scopedIdentifier :: NixParser ScopedIdent
 scopedIdentifier = SIdent <$> sepBy1 (Parsec.identifier nixLexer) dot
 
 attribute :: NixParser Attr
-attribute =  (Assign <$> (SIdent . return <$> Parsec.stringLiteral nixLexer <|> scopedIdentifier) <* assign <*> expr)
+attribute =  (Assign <$> (SIdent . return <$> stringLiteral <|> scopedIdentifier) <* assign <*> expr)
          <|> (Inherit <$> (symbol "inherit" *> option (SIdent []) (parens scopedIdentifier)) <*> many1 (Parsec.identifier nixLexer))
 
 list :: NixParser Expr
@@ -333,10 +349,7 @@ attrSetPattern = AttrSetP <$> optionMaybe atPattern <*> setPattern
     ellipsis   = ("...",Nothing) <$ reserved "..."
 
 letExpr :: NixParser Expr
-letExpr = Let <$> (reserved "let" *> many1 letAssignment) <*> (reserved "in" *> expr)
-
-letAssignment :: NixParser (String, Expr)
-letAssignment = (,) <$> Parsec.identifier nixLexer <* assign <*> expr <* semi
+letExpr = Let <$> (reserved "let" *> (try attribute) `endBy1` semi) <*> (reserved "in" *> expr)
 
 parseNixFile :: FilePath -> IO (Either ParseError Expr)
 parseNixFile path = Parsec.parse expr path <$> readFile path
@@ -418,9 +431,10 @@ attrSetToEnv (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs 
 
 eval :: Expr -> Eval Expr
 eval e | trace ("eval " ++ show e) False = undefined
+eval Null                                       = return Null
 eval e@(Lit _)                                  = return e
 eval e@(Boolean _)                              = return e
-eval (Ident v)                                  = getEnv v
+eval (Ident v)                                  = getEnv v >>= eval
 eval e@(Append _ _)                             = Lit <$> evalString e
 eval e@(And _ _)                                = Boolean <$> evalBool e
 eval e@(Or _ _)                                 = Boolean <$> evalBool e
@@ -429,14 +443,15 @@ eval e@(Equal _ _)                              = Boolean <$> evalBool e
 eval e@(Inequal _ _)                            = Boolean <$> evalBool e
 eval (IfThenElse b x y)                         = evalBool b >>= \b' -> eval (if b' then x else y)
 eval (DefAttr x y)                              = eval x `onError` (isUndefinedVariable, eval y)
-eval (Let env e)                                = trace ("add to env: " ++ show env) $ local (union (fromList env)) (eval e)
-eval (Apply (Fun (Ident v) x) y)                = eval y >>= \y' -> local (insert v y') (eval x)
-eval (Apply (Ident v) y)                        = getEnv v >>= \x' -> eval (Apply x' y)
-eval (Apply x@(Apply _ _) y)                    = eval x >>= \x' -> eval (Apply x' y)
+eval (Let as e)                                 = concat <$> mapM attrSetToEnv as >>= \env -> trace ("add to env: " ++ show env) $ local (union (fromList env)) (eval e)
+eval (Apply (Fun (Ident v) x) y)                = trace "foo" $ eval y >>= \y' -> local (insert v y') (eval x)
+eval (Apply (Ident v) y)                        = trace "yo" $ getEnv v >>= \x' -> eval (Apply x' y)
+eval (Apply x@(Apply _ _) y)                    = trace "yo" $ eval x >>= \x' -> eval (Apply x' y)
 eval (AttrSet False as)                         = (AttrSet False . map (\(k,v) -> Assign (SIdent [k]) v) . concat) <$> mapM evalAttribute as
-eval e@(AttrSet True as)                        = concat <$> mapM attrSetToEnv as >>= \as' -> local (union (fromList as')) (eval (AttrSet False as))
+eval e@(AttrSet True as)                        = concat <$> mapM attrSetToEnv as >>= \as' -> trace ("add to env: " ++ show as') $ local (union (fromList as')) (eval (AttrSet False as))
 eval (Deref (Ident v) y)                        = getEnv v >>= \v' -> eval (Deref v' y)
-eval (Deref (AttrSet False as) y@(Ident _))     = concat <$> mapM evalAttribute as >>= \as' -> local (\env -> foldr (uncurry insert) env as') (eval y)
+eval (Deref (AttrSet False as) y@(Ident _))     = concat <$> mapM evalAttribute as >>= \as' -> trace ("add to env: " ++ show as') $ local (\env -> foldr (uncurry insert) env as') (eval y)
+eval (Deref (AttrSet True as) y@(Ident _))      = concat <$> mapM attrSetToEnv as >>= \as' -> trace ("add to env: " ++ show as') $ local (\env -> foldr (uncurry insert) env as') (eval y)
 eval e@(Deref _ _)                              = throwError (TypeMismatch e)
 eval e                                          = throwError (Unsupported e)
 
