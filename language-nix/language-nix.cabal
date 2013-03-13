@@ -18,24 +18,24 @@ Source-Repository head
 Library
   Exposed-Modules:      Language.Nix
   Build-Depends:        base >= 3 && < 5, parsec, wl-pprint, transformers, QuickCheck,
-                        containers, mtl
+                        containers, mtl >= 2.1
   Ghc-Options:          -Wall
 
 Executable parse-nix
   main-is:              parse-nix.hs
   Build-Depends:        base, language-nix, parsec, wl-pprint, transformers, QuickCheck,
-                        containers, mtl
+                        containers, mtl >= 2.1
   Ghc-Options:          -Wall
 
 Executable run-nix
   main-is:              run-nix.hs
   Build-Depends:        base, language-nix, parsec, wl-pprint, transformers, QuickCheck,
-                        containers, mtl
+                        containers, mtl >= 2.1
   Ghc-Options:          -Wall
 
 Test-Suite self-test
   type:                 exitcode-stdio-1.0
   main-is:              self-test.hs
   build-depends:        base, language-nix, parsec, wl-pprint, transformers,
-                        containers, mtl, doctest, QuickCheck, hspec, HUnit
+                        containers, mtl >= 2.1, doctest, QuickCheck, hspec, HUnit
   Ghc-Options:          -Wall
