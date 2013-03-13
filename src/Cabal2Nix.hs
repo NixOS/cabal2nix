@@ -83,7 +83,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let packageId = package (packageDescription cabal)
   sha <- if null (optSha256 cfg) then hashPackage packageId else return (optSha256 cfg)
 
-  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg }
+  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg, doCheck = optDoCheck cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = optMaintainer cfg
                                      , platforms   = optPlatform cfg
