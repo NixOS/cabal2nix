@@ -36,8 +36,6 @@ import qualified Text.Parsec as Parsec
 import qualified Text.Parsec.Language as Parsec
 import qualified Text.Parsec.Token as Parsec
 import Text.Parsec.Expr
-import Text.PrettyPrint.Leijen ( Pretty(..) )
-import qualified Text.PrettyPrint.Leijen as Pretty
 import Test.QuickCheck
 
 import Text.Show.Functions ( )
@@ -131,9 +129,6 @@ genIdentifier = ((:) <$> elements firstChar <*> listOf (elements identChar)) `su
 
 instance Arbitrary ScopedIdent where
   arbitrary = SIdent <$> listOf1 genIdentifier
-
-instance Pretty ScopedIdent where
-  pretty (SIdent xs) = Pretty.hcat $ Pretty.punctuate Pretty.dot (map Pretty.text xs)
 
 data Expr = Null
           | Lit String

@@ -3,7 +3,6 @@
 module Main ( main ) where
 
 import Language.Nix
-import Text.PrettyPrint.Leijen ( pretty )
 import qualified Text.Parsec.Token as Parsec ( reservedNames )
 import Test.DocTest
 import Test.QuickCheck
@@ -43,8 +42,9 @@ main = do
         parse scopedIdentifier "abc" `gives` SIdent ["abc"]
         parse scopedIdentifier "abc  " `gives` SIdent ["abc"]
         parse scopedIdentifier "abc.def" `gives` SIdent ["abc","def"]
-      prop "parses all randomly generated samples" $
-        \sident -> either (const False) (sident ==) (parse scopedIdentifier (show (pretty sident)))
+      -- Need to implement pretty-printing again before this test can be used.
+      -- prop "parses all randomly generated samples" $
+      --   \sident -> either (const False) (sident ==) (parse scopedIdentifier (show (pretty sident)))
       it "does not swallow leading whitespace" $
         parseFail scopedIdentifier " abc"
       it "does not accept reserved words" $
