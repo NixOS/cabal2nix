@@ -425,6 +425,7 @@ evalAttribute e                        = throwError (Unsupported (AttrSet False 
 attrSetToEnv :: Attr -> Eval [(VarName,Expr)]
 attrSetToEnv (Assign (SIdent [k]) v)  = return [(k,v)]
 attrSetToEnv (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs ]
+attrSetToEnv e                        = throwError (Unsupported (AttrSet True [e]))
 
 eval :: Expr -> Eval Expr
 eval e | trace ("eval " ++ show e) False = undefined
@@ -445,7 +446,7 @@ eval (Apply (Fun (Ident v) x) y)                = trace "foo" $ eval y >>= \y' -
 eval (Apply (Ident v) y)                        = trace "yo" $ getEnv v >>= \x' -> eval (Apply x' y)
 eval (Apply x@(Apply _ _) y)                    = trace "yo" $ eval x >>= \x' -> eval (Apply x' y)
 eval (AttrSet False as)                         = (AttrSet False . map (\(k,v) -> Assign (SIdent [k]) v) . concat) <$> mapM evalAttribute as
-eval e@(AttrSet True as)                        = concat <$> mapM attrSetToEnv as >>= \as' -> trace ("add to env: " ++ show as') $ local (union (fromList as')) (eval (AttrSet False as))
+eval (AttrSet True as)                          = concat <$> mapM attrSetToEnv as >>= \as' -> trace ("add to env: " ++ show as') $ local (union (fromList as')) (eval (AttrSet False as))
 eval (Deref (Ident v) y)                        = getEnv v >>= \v' -> eval (Deref v' y)
 eval (Deref (AttrSet False as) y@(Ident _))     = concat <$> mapM evalAttribute as >>= \as' -> trace ("add to env: " ++ show as') $ local (\env -> foldr (uncurry insert) env as') (eval y)
 eval (Deref (AttrSet True as) y@(Ident _))      = concat <$> mapM attrSetToEnv as >>= \as' -> trace ("add to env: " ++ show as') $ local (\env -> foldr (uncurry insert) env as') (eval y)
