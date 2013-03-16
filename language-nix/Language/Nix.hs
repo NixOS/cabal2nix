@@ -225,7 +225,9 @@ nixString :: NixParser String
 nixString = lexeme $ between (string "''") (string "''") (concat <$> many stringChar)
   where
     stringChar :: NixParser String
-    stringChar = choice [ many1 (noneOf "'")
+    stringChar = choice [ many1 (noneOf "$'")
+                        , try $ char '$' >> braces expr >> return ""
+                        , return <$> char '$'
                         , try $ (return <$> char '\'') <* notFollowedBy (char '\'')
                         , try $ string "''" >> string "${"
                         ]

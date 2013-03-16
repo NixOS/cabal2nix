@@ -68,6 +68,7 @@ main = do
         parse literal "''abc''${''" `gives` Lit "abc${"
         parse literal "\"a${b}c\"" `gives` Lit "ac"
         parse literal "\"a${if !x then \"b\" else \"c\"}d\"" `gives` Lit "ad"
+        parse literal "''a${if b then \"c\" else ''d''}e''" `gives` Lit "ae"
 
     describe "attrSet" $ do
       it "parses an empty attribute set" $ do
