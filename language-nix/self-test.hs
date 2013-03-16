@@ -91,6 +91,8 @@ main = do
         parse attrSet "{ inherit a; inherit b; }" `gives` AttrSet False [Inherit (SIdent []) ["a"],Inherit (SIdent []) ["b"]]
         parse attrSet "{ inherit a b; }" `gives` AttrSet False [Inherit (SIdent []) ["a","b"]]
         parse attrSet "{ inherit (a) b c d; }" `gives` AttrSet False [Inherit (SIdent ["a"]) ["b","c","d"]];
+        -- The parser cannot handle this expample yet.
+        -- parse attrSet "{ inherit (import ./foo.nix) a b c; }" `gives` Lit "a"
 
     describe "list" $ do
       it "parses an empty list" $
