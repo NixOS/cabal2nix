@@ -8,7 +8,7 @@ import Data.List
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
   | pname == "alex"             = deriv { buildTools = "perl":buildTools }
-  | pname == "cabal-install" && version >= (Version [0,14] [])
+  | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
@@ -48,7 +48,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
-  | pname == "X11" && version >= (Version [1,6] [])
+  | pname == "X11" && version >= Version [1,6] []
                                 = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
   | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
   | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs
