@@ -45,7 +45,7 @@ Source-Repository head
 
 Library
   Build-Depends:        base >= 3 && < 5, tar >= 0.4, Cabal, containers,
-                        directory, filepath, bytestring
+                        directory, filepath, bytestring, utf8-string
   hs-source-dirs:       src
   Ghc-Options:          -Wall
   Exposed-Modules:      Distribution.Hackage.DB

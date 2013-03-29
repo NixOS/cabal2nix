@@ -23,7 +23,9 @@ module Distribution.Hackage.DB
 
 import qualified Codec.Archive.Tar as Tar
 import Data.ByteString.Lazy.Char8 ( ByteString )
-import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.ByteString.Lazy.Char8 as BS8
+import qualified Data.ByteString.Lazy as BSC
+import Data.String.UTF8 ( toString, fromRep )
 import Data.Map
 import Data.Maybe
 import Data.Version
@@ -54,13 +56,16 @@ readHackage = do
 -- 'Hackage' map that provides fast access to its contents.
 
 readHackage' :: FilePath -> IO Hackage
-readHackage' = fmap parseHackage . BS.readFile
+readHackage' = fmap parseHackage . BS8.readFile
 
 -- | Parse the contents of Hackage's @00-index.tar@ into a 'Hackage' map.
 
 parseHackage :: ByteString -> Hackage
 parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
   where
+    decodeUTF8 :: ByteString -> String
+    decodeUTF8 = toString . fromRep . BSC.unpack
+
     addEntry :: Tar.Entry -> Hackage -> Hackage
     addEntry e db = case splitDirectories (Tar.entryPath e) of
                         [".",".","@LongLink"] -> db
@@ -73,7 +78,7 @@ parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
     add name version pkg = insertWith union name (singleton (pVersion version) (pPackage name pkg))
 
     pPackage :: String -> ByteString -> GenericPackageDescription
-    pPackage name buf = case parsePackageDescription (BS.unpack buf) of
+    pPackage name buf = case parsePackageDescription (decodeUTF8 buf) of
                           ParseOk _ a     -> a
                           ParseFailed err -> error ("Hackage.DB.parseHackage: cannot parse cabal file " ++ show name ++ ": " ++ show err)
 
