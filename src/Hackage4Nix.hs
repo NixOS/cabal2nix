@@ -118,7 +118,7 @@ updateNixPkgs paths = do
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats
               deriv'' = deriv' { metaSection = meta
-                                               { maintainers = maints ++ ["simons"]
+                                               { maintainers = maints -- ++ ["andres"]
                                                , platforms   = plats'
                                                }
                                }
