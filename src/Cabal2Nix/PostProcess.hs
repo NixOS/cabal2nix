@@ -28,6 +28,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
+  | pname == "hspec"            = deriv { doCheck = False }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
