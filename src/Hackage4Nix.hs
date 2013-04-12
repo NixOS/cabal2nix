@@ -96,8 +96,9 @@ selectLatestVersions = Set.fromList . nubBy f2 . sortBy f1 . Set.toList
 discoverUpdates :: String -> Version -> Hackage4Nix [Version]
 discoverUpdates name vers = do
   db <- asks _hackageDb
-  let versions = DB.keys (fromJust (DB.lookup name db))
-  return (filter (>vers) versions)
+  case DB.lookup name db of
+    Just pkgs -> return (filter (>vers) (DB.keys pkgs))
+    Nothing   -> fail ("discoverUpdates cannot find package " ++ show name ++ " on Hackage")
 
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
