@@ -79,8 +79,6 @@ parseNixFile path buf
                = msgDebug ("ignore non-cabal package " ++ path) >> return Nothing
   | any (`isSuffixOf`path) badPackagePaths
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
-  | buf =~ "src = (fetchurl|fetchgit|sourceFromHead)"
-               = msgDebug ("ignore non-hackage package " ++ path) >> return Nothing
   | Just deriv <- parseDerivation buf
                = return (Just (Pkg deriv path (regenerateDerivation deriv buf)))
   | otherwise = msgInfo ("failed to parse file " ++ path) >> return Nothing
