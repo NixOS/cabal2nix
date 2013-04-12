@@ -202,7 +202,9 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 -- Packages that we cannot parse.
 
 badPackagePaths :: [FilePath]
-badPackagePaths = [ "haskell-platform/2011.2.0.1.nix", "haskell-platform/2011.4.0.0.nix"
+badPackagePaths = [ "haskell-platform/2009.2.0.2.nix", "haskell-platform/2010.1.0.0.nix"
+                  , "haskell-platform/2010.2.0.0.nix", "haskell-platform/2011.2.0.0.nix"
+                  , "haskell-platform/2011.2.0.1.nix", "haskell-platform/2011.4.0.0.nix"
                   , "haskell-platform/2012.2.0.0.nix", "haskell-platform/2012.4.0.0.nix"
                   , "top-level/all-packages.nix",      "top-level/haskell-packages.nix"
                   ]
