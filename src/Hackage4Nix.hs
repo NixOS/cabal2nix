@@ -71,8 +71,7 @@ discoverNixFiles yield dirOrFile = do
     (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
-regenerateDerivation deriv buf = (pname deriv `notElem` patchedPackages) &&
-                                 not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
+regenerateDerivation deriv buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
@@ -208,9 +207,3 @@ badPackagePaths = [ "haskell-platform/2009.2.0.2.nix", "haskell-platform/2010.1.
                   , "haskell-platform/2012.2.0.0.nix", "haskell-platform/2012.4.0.0.nix"
                   , "top-level/all-packages.nix",      "top-level/haskell-packages.nix"
                   ]
-
--- Packages that we cannot regenerate automatically yet. This list
--- should be empty.
-
-patchedPackages :: [String]
-patchedPackages = []
