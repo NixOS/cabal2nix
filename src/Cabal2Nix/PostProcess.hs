@@ -24,6 +24,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "haddock"          = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
+  | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
