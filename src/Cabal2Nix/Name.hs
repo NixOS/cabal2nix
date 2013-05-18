@@ -18,6 +18,7 @@ toNixName name    = f name
 -- identity mappings to incicate that I have verified their correctness.
 libNixName :: String -> [String]
 libNixName "adns"               = return "adns"
+libNixName "alsa"               = return "alsaLib"
 libNixName "cairo-pdf"          = return "cairo"
 libNixName "cairo-ps"           = return "cairo"
 libNixName "cairo"              = return "cairo"
@@ -59,6 +60,7 @@ libNixName "Xext"               = return "libXext"
 libNixName "xft"                = return "libXft"
 libNixName "xml2"               = return "libxml2"
 libNixName "Xrandr"             = return "libXrandr"
+libNixName "Xss"                = return "libXScrnSaver"
 libNixName "zmq"                = return "zeromq"
 libNixName "z"                  = return "zlib"
 libNixName x                    = return x
