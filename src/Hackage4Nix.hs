@@ -206,6 +206,9 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                   , "haskell-platform/2011.2.0.1.nix", "haskell-platform/2011.4.0.0.nix"
                   , "haskell-platform/2012.2.0.0.nix", "haskell-platform/2012.4.0.0.nix"
                   , "haskell-platform/2013.2.0.0.nix", "compilers/flapjax/default.nix"
+                  , "pkgs/games/uqm/3dovideo.nix"
                     -- Our primitive parser cannot handle these files.
-                  , "top-level/all-packages.nix",      "top-level/haskell-packages.nix"
+                  , "top-level/all-packages.nix", "top-level/haskell-packages.nix"
+                    -- This build is way too complicated to maintain it automatically.
+                  , "pkgs/development/compilers/pakcs/default.nix"
                   ]
