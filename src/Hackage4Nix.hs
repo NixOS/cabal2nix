@@ -112,11 +112,15 @@ updateNixPkgs paths = do
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
           pkg <- getCabalPackage (pname deriv) (version deriv)
-          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv, runHaddock = runHaddock deriv, jailbreak = jailbreak deriv, doCheck = doCheck deriv }
+          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv
+                                        , runHaddock = runHaddock deriv
+                                        , doCheck = doCheck deriv
+                                        , jailbreak = jailbreak deriv
+                                        }
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats
               deriv'' = deriv' { metaSection = meta
-                                               { maintainers = maints -- ++ ["andres"]
+                                               { maintainers = maints -- ++ ["andres","simons"]
                                                , platforms   = plats'
                                                }
                                }
@@ -142,7 +146,10 @@ genCabal2NixCmdline :: Pkg -> String
 genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ ['>':path']
   where
     meta = metaSection deriv
-    opts = [cabal] ++ maints' ++ plats' ++ (if runHaddock deriv then [] else ["--no-haddock"]) ++ (if doCheck deriv then [] else ["--no-check"])
+    opts = [cabal] ++ maints' ++ plats'
+                   ++ (if jailbreak deriv then ["--jailbreak"] else [])
+                   ++ (if runHaddock deriv then [] else ["--no-haddock"])
+                   ++ (if doCheck deriv then [] else ["--no-check"])
     cabal = "cabal://" ++ display (packageId deriv)
     maints' = [ "--maintainer=" ++ normalizeMaintainer m | m <- maintainers meta ]
     plats'
