@@ -23,6 +23,7 @@ data Configuration = Configuration
   , optPlatform :: [String]
   , optHaddock :: Bool
   , optDoCheck :: Bool
+  , optJailbreak :: Bool
   }
   deriving (Show)
 
@@ -35,6 +36,7 @@ defaultConfiguration = Configuration
   , optPlatform = []
   , optHaddock = True
   , optDoCheck = True
+  , optJailbreak = False
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
@@ -45,6 +47,7 @@ options =
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
+  , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
   ]
 
 usage :: String
@@ -83,7 +86,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let packageId = package (packageDescription cabal)
   sha <- if null (optSha256 cfg) then hashPackage packageId else return (optSha256 cfg)
 
-  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg }
+  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = optMaintainer cfg
                                      , platforms   = optPlatform cfg

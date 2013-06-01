@@ -22,6 +22,7 @@ Description:
   >   -m MAINTAINER  --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
   >   -p PLATFORM    --platform=PLATFORM      supported build platforms (may be specified multiple times)
   >                  --no-check               don't run regression test suites of this package
+  >                  --jailbreak              don't honor version restrictions on build inputs
   >
   > Recognized URI schemes:
   >
