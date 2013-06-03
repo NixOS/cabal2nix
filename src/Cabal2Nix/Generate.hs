@@ -55,7 +55,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
                         (configureCabalFlags pkg)
                         (const True)
                         (Platform I386 Linux)                   -- shouldn't be hardcoded
-                        (CompilerId GHC (Version [7,4,1] []))   -- dito
+                        (CompilerId GHC (Version [7,6,3] []))   -- dito
                         [] cabal
 
 unDep :: Cabal.Dependency -> String
