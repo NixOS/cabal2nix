@@ -5,7 +5,6 @@ import Cabal2Nix.Generate
 import Control.Exception ( bracket )
 import Control.Monad.RWS
 import Data.List
-import Data.Maybe
 import qualified Data.Set as Set
 import Data.Version
 import qualified Distribution.Hackage.DB as DB
@@ -71,7 +70,7 @@ discoverNixFiles yield dirOrFile = do
     (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
-regenerateDerivation deriv buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
+regenerateDerivation _ buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
