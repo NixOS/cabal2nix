@@ -50,8 +50,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
-  | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
+  | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "X11" && version >= Version [1,6] []
                                 = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
   | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
