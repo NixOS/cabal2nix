@@ -27,6 +27,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
+  | pname == "hflags"           = deriv { metaSection = metaSection { license = Unknown (Just "Apache-2.0") } }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hspec"            = deriv { doCheck = False }
