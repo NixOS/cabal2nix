@@ -7,7 +7,7 @@
 1) Vorstellung des Nix Paket-Managers
 
     - Übersicht der besonderen Features
-    - Der Paket-Store
+    - Die Paket-Datenbank
     - Nix als Programmiersprache
 
 2) Installation von Haskell-Paketen
@@ -63,7 +63,24 @@
 - In `/nix/store` installierte Pakete referenzieren niemals
   Dateien außerhalb des Stores.
 
-# Das Nix-Programm für `parsec 3.1.3`
+# Die Paketdatenbank
+
+- Nixpkgs ist eine Sammlung von Build-Rezepten, die in der rein
+funktionalen Sprache *Nix* geschrieben sind.
+
+- Ein Paket wird erzeugt durch die Funktion `derivation`:
+
+        derivation :: String             -- Arch-OS
+                   -> String             -- Name-Version
+                   -> [String]           -- Build-Kommando
+                   -> [StorePath]        -- Abhängigkeiten
+                   -> [(String,String)]  -- Shell-Umgebung
+                   -> IO StorePath
+
+- Nixpkgs bietet verschiedene `mkDerivation`-Wrapper, um die Verwendung
+von `derivation` vereinfachen.
+
+# Das Paket `parsec 3.1.3`
 
     { cabal, mtl, text }:
 
@@ -84,10 +101,10 @@
       /nix/store/i0k3s...-haskell-text-ghc7.6.3-0.11.3.1
       /nix/store/q8163...-haskell-transformers-ghc7.6.3-0.3.0.0
     [...]
-    building path(s) `/nix/store/0xfxh1ncksix601m9n71fw1wkfhmsjjz-user-environment'
+    building path(s) `/nix/store/0xfxh...-user-environment'
     created 22 symlinks in user environment
 
-# Das Nix-Programm für `yesod 1.2.1`
+# Das Paket für `yesod 1.2.1`
 
     { cabal, aeson, blazeHtml, blazeMarkup, dataDefault,
     , hamlet monadControl, networkConduit, safe,
@@ -106,3 +123,24 @@
         yesodCore yesodForm yesodPersistent
       ];
     })
+
+# Die Programmiersprache Nix
+
+- Nix ist lazy-evaluiertes ungetyptes Lambda-Kalkül.
+
+- Strings: `"hello world"`, `http://example.org/`
+
+- Listen: `[ 12 "abc" http://example.org ]`
+
+- Funktionen: `list: element: list ++ [element]`
+
+- Dictionaries: { foo = "foo"; foo = "bar; }
+
+- Rekursive Dictionaries:
+
+        rec { bar = "foo"; bar = "bar; foobar = foo + bar; }
+
+- Let-Statements:
+
+        let append = { list ? [], element }: list++[element];
+        in append { list = ["abc" 3]; element = null; }
