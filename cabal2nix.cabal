@@ -46,7 +46,7 @@ Source-Repository head
   Location:             git://github.com/NixOS/cabal2nix.git
 
 Executable cabal2nix
-  main-is:              Cabal2Nix.hs
+  main-is:              cabal2nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.10,
                         filepath, directory, process, HTTP, hackage-db
@@ -66,7 +66,7 @@ Executable cabal2nix
                         Distribution.NixOS.PrettyPrinting
 
 Executable hackage4nix
-  main-is:              Hackage4Nix.hs
+  main-is:              hackage4nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.10,
                         mtl, containers, directory, filepath, hackage-db

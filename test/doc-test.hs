@@ -29,5 +29,5 @@ main = do
              , "src/Distribution/NixOS/Derivation/Meta.hs"
              , "src/Distribution/NixOS/PrettyPrinting.hs"
              ]
-  doctest $ "src/Cabal2Nix.hs" : libs
-  doctest $ "src/Hackage4Nix.hs" : libs
+  doctest $ "src/cabal2nix.hs" : libs
+  doctest $ "src/hackage4nix.hs" : libs
