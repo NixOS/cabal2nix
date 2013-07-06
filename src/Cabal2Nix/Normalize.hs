@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Cabal2Nix.Normalize ( normalize ) where
+module Cabal2Nix.Normalize ( normalize, normalizeList ) where
 
 import Distribution.NixOS.Derivation.Cabal
 import Cabal2Nix.Name
