@@ -60,6 +60,7 @@ libNixName "pangocairo"         = return "pango"
 libNixName "pcre"               = return "pcre"
 libNixName "png"                = return "libpng"
 libNixName "pq"                 = return "postgresql"
+libNixName "pthread"            = []
 libNixName "sndfile"            = return "libsndfile"
 libNixName "sqlite3"            = return "sqlite"
 libNixName "ssl"                = return "openssl"
