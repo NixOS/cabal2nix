@@ -44,7 +44,7 @@ import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseRes
 type Hackage = Map String (Map Version GenericPackageDescription)
 
 -- | Read the Hackage database from
--- @$HOME\/@*<package database path>*@\/hackage.haskell.org\/00-index.tar@ and
+-- @$HOME\/@/<package database path>/@\/hackage.haskell.org\/00-index.tar@ and
 -- return a 'Map' that provides fast access to its contents. That @tar@
 -- file is typically created by running the command @\"cabal update\"@.
 
