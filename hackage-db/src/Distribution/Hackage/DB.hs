@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {- |
    Module      :  Distribution.Hackage.DB
    License     :  BSD3
@@ -43,14 +44,20 @@ import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseRes
 type Hackage = Map String (Map Version GenericPackageDescription)
 
 -- | Read the Hackage database from
--- @$HOME\/.cabal\/packages\/hackage.haskell.org\/00-index.tar@ and
+-- @$HOME\/@*<package database path>*@\/hackage.haskell.org\/00-index.tar@ and
 -- return a 'Map' that provides fast access to its contents. That @tar@
 -- file is typically created by running the command @\"cabal update\"@.
 
 readHackage :: IO Hackage
 readHackage = do
   homedir <- getHomeDirectory
-  readHackage' (joinPath [ homedir, ".cabal", "packages", "hackage.haskell.org", "00-index.tar" ])
+  readHackage' (joinPath [ homedir,
+#ifdef IS_DARWIN
+    "Library", "Haskell", "repo-cache"
+#else
+    ".cabal", "packages"
+#endif
+    , "hackage.haskell.org", "00-index.tar" ])
 
 -- | Read the Hackage database from the given 'FilePath' and return a
 -- 'Hackage' map that provides fast access to its contents.
