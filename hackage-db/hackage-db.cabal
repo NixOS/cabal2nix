@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               provide access to the Hackage database via Data.Map
 Cabal-Version:          >= 1.6
 Build-Type:             Simple
-Tested-With:            GHC >= 6.12.3 && <= 7.6.2
+Tested-With:            GHC >= 6.12.3 && <= 7.6.3
 Description:
    This module provides simple access to the Hackage database by means
    of @Data.Map@. Suppose you wanted to implement a utility that queries
@@ -38,6 +38,8 @@ Description:
    Note that once the database has been parsed, it can be accessed
    quickly, but the inital cost of reading @00-index.tar@ is fairly
    high.
+   .
+   This package is known to work on Linux and Mac OS X, but not Windows.
 
 Source-Repository head
   Type:                 git
@@ -49,3 +51,5 @@ Library
   hs-source-dirs:       src
   Ghc-Options:          -Wall
   Exposed-Modules:      Distribution.Hackage.DB
+  if os(darwin)
+    Cpp-Options:          -DIS_DARWIN
