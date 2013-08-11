@@ -15,7 +15,9 @@ postProcess deriv@(MkDerivation {..})
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
+  | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":buildTools }
+  | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"lsof":"openssh":"which":"bup":buildTools }
   | pname == "glade"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs, pkgConfDeps = "gtkC":delete "gtk" pkgConfDeps }
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
@@ -148,4 +150,12 @@ gitAnnexOverrides = unlines
   , "  cp dist/build/git-annex/git-annex git-annex"
   , "  ./git-annex test"
   , "'';"
+  ]
+
+ghciPostInstall :: String
+ghciPostInstall = unlines
+  [ "postInstall = ''"
+  , "    ensureDir \"$out/share/ghci\""
+  , "    ln -s \"$out/share/$pname-$version/ghci\" \"$out/share/ghci/$pname\""
+  , "  '';"
   ]
