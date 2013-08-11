@@ -33,7 +33,9 @@ postProcess deriv@(MkDerivation {..})
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hspec"            = deriv { doCheck = False }
-  | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
+  | pname == "idris"            = if version < Version [0,9,9] []
+                                    then deriv { buildTools = "happy":buildTools, extraLibs = "gmp":extraLibs }
+                                    else deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
