@@ -96,20 +96,20 @@ cudaConfigurePhase = unlines
 ghcModPostInstall :: String
 ghcModPostInstall = unlines
   [ "postInstall = ''"
-  , "    cd $out/share/$pname-$version"
-  , "    make"
-  , "    rm Makefile"
-  , "    cd .."
-  , "    ensureDir \"$out/share/emacs\""
-  , "    mv $pname-$version emacs/site-lisp"
-  , "  '';"
+  , "  cd $out/share/$pname-$version"
+  , "  make"
+  , "  rm Makefile"
+  , "  cd .."
+  , "  ensureDir \"$out/share/emacs\""
+  , "  mv $pname-$version emacs/site-lisp"
+  , "'';"
   ]
 
 wxcPostInstall :: String
 wxcPostInstall = unlines
   [ "postInstall = ''"
-  , "    cp -v dist/build/libwxc.so.${self.version} $out/lib/libwxc.so"
-  , "  '';"
+  , "  cp -v dist/build/libwxc.so.${self.version} $out/lib/libwxc.so"
+  , "'';"
   ]
 
 cabalInstallPostInstall :: String
@@ -157,7 +157,7 @@ gitAnnexOverrides = unlines
 ghciPostInstall :: String
 ghciPostInstall = unlines
   [ "postInstall = ''"
-  , "    ensureDir \"$out/share/ghci\""
-  , "    ln -s \"$out/share/$pname-$version/ghci\" \"$out/share/ghci/$pname\""
-  , "  '';"
+  , "  ensureDir \"$out/share/ghci\""
+  , "  ln -s \"$out/share/$pname-$version/ghci\" \"$out/share/ghci/$pname\""
+  , "'';"
   ]
