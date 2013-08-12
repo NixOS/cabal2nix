@@ -13,7 +13,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
                                   , enable "Production", enable "TDFA"]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
- | name == "xmobar"             = [enable "with_xft", enable "with_iwlib"]
+ | name == "xmobar"             = [enable "with_xft"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
  | otherwise                    = []
 
