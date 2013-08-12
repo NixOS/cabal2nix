@@ -29,6 +29,7 @@ data Configuration = Configuration
   { _msgDebug  :: String -> IO ()
   , _msgInfo   :: String -> IO ()
   , _hackageDb :: DB.Hackage
+  , _force     :: Bool
   }
 
 defaultConfiguration :: Configuration
@@ -36,6 +37,7 @@ defaultConfiguration = Configuration
   { _msgDebug  = hPutStrLn stderr
   , _msgInfo   = hPutStrLn stderr
   , _hackageDb = DB.empty
+  , _force     = False
   }
 
 type Hackage4Nix a = RWST Configuration () PkgSet IO a
@@ -79,7 +81,9 @@ parseNixFile path buf
   | any (`isSuffixOf`path) badPackagePaths
                = msgDebug ("ignore known bad package " ++ path) >> return Nothing
   | Just deriv <- parseDerivation buf
-               = return (Just (Pkg deriv path (regenerateDerivation deriv buf)))
+               = do forceReGen <- asks _force
+                    let reGen = regenerateDerivation deriv buf
+                    return (Just (Pkg deriv path (forceReGen || reGen)))
   | otherwise = msgInfo ("failed to parse file " ++ path) >> return Nothing
 
 selectLatestVersions :: PkgSet -> PkgSet
@@ -163,7 +167,7 @@ normalizeMaintainer x
   | "self.stdenv.lib.maintainers." `isPrefixOf` x = drop 28 x
   | otherwise                                     = x
 
-data CliOption = PrintHelp | Verbose
+data CliOption = PrintHelp | Verbose | ForceRegen
   deriving (Eq)
 
 main :: IO ()
@@ -172,6 +176,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
       options =
         [ Option "h" ["help"]     (NoArg PrintHelp)                 "show this help text"
         , Option "v" ["verbose"]  (NoArg Verbose)                   "enable noisy debug output"
+        , Option ""  ["force"]    (NoArg ForceRegen)                "re-generate all files in place"
         ]
 
       usage :: String
@@ -198,6 +203,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let cfg = defaultConfiguration
             { _msgDebug  = if Verbose `elem` opts then _msgDebug defaultConfiguration else const (return ())
             , _hackageDb = hackage
+            , _force     = ForceRegen `elem` opts
             }
   ((),_,()) <- runRWST (updateNixPkgs args) cfg Set.empty
   return ()
