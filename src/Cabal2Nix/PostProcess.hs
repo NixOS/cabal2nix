@@ -41,6 +41,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
+  | pname == "lhs2tex"          = deriv { extraLibs = "texLive":extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = delete "ffi" extraLibs }
   | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
@@ -178,3 +179,12 @@ hfusePreConfigure = unlines
 
 ghcPathsPatches :: String
 ghcPathsPatches = "patches = [ ./ghc-paths-nix.patch ];"
+
+lhs2texPostInstall :: String
+lhs2texPostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir -p \"$out/share/doc/$name\""
+  , "  cp doc/Guide2.pdf $out/share/doc/$name"
+  , "  mkdir -p \"$out/nix-support\""
+  , "'';"
+  ]
