@@ -30,6 +30,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "hflags"           = deriv { metaSection = metaSection { license = Unknown (Just "Apache-2.0") } }
+  | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hspec"            = deriv { doCheck = False }
@@ -159,5 +160,17 @@ ghciPostInstall = unlines
   [ "postInstall = ''"
   , "  ensureDir \"$out/share/ghci\""
   , "  ln -s \"$out/share/$pname-$version/ghci\" \"$out/share/ghci/$pname\""
+  , "'';"
+  ]
+
+hfusePreConfigure :: String
+hfusePreConfigure = unlines
+  [ "preConfigure = ''"
+  , "  sed -i -e \"s@  Extra-Lib-Dirs:         /usr/local/lib@  Extra-Lib-Dirs:         ${fuse}/lib@\" HFuse.cabal"
+  , "  sed -i -e \"s/LANGUAGE FlexibleContexts/LANGUAGE FlexibleContexts, RankNTypes/\" System/Fuse.hsc"
+  , "  sed -i -e \"s/E(Exception/E(catch, Exception, IOException/\" System/Fuse.hsc"
+  , "  sed -i -e \"s/IO(catch,/IO(/\" System/Fuse.hsc"
+  , "  sed -i -e \"s/IO.catch/ E.catch/\" System/Fuse.hsc"
+  , "  sed -i -e \"s/const exitFailure/\\\\\\\\(_ :: IOException) -> exitFailure/\" System/Fuse.hsc"
   , "'';"
   ]
