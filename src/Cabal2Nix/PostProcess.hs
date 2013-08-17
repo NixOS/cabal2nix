@@ -17,6 +17,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":buildTools }
+  | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"lsof":"openssh":"which":"bup":buildTools }
   | pname == "glade"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs, pkgConfDeps = "gtkC":delete "gtk" pkgConfDeps }
@@ -174,3 +175,6 @@ hfusePreConfigure = unlines
   , "  sed -i -e \"s/const exitFailure/\\\\\\\\(_ :: IOException) -> exitFailure/\" System/Fuse.hsc"
   , "'';"
   ]
+
+ghcPathsPatches :: String
+ghcPathsPatches = "patches = [ ./ghc-paths-nix.patch ];"
