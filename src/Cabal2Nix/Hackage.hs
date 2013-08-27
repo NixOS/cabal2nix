@@ -11,6 +11,7 @@ import Network.Browser ( browse, request, setCheckForProxy, setDebugLog, setOutH
 import System.Directory ( doesFileExist, getHomeDirectory, createDirectoryIfMissing )
 import System.FilePath ( dropFileName, (</>), (<.>) )
 import System.Process ( readProcess )
+import Control.Exception (catch, SomeException(..))
 
 import qualified Distribution.Hackage.DB as DB
 
@@ -35,12 +36,19 @@ hashPackage pkg = do
     exists <- doesFileExist cachePath
     hash' <- if exists
                then readFile cachePath
-               else readProcess "bash" ["-c", "exec nix-prefetch-url 2>/dev/tty " ++ hackagePath pkg TarGz] ""
+               else getHackageHash
     let hash = reverse (dropWhile (=='\n') (reverse hash'))
     unless exists $ do
       createDirectoryIfMissing True (dropFileName cachePath)
       writeFile cachePath hash
     return hash
+  where getHackageHash = do
+            let command = "exec nix-prefetch-url 2>/dev/tty " ++ hackagePath pkg TarGz
+            catch (readProcess "bash" ["-c", command] "") handlePrefetchError
+        handlePrefetchError (SomeException _) = do
+           error $ "\nError: Cannot compute hash for a hackage project.\n" ++
+                  "Specify hash explicitly via --sha256 and add appropriate \"src\" attribute " ++
+                  "to resulting nix expression."
 
 hashCachePath :: PackageIdentifier -> IO FilePath
 hashCachePath (PackageIdentifier (PackageName name) version') = do
