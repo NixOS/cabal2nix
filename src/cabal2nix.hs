@@ -18,7 +18,7 @@ import System.IO ( hPutStrLn, hFlush, stdout, stderr )
 data Configuration = Configuration
   { optPrintHelp :: Bool
   , optPrintVersion :: Bool
-  , optSha256 :: String
+  , optSha256 :: Maybe String
   , optMaintainer :: [String]
   , optPlatform :: [String]
   , optHaddock :: Bool
@@ -31,7 +31,7 @@ defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
   { optPrintHelp = False
   , optPrintVersion = False
-  , optSha256 = ""
+  , optSha256 = Nothing
   , optMaintainer = []
   , optPlatform = []
   , optHaddock = True
@@ -42,7 +42,7 @@ defaultConfiguration = Configuration
 options :: [OptDescr (Configuration -> Configuration)]
 options =
   [ Option "h" ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
-  , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = x }) "HASH")                              "sha256 hash of source tarball"
+  , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                              "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
@@ -84,7 +84,9 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                exitFailure
 
   let packageId = package (packageDescription cabal)
-  sha <- if null (optSha256 cfg) then hashPackage packageId else return (optSha256 cfg)
+  sha <- case optSha256 cfg of
+              Just hash -> return hash
+              Nothing -> hashPackage packageId
 
   let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
