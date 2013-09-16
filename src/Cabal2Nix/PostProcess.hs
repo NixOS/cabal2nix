@@ -47,6 +47,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
+  | pname == "pandoc"           = deriv { buildDepends = "alex":"happy":buildDepends }
   | pname == "pango"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "pcap"             = deriv { extraLibs = "libpcap":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
