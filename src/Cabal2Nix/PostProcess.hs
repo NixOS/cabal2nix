@@ -44,6 +44,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "lhs2tex"          = deriv { extraLibs = "texLive":extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = delete "ffi" extraLibs }
   | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
+  | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
