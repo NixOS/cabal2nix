@@ -35,15 +35,15 @@ postProcess deriv@(MkDerivation {..})
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hspec"            = deriv { doCheck = False }
-  | pname == "idris"            = if version < Version [0,9,9] []
-                                    then deriv { buildTools = "happy":buildTools, extraLibs = "gmp":extraLibs }
-                                    else deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
+  | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
   | pname == "lhs2tex"          = deriv { extraLibs = "texLive":extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = delete "ffi" extraLibs }
   | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
+  | pname == "llvm-general"     = deriv { doCheck = False }
+  | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
