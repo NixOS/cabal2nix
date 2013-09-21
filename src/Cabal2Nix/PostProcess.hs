@@ -45,6 +45,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
+  | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
   | pname == "pandoc"           = deriv { buildDepends = "alex":"happy":buildDepends }
@@ -198,3 +199,6 @@ lhs2texPostInstall = unlines
   , "  mkdir -p \"$out/nix-support\""
   , "'';"
   ]
+
+ncursesPatchPhase :: String
+ncursesPatchPhase = "patchPhase = \"find . -type f -exec sed -i -e 's|ncursesw/||' {} \\\\;\";"
