@@ -159,7 +159,7 @@ xmonadPostInstall = unlines
 gitAnnexOverrides :: String
 gitAnnexOverrides = unlines
   [ "preConfigure = \"patchShebangs .\";"
-  , "installPhase = \"make PREFIX=$out CABAL=./Setup docs install\";"
+  , "installPhase = \"./Setup install\";"
   , "checkPhase = ''"
   , "  export HOME=\"$NIX_BUILD_TOP/tmp\""
   , "  mkdir \"$HOME\""
