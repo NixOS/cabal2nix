@@ -60,6 +60,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
+  | pname == "trifecta"         = deriv { phaseOverrides = trifectaPostPatch }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
@@ -202,3 +203,13 @@ lhs2texPostInstall = unlines
 
 ncursesPatchPhase :: String
 ncursesPatchPhase = "patchPhase = \"find . -type f -exec sed -i -e 's|ncursesw/||' {} \\\\;\";"
+
+trifectaPostPatch :: String
+trifectaPostPatch = unlines
+  [ "postPatch = ''"
+  , "  substituteInPlace trifecta.cabal \\"
+  , "    --replace \"blaze-html           >= 0.5     && < 0.6,\" \"blaze-html           >= 0.5     && < 0.7,\" \\"
+  , "    --replace \"hashable             >= 1.2     && < 1.3,\" \"hashable             >= 1.1     && < 1.3,\" \\"
+  , "    --replace \"fingertree           >= 0.0.1   && < 0.1,\" \"fingertree           >= 0.0.1   && < 0.2,\""
+  , "'';"
+  ]
