@@ -11,6 +11,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
                                   , enable "Pairing", enable "XMPP", enable "DNS"
                                   , enable "Production", enable "TDFA"]
  | name == "haskeline"          = [enable "terminfo"]
+ | name == "hslua"              = [enable "system-lua"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "xmobar"             = [enable "with_xft"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
