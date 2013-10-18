@@ -53,6 +53,7 @@ libNixName "jpeg"               = return "libjpeg"
 libNixName "libglade-2.0"       = return "libglade"
 libNixName "libgsasl"           = return "gsasl"
 libNixName "librsvg-2.0"        = return "librsvg"
+libNixName "libusb-1.0"         = return "libusb"
 libNixName "libxml-2.0"         = return "libxml2"
 libNixName "libzip"             = return "libzip"
 libNixName "m"                  = []  -- in stdenv
