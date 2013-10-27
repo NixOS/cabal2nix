@@ -56,6 +56,7 @@ data Derivation = MkDerivation
   , runHaddock          :: Bool
   , jailbreak           :: Bool
   , doCheck             :: Bool
+  , testTarget          :: String
   , phaseOverrides      :: String
   , metaSection         :: Meta
   }
@@ -87,6 +88,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
     , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
+    , onlyIf (testTarget deriv) $ attr "testTarget" $ string (testTarget deriv)
     , onlyIf (phaseOverrides deriv) $ vcat ((map text . lines) (phaseOverrides deriv))
     , disp (metaSection deriv)
     ]
@@ -131,6 +133,7 @@ parseDerivation buf
                   , runHaddock     = noHaddock /= ["true"]
                   , jailbreak      = jailBreak == ["true"]
                   , doCheck        = docheck == ["true"] || null docheck
+                  , testTarget     = ""
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage    = ""
