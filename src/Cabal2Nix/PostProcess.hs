@@ -13,6 +13,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
+  | pname == "dns"              = deriv { testTarget = "spec" }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
