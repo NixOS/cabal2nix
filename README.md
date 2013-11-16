@@ -47,9 +47,10 @@ provided, as well as a `file:///local/path/pkg.cabal` URI that doesn't
 depend on network access. Run the utility with `--help` to see the
 complete list of supported command line flags.
 
-To add a new package to Nix, the following steps need to be performed:
+To add a new package to Nix, checkout the Nixpkgs project from
+https://github.com/nixos/nixpkgs.git and run
 
-    $ cd $NIXPKGS_ALL/pkgs/development/libraries/haskell
+    $ cd pkgs/development/libraries/haskell
     $ mkdir foo
     $ cabal2nix cabal://foo-1.0 >foo/default.nix
 
@@ -67,37 +68,38 @@ Furthermore, `hackage4nix` adds default settings for the
 `meta.maintainers` and `meta.platforms` attribute if these aren't
 configured yet. Generally speaking, running
 
-    $ hackage4nix $NIXPKGS_ALL
+    $ hackage4nix pkgs
 
-should be a *no-op* --- i.e. no files should change! If there are
-changes, these indicate that a file has been modified manually, and then
-these changes must be investigated to find out what is going on.
+in your checked-out copy of the Nixpkgs tree should be a *no-op* ---
+i.e. no files should change! If there are changes, these indicate that a
+file has been modified manually, and then these changes must be
+investigated to find out what is going on.
 
 Last but not least, `hackage4nix` generates a list of all updates
 available from Hackage. (Run `cabal update` to make sure that your local
 copy of the Hackage database is up-to-date!) For example:
 
-    $ hackage4nix $NIXPKGS_ALL
+    $ hackage4nix pkgs
     The following updates are available:
 
     WebBits-Html-1.0.1:
-      cabal2nix cabal://WebBits-Html-1.0.2 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/WebBits-Html/default.nix
+      cabal2nix cabal://WebBits-Html-1.0.2 >pkgs/pkgs/development/libraries/haskell/WebBits-Html/default.nix
 
     happstack-server-6.1.6:
-      cabal2nix cabal://happstack-server-6.2.1 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/happstack/happstack-server.nix
-      cabal2nix cabal://happstack-server-6.2.2 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/happstack/happstack-server.nix
+      cabal2nix cabal://happstack-server-6.2.1 >pkgs/pkgs/development/libraries/haskell/happstack/happstack-server.nix
+      cabal2nix cabal://happstack-server-6.2.2 >pkgs/pkgs/development/libraries/haskell/happstack/happstack-server.nix
 
     primitive-0.3.1:
-      cabal2nix cabal://primitive-0.4 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/primitive/default.nix
+      cabal2nix cabal://primitive-0.4 >pkgs/pkgs/development/libraries/haskell/primitive/default.nix
 
     repa-2.1.1.5:
-      cabal2nix cabal://repa-2.1.1.6 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/repa/default.nix
+      cabal2nix cabal://repa-2.1.1.6 >pkgs/pkgs/development/libraries/haskell/repa/default.nix
 
     unix-compat-0.2.2.1:
-      cabal2nix cabal://unix-compat-0.3 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/unix-compat/default.nix
+      cabal2nix cabal://unix-compat-0.3 >pkgs/pkgs/development/libraries/haskell/unix-compat/default.nix
 
     vector-0.7.1:
-      cabal2nix cabal://vector-0.8 >$NIXPKGS_ALL/pkgs/development/libraries/haskell/vector/default.nix
+      cabal2nix cabal://vector-0.8 >pkgs/pkgs/development/libraries/haskell/vector/default.nix
 
 These updates can be performed automatically by running the `cabal2nix`
 command given by `hackage4nix`. If there is more than one possible
