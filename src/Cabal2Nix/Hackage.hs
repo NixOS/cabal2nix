@@ -45,7 +45,7 @@ hashPackage pkg = do
   where getHackageHash = do
             let command = "exec nix-prefetch-url 2>/dev/tty " ++ hackagePath pkg TarGz
             handle handlePrefetchError (readProcess "bash" ["-c", command] "")
-        handlePrefetchError (SomeException _) = do
+        handlePrefetchError (SomeException _) =
            error $ "\nError: Cannot compute hash. (Not a hackage project?)\n" ++
                   "Specify hash explicitly via --sha256 and add appropriate \"src\" attribute " ++
                   "to resulting nix expression."
