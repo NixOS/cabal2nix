@@ -102,8 +102,8 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
                   ++ map text (configureFlags deriv)
 
 -- | A very incomplete parser that extracts 'pname', 'version',
--- 'sha256', 'platforms', 'maintainers', and 'runHaddock' from the given
--- Nix expression.
+-- 'sha256', 'platforms', 'hydraPlatforms', 'maintainers', 'doCheck',
+-- 'jailbreak', and 'runHaddock' from the given Nix expression.
 
 parseDerivation :: String -> Maybe Derivation
 parseDerivation buf
@@ -113,6 +113,7 @@ parseDerivation buf
   , Just vers <- simpleParse vers'
   , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
+  , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
@@ -136,11 +137,12 @@ parseDerivation buf
                   , testTarget     = ""
                   , phaseOverrides = ""
                   , metaSection  = Meta
-                                   { homepage    = ""
-                                   , description = ""
-                                   , license     = Unknown Nothing
-                                   , maintainers = concatMap words maint
-                                   , platforms   = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
+                                   { homepage       = ""
+                                   , description    = ""
+                                   , license        = Unknown Nothing
+                                   , maintainers    = concatMap words maint
+                                   , platforms      = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
+                                   , hydraPlatforms = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) hplats)
                                    }
                   }
   | otherwise = Nothing

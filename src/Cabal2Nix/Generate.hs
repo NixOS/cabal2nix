@@ -33,11 +33,12 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , testTarget     = ""
   , phaseOverrides = ""
   , metaSection    = Meta
-                   { homepage    = Cabal.homepage descr
-                   , description = Cabal.synopsis descr
-                   , license     = fromCabalLicense (Cabal.license descr)
-                   , platforms   = []
-                   , maintainers = []
+                   { homepage       = Cabal.homepage descr
+                   , description    = Cabal.synopsis descr
+                   , license        = fromCabalLicense (Cabal.license descr)
+                   , platforms      = []
+                   , hydraPlatforms = []
+                   , maintainers    = []
                    }
   }
   where

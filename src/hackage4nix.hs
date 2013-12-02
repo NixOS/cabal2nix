@@ -111,6 +111,7 @@ updateNixPkgs paths = do
         let Pkg deriv path regenerate = nix
             maints = maintainers (metaSection deriv)
             plats  = platforms (metaSection deriv)
+            hplats = hydraPlatforms (metaSection deriv)
         modify (Set.insert nix)
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
@@ -123,8 +124,9 @@ updateNixPkgs paths = do
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats
               deriv'' = deriv' { metaSection = meta
-                                               { maintainers = maints -- ++ ["andres","simons"]
-                                               , platforms   = plats'
+                                               { maintainers    = maints -- ++ ["andres","simons"]
+                                               , platforms      = plats'
+                                               , hydraPlatforms = hplats
                                                }
                                }
           io $ writeFile path (show (disp (normalize deriv'')))
@@ -149,7 +151,7 @@ genCabal2NixCmdline :: Pkg -> String
 genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ ['>':path']
   where
     meta = metaSection deriv
-    opts = [cabal] ++ maints' ++ plats'
+    opts = [cabal] ++ maints' ++ plats' ++ hplats'
                    ++ (if jailbreak deriv then ["--jailbreak"] else [])
                    ++ (if runHaddock deriv then [] else ["--no-haddock"])
                    ++ (if doCheck deriv then [] else ["--no-check"])
@@ -158,6 +160,9 @@ genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ ['>'
     plats'
       | ["self.ghc.meta.platforms"] == platforms meta = []
       | otherwise                                     = [ "--platform=" ++ p | p <- platforms meta ]
+    hplats'
+      | ["self.ghc.meta.platforms"] == platforms meta = []
+      | otherwise                                     = [ "--hydra-platform=" ++ p | p <- platforms meta ]
     path'
       | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (display (version deriv) <.> "nix")
       | otherwise                   = path

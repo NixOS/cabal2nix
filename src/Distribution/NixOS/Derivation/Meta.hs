@@ -30,8 +30,7 @@ import Distribution.Text
 -- >   homepage = "http://example.org";
 -- >   description = "an example package";
 -- >   license = "unknown";
--- >   platforms =
--- >     stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
+-- >   platforms = stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
 -- >   maintainers = [ stdenv.lib.maintainers.joe stdenv.lib.maintainers.jane ];
 -- > };
 --
@@ -39,11 +38,12 @@ import Distribution.Text
 -- but no parsing as of now!
 
 data Meta = Meta
-  { homepage    :: String       -- ^ URL of the package homepage
-  , description :: String       -- ^ short description of the package
-  , license     :: License      -- ^ licensing terms
-  , platforms   :: [String]     -- ^ list of supported platforms from @pkgs\/lib\/platforms.nix@
-  , maintainers :: [String]     -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
+  { homepage       :: String    -- ^ URL of the package homepage
+  , description    :: String    -- ^ short description of the package
+  , license        :: License   -- ^ licensing terms
+  , platforms      :: [String]  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
+  , hydraPlatforms :: [String]  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
+  , maintainers    :: [String]  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   }
   deriving (Show, Eq, Ord)
 
@@ -59,10 +59,14 @@ renderMeta meta = vcat
     , onlyIf (description meta) $ attr "description" $ string (description meta)
     , attr "license" $ disp (license meta)
     , onlyIf (platforms meta) $ sep
-      [ text "platforms" <+> equals
-      , nest 2 (fsep $ punctuate (text " ++") $ map text (platforms meta)) <> semi
-      ]
+      [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
+    , onlyIf (hydraPlatforms meta) $ sep
+      [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
     , listattr "maintainers" (maintainers meta)
     ]
   , rbrace <> semi
   ]
+
+renderPlatformList :: [String] -> Doc
+renderPlatformList plats =
+  nest 2 (fsep $ punctuate (text " ++") $ map text plats) <> semi
