@@ -7,7 +7,10 @@ import Data.List
 
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
-  | pname == "alex"             = deriv { buildTools = "perl":buildTools }
+  | pname == "alex" && version < Version [3,1] []
+                                = deriv { buildTools = "perl":buildTools }
+  | pname == "alex" && version >= Version [3,1] []
+                                = deriv { buildTools = "perl":"happy":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
