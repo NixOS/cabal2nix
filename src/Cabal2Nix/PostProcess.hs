@@ -50,6 +50,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
+  | pname == "markdown-unlit"   = deriv { runHaddock = True, phaseOverrides = markdownUnlitNoHaddock }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
@@ -219,3 +220,6 @@ trifectaPostPatch = unlines
   , "    --replace \"fingertree           >= 0.0.1   && < 0.1,\" \"fingertree           >= 0.0.1   && < 0.2,\""
   , "'';"
   ]
+
+markdownUnlitNoHaddock :: String
+markdownUnlitNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.4\";"
