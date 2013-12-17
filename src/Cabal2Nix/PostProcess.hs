@@ -17,6 +17,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
+  | pname == "doctest"          = deriv { runHaddock = True, phaseOverrides = doctestNoHaddock }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
@@ -221,5 +222,6 @@ trifectaPostPatch = unlines
   , "'';"
   ]
 
-markdownUnlitNoHaddock :: String
+doctestNoHaddock, markdownUnlitNoHaddock :: String
 markdownUnlitNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.4\";"
+doctestNoHaddock = markdownUnlitNoHaddock
