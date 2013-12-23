@@ -43,6 +43,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hspec"            = deriv { doCheck = False }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
+  | pname == "io-streams"       = deriv { configureFlags = "-fNoInteractiveTests":configureFlags }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
