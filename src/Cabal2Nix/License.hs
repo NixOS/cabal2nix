@@ -17,5 +17,6 @@ fromCabalLicense BSD4                              = Known "self.stdenv.lib.lice
 fromCabalLicense MIT                               = Known "self.stdenv.lib.licenses.mit"
 fromCabalLicense PublicDomain                      = Known "self.stdenv.lib.licenses.publicDomain"
 fromCabalLicense AllRightsReserved                 = Known "self.stdenv.lib.licenses.proprietary"
+fromCabalLicense (Apache Nothing)                  = Known "self.stdenv.lib.licenses.asl20"
 fromCabalLicense OtherLicense                      = Unknown Nothing
 fromCabalLicense l                                 = error $ "Cabal2Nix.License.fromCabalLicense: unknown license " ++ show l

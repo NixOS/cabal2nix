@@ -48,7 +48,7 @@ Source-Repository head
 Executable cabal2nix
   main-is:              cabal2nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.10,
+  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.16,
                         filepath, directory, process, HTTP, hackage-db
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
@@ -68,7 +68,7 @@ Executable cabal2nix
 Executable hackage4nix
   main-is:              hackage4nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.10,
+  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.16,
                         mtl, containers, directory, filepath, hackage-db
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
