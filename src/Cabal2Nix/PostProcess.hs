@@ -11,6 +11,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { buildTools = "perl":buildTools }
   | pname == "alex" && version >= Version [3,1] []
                                 = deriv { buildTools = "perl":"happy":buildTools }
+  | pname == "cabal2nix"        = deriv { doCheck = True, phaseOverrides = cabal2nixDoCheckHook }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
@@ -228,3 +229,6 @@ trifectaPostPatch = unlines
 doctestNoHaddock, markdownUnlitNoHaddock :: String
 markdownUnlitNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.4\";"
 doctestNoHaddock = markdownUnlitNoHaddock
+
+cabal2nixDoCheckHook :: String
+cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.version;"
