@@ -42,6 +42,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
+  | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
