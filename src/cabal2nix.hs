@@ -1,7 +1,7 @@
 module Main ( main ) where
 
-import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Generate ( cabal2nix )
+import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Normalize ( normalize )
 import Distribution.NixOS.Derivation.Cabal
 
@@ -24,6 +24,7 @@ data Configuration = Configuration
   , optHaddock :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
+  , optLocal :: Bool
   }
   deriving (Show)
 
@@ -37,17 +38,19 @@ defaultConfiguration = Configuration
   , optHaddock = True
   , optDoCheck = True
   , optJailbreak = False
+  , optLocal = False
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
 options =
   [ Option "h" ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
-  , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                              "sha256 hash of source tarball"
+  , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                         "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
   , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
+  , Option ""  ["local"]      (NoArg (\o -> o { optLocal = True }))                                      "assume a local package that is not on hackage yet. "
   ]
 
 usage :: String
@@ -85,8 +88,9 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let packageId = package (packageDescription cabal)
   sha <- case optSha256 cfg of
-              Just hash -> return hash
-              Nothing -> hashPackage packageId
+              Just hash -> return $ Just hash
+              Nothing | optLocal cfg -> return Nothing
+              Nothing -> fmap Just $ hashPackage packageId
 
   let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
@@ -94,6 +98,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      , platforms   = optPlatform cfg
                                      }
                      , doCheck = doCheck deriv && optDoCheck cfg
+                     , src = if optLocal cfg then Just "./." else Nothing
                      }
 
   putStr (show (disp (normalize deriv')))

@@ -1,23 +1,23 @@
 module Cabal2Nix.Generate ( cabal2nix ) where
 
-import Cabal2Nix.License
-import Cabal2Nix.PostProcess
-import Cabal2Nix.Normalize
 import Cabal2Nix.Flags
+import Cabal2Nix.License
+import Cabal2Nix.Normalize
+import Cabal2Nix.PostProcess
 import Data.Maybe
 import Distribution.Compiler
+import Distribution.NixOS.Derivation.Cabal
 import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
 import Distribution.System
-import Distribution.Version
-import Distribution.NixOS.Derivation.Cabal
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = normalize $ postProcess MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
-  , sha256         = "cabal2nix left the sha256 field undefined"
+  , sha256         = error "cabal2nix left the sha256 field undefined"
+  , src            = Nothing
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
   , buildDepends   = map unDep deps

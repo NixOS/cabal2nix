@@ -19,10 +19,11 @@ module Distribution.NixOS.Derivation.Cabal
   )
   where
 
+import Data.Maybe
 import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.PrettyPrinting
-import Distribution.Text
 import Distribution.Package
+import Distribution.Text
 #ifdef __HADDOCK__
 import Distribution.PackageDescription ( PackageDescription )
 #endif
@@ -43,7 +44,8 @@ import Text.Regex.Posix hiding ( empty )
 data Derivation = MkDerivation
   { pname               :: String
   , version             :: Version
-  , sha256              :: String
+  , sha256              :: Maybe String
+  , src                 :: Maybe String
   , isLibrary           :: Bool
   , isExecutable        :: Bool
   , buildDepends        :: [String]
@@ -73,11 +75,13 @@ renderDerivation :: Derivation -> Doc
 renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   [ text ""
   , text "cabal.mkDerivation" <+> lparen <> text "self" <> colon <+> lbrace
-  , nest 2 $ vcat
+  , nest 2 $ vcat $
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
-    , attr "sha256"  $ string (sha256 deriv)
-    , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
+    ] ++ maybeToList (fmap (attr "sha256" . string) $ sha256 deriv) 
+      ++ maybeToList (fmap (attr "src" . string) $ src deriv)
+      ++ 
+    [ boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" (buildDepends deriv)
     , listattr "testDepends" (testDepends deriv)
@@ -111,7 +115,8 @@ parseDerivation buf
   , [name]    <- buf `regsubmatch` "pname *= *\"([^\"]+)\""
   , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , Just vers <- simpleParse vers'
-  , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , sha       <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , sr        <- buf `regsubmatch` "src *= *([^;]+);"
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
@@ -121,7 +126,8 @@ parseDerivation buf
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
-                  , sha256         = sha
+                  , sha256         = listToMaybe sha
+                  , src            = listToMaybe sr
                   , isLibrary      = False
                   , isExecutable   = False
                   , buildDepends   = []
