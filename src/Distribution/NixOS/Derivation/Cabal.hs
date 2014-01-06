@@ -45,7 +45,7 @@ data Derivation = MkDerivation
   { pname               :: String
   , version             :: Version
   , sha256              :: Maybe String
-  , src                 :: Maybe String
+  , src                 :: Maybe FilePath
   , isLibrary           :: Bool
   , isExecutable        :: Bool
   , buildDepends        :: [String]
@@ -79,7 +79,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
     ] ++ maybeToList (fmap (attr "sha256" . string) $ sha256 deriv) 
-      ++ maybeToList (fmap (attr "src" . string) $ src deriv)
+      ++ maybeToList (fmap (attr "src" . text) $ src deriv)
       ++ 
     [ boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
