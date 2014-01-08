@@ -62,6 +62,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "pango"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "pcap"             = deriv { extraLibs = "libpcap":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
+  | pname == "poppler"          = deriv { extraLibs = "libc":extraLibs }
   | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
