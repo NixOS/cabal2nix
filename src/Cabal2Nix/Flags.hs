@@ -15,6 +15,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "xmobar"             = [enable "with_xft", enable "with_iwlib"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
+ | name == "yi"                 = [enable "pango"]
  | otherwise                    = []
 
 enable :: String -> (FlagName,Bool)
