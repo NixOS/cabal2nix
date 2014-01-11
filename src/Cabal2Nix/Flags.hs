@@ -14,7 +14,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "hslua"              = [enable "system-lua"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
- | name == "xmobar"             = [enable "with_xft", enable "with_iwlib"]
+ | name == "xmobar"             = [enable "with_xft", enable "with_iwlib", enable "with_alsa"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
  | name == "yi"                 = [enable "pango"]
  | otherwise                    = []
