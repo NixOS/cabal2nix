@@ -19,6 +19,7 @@ toNixName name    = f name
 libNixName :: String -> [String]
 libNixName "adns"               = return "adns"
 libNixName "alsa"               = return "alsaLib"
+libNixName "asound"             = return "alsaLib"
 libNixName "cairo-pdf"          = return "cairo"
 libNixName "cairo-ps"           = return "cairo"
 libNixName "cairo"              = return "cairo"
