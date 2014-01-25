@@ -21,6 +21,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "doctest"          = deriv { runHaddock = True, phaseOverrides = doctestNoHaddock }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
+  | pname == "either"           = deriv { runHaddock = True, phaseOverrides = eitherNoHaddock }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":buildTools }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
@@ -235,3 +236,6 @@ doctestNoHaddock = markdownUnlitNoHaddock
 
 cabal2nixDoCheckHook :: String
 cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.version;"
+
+eitherNoHaddock :: String
+eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
