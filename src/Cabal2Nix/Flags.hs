@@ -12,6 +12,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
                                   , enable "Production", enable "TDFA"]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "hslua"              = [enable "system-lua"]
+ | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "xmobar"             = [enable "with_xft", enable "with_iwlib", enable "with_alsa"]
