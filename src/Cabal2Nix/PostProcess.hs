@@ -181,6 +181,7 @@ gitAnnexOverrides = unlines
   , "  cp dist/build/git-annex/git-annex git-annex"
   , "  ./git-annex test"
   , "'';"
+  , "propagatedUserEnvPkgs = [git lsof];"
   ]
 
 ghciPostInstall :: String
