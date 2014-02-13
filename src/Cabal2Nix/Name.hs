@@ -84,6 +84,7 @@ libNixName "Xrandr"             = return "libXrandr"
 libNixName "Xss"                = return "libXScrnSaver"
 libNixName "Xtst"               = return "libXtst"
 libNixName "zmq"                = return "zeromq"
+libNixName "libzmq"             = return "zeromq"
 libNixName "z"                  = return "zlib"
 libNixName x                    = return x
 
