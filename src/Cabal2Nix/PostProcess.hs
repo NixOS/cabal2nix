@@ -7,6 +7,8 @@ import Data.List
 
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
+  | pname == "aeson" && version > Version [0,7] []
+                                = deriv { buildDepends = "blazeBuilder":buildDepends }
   | pname == "alex" && version < Version [3,1] []
                                 = deriv { buildTools = "perl":buildTools }
   | pname == "alex" && version >= Version [3,1] []
