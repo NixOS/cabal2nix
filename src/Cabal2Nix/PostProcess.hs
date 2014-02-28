@@ -9,6 +9,7 @@ postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
   | pname == "aeson" && version > Version [0,7] []
                                 = deriv { buildDepends = "blazeBuilder":buildDepends }
+  | pname == "Agda"             = deriv { buildTools = "emacs":buildTools, phaseOverrides = agdaPostInstall }
   | pname == "alex" && version < Version [3,1] []
                                 = deriv { buildTools = "perl":buildTools }
   | pname == "alex" && version >= Version [3,1] []
@@ -245,3 +246,10 @@ cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.
 
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
+
+agdaPostInstall :: String
+agdaPostInstall = unlines
+  [ "postInstall = ''"
+  , "  $out/bin/agda-mode compile"
+  , "'';"
+  ]
