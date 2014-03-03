@@ -73,6 +73,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
+  | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
@@ -251,5 +252,14 @@ agdaPostInstall :: String
 agdaPostInstall = unlines
   [ "postInstall = ''"
   , "  $out/bin/agda-mode compile"
+  , "'';"
+  ]
+
+structuredHaskellModePostInstall :: String
+structuredHaskellModePostInstall = unlines
+  [ "postInstall = ''"
+  , "  emacs -L elisp --batch -f batch-byte-compile \"elisp/\"*.el"
+  , "  install -d $out/share/emacs/site-lisp"
+  , "  install \"elisp/\"*.elc $out/share/emacs/site-lisp"
   , "'';"
   ]
