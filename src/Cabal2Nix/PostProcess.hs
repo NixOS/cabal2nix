@@ -60,6 +60,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "markdown-unlit"   = deriv { runHaddock = True, phaseOverrides = markdownUnlitNoHaddock }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
+  | pname == "mysql"            = deriv { buildTools = "mysqlConfig":buildTools, extraLibs = "zlib":extraLibs }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
