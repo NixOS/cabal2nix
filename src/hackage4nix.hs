@@ -162,7 +162,7 @@ genCabal2NixCmdline (Pkg deriv path _) = unwords $ ["cabal2nix"] ++ opts ++ ['>'
       | otherwise                                     = [ "--platform=" ++ p | p <- platforms meta ]
     hplats'
       | ["self.ghc.meta.platforms"] == platforms meta = []
-      | otherwise                                     = [ "--hydra-platform=" ++ p | p <- platforms meta ]
+      | otherwise                                     = [ "--hydra-platform=" ++ p | p <- hydraPlatforms meta ]
     path'
       | path =~ "/[0-9\\.]+\\.nix$" = replaceFileName path (display (version deriv) <.> "nix")
       | otherwise                   = path

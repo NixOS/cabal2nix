@@ -112,8 +112,8 @@ parseDerivation buf
   , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , Just vers <- simpleParse vers'
   , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
-  , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
+  , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
