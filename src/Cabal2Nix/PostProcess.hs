@@ -74,11 +74,13 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
+  | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "trifecta"         = deriv { phaseOverrides = trifectaPostPatch }
+  | pname == "unix-time"        = deriv { phaseOverrides = unixTimeConfigureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
@@ -262,5 +264,17 @@ structuredHaskellModePostInstall = unlines
   , "  emacs -L elisp --batch -f batch-byte-compile \"elisp/\"*.el"
   , "  install -d $out/share/emacs/site-lisp"
   , "  install \"elisp/\"*.elc $out/share/emacs/site-lisp"
+  , "'';"
+  ]
+
+unixTimeConfigureFlags :: String
+unixTimeConfigureFlags =
+  "configureFlags = self.stdenv.lib.optionalString self.enableSharedLibraries \"--ghc-option=-fPIC\";"
+
+sloanePostInstall :: String
+sloanePostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir -p $out/share/man/man1"
+  , "  cp sloane.1 $out/share/man/man1/"
   , "'';"
   ]
