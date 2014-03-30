@@ -172,8 +172,9 @@ highlightingKatePostProcessing deriv@(MkDerivation {..}) = deriv
 xmonadPostInstall :: String
 xmonadPostInstall = unlines
   [ "postInstall = ''"
+  , "  shopt -s globstar"
   , "  mkdir -p $out/share/man/man1"
-  , "  mv $out/share/xmonad-*/man/*.1 $out/share/man/man1/"
+  , "  mv \"$out/\"**\"/man/\"*.1 $out/share/man/man1/"
   , "'';"
   ]
 
