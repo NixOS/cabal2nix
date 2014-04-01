@@ -60,6 +60,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "markdown-unlit"   = deriv { runHaddock = True, phaseOverrides = markdownUnlitNoHaddock }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
+  | pname == "mime-mail"        = deriv { extraFunctionArgs = ["sendmail ? \"sendmail\""], phaseOverrides = mimeMailConfigureFlags }
   | pname == "mysql"            = deriv { buildTools = "mysqlConfig":buildTools, extraLibs = "zlib":extraLibs }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
@@ -278,4 +279,9 @@ sloanePostInstall = unlines
   , "  mkdir -p $out/share/man/man1"
   , "  cp sloane.1 $out/share/man/man1/"
   , "'';"
+  ]
+
+mimeMailConfigureFlags :: String
+mimeMailConfigureFlags = unlines
+  [ "configureFlags = \"--ghc-option=-DMIME_MAIL_SENDMAIL_PATH=\\\"${sendmail}\\\"\";"
   ]
