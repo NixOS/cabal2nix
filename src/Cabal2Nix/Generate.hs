@@ -20,6 +20,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , sha256         = "cabal2nix left the sha256 field undefined"
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
+  , extraFunctionArgs = []
   , buildDepends   = map unDep deps
   , testDepends    = map unDep tstDeps ++ concatMap Cabal.extraLibs tests
   , buildTools     = map unDep tools

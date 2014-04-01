@@ -46,6 +46,7 @@ data Derivation = MkDerivation
   , sha256              :: String
   , isLibrary           :: Bool
   , isExecutable        :: Bool
+  , extraFunctionArgs   :: [String]
   , buildDepends        :: [String]
   , testDepends         :: [String]
   , buildTools          :: [String]
@@ -97,7 +98,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   ]
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
-              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
 
@@ -124,6 +125,7 @@ parseDerivation buf
                   , sha256         = sha
                   , isLibrary      = False
                   , isExecutable   = False
+                  , extraFunctionArgs = []
                   , buildDepends   = []
                   , testDepends    = []
                   , buildTools     = []
