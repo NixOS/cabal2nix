@@ -228,4 +228,7 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                   , "top-level/all-packages.nix", "top-level/haskell-packages.nix"
                     -- This build is way too complicated to maintain it automatically.
                   , "pkgs/development/compilers/pakcs/default.nix"
+                    -- Not registered on Hackage.
+                  , "pkgs/tools/networking/sproxy/default.nix"
+                  , "pkgs/tools/networking/sproxy-web/default.nix"
                   ]
