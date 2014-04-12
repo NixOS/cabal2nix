@@ -20,6 +20,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , src            = Nothing
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
+  , extraFunctionArgs = []
   , buildDepends   = map unDep deps
   , testDepends    = map unDep tstDeps ++ concatMap Cabal.extraLibs tests
   , buildTools     = map unDep tools

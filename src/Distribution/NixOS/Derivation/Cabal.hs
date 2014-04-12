@@ -48,6 +48,7 @@ data Derivation = MkDerivation
   , src                 :: Maybe FilePath
   , isLibrary           :: Bool
   , isExecutable        :: Bool
+  , extraFunctionArgs   :: [String]
   , buildDepends        :: [String]
   , testDepends         :: [String]
   , buildTools          :: [String]
@@ -78,9 +79,9 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   , nest 2 $ vcat $
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
-    ] ++ maybeToList (fmap (attr "sha256" . string) $ sha256 deriv) 
+    ] ++ maybeToList (fmap (attr "sha256" . string) $ sha256 deriv)
       ++ maybeToList (fmap (attr "src" . text) $ src deriv)
-      ++ 
+      ++
     [ boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" (buildDepends deriv)
@@ -101,7 +102,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   ]
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
-              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
+              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
 
@@ -115,10 +116,10 @@ parseDerivation buf
   , [name]    <- buf `regsubmatch` "pname *= *\"([^\"]+)\""
   , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , Just vers <- simpleParse vers'
-  , sha       <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , sr        <- buf `regsubmatch` "src *= *([^;]+);"
-  , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
+  , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
@@ -130,6 +131,7 @@ parseDerivation buf
                   , src            = listToMaybe sr
                   , isLibrary      = False
                   , isExecutable   = False
+                  , extraFunctionArgs = []
                   , buildDepends   = []
                   , testDepends    = []
                   , buildTools     = []

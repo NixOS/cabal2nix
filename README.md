@@ -115,7 +115,7 @@ packages available in Nix have been generated automatically from their
 Cabal files. There are only a handful of exceptions, which we cannot
 generate because these packages aren't available on Hackage. The list of
 those packages is hard-coded into the
-[`hackage4nix.hs`](http://github.com/NixOS/cabal2nix/blob/master/src/Hackage4Nix.hs)
+[`hackage4nix.hs`](https://github.com/NixOS/cabal2nix/blob/master/src/hackage4nix.hs)
 binary in the function `badPackagePaths`.
 
 Furthermore, Hackage4Nix will not re-generate packages that have been
@@ -133,5 +133,5 @@ the tool [`package-list`](http://github.com/peti/package-list),
 and published at <http://cryp.to/haskell-in-nixpkgs.txt>. Hackage picks
 it up from there and generates links on each package's homepage to the
 corresponding page in Hydra automatically. See [ticket
-875](http://hackage.haskell.org/trac/hackage/ticket/875) for further
+875](http://www.haskell.org/pipermail/cabal-devel/2011-August/007714.html) for further
 details.
