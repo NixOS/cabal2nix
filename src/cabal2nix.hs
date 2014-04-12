@@ -50,15 +50,17 @@ options =
   ]
 
 usage :: String
-usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++ unlines
+usage = usageInfo "Usage: cabal2nix [options] URI" options ++ unlines
         [ ""
         , "Recognized URI schemes:"
         , ""
         , "  cabal://pkgname-pkgversion       download the specified package from Hackage"
         , "  cabal://pkgname                  download latest version of the specified package from Hackage"
-        , "  http://host/path                 fetch the Cabal file via HTTP"
         , "  file:///local/path               load the Cabal file from the local disk"
         , "  /local/path                      abbreviated version of file URI"
+        , ""
+        , "If URI is a local path and is not a file, then it will be used as the source of the package. Otherwise, the source"
+        , "will be downloaded from hackage."
         ]
 
 cmdlineError :: String -> IO a
