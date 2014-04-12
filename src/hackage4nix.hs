@@ -1,7 +1,7 @@
 module Main ( main ) where
 
-import Cabal2Nix.Normalize
 import Cabal2Nix.Generate
+import Cabal2Nix.Normalize
 import Control.Exception ( bracket )
 import Control.Monad.RWS
 import Data.List
@@ -116,7 +116,7 @@ updateNixPkgs paths = do
         when regenerate $ do
           msgDebug ("re-generate " ++ path)
           pkg <- getCabalPackage (pname deriv) (version deriv)
-          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv
+          let deriv'  = (cabal2nix pkg) { src = src deriv
                                         , runHaddock = runHaddock deriv
                                         , doCheck = doCheck deriv
                                         , jailbreak = jailbreak deriv

@@ -16,8 +16,7 @@ cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = normalize $ postProcess MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
-  , sha256         = error "cabal2nix left the sha256 field undefined"
-  , src            = Nothing
+  , src            = error "cabal2nix left the src field undefined"
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
   , extraFunctionArgs = []

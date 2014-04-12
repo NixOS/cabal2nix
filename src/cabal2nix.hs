@@ -1,19 +1,18 @@
 module Main ( main ) where
 
 import Cabal2Nix.Generate ( cabal2nix )
-import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Normalize ( normalize )
+import Cabal2Nix.Package
 import Distribution.NixOS.Derivation.Cabal
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )
-import Distribution.PackageDescription ( package, packageDescription )
-import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text ( disp )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.IO ( hPutStrLn, hFlush, stdout, stderr )
+import Text.URI ( parseURI )
 
 data Configuration = Configuration
   { optPrintHelp :: Bool
@@ -24,7 +23,6 @@ data Configuration = Configuration
   , optHaddock :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
-  , optLocal :: Bool
   }
   deriving (Show)
 
@@ -38,7 +36,6 @@ defaultConfiguration = Configuration
   , optHaddock = True
   , optDoCheck = True
   , optJailbreak = False
-  , optLocal = False
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
@@ -50,7 +47,6 @@ options =
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
   , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
-  , Option ""  ["local"]      (NoArg (\o -> o { optLocal = True }))                                      "assume a local package that is not on hackage yet. "
   ]
 
 usage :: String
@@ -79,26 +75,17 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   when (optPrintHelp cfg) (putStr usage >> exitSuccess)
   when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
 
-  cabal' <- fmap parsePackageDescription (readCabalFile (head args))
-  cabal <- case cabal' of
-             ParseOk _ a -> return a
-             ParseFailed err -> do
-               hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
-               exitFailure
+  uri <- case parseURI (head args) of
+    Nothing -> hPutStrLn stderr "*** invalid uri" >> exitFailure
+    Just uri' -> return uri'
+  pkg <- readPackage (optSha256 cfg) uri
 
-  let packageId = package (packageDescription cabal)
-  sha <- case optSha256 cfg of
-              Just hash -> return $ Just hash
-              Nothing | optLocal cfg -> return Nothing
-              Nothing -> fmap Just $ hashPackage packageId
-
-  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
+  let deriv  = (cabal2nix $ cabal pkg) { src = source pkg, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = optMaintainer cfg
                                      , platforms   = optPlatform cfg
                                      }
                      , doCheck = doCheck deriv && optDoCheck cfg
-                     , src = if optLocal cfg then Just "./." else Nothing
                      }
 
   putStr (show (disp (normalize deriv')))

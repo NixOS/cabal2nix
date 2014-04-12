@@ -14,12 +14,12 @@
 module Distribution.NixOS.Derivation.Cabal
   ( Derivation(..)
   , parseDerivation
+  , DerivationSource(..)
   , module Distribution.NixOS.Derivation.Meta
   , module Data.Version
   )
   where
 
-import Data.Maybe
 import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.PrettyPrinting
 import Distribution.Package
@@ -34,18 +34,18 @@ import Data.Char
 import Data.Function
 import Text.Regex.Posix hiding ( empty )
 
+data DerivationSource = Hackage String | Directory String | FetchUrl String String deriving (Eq, Show, Ord)
+
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
 -- 'PackageDescription' from Cabal.
 --
 -- Note that the "Text" instance definition provides pretty-printing,
 -- but no parsing as of now!
-
 data Derivation = MkDerivation
   { pname               :: String
   , version             :: Version
-  , sha256              :: Maybe String
-  , src                 :: Maybe FilePath
+  , src                 :: DerivationSource
   , isLibrary           :: Bool
   , isExecutable        :: Bool
   , extraFunctionArgs   :: [String]
@@ -79,9 +79,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   , nest 2 $ vcat $
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
-    ] ++ maybeToList (fmap (attr "sha256" . string) $ sha256 deriv)
-      ++ maybeToList (fmap (attr "src" . text) $ src deriv)
-      ++
+    ] ++ sourceAttrs (src deriv) ++
     [ boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" (buildDepends deriv)
@@ -103,8 +101,15 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
               buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
+           ++ ["fetchurl" | FetchUrl _ _ <- [src deriv]]
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
+    sourceAttrs (Hackage hash) = [attr "sha256" $ string hash]
+    sourceAttrs (Directory dir) = [attr "src" $ text dir]
+    sourceAttrs (FetchUrl url hash) = return $ attr "src" $ text "fetchurl" <+> lbrace $$ nest 2 (vcat
+      [ attr "url" $ string url
+      , attr "sha256" $ string hash
+      ])
 
 -- | A very incomplete parser that extracts 'pname', 'version',
 -- 'sha256', 'platforms', 'hydraPlatforms', 'maintainers', 'doCheck',
@@ -116,8 +121,9 @@ parseDerivation buf
   , [name]    <- buf `regsubmatch` "pname *= *\"([^\"]+)\""
   , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , Just vers <- simpleParse vers'
-  , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , sha       <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , sr        <- buf `regsubmatch` "src *= *([^;]+);"
+  , url       <- buf `regsubmatch` "url *= *([^;]+);"
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
@@ -127,8 +133,11 @@ parseDerivation buf
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
-                  , sha256         = listToMaybe sha
-                  , src            = listToMaybe sr
+                  , src            = case (sr,url) of
+                                       ([]   , _      ) -> Hackage $ head sha
+                                       (_    , url':_ ) -> FetchUrl url' $ head sha
+                                       (sr':_, []     ) -> Directory sr'
+
                   , isLibrary      = False
                   , isExecutable   = False
                   , extraFunctionArgs = []
