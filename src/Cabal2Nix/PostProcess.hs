@@ -79,6 +79,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
+  | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "unix-time"        = deriv { phaseOverrides = unixTimeConfigureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
@@ -233,6 +234,9 @@ doctestNoHaddock = markdownUnlitNoHaddock
 
 cabal2nixDoCheckHook :: String
 cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.version;"
+
+textIcuDoCheckHook :: String
+textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
 
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
