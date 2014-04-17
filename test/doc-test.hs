@@ -34,4 +34,5 @@ main = do
              , "src/Distribution/NixOS/Regex.hs"
              ]
   doctest $ "src/cabal2nix.hs" : libs
+  doctest $ "src/hackage2nix.hs" : libs
   doctest $ "src/hackage4nix.hs" : libs

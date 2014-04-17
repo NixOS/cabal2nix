@@ -100,6 +100,27 @@ Executable hackage4nix
                         Distribution.NixOS.PrettyPrinting
                         Distribution.NixOS.Regex
 
+Executable hackage2nix
+  main-is:              hackage2nix.hs
+  hs-source-dirs:       src
+  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.16,
+                        mtl, containers, directory, filepath, hackage-db, optparse-applicative,
+                        IfElse
+  Extensions:           PatternGuards, RecordWildCards, CPP
+  Ghc-Options:          -Wall
+  other-modules:        Cabal2Nix.CorePackages
+                        Cabal2Nix.Flags
+                        Cabal2Nix.Generate
+                        Cabal2Nix.Hackage
+                        Cabal2Nix.License
+                        Cabal2Nix.Name
+                        Cabal2Nix.Normalize
+                        Cabal2Nix.PostProcess
+                        Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
+                        Distribution.NixOS.PrettyPrinting
+
 Test-Suite doctest-cabal2nix
   type:                 exitcode-stdio-1.0
   main-is:              doc-test.hs
