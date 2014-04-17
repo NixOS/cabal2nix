@@ -36,6 +36,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "gloss-raster"     = deriv { extraLibs = "llvm":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
   | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs, buildDepends = delete "gio" buildDepends }
+  | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "haddock"          = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
