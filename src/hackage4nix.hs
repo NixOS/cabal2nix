@@ -231,4 +231,5 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                     -- Not registered on Hackage.
                   , "pkgs/tools/networking/sproxy/default.nix"
                   , "pkgs/tools/networking/sproxy-web/default.nix"
+                  , "pkgs/development/tools/haskell/cabal-delete/default.nix"
                   ]
