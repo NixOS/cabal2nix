@@ -228,6 +228,8 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                   , "top-level/all-packages.nix", "top-level/haskell-packages.nix"
                     -- This build is way too complicated to maintain it automatically.
                   , "pkgs/development/compilers/pakcs/default.nix"
+                    -- Requires platform-specific magic that I don't want to add to cabal2nix.
+                  , "pkgs/development/libraries/haskell/fsnotify/default.nix"
                     -- Not registered on Hackage.
                   , "pkgs/tools/networking/sproxy/default.nix"
                   , "pkgs/tools/networking/sproxy-web/default.nix"
