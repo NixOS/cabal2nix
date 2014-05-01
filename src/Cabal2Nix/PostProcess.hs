@@ -126,7 +126,8 @@ cudaConfigurePhase = unlines
 
 ghcModPostInstall :: String
 ghcModPostInstall = unlines
-  [ "postInstall = ''"
+  [ "configureFlags = \"--datasubdir=${self.pname}-${self.version}\";"
+  , "postInstall = ''"
   , "  cd $out/share/$pname-$version"
   , "  make"
   , "  rm Makefile"
