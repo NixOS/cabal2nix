@@ -224,9 +224,6 @@ corePackages = Prelude.map (fromJust . simpleParse)
                , "unix-2.7.0.1"
                ]
 
-instance NFData PackageName where
-  rnf (PackageName name) = rnf name
-
 instance NFData State where
   rnf (State db) = rnf db
 
