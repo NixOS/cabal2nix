@@ -2,26 +2,25 @@
 
 module Main where
 
+import Control.DeepSeq
 import Control.Monad.IfElse
 import Control.Monad.Reader
 import Control.Monad.State.Strict hiding ( State )
+import Data.Char
+import Data.List ( intercalate )
+import qualified Data.Map as Map
 import Data.Maybe
-import qualified Data.Set as Set
 import Data.Monoid
-import Distribution.Version
+import qualified Distribution.Compat.ReadP as Parse
 import Distribution.Compiler
 import Distribution.Hackage.DB
 import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Text
+import Distribution.Version
 import Options.Applicative
 import System.IO
-import Data.List ( reverse, intercalate )
 import Text.PrettyPrint ( text )
-import qualified Distribution.Compat.ReadP as Parse
-import Data.Char
-import qualified Data.Map as Map
-import Control.DeepSeq
 
 data Options = Options
   { verbose :: Bool
@@ -91,7 +90,7 @@ incDepth f = local (\cfg -> cfg { _recursionDepth = 1 + _recursionDepth cfg }) f
 run :: Compile a -> IO a
 run f = runCompiler f Options
   { verbose = True, overlay = []
-  , compiler = CompilerId GHC (Version {versionBranch = [7,8,2], versionTags = []})
+  , compiler = CompilerId GHC Version {versionBranch = [7,8,2], versionTags = []}
   }
 
 main :: IO ()
@@ -129,24 +128,22 @@ resolve dep@(Dependency pkgname@(PackageName name) versionRange) = do
   vdb <- resolveName pkgname
   msgInfo $ "resolve: " ++ name ++ " has versions: " ++ displayList (keys vdb)
   let matches = Distribution.Hackage.DB.filterWithKey (\k _ -> k `withinRange` versionRange) vdb
-  case Distribution.Hackage.DB.null matches of
-    True  -> fail $ "resolve: cannot satisfy " ++ display dep ++ " from versions " ++ displayList (keys vdb)
-    False -> do msgInfo $ "resolve: " ++ display dep ++ " matches versions: " ++ displayList (keys matches)
-                return matches
+  if Distribution.Hackage.DB.null matches
+    then fail $ "resolve: cannot satisfy " ++ display dep ++ " from versions " ++ displayList (keys vdb)
+    else do msgInfo $ "resolve: " ++ display dep ++ " matches versions: " ++ displayList (keys matches)
+            return matches
 
 addPackage :: Dependency -> Compile ()
-addPackage dep@(Dependency name vers) = do
+addPackage dep@(Dependency name _) = do
   msgInfo $ "try to register " ++ display dep
   known <- gets $ \(State pkgDb) -> dep `isKnownPackage` pkgDb
-  case known of
-    True -> return ()
-    False -> do
-      vdb <- resolve dep
-      r <- compile (last (elems vdb))
-      case r of
-        Left missingDeps -> incDepth $ do mapM_ addPackage (Prelude.filter (\(Dependency n _) -> n /= name) missingDeps)
-                                          addPackage dep
-        Right (pdesc, _) -> do registerPackage (packageId pdesc)
+  unless known $ do
+    vdb <- resolve dep
+    r <- compile (last (elems vdb))
+    case r of
+      Left missingDeps -> incDepth $ do mapM_ addPackage (Prelude.filter (\(Dependency n _) -> n /= name) missingDeps)
+                                        addPackage dep
+      Right (pdesc, _) -> registerPackage (packageId pdesc)
 
 isKnownPackage :: Dependency -> Map PackageName Version -> Bool
 isKnownPackage (Dependency name versionRange) pkgDb =
@@ -158,7 +155,7 @@ compile :: GenericPackageDescription -> Compile (Either [Dependency] (PackageDes
 compile gpdesc = do
   let PackageIdentifier name vers = packageId gpdesc
   knownPackages <- gets (\(State pkgDb) -> force $ Map.insert name vers pkgDb)
-  platformId <- return (Platform X86_64 Linux)
+  let platformId = Platform X86_64 Linux
   compilerId <- asks _compiler
   return $ finalizePackageDescription
              ([] :: FlagAssignment)
@@ -171,7 +168,7 @@ compile gpdesc = do
 registerPackage :: PackageIdentifier -> Compile ()
 registerPackage pkgid@(PackageIdentifier name vers) = do
   msgNote $ "add " ++ display pkgid
-  modify' $ \(State db) -> State $!! (Map.insert name vers db)
+  modify' $ \(State db) -> State (Map.insert name vers db)
 
 buildPackageSet :: Compile ()
 buildPackageSet = do
@@ -227,4 +224,5 @@ corePackages = Prelude.map (fromJust . simpleParse)
 instance NFData State where
   rnf (State db) = rnf db
 
+modify' :: (State -> State) -> Compile ()
 modify' f = get >>= \st -> put $!! f st
