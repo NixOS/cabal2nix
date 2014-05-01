@@ -4,8 +4,9 @@ module Main where
 
 import Control.Monad.IfElse
 import Control.Monad.Reader
-import Control.Monad.State hiding ( State )
+import Control.Monad.State.Strict hiding ( State )
 import Data.Maybe
+import qualified Data.Set as Set
 import Data.Monoid
 import Distribution.Version
 import Distribution.Compiler
@@ -19,6 +20,8 @@ import Data.List ( reverse, intercalate )
 import Text.PrettyPrint ( text )
 import qualified Distribution.Compat.ReadP as Parse
 import Data.Char
+import qualified Data.Map as Map
+import Control.DeepSeq
 
 data Options = Options
   { verbose :: Bool
@@ -30,6 +33,7 @@ data Options = Options
 data Config = Config
   { _verbose :: Bool
   , _hackage :: Hackage
+  , _recursionDepth :: Int
   , _compiler :: CompilerId
   }
   deriving (Show)
@@ -50,13 +54,16 @@ instance Text Nixpkg where
           cs <- Parse.munch1 isAlphaNum
           if all isDigit cs then Parse.pfail else return cs
 
-data State = State (Map PackageIdentifier ())
+data State = State (Map PackageName Version)
   deriving (Show)
 
 type Compile a = MonadIO m => StateT State (ReaderT Config m) a
 
 yell :: String -> Compile ()
-yell = liftIO . hPutStrLn stderr
+yell msg = do
+  d <- asks _recursionDepth
+  let prefix = replicate d ' '
+  liftIO (hPutStrLn stderr (prefix ++ msg))
 
 msgInfo, msgNote, msgWarn :: String -> Compile ()
 msgInfo = whenM (asks _verbose) . yell . showString "INFO: "
@@ -69,11 +76,15 @@ runCompiler f opts = do
   let cfg = Config
             { _verbose = verbose opts
             , _hackage = db
+            , _recursionDepth = 0
             , _compiler = compiler opts
             }
-      st  = State Distribution.Hackage.DB.empty
+      st  = State Map.empty
       f'  = msgInfo (showString "options = " (show opts)) >> f
   runReaderT (evalStateT f' st) cfg
+
+incDepth :: Compile a -> Compile a
+incDepth f = local (\cfg -> cfg { _recursionDepth = 1 + _recursionDepth cfg }) f
 
 -- | A convenience variant of 'runCompiler' that's probably good enough
 -- for quick-fire testing in ghci.
@@ -116,33 +127,37 @@ resolveName (PackageName name) = do
 resolve :: Dependency -> Compile (Map Version GenericPackageDescription)
 resolve dep@(Dependency pkgname@(PackageName name) versionRange) = do
   vdb <- resolveName pkgname
-  -- msgInfo $ "resolve: " ++ name ++ " has versions: " ++ displayList (keys vdb)
+  msgInfo $ "resolve: " ++ name ++ " has versions: " ++ displayList (keys vdb)
   let matches = Distribution.Hackage.DB.filterWithKey (\k _ -> k `withinRange` versionRange) vdb
   case Distribution.Hackage.DB.null matches of
     True  -> fail $ "resolve: cannot satisfy " ++ display dep ++ " from versions " ++ displayList (keys vdb)
-    False -> do -- msgInfo $ "resolve: " ++ display dep ++ " matches versions: " ++ displayList (keys matches)
+    False -> do msgInfo $ "resolve: " ++ display dep ++ " matches versions: " ++ displayList (keys matches)
                 return matches
 
 addPackage :: Dependency -> Compile ()
-addPackage dep = do
+addPackage dep@(Dependency name vers) = do
+  msgInfo $ "try to register " ++ display dep
   known <- gets $ \(State pkgDb) -> dep `isKnownPackage` pkgDb
   case known of
-    True -> do -- msgWarn (display dep ++ " is already registered!")
-               return ()
+    True -> return ()
     False -> do
       vdb <- resolve dep
       r <- compile (last (elems vdb))
       case r of
-        Left missingDeps -> mapM_ addPackage missingDeps
-        Right (pdesc, _) -> registerPackage (packageId pdesc)
+        Left missingDeps -> incDepth $ do mapM_ addPackage (Prelude.filter (\(Dependency n _) -> n /= name) missingDeps)
+                                          addPackage dep
+        Right (pdesc, _) -> do registerPackage (packageId pdesc)
 
-isKnownPackage :: Dependency -> Map PackageIdentifier () -> Bool
-isKnownPackage (Dependency (PackageName name) versionRange) pkgDb =
-  not (Distribution.Hackage.DB.null (filterWithKey (\(PackageIdentifier (PackageName name') version) _ -> name' == name && version `withinRange` versionRange) pkgDb))
+isKnownPackage :: Dependency -> Map PackageName Version -> Bool
+isKnownPackage (Dependency name versionRange) pkgDb =
+  case Map.lookup name pkgDb of
+    Nothing -> False
+    Just v   -> v `withinRange` versionRange
 
 compile :: GenericPackageDescription -> Compile (Either [Dependency] (PackageDescription, FlagAssignment))
 compile gpdesc = do
-  State knownPackages <- get
+  let PackageIdentifier name vers = packageId gpdesc
+  knownPackages <- gets (\(State pkgDb) -> force $ Map.insert name vers pkgDb)
   platformId <- return (Platform X86_64 Linux)
   compilerId <- asks _compiler
   return $ finalizePackageDescription
@@ -150,37 +165,69 @@ compile gpdesc = do
              (`isKnownPackage` knownPackages)
              platformId
              compilerId
-             (Prelude.map thisPackageVersion (keys knownPackages))
+             [] -- [ thisPackageVersion (PackageIdentifier n v) | (n,v) <- Map.toList knownPackages ]
              gpdesc
 
 registerPackage :: PackageIdentifier -> Compile ()
-registerPackage pkgid = do
-  msgInfo $ "registerPackage: " ++ display pkgid
-  modify $ \(State db) -> State (insert pkgid () db)
+registerPackage pkgid@(PackageIdentifier name vers) = do
+  msgNote $ "add " ++ display pkgid
+  modify' $ \(State db) -> State $!! (Map.insert name vers db)
 
 buildPackageSet :: Compile ()
 buildPackageSet = do
   mapM_ registerPackage corePackages
-  addPackage (fromJust (simpleParse "hackage-db") :: Dependency)
-  addPackage (fromJust (simpleParse "hledger") :: Dependency)
-  -- addPackage (fromJust (simpleParse "git-annex") :: Dependency)
+  mapM_ (addPackage . fromJust . simpleParse)
+    [ "network < 2.5"           -- required because of hslogger
+    -- here comes the actual payload
+    , "cabal2nix"
+    , "hledger"
+    , "hledger-web"
+    , "idris"
+    , "Elm"
+    , "Agda"
+    , "git-annex"
+    ]
 
-  -- Right (tpkg, _) = finalizePackageDescription
-  --                       (configureCabalFlags pkg)
-  --                       (const True)
-  --                       (Platform I386 Linux)                   -- shouldn't be hardcoded
-  --                       (CompilerId GHC (Version [7,6,3] []))   -- dito
-  --                       [] cabal
   State pkgDb <- get
-  mapM_ (msgNote . display) (keys pkgDb)
-
+  mapM_ (liftIO . putStrLn . display . uncurry PackageIdentifier) (Map.toList pkgDb)
 
 displayList :: Text a => [a] -> String
 displayList = intercalate ", " . Prelude.map display
 
 corePackages :: [PackageIdentifier]
 corePackages = Prelude.map (fromJust . simpleParse)
-               [ "ghc-prim-0.3.1"
-               , "integer-simple-0.1.2"
-               , "rts-1.0.1"
+               [ "Cabal-1.18.1.3"
+               , "array-0.5.0.0"
+               , "base-4.7.0.0"
+               , "bin-package-db-0.0.0.0"
+               , "binary-0.7.1.0"
+               , "bytestring-0.10.4.0"
+               , "containers-0.5.5.1"
+               , "deepseq-1.3.0.2"
+               , "directory-1.2.1.0"
+               , "filepath-1.3.0.2"
+               , "ghc-7.8.2"
+               , "ghc-prim-0.3.1.0"
+               , "haskell2010-1.1.2.0"
+               , "haskell98-2.0.0.3"
+               , "hoopl-3.10.0.1"
+               , "hpc-0.6.0.1"
+               , "integer-gmp-0.5.1.0"
+               , "old-locale-1.0.0.6"
+               , "old-time-1.1.0.2"
+               , "pretty-1.1.1.1"
+               , "process-1.2.0.0"
+               , "rts-1.0"
+               , "template-haskell-2.9.0.0"
+               , "time-1.4.2"
+               , "transformers-0.3.0.0"
+               , "unix-2.7.0.1"
                ]
+
+instance NFData PackageName where
+  rnf (PackageName name) = rnf name
+
+instance NFData State where
+  rnf (State db) = rnf db
+
+modify' f = get >>= \st -> put $!! f st
