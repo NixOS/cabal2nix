@@ -38,7 +38,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs, buildDepends = delete "gio" buildDepends }
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
-  | pname == "haddock"          = deriv { buildTools = "alex":"happy":buildTools }
+  | pname == "haddock" && version < Version [2,14] []
+                                = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
   | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
