@@ -236,4 +236,5 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                   , "pkgs/development/tools/haskell/cabal-delete/default.nix"
                   , "pkgs/development/compilers/cryptol/1.8.x.nix"
                   , "pkgs/development/compilers/cryptol/2.0.x.nix"
+                  , "pkgs/development/compilers/agda/stdlib.nix"
                   ]
