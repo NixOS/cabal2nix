@@ -231,10 +231,11 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                     -- Requires platform-specific magic that I don't want to add to cabal2nix.
                   , "pkgs/development/libraries/haskell/fsnotify/default.nix"
                     -- Not registered on Hackage.
-                  , "pkgs/tools/networking/sproxy/default.nix"
-                  , "pkgs/tools/networking/sproxy-web/default.nix"
-                  , "pkgs/development/tools/haskell/cabal-delete/default.nix"
+                  , "pkgs/development/compilers/agda/stdlib.nix"
                   , "pkgs/development/compilers/cryptol/1.8.x.nix"
                   , "pkgs/development/compilers/cryptol/2.0.x.nix"
-                  , "pkgs/development/compilers/agda/stdlib.nix"
+                  , "pkgs/development/libraries/haskell/syb/0.4.1.nix"
+                  , "pkgs/development/tools/haskell/cabal-delete/default.nix"
+                  , "pkgs/tools/networking/sproxy-web/default.nix"
+                  , "pkgs/tools/networking/sproxy/default.nix"
                   ]
