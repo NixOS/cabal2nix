@@ -52,6 +52,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
+  | pname == "HTTP" && version >= Version [4000,2,14] []
+                                = deriv { runHaddock = True, phaseOverrides = httpNoHaddock }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
@@ -245,6 +247,9 @@ textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
 
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
+
+httpNoHaddock :: String
+httpNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"6.11\";"
 
 agdaPostInstall :: String
 agdaPostInstall = unlines
