@@ -2,7 +2,7 @@
 
 { cabal2nixSrc ? { outPath = ./.; revCount = 0; gitTag = "dirty"; }
 , supportedPlatforms ? [ "x86_64-linux" ]
-, supportedCompilers ? ["ghc6123" "ghc704" "ghc722" "ghc742" "ghc763" "ghc782" "ghcHEAD"]
+, supportedCompilers ? ["ghc6104" "ghc6123" "ghc704" "ghc722" "ghc742" "ghc763" "ghc782" "ghcHEAD"]
 }:
 
 let
@@ -13,8 +13,6 @@ in
     let
       pkgs = import <nixpkgs> { inherit system; };
       haskellPackages = pkgs.lib.getAttrFromPath ["haskellPackages_${ghcVer}"] pkgs;
-      Cabal = if pkgs.lib.versionOlder haskellPackages.ghcPlain.version "7.6" then haskellPackages.Cabal_1_16_0_3 else null;
-      hackageDb = haskellPackages.hackageDb.override { inherit Cabal; };
     in
     haskellPackages.cabal.mkDerivation (self: {
       pname = "cabal2nix";
