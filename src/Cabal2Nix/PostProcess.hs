@@ -85,6 +85,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
+  | pname == "tar"              = deriv { runHaddock = True, phaseOverrides = tarNoHaddock }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
@@ -250,9 +251,10 @@ textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
 
-httpNoHaddock, quickCheckNoHaddock :: String
+httpNoHaddock, quickCheckNoHaddock, tarNoHaddock :: String
 httpNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"6.11\";"
 quickCheckNoHaddock = httpNoHaddock
+tarNoHaddock = httpNoHaddock
 
 agdaPostInstall :: String
 agdaPostInstall = unlines
