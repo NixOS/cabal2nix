@@ -85,6 +85,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
+  | pname == "syb" && version == Version [0,4,1] []
+                                = deriv { doCheck = True, phaseOverrides = sybDoCheck }
   | pname == "tar"              = deriv { runHaddock = True, phaseOverrides = tarNoHaddock }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
@@ -288,3 +290,6 @@ mimeMailConfigureFlags :: String
 mimeMailConfigureFlags = unlines
   [ "configureFlags = \"--ghc-option=-DMIME_MAIL_SENDMAIL_PATH=\\\"${sendmail}\\\"\";"
   ]
+
+sybDoCheck :: String
+sybDoCheck = "doCheck = self.stdenv.lib.versionOlder self.ghc.version \"7.9\";"
