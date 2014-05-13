@@ -54,6 +54,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hspec"            = deriv { doCheck = False }
   | pname == "HTTP" && version >= Version [4000,2,14] []
                                 = deriv { runHaddock = True, phaseOverrides = httpNoHaddock }
+  | pname == "GlomeVec"         = deriv { buildTools = "llvm":buildTools }
   | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
   | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
