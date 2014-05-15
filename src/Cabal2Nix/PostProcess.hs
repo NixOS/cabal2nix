@@ -180,7 +180,7 @@ darcsInstallPostInstall = unlines
 
 highlightingKatePostProcessing :: Derivation -> Derivation
 highlightingKatePostProcessing deriv@(MkDerivation {..}) = deriv
-  { phaseOverrides = "prePatch = \"sed -i -e 's|regex-pcre-builtin|regex-pcre|' highlighting-kate.cabal\";"
+  { phaseOverrides = "prePatch = \"sed -i -e 's|regex-pcre-builtin >= .*|regex-pcre|' highlighting-kate.cabal\";"
   , buildDepends = "regex-pcre" : filter (/="regex-pcre-builtin") buildDepends
   }
 
