@@ -15,7 +15,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
- | name == "xmobar"             = [enable "with_xft", enable "with_iwlib", enable "with_alsa"]
+ | name == "xmobar"             = [enable "with_xft", enable "with_iwlib", enable "with_alsa", enable "with_mpd"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
  | name == "yi"                 = [enable "pango"]
  | otherwise                    = []
