@@ -85,6 +85,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
   | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
+  | pname == "split" && version == Version [0,2,2] []
+                                = deriv { doCheck = True, phaseOverrides = splitDoCheck }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "syb" && version == Version [0,4,1] []
@@ -293,5 +295,6 @@ mimeMailConfigureFlags = unlines
   [ "configureFlags = \"--ghc-option=-DMIME_MAIL_SENDMAIL_PATH=\\\"${sendmail}\\\"\";"
   ]
 
-sybDoCheck :: String
+sybDoCheck, splitDoCheck :: String
 sybDoCheck = "doCheck = self.stdenv.lib.versionOlder self.ghc.version \"7.9\";"
+splitDoCheck = sybDoCheck
