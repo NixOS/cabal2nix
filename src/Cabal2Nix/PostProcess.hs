@@ -95,6 +95,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
+  | pname == "transformers" && version >= Version [0,4,1] []
+                                = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
   | pname == "unix-time"        = deriv { phaseOverrides = unixTimeConfigureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
@@ -261,6 +263,7 @@ httpNoHaddock, quickCheckNoHaddock, tarNoHaddock :: String
 httpNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"6.11\";"
 quickCheckNoHaddock = httpNoHaddock
 tarNoHaddock = httpNoHaddock
+transformersNoHaddock = httpNoHaddock
 
 agdaPostInstall :: String
 agdaPostInstall = unlines
