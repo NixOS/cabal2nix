@@ -89,7 +89,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { doCheck = True, phaseOverrides = splitDoCheck }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
   | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
-  | pname == "syb" && version == Version [0,4,1] []
+  | pname == "syb" && version == Version [0,4,2] []
                                 = deriv { doCheck = True, phaseOverrides = sybDoCheck }
   | pname == "tar"              = deriv { runHaddock = True, phaseOverrides = tarNoHaddock }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
