@@ -65,6 +65,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
+  | pname == "MFlow"            = deriv { buildTools = "cpphs":buildTools }
   | pname == "markdown-unlit"   = deriv { runHaddock = True, phaseOverrides = markdownUnlitNoHaddock }
   | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "mime-mail"        = deriv { extraFunctionArgs = ["sendmail ? \"sendmail\""], phaseOverrides = mimeMailConfigureFlags }
