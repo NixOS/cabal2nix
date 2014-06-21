@@ -1,20 +1,18 @@
 module Cabal2Nix.Package where
 
-import Control.Exception ( handle, SomeException(..))
 import Control.Monad
-import Data.Functor ( (<$>) )
-import Data.List ( isSuffixOf )
-import Data.Maybe ( fromMaybe, fromJust )
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Maybe
+import Data.Functor ( (<$>), (<$) )
+import Data.List ( isSuffixOf, isPrefixOf )
+import Data.Maybe ( listToMaybe )
 import Distribution.NixOS.Derivation.Cabal
+import Distribution.NixOS.Fetch
 import Distribution.Text ( simpleParse )
-import Network.Browser ( browse, request, setCheckForProxy, setDebugLog, setOutHandler )
-import Network.HTTP ( getRequest, rspBody )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
-import System.FilePath ( dropFileName, (</>), (<.>) )
-import System.IO ( hPutStrLn, stderr)
-import System.Process ( readProcess )
-import Text.URI
+import System.FilePath ( (</>), (<.>) )
+import System.IO ( hPutStrLn, stderr, hPutStr )
 
 import qualified Distribution.Hackage.DB as DB
 import qualified Distribution.Package as Cabal
@@ -26,102 +24,91 @@ data Package = Package
   , cabal :: Cabal.GenericPackageDescription
   }
 
-readPackage :: Maybe String -> URI -> IO Package
-readPackage optHash uri = case uriScheme uri of
-  Nothing -> local
-  Just "file" -> local
-  Just "cabal" -> cabalPackage optHash $ fromMaybe "" (uriRegName uri) ++ uriPath uri
-  Just scheme -> hPutStrLn stderr ("*** unsupported URI scheme: " ++ scheme) >> exitFailure
-  where local = localPackage optHash $ fromMaybe "" (uriRegName uri) ++ uriPath uri
+getPackage :: Source -> IO Package
+getPackage source = do
+  (derivSource, pkgDesc) <- fetchOrFromDB source
+  flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) $ showPackageIdentifier pkgDesc) return derivSource
 
-localPackage :: Maybe String -> FilePath -> IO Package
-localPackage optHash path = do
-  isDir <- doesDirectoryExist path
-  cabalFile <- if isDir
-    then do
-      cabals <- filter (".cabal" `isSuffixOf`) <$> getDirectoryContents path
-      case cabals of
-        [] -> hPutStrLn stderr "*** No cabal file found in given directory" >> exitFailure
-        (f:_) -> return $ path </> f
-    else return path
-  pkgDesc <- readFile cabalFile >>= readPackageDescription
-  if isDir
-    then return $ Package (Directory path) pkgDesc
-    else do
-      hash <- getHash optHash pkgDesc
-      return $ Package (Hackage hash) pkgDesc
 
-cabalPackage :: Maybe String -> String -> IO Package
-cabalPackage optHash packageName = do
-  pkgDesc <- case versionBranch $ Cabal.pkgVersion $ pid packageName of
-    [] -> do
-      packageDescription <- DB.lookup packageName `fmap` DB.readHackage
-      case packageDescription of
-        Just d -> return $ snd $ last $ DB.toList d
-        Nothing -> error "No such package"
-    _  -> fetchUrl (hackagePath (pid packageName) Cabal) >>= readPackageDescription
-  hash <- getHash optHash pkgDesc
-  return $ Package (Hackage hash) pkgDesc
+fetchOrFromDB :: Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
+fetchOrFromDB src
+  | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,) Nothing) . fromDB . drop (length "cabal://") $ sourceUrl src
+  | otherwise                             = do
+    r <- fetch cabalFromPath src
+    case r of
+      Nothing -> hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
+      Just (derivSource, (externalSource, pkgDesc)) ->
+        return (derivSource <$ guard externalSource, pkgDesc)
 
-  where pid p = fromJust $ simpleParse p
+fromDB :: String -> IO Cabal.GenericPackageDescription
+fromDB pkg = do
+  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> DB.readHackage
+  case pkgDesc of
+    Just r -> return r
+    Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure
+ where
+  Just pkgId = simpleParse pkg
+  Cabal.PackageName name = Cabal.pkgName pkgId
+  version = Cabal.pkgVersion pkgId
 
-fetchUrl :: String -> IO String
-fetchUrl url = do
-  (_,rsp) <- browse $ do
-     setCheckForProxy True
-     setDebugLog Nothing
-     setOutHandler (\_ -> return ())
-     request (getRequest url)
-  return (rspBody rsp)
+  lookupVersion :: DB.Map DB.Version Cabal.GenericPackageDescription -> Maybe Cabal.GenericPackageDescription
+  lookupVersion
+    | null (versionBranch version) = fmap snd . listToMaybe . reverse . DB.toAscList
+    | otherwise                    = DB.lookup version
 
-readPackageDescription :: String -> IO Cabal.GenericPackageDescription
-readPackageDescription source = case Cabal.parsePackageDescription source of
-  Cabal.ParseOk _ a -> return a
-  Cabal.ParseFailed err -> do
-    hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
-    exitFailure
 
-getHash :: Maybe String -> Cabal.GenericPackageDescription -> IO String
-getHash optHash pkgDesc = maybe (hashPackage $ Cabal.package $ Cabal.packageDescription pkgDesc) return optHash
+readFileMay :: String -> IO (Maybe String)
+readFileMay file = do
+  e <- doesFileExist file
+  if e
+    then Just <$> readFile file
+    else return Nothing
 
-data Ext = TarGz | Cabal deriving Eq
+hashCachePath :: String -> IO String
+hashCachePath pid = do
+  home <- getHomeDirectory
+  let cacheDir = home </> ".cache/cabal2nix"
+  createDirectoryIfMissing True cacheDir
+  return $ cacheDir </> pid <.> "sha256"
 
-showExt :: Ext -> String
-showExt TarGz = ".tar.gz"
-showExt Cabal = ".cabal"
+sourceFromHackage :: Maybe String -> String -> IO DerivationSource
+sourceFromHackage optHash pkgId = do
+  cacheFile <- hashCachePath pkgId
+  hash <- maybe (readFileMay cacheFile) (return . Just) optHash
+  res <- runMaybeT $ fst <$> fetchWith (False, "url") (Source ("mirror://hackage/" ++ pkgId ++ ".tar.gz") "" hash)
+  case res of
+    Just r -> writeFile cacheFile (derivHash r) >> return r
+    Nothing -> do
+      hPutStr stderr $ unlines
+        [ "*** cannot compute hash. (Not a hackage project?)"
+        , " Specify hash explicitly via --sha256 and add appropriate \"src\" attribute"
+        , " to resulting nix expression."
+        ]
+      exitFailure
 
-hackagePath :: Cabal.PackageIdentifier -> Ext -> String
-hackagePath (Cabal.PackageIdentifier (Cabal.PackageName name) version') ext =
-    "http://hackage.haskell.org/packages/archive/" ++
-    name ++ "/" ++ version ++ "/" ++ name ++
-    (if ext == TarGz then '-' : version else "") ++
-    showExt ext
-  where
-    version = showVersion version'
+showPackageIdentifier :: Cabal.GenericPackageDescription -> String
+showPackageIdentifier pkgDesc = name ++ "-" ++ showVersion version where
+  pkgId = Cabal.package . Cabal.packageDescription $ pkgDesc
+  Cabal.PackageName name = Cabal.packageName pkgId
+  version = Cabal.packageVersion pkgId
 
-hashPackage :: Cabal.PackageIdentifier -> IO String
-hashPackage pkg = do
-    cachePath <- hashCachePath pkg
-    exists <- doesFileExist cachePath
-    hash' <- if exists
-               then readFile cachePath
-               else getHackageHash
-    let hash = reverse (dropWhile (=='\n') (reverse hash'))
-    unless exists $ do
-      createDirectoryIfMissing True (dropFileName cachePath)
-      writeFile cachePath hash
-    return hash
-  where getHackageHash = do
-            let command = "exec nix-prefetch-url 2>/dev/tty " ++ hackagePath pkg TarGz
-            handle handlePrefetchError (readProcess "bash" ["-c", command] "")
-        handlePrefetchError (SomeException _) =
-           error $ "\nError: Cannot compute hash. (Not a hackage project?)\n" ++
-                  "Specify hash explicitly via --sha256 and add appropriate \"src\" attribute " ++
-                  "to resulting nix expression."
+cabalFromPath :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+cabalFromPath path = do
+  d <- liftIO $ doesDirectoryExist path
+  (,) d <$> if d
+    then cabalFromDirectory path
+    else cabalFromFile      path
 
-hashCachePath :: Cabal.PackageIdentifier -> IO FilePath
-hashCachePath (Cabal.PackageIdentifier (Cabal.PackageName name) version') = do
-    home <- getHomeDirectory
-    return $ home ++ "/.cache/cabal2nix" </> name ++ "-" ++ version <.> "sha256"
-  where
-    version = showVersion version'
+cabalFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
+cabalFromDirectory dir = do
+  cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
+  case cabals of
+    [cabalFile] -> cabalFromFile cabalFile
+    _       -> liftIO $ hPutStrLn stderr "*** found zero or more than one cabal file. Exiting." >> exitFailure
+
+cabalFromFile :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
+cabalFromFile file = do
+  content <- liftIO $ readFile file
+  case Cabal.parsePackageDescription content of
+    Cabal.ParseFailed _ -> mzero
+    Cabal.ParseOk     _ a -> return a
