@@ -50,6 +50,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hfsevents"        = deriv { buildTools = "gccApple":buildTools, phaseOverrides = "configureFlags = \"--ghc-option=-pgmc=${gccApple}/bin/gcc\";" }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
+  | pname == "hlibgit2"         = deriv { testDepends = "git":testDepends }
   | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
