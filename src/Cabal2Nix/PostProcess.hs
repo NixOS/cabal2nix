@@ -101,7 +101,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "transformers" && version >= Version [0,4,1] []
                                 = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
-  | pname == "unix-time"        = deriv { phaseOverrides = unixTimeConfigureFlags }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
@@ -284,10 +283,6 @@ structuredHaskellModePostInstall = unlines
   , "  install \"elisp/\"*.el \"elisp/\"*.elc  $out/share/emacs/site-lisp"
   , "'';"
   ]
-
-unixTimeConfigureFlags :: String
-unixTimeConfigureFlags =
-  "configureFlags = self.stdenv.lib.optionalString self.enableSharedLibraries \"--ghc-option=-fPIC\";"
 
 sloanePostInstall :: String
 sloanePostInstall = unlines
