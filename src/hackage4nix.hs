@@ -120,6 +120,7 @@ updateNixPkgs paths = do
                                         , runHaddock = runHaddock deriv
                                         , doCheck = doCheck deriv
                                         , jailbreak = jailbreak deriv
+                                        , hyperlinkSource = hyperlinkSource deriv
                                         }
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats

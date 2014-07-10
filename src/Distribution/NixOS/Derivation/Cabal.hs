@@ -58,6 +58,7 @@ data Derivation = MkDerivation
   , jailbreak           :: Bool
   , doCheck             :: Bool
   , testTarget          :: String
+  , hyperlinkSource     :: Bool
   , phaseOverrides      :: String
   , metaSection         :: Meta
   }
@@ -90,6 +91,7 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
     , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
     , onlyIf (testTarget deriv) $ attr "testTarget" $ string (testTarget deriv)
+    , boolattr "hyperlinkSource" (not (hyperlinkSource deriv)) (hyperlinkSource deriv)
     , onlyIf (phaseOverrides deriv) $ vcat ((map text . lines) (phaseOverrides deriv))
     , disp (metaSection deriv)
     ]
@@ -119,6 +121,7 @@ parseDerivation buf
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
   , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
+  , hyperlSrc <- buf `regsubmatch` "hyperlinkSource *= *(true|false) *;"
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
@@ -137,6 +140,7 @@ parseDerivation buf
                   , jailbreak      = jailBreak == ["true"]
                   , doCheck        = docheck == ["true"] || null docheck
                   , testTarget     = ""
+                  , hyperlinkSource = hyperlSrc == ["true"] || null hyperlSrc
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage       = ""

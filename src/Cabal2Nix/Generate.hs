@@ -32,6 +32,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , jailbreak      = False
   , doCheck        = True
   , testTarget     = ""
+  , hyperlinkSource = True
   , phaseOverrides = ""
   , metaSection    = Meta
                    { homepage       = Cabal.homepage descr

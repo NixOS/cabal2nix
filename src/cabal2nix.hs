@@ -24,6 +24,7 @@ data Configuration = Configuration
   , optHaddock :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
+  , optHyperlinkSource :: Bool
   }
   deriving (Show)
 
@@ -37,6 +38,7 @@ defaultConfiguration = Configuration
   , optHaddock = True
   , optDoCheck = True
   , optJailbreak = False
+  , optHyperlinkSource = True
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
@@ -45,9 +47,10 @@ options =
   , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                         "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
+  , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
-  , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
+  , Option ""  ["no-hyperlink-source"] (NoArg (\o -> o { optHyperlinkSource = False }))                  "don't add pretty-printed source code to the documentation"
   ]
 
 usage :: String
