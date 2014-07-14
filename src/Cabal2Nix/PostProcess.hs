@@ -197,6 +197,10 @@ xmonadPostInstall = unlines
   , "  mkdir -p $out/share/man/man1"
   , "  mv \"$out/\"**\"/man/\"*.1 $out/share/man/man1/"
   , "'';"
+  , "patches = ["
+  , "  # Patch to make xmonad use XMONAD_{GHC,XMESSAGE} (if available)."
+  , "  ./xmonad_ghc_var_0.11.patch"
+  , "];"
   ]
 
 gitAnnexOverrides :: String
