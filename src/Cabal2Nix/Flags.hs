@@ -5,6 +5,7 @@ import Distribution.PackageDescription
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier (PackageName name) _)
+ | name == "arithmoi"           = [disable "llvm"]
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "git-annex"          = [ enable "S3", enable "WebDAV", enable "Inotify"
                                   , enable "Dbus", enable "Assistant", enable "Webapp"
