@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               provide access to the Hackage database via Data.Map
 Cabal-Version:          >= 1.6
 Build-Type:             Simple
-Tested-With:            GHC >= 6.12.3 && <= 7.6.3
+Tested-With:            GHC >= 6.12.3 && <= 7.8.3
 Description:
    This module provides simple access to the Hackage database by means
    of @Data.Map@. Suppose you wanted to implement a utility that queries
