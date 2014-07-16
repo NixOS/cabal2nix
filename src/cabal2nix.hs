@@ -25,6 +25,7 @@ data Configuration = Configuration
   , optDoCheck :: Bool
   , optJailbreak :: Bool
   , optHyperlinkSource :: Bool
+  , optHackageDb :: Maybe FilePath
   }
   deriving (Show)
 
@@ -39,11 +40,13 @@ defaultConfiguration = Configuration
   , optDoCheck = True
   , optJailbreak = False
   , optHyperlinkSource = True
+  , optHackageDb = Nothing
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
 options =
   [ Option "h" ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
+  , Option ""  ["hackage-db"] (ReqArg (\x o -> o { optHackageDb = Just x }) "FILEPATH")                  "path to the local hackage db in tar format"
   , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                         "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
@@ -79,7 +82,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   when (optPrintHelp cfg) (putStr usage >> exitSuccess)
   when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
 
-  cabal' <- fmap parsePackageDescription (readCabalFile (head args))
+  cabal' <- fmap parsePackageDescription (readCabalFile (optHackageDb cfg) (head args))
   cabal <- case cabal' of
              ParseOk _ a -> return a
              ParseFailed err -> do

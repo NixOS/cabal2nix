@@ -57,21 +57,21 @@ hashCachePath (PackageIdentifier (PackageName name) version') = do
   where
     version = showVersion version'
 
-readCabalFile :: FilePath -> IO String
-readCabalFile path
+readCabalFile :: Maybe FilePath -> FilePath -> IO String
+readCabalFile hackageDbPath path
   | "cabal://" `isPrefixOf` path = do let pid p = fromJust $ simpleParse p
                                           packageName = drop 8 path
                                       case versionBranch $ pkgVersion $ pid packageName of
                                         [] -> do
-                                          packageDescription <- DB.lookup packageName `fmap` DB.readHackage
+                                          packageDescription <- DB.lookup packageName `fmap` maybe DB.readHackage DB.readHackage' hackageDbPath
                                           case packageDescription of
                                             Just d -> do
                                               let version = showVersion $ last $ DB.keys d
-                                              readCabalFile $ hackagePath (pid $ packageName ++ "-" ++ version) Cabal
+                                              readCabalFile Nothing $ hackagePath (pid $ packageName ++ "-" ++ version) Cabal
                                             Nothing -> error "No such package"
-                                        _  -> readCabalFile $ hackagePath (pid packageName) Cabal
+                                        _  -> readCabalFile Nothing $ hackagePath (pid packageName) Cabal
   | "http://"  `isPrefixOf` path = fetchUrl path
-  | "file://"  `isPrefixOf` path = readCabalFile (drop 7 path)
+  | "file://"  `isPrefixOf` path = readCabalFile Nothing (drop 7 path)
   | otherwise                    = readFile path
 
 fetchUrl :: String -> IO String
