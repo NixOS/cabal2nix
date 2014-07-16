@@ -265,7 +265,7 @@ textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
 
-httpNoHaddock, quickCheckNoHaddock, tarNoHaddock :: String
+httpNoHaddock, quickCheckNoHaddock, tarNoHaddock, transformersNoHaddock :: String
 httpNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"6.11\";"
 quickCheckNoHaddock = httpNoHaddock
 tarNoHaddock = httpNoHaddock
