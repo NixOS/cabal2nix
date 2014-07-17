@@ -24,6 +24,8 @@ data Configuration = Configuration
   , optDoCheck :: Bool
   , optJailbreak :: Bool
   , optRevision :: String
+  , optHyperlinkSource :: Bool
+  , optHackageDb :: Maybe FilePath
   }
   deriving (Show)
 
@@ -38,18 +40,22 @@ defaultConfiguration = Configuration
   , optDoCheck = True
   , optJailbreak = False
   , optRevision = ""
+  , optHyperlinkSource = True
+  , optHackageDb = Nothing
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
 options =
   [ Option "h" ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
+  , Option ""  ["hackage-db"] (ReqArg (\x o -> o { optHackageDb = Just x }) "FILEPATH")                  "path to the local hackage db in tar format"
   , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                         "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
+  , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
-  , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
   , Option ""  ["rev"]        (ReqArg (\x o -> o { optRevision = x }) "REVISION")                        "revision, only used when fetching from VCS"
+  , Option ""  ["no-hyperlink-source"] (NoArg (\o -> o { optHyperlinkSource = False }))                  "don't add pretty-printed source code to the documentation"
   ]
 
 usage :: String
@@ -83,7 +89,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   when (optPrintHelp cfg) (putStr usage >> exitSuccess)
   when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
 
-  pkg <- getPackage $ Source (head args) (optRevision cfg) (optSha256 cfg)
+  pkg <- getPackage (optHackageDb cfg) $ Source (head args) (optRevision cfg) (optSha256 cfg)
 
   let deriv  = (cabal2nix $ cabal pkg) { src = source pkg, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
       deriv' = deriv { metaSection = (metaSection deriv)

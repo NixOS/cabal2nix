@@ -120,6 +120,7 @@ updateNixPkgs paths = do
                                         , runHaddock = runHaddock deriv
                                         , doCheck = doCheck deriv
                                         , jailbreak = jailbreak deriv
+                                        , hyperlinkSource = hyperlinkSource deriv
                                         }
               meta    = metaSection deriv'
               plats'  = if null plats then platforms meta else plats
@@ -228,7 +229,16 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                   , "top-level/all-packages.nix", "top-level/haskell-packages.nix"
                     -- This build is way too complicated to maintain it automatically.
                   , "pkgs/development/compilers/pakcs/default.nix"
+                  , "pkgs/development/libraries/haskell/hoogle/local.nix"
+                    -- Requires platform-specific magic that I don't want to add to cabal2nix.
+                  , "pkgs/development/libraries/haskell/fsnotify/default.nix"
                     -- Not registered on Hackage.
-                  , "pkgs/tools/networking/sproxy/default.nix"
+                  , "pkgs/development/compilers/agda/stdlib-0.7.nix"
+                  , "pkgs/development/compilers/agda/stdlib-0.8.nix"
+                  , "pkgs/development/compilers/cryptol/1.8.x.nix"
+                  , "pkgs/development/compilers/cryptol/2.0.x.nix"
+                  , "pkgs/development/compilers/jhc/default.nix"
+                  , "pkgs/development/tools/haskell/cabal-delete/default.nix"
                   , "pkgs/tools/networking/sproxy-web/default.nix"
+                  , "pkgs/tools/networking/sproxy/default.nix"
                   ]

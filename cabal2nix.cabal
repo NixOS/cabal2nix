@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.62
+Version:                1.67
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
 Build-Type:             Custom
-Tested-With:            GHC >= 6.12.3 && <= 7.8.1
+Tested-With:            GHC >= 6.10.4 && <= 7.8.3
 Data-files:             README.md
 Description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
@@ -18,11 +18,14 @@ Description:
   .
   > Usage: cabal2nix [options] url-to-cabal-file
   >   -h             --help                   show this help text
+  >                  --hackage-db=FILEPATH    path to the local hackage db in tar format
   >                  --sha256=HASH            sha256 hash of source tarball
   >   -m MAINTAINER  --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
   >   -p PLATFORM    --platform=PLATFORM      supported build platforms (may be specified multiple times)
-  >                  --no-check               don't run regression test suites of this package
   >                  --jailbreak              don't honor version restrictions on build inputs
+  >                  --no-haddock             don't run Haddock when building this package
+  >                  --no-check               don't run regression test suites of this package
+  >                  --no-hyperlink-source    don't add pretty-printed source code to the documentation
   >
   > Recognized URI schemes:
   >
@@ -34,8 +37,8 @@ Description:
   .
   The only required argument is the path to the cabal file. For example:
   .
-  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.62/cabal2nix.cabal
-  > cabal2nix cabal://cabal2nix-1.62
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.67/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-1.67
   .
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes

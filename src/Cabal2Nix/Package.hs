@@ -24,15 +24,15 @@ data Package = Package
   , cabal :: Cabal.GenericPackageDescription
   }
 
-getPackage :: Source -> IO Package
-getPackage source = do
-  (derivSource, pkgDesc) <- fetchOrFromDB source
+getPackage :: Maybe String -> Source -> IO Package
+getPackage optHackageDB source = do
+  (derivSource, pkgDesc) <- fetchOrFromDB optHackageDB source
   flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) $ showPackageIdentifier pkgDesc) return derivSource
 
 
-fetchOrFromDB :: Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
-fetchOrFromDB src
-  | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,) Nothing) . fromDB . drop (length "cabal://") $ sourceUrl src
+fetchOrFromDB :: Maybe String -> Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
+fetchOrFromDB optHackageDB src
+  | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,) Nothing) . fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
   | otherwise                             = do
     r <- fetch cabalFromPath src
     case r of
@@ -40,9 +40,9 @@ fetchOrFromDB src
       Just (derivSource, (externalSource, pkgDesc)) ->
         return (derivSource <$ guard externalSource, pkgDesc)
 
-fromDB :: String -> IO Cabal.GenericPackageDescription
-fromDB pkg = do
-  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> DB.readHackage
+fromDB :: Maybe String -> String -> IO Cabal.GenericPackageDescription
+fromDB optHackageDB pkg = do
+  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> maybe DB.readHackage DB.readHackage' optHackageDB
   case pkgDesc of
     Just r -> return r
     Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure
