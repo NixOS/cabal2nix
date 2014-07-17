@@ -100,10 +100,12 @@ renderDerivation deriv = funargs (map text ("cabal" : inputs)) $$ vcat
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
               buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
-           ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= ""]
+           ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
+    isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl (src deriv)
     sourceAttr (DerivationSource{..})
+      | isHackagePackage = attr "sha256" $ string derivHash
       | derivKind /= "" = vcat
          [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace
          , nest 2 $ vcat
