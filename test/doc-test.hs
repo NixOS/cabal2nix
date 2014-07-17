@@ -27,6 +27,7 @@ main = do
              , "src/Distribution/NixOS/Derivation/License.hs"
              , "src/Distribution/NixOS/Derivation/Cabal.hs"
              , "src/Distribution/NixOS/Derivation/Meta.hs"
+             , "src/Distribution/NixOS/Fetch.hs"
              , "src/Distribution/NixOS/PrettyPrinting.hs"
              ]
   doctest $ "src/cabal2nix.hs" : libs
