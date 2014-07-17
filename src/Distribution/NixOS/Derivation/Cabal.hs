@@ -1,4 +1,4 @@
-{-# LANGUAGE PatternGuards, CPP #-}
+{-# LANGUAGE PatternGuards, RecordWildCards, CPP #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.Cabal
    License     :  BSD3
