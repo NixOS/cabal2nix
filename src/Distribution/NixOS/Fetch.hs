@@ -48,7 +48,8 @@ fetch :: forall a. (String -> MaybeT IO a)      -- ^ This function is passed the
 fetch f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, "url")
+    [ (False, "zip")
+    , (False, "url")
     , (True, "git")
     , (True, "hg")
     , (True, "svn")
