@@ -2,8 +2,8 @@
 
 module Cabal2Nix.PostProcess ( postProcess ) where
 
-import Distribution.NixOS.Derivation.Cabal
 import Data.List
+import Distribution.NixOS.Derivation.Cabal
 
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
@@ -36,7 +36,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gloss-raster"     = deriv { extraLibs = "llvm":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
-  | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs, buildDepends = delete "gio" buildDepends }
+  | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gtkglext"         = deriv { pkgConfDeps = "pangox_compat":pkgConfDeps }
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
