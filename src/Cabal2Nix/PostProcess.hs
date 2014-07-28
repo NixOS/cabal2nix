@@ -97,6 +97,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
+  | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
   | pname == "transformers" && version >= Version [0,4,1] []
                                 = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
