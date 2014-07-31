@@ -269,7 +269,7 @@ transformersNoHaddock = httpNoHaddock
 agdaPostInstall :: String
 agdaPostInstall = unlines
   [ "postInstall = ''"
-  , "  $out/bin/agda -c --no-main $out/share/Agda-*/lib/prim/Agda/Primitive.agda"
+  , "  $out/bin/agda -c --no-main $(find $out/share -name Primitive.agda)"
   , "  $out/bin/agda-mode compile"
   , "'';"
   ]
