@@ -1,15 +1,12 @@
 {- |
    Module      :  Distribution.Hackage.DB
    License     :  BSD3
-
    Maintainer  :  simons@cryp.to
    Stability   :  provisional
    Portability :  portable
 
    This module provides simple access to the Hackage database by means
-   of 'Map'. Note that once the database has been parsed, it can be
-   accessed quickly, but the inital cost of reading @00-index.tar@ is
-   fairly high.
+   of 'Map'.
  -}
 
 module Distribution.Hackage.DB
@@ -21,19 +18,20 @@ module Distribution.Hackage.DB
   )
   where
 
+import Data.Map
+import Data.Version
+import Distribution.Package
+import Distribution.PackageDescription
+
 import qualified Codec.Archive.Tar as Tar
 import Data.ByteString.Lazy.Char8 ( ByteString )
-import qualified Data.ByteString.Lazy.Char8 as BS8
-import qualified Data.ByteString.Lazy as BSC
+import qualified Data.ByteString.Lazy.Char8 as BS8 ( readFile )
+import qualified Data.ByteString.Lazy as BSC ( unpack )
 import Data.String.UTF8 ( toString, fromRep )
-import Data.Map
-import Data.Maybe
-import Data.Version
-import System.Directory
-import System.FilePath
-import Distribution.Package
-import Distribution.Text
-import Distribution.PackageDescription
+import Data.Maybe ( fromMaybe )
+import System.Directory ( getHomeDirectory )
+import System.FilePath ( joinPath, splitDirectories )
+import Distribution.Text ( simpleParse )
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 
 -- | A 'Map' representation of the Hackage database. For sake of
