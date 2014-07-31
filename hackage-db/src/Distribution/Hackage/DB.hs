@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {- |
    Module      :  Distribution.Hackage.DB
    License     :  BSD3

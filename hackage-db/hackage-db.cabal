@@ -51,5 +51,3 @@ Library
   hs-source-dirs:       src
   Ghc-Options:          -Wall
   Exposed-Modules:      Distribution.Hackage.DB
-  if os(darwin)
-    Cpp-Options:          -DIS_DARWIN
