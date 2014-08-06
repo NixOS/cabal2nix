@@ -145,6 +145,7 @@ ghcModPostInstall = unlines
   [ "configureFlags = \"--datasubdir=${self.pname}-${self.version}\";"
   , "postInstall = ''"
   , "  cd $out/share/$pname-$version"
+  , "  sed -i -e 's/\"-b\" \"\\\\n\" \"-l\"/\"-l\" \"-b\" \"\\\\\"\\\\\\\\n\\\\\"\"/' ghc-process.el"
   , "  make"
   , "  rm Makefile"
   , "  cd .."
