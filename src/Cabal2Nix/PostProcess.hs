@@ -19,6 +19,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
+  | pname == "cookie"           = deriv { phaseOverrides = cookieDoCheckHook }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
@@ -253,6 +254,9 @@ doctestNoHaddock = markdownUnlitNoHaddock
 
 cabal2nixDoCheckHook :: String
 cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.version;"
+
+cookieDoCheckHook :: String
+cookieDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
 
 textIcuDoCheckHook :: String
 textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
