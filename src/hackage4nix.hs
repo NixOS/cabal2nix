@@ -103,34 +103,43 @@ discoverUpdates name vers = do
 
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
-  msgDebug $ "updating = " ++ show paths
-  forM_ paths $ \fileOrDir ->
+  -- Traverse the given directorcy structure and discover all available
+  -- Haskell packages.
+  forM_ paths $ \fileOrDir -> do
+    msgDebug $ "scanning " ++ show fileOrDir
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix -> do
-        let Pkg deriv path regenerate = nix
-            maints = maintainers (metaSection deriv)
-            plats  = platforms (metaSection deriv)
-            hplats = hydraPlatforms (metaSection deriv)
         modify (Set.insert nix)
-        when regenerate $ do
-          msgDebug ("re-generate " ++ path)
-          pkg <- getCabalPackage (pname deriv) (version deriv)
-          let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv
-                                        , runHaddock = runHaddock deriv
-                                        , doCheck = doCheck deriv
-                                        , jailbreak = jailbreak deriv
-                                        , hyperlinkSource = hyperlinkSource deriv
-                                        }
-              meta    = metaSection deriv'
-              plats'  = if null plats then platforms meta else plats
-              deriv'' = deriv' { metaSection = meta
-                                               { maintainers    = maints -- ++ ["andres","simons"]
-                                               , platforms      = plats'
-                                               , hydraPlatforms = hplats
-                                               }
-                               }
-          io $ writeFile path (show (disp (normalize deriv'')))
+  -- Re-generate all Haskell packgaes in-place (unless
+  -- 'regenerateDerivation' decided that this particular package
+  -- shouldn't be touched.
+  get >>= \pkgset -> forM_ (Set.toList pkgset) $ \nix -> do
+    let Pkg deriv path regenerate = nix
+        maints = maintainers (metaSection deriv)
+        plats  = platforms (metaSection deriv)
+        hplats = hydraPlatforms (metaSection deriv)
+    when regenerate $ do
+      msgDebug ("re-generate " ++ path)
+      pkg <- getCabalPackage (pname deriv) (version deriv)
+      let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv
+                                    , runHaddock = runHaddock deriv
+                                    , doCheck = doCheck deriv
+                                    , jailbreak = jailbreak deriv
+                                    , hyperlinkSource = hyperlinkSource deriv
+                                    }
+          meta    = metaSection deriv'
+          plats'  = if null plats then platforms meta else plats
+          deriv'' = deriv' { metaSection = meta
+                                           { maintainers    = maints -- ++ ["andres","simons"]
+                                           , platforms      = plats'
+                                           , hydraPlatforms = hplats
+                                           }
+                           }
+      io $ writeFile path (show (disp (normalize deriv'')))
+  -- Discover available updates and print the appropriate cabal2nix
+  -- command line to the console for the user to execute at his/her
+  -- discretion.
   pkgset <- gets selectLatestVersions
   updates' <- forM (Set.elems pkgset) $ \pkg -> do
     let Pkg deriv _ _ = pkg
