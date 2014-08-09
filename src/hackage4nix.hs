@@ -109,16 +109,21 @@ updateNixPkgs paths = do
     msgDebug $ "scanning " ++ show fileOrDir
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (readFile file) >>= parseNixFile file
-      flip (maybe (return ())) nix' $ \nix -> do
+      flip (maybe (return ())) nix' $ \nix ->
         modify (Set.insert nix)
-  -- Re-generate all Haskell packgaes in-place (unless
+  -- Re-generate all Haskell packages in-place (unless
   -- 'regenerateDerivation' decided that this particular package
   -- shouldn't be touched.
+  latestVersions <- gets selectLatestVersions
+  let latestVersionMap :: [(String,Version)]
+      latestVersionMap = [ (pname deriv, version deriv) | Pkg deriv _ _ <- Set.toList latestVersions ]
+  let isLatest :: Derivation -> Bool
+      isLatest deriv = maybe False (version deriv ==) (lookup (pname deriv) latestVersionMap)
   get >>= \pkgset -> forM_ (Set.toList pkgset) $ \nix -> do
     let Pkg deriv path regenerate = nix
         maints = maintainers (metaSection deriv)
         plats  = platforms (metaSection deriv)
-        hplats = hydraPlatforms (metaSection deriv)
+        hplats = if isLatest deriv then hydraPlatforms (metaSection deriv) else ["self.stdenv.lib.platforms.none"]
     when regenerate $ do
       msgDebug ("re-generate " ++ path)
       pkg <- getCabalPackage (pname deriv) (version deriv)
@@ -131,7 +136,7 @@ updateNixPkgs paths = do
           meta    = metaSection deriv'
           plats'  = if null plats then platforms meta else plats
           deriv'' = deriv' { metaSection = meta
-                                           { maintainers    = maints -- ++ ["andres","simons"]
+                                           { maintainers    = maints
                                            , platforms      = plats'
                                            , hydraPlatforms = hplats
                                            }
@@ -140,8 +145,7 @@ updateNixPkgs paths = do
   -- Discover available updates and print the appropriate cabal2nix
   -- command line to the console for the user to execute at his/her
   -- discretion.
-  pkgset <- gets selectLatestVersions
-  updates' <- forM (Set.elems pkgset) $ \pkg -> do
+  updates' <- forM (Set.elems latestVersions) $ \pkg -> do
     let Pkg deriv _ _ = pkg
     updates <- discoverUpdates (pname deriv) (version deriv)
     return (pkg,updates)
