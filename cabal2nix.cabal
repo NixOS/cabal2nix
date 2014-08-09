@@ -67,6 +67,7 @@ Executable cabal2nix
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
                         Distribution.NixOS.PrettyPrinting
+                        Distribution.NixOS.Regex
 
 Executable hackage4nix
   main-is:              hackage4nix.hs
@@ -86,6 +87,7 @@ Executable hackage4nix
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
                         Distribution.NixOS.PrettyPrinting
+                        Distribution.NixOS.Regex
 
 Test-Suite doctest-cabal2nix
   type:                 exitcode-stdio-1.0

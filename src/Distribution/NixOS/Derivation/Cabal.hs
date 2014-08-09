@@ -21,6 +21,7 @@ module Distribution.NixOS.Derivation.Cabal
 
 import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.PrettyPrinting
+import Distribution.NixOS.Regex hiding ( empty )
 import Distribution.Text
 import Distribution.Package
 #ifdef __HADDOCK__
@@ -31,7 +32,6 @@ import Data.Version
 import Data.List
 import Data.Char
 import Data.Function
-import Text.Regex.Posix hiding ( empty )
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -84,11 +84,11 @@ renderDerivation deriv =
     , attr "sha256"  $ string (sha256 deriv)
     , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
-    , listattr "buildDepends" (buildDepends deriv)
-    , listattr "testDepends" (testDepends deriv)
-    , listattr "buildTools" (buildTools deriv)
-    , listattr "extraLibraries" (extraLibs deriv)
-    , listattr "pkgconfigDepends" (pkgConfDeps deriv)
+    , listattr "buildDepends" empty (buildDepends deriv)
+    , listattr "testDepends" empty (testDepends deriv)
+    , listattr "buildTools" empty (buildTools deriv)
+    , listattr "extraLibraries" empty (extraLibs deriv)
+    , listattr "pkgconfigDepends" empty (pkgConfDeps deriv)
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
@@ -120,7 +120,7 @@ parseDerivation buf
   , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
-  , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
+  , maint     <- buf `regsubmatch` "maintainers *= *(with [^;]+;)? \\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
   , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
@@ -149,14 +149,9 @@ parseDerivation buf
                                    { homepage       = ""
                                    , description    = ""
                                    , license        = Unknown Nothing
-                                   , maintainers    = concatMap words maint
+                                   , maintainers    = if null maint then [] else concatMap words (tail maint)
                                    , platforms      = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
                                    , hydraPlatforms = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) hplats)
                                    }
                   }
   | otherwise = Nothing
-
-regsubmatch :: String -> String -> [String]
-regsubmatch buf patt = let (_,_,_,x) = f in x
-  where f :: (String,String,String,[String])
-        f = match (makeRegexOpts compExtended execBlank patt) buf

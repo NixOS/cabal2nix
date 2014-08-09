@@ -8,6 +8,7 @@ import Cabal2Nix.CorePackages
 import Data.List
 import Data.Char
 import Data.Function
+import Distribution.NixOS.Regex ( regsubmatch )
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
@@ -50,9 +51,18 @@ normalizeNixLibs = normalizeList . concatMap libNixName
 normalizeNixBuildTools :: [String] -> [String]
 normalizeNixBuildTools = normalizeList . concatMap buildToolNixName
 
+-- |Strip the "self.ghc.meta.platforms" prefix from platform names, filter
+-- duplicates, and sort the resulting list alphabetically.
+--
+-- >>> normalizeMaintainers ["self.stdenv.lib.maintainers.foobar", "foobar"]
+-- ["foobar"]
+--
+-- >>> normalizeMaintainers ["any.prefix.is.recognized.yo", "abc.def"]
+-- ["def","yo"]
+
 normalizeMaintainers :: [String] -> [String]
 normalizeMaintainers maints = normalizeList
-  [ if '.' `elem` m then m else "self.stdenv.lib.maintainers." ++ m | m <- maints ]
+  [ (m `regsubmatch` "^([^.].*\\.)?([^.]+)$") !! 1 | m <- maints ]
 
 normalizePlatforms :: [String] -> [String]
 normalizePlatforms [] = ["self.ghc.meta.platforms"]
