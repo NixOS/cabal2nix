@@ -8,10 +8,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "arithmoi"           = [disable "llvm"]
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "folds"              = [disable "test-hlint"]
- | name == "git-annex"          = [ enable "S3", enable "WebDAV", enable "Inotify"
-                                  , enable "Dbus", enable "Assistant", enable "Webapp"
-                                  , enable "Pairing", enable "XMPP", enable "DNS"
-                                  , enable "Production", enable "TDFA"]
+ | name == "git-annex"          = [enable "Assistant" , enable "Production"]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "hslua"              = [enable "system-lua"]
  | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
