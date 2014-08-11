@@ -52,7 +52,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hlibgit2"         = deriv { testDepends = "git":testDepends }
   | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
-  | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas": filter (/= "lapack") extraLibs }
+  | pname == "hmatrix"          = deriv { extraLibs = "liblapack":"blas": filter (/= "lapack") extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
   | pname == "HTTP" && version >= Version [4000,2,14] []
