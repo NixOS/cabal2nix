@@ -132,6 +132,7 @@ updateNixPkgs paths = do
                                     , doCheck = doCheck deriv
                                     , jailbreak = jailbreak deriv
                                     , hyperlinkSource = hyperlinkSource deriv
+                                    , enableSplitObjs = enableSplitObjs deriv
                                     }
           meta    = metaSection deriv'
           plats'  = if null plats then platforms meta else plats

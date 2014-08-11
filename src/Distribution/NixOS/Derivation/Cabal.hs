@@ -59,6 +59,7 @@ data Derivation = MkDerivation
   , doCheck             :: Bool
   , testTarget          :: String
   , hyperlinkSource     :: Bool
+  , enableSplitObjs     :: Bool
   , phaseOverrides      :: String
   , metaSection         :: Meta
   }
@@ -90,6 +91,7 @@ renderDerivation deriv =
     , listattr "extraLibraries" empty (extraLibs deriv)
     , listattr "pkgconfigDepends" empty (pkgConfDeps deriv)
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
+    , boolattr "enableSplitObjs"  (not (enableSplitObjs deriv)) (enableSplitObjs deriv)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
     , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
@@ -125,6 +127,7 @@ parseDerivation buf
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
   , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
   , hyperlSrc <- buf `regsubmatch` "hyperlinkSource *= *(true|false) *;"
+  , splitObj  <- buf `regsubmatch` "enableSplitObjs *= *(true|false) *;"
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
@@ -144,6 +147,7 @@ parseDerivation buf
                   , doCheck        = docheck == ["true"] || null docheck
                   , testTarget     = ""
                   , hyperlinkSource = hyperlSrc == ["true"] || null hyperlSrc
+                  , enableSplitObjs = splitObj  /= ["false"]
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage       = ""

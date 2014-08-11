@@ -33,6 +33,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , doCheck        = True
   , testTarget     = ""
   , hyperlinkSource = True
+  , enableSplitObjs = True
   , phaseOverrides = ""
   , metaSection    = Meta
                    { homepage       = Cabal.homepage descr
