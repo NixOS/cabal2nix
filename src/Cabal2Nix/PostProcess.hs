@@ -47,7 +47,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
-  | pname == "hfsevents"        = deriv { buildTools = "gccApple":buildTools, phaseOverrides = "configureFlags = \"--ghc-option=-pgmc=${gccApple}/bin/gcc\";" }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hlibgit2"         = deriv { testDepends = "git":testDepends }
