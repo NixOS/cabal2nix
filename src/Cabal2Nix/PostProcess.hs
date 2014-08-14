@@ -95,7 +95,6 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { doCheck = True, phaseOverrides = sybDoCheck }
   | pname == "tar"              = deriv { runHaddock = True, phaseOverrides = tarNoHaddock }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
-  | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
   | pname == "transformers" && version >= Version [0,4,1] []
@@ -256,9 +255,6 @@ cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.
 
 cookieDoCheckHook :: String
 cookieDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
-
-textIcuDoCheckHook :: String
-textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
 
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
