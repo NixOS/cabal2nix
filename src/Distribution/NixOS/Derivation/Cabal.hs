@@ -1,4 +1,4 @@
-{-# LANGUAGE PatternGuards, CPP #-}
+{-# LANGUAGE PatternGuards, RecordWildCards, CPP #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.Cabal
    License     :  BSD3
@@ -14,16 +14,18 @@
 module Distribution.NixOS.Derivation.Cabal
   ( Derivation(..)
   , parseDerivation
+  , DerivationSource(..)
   , module Distribution.NixOS.Derivation.Meta
   , module Data.Version
   )
   where
 
 import Distribution.NixOS.Derivation.Meta
+import Distribution.NixOS.Fetch
 import Distribution.NixOS.PrettyPrinting
 import Distribution.NixOS.Regex hiding ( empty )
-import Distribution.Text
 import Distribution.Package
+import Distribution.Text
 #ifdef __HADDOCK__
 import Distribution.PackageDescription ( PackageDescription )
 #endif
@@ -39,11 +41,10 @@ import Data.Function
 --
 -- Note that the "Text" instance definition provides pretty-printing,
 -- but no parsing as of now!
-
 data Derivation = MkDerivation
   { pname               :: String
   , version             :: Version
-  , sha256              :: String
+  , src                 :: DerivationSource
   , isLibrary           :: Bool
   , isExecutable        :: Bool
   , extraFunctionArgs   :: [String]
@@ -82,7 +83,7 @@ renderDerivation deriv =
   , nest 2 $ vcat
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
-    , attr "sha256"  $ string (sha256 deriv)
+    , sourceAttr (src deriv)
     , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" empty (buildDepends deriv)
@@ -106,20 +107,36 @@ renderDerivation deriv =
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
               buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
+           ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
+    isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl (src deriv)
+    sourceAttr (DerivationSource{..})
+      | isHackagePackage = attr "sha256" $ string derivHash
+      | derivKind /= "" = vcat
+         [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace
+         , nest 2 $ vcat
+           [ attr "url" $ string derivUrl
+           , attr "sha256" $ string derivHash
+           , if derivRevision /= "" then attr "rev" (string derivRevision) else empty
+           ]
+         , rbrace <> semi
+         ]
+      | otherwise = attr "src" $ text derivUrl
 
 -- | A very incomplete parser that extracts 'pname', 'version',
 -- 'sha256', 'platforms', 'hydraPlatforms', 'maintainers', 'doCheck',
 -- 'jailbreak', and 'runHaddock' from the given Nix expression.
-
 parseDerivation :: String -> Maybe Derivation
 parseDerivation buf
   | buf =~ "cabal.mkDerivation"
   , [name]    <- buf `regsubmatch` "pname *= *\"([^\"]+)\""
   , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
   , Just vers <- simpleParse vers'
-  , [sha]     <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , sha       <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
+  , sr        <- buf `regsubmatch` "src *= *([^;]+);"
+  , url       <- buf `regsubmatch` "url *= *\"?([^;\"]+)\"? *;"
+  , rev       <- buf `regsubmatch` "rev *= *\"([^\"]+)\""
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
   , maint     <- buf `regsubmatch` "maintainers *= *(with [^;]+;)? \\[([^\"]+)]"
@@ -131,7 +148,12 @@ parseDerivation buf
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
-                  , sha256         = sha
+                  , src            = case (sr,url) of
+                                       ([]   , _      ) -> DerivationSource "url" ("mirror://hackage/" ++ name ++ "-" ++ vers' ++ ".tar.gz") "" $ head sha
+                                       (sr':_, []     ) -> DerivationSource "" sr' "" ""
+                                       (sr':_, url':_ ) -> DerivationSource (drop (length "fetch") . head . words $ sr')
+                                                                           url' (head $ rev ++ [""]) $ head sha
+
                   , isLibrary      = False
                   , isExecutable   = False
                   , extraFunctionArgs = []

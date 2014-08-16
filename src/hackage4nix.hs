@@ -1,7 +1,7 @@
 module Main ( main ) where
 
-import Cabal2Nix.Normalize
 import Cabal2Nix.Generate
+import Cabal2Nix.Normalize
 import Control.Exception ( bracket )
 import Control.Monad.RWS
 import Data.List
@@ -111,6 +111,7 @@ updateNixPkgs paths = do
       nix' <- io (readFile file) >>= parseNixFile file
       flip (maybe (return ())) nix' $ \nix ->
         modify (Set.insert nix)
+
   -- Re-generate all Haskell packages in-place (unless
   -- 'regenerateDerivation' decided that this particular package
   -- shouldn't be touched.
@@ -124,10 +125,11 @@ updateNixPkgs paths = do
         maints = maintainers (metaSection deriv)
         plats  = platforms (metaSection deriv)
         hplats = if isLatest deriv then hydraPlatforms (metaSection deriv) else ["self.stdenv.lib.platforms.none"]
+
     when regenerate $ do
       msgDebug ("re-generate " ++ path)
       pkg <- getCabalPackage (pname deriv) (version deriv)
-      let deriv'  = (cabal2nix pkg) { sha256 = sha256 deriv
+      let deriv'  = (cabal2nix pkg) { src = src deriv
                                     , runHaddock = runHaddock deriv
                                     , doCheck = doCheck deriv
                                     , jailbreak = jailbreak deriv
@@ -143,6 +145,7 @@ updateNixPkgs paths = do
                                            }
                            }
       io $ writeFile path (show (disp (normalize deriv'')))
+
   -- Discover available updates and print the appropriate cabal2nix
   -- command line to the console for the user to execute at his/her
   -- discretion.

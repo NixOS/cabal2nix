@@ -1,14 +1,13 @@
 module Main ( main ) where
 
-import Cabal2Nix.Hackage ( hashPackage, readCabalFile )
 import Cabal2Nix.Generate ( cabal2nix )
 import Cabal2Nix.Normalize ( normalize )
+import Cabal2Nix.Package
 import Distribution.NixOS.Derivation.Cabal
+import Distribution.NixOS.Fetch
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )
-import Distribution.PackageDescription ( package, packageDescription )
-import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text ( disp )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
@@ -24,6 +23,7 @@ data Configuration = Configuration
   , optHaddock :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
+  , optRevision :: String
   , optHyperlinkSource :: Bool
   , optHackageDb :: Maybe FilePath
   }
@@ -39,6 +39,7 @@ defaultConfiguration = Configuration
   , optHaddock = True
   , optDoCheck = True
   , optJailbreak = False
+  , optRevision = ""
   , optHyperlinkSource = True
   , optHackageDb = Nothing
   }
@@ -53,19 +54,25 @@ options =
   , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
+  , Option ""  ["rev"]        (ReqArg (\x o -> o { optRevision = x }) "REVISION")                        "revision, only used when fetching from VCS"
   , Option ""  ["no-hyperlink-source"] (NoArg (\o -> o { optHyperlinkSource = False }))                  "don't add pretty-printed source code to the documentation"
   ]
 
 usage :: String
-usage = usageInfo "Usage: cabal2nix [options] url-to-cabal-file" options ++ unlines
+usage = usageInfo "Usage: cabal2nix [options] URI" options ++ unlines
         [ ""
         , "Recognized URI schemes:"
         , ""
-        , "  cabal://pkgname-pkgversion       download the specified package from Hackage"
-        , "  cabal://pkgname                  download latest version of the specified package from Hackage"
-        , "  http://host/path                 fetch the Cabal file via HTTP"
-        , "  file:///local/path               load the Cabal file from the local disk"
-        , "  /local/path                      abbreviated version of file URI"
+        , "  cabal://pkgname-pkgversion     download the specified package from Hackage"
+        , "  cabal://pkgname                download latest version of the specified package from Hackage"
+        , "  file:///local/path             load the Cabal file from the local disk"
+        , "  /local/path                    abbreviated version of file URI"
+        , "  <git/svn/bzr/hg URL>           download the source from the specified repository"
+        , ""
+        , "If the URI refers to a cabal file, information for building the package will be retrieved from that file, but "
+        , "hackage will be used as a source for the derivation."
+        , "Otherwise, the supplied URI will be used to as the source for the derivation and the information is taken"
+        , "from the cabal file at the root of the downloaded source."
         ]
 
 cmdlineError :: String -> IO a
@@ -82,19 +89,9 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   when (optPrintHelp cfg) (putStr usage >> exitSuccess)
   when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
 
-  cabal' <- fmap parsePackageDescription (readCabalFile (optHackageDb cfg) (head args))
-  cabal <- case cabal' of
-             ParseOk _ a -> return a
-             ParseFailed err -> do
-               hPutStrLn stderr ("*** cannot parse cabal file: " ++ show err)
-               exitFailure
+  pkg <- getPackage (optHackageDb cfg) $ Source (head args) (optRevision cfg) (optSha256 cfg)
 
-  let packageId = package (packageDescription cabal)
-  sha <- case optSha256 cfg of
-              Just hash -> return hash
-              Nothing -> hashPackage packageId
-
-  let deriv  = (cabal2nix cabal) { sha256 = sha, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
+  let deriv  = (cabal2nix $ cabal pkg) { src = source pkg, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = optMaintainer cfg
                                      , platforms   = optPlatform cfg
