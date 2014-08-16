@@ -16,6 +16,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { buildTools = "perl":"happy":buildTools }
   | pname == "bindings-GLFW"    = deriv { extraLibs = "libXext":"libXfixes":extraLibs }
   | pname == "cabal2nix"        = deriv { doCheck = True, phaseOverrides = cabal2nixDoCheckHook }
+  | pname == "cabal-bounds"      = deriv { buildTools = "cabalInstall":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
