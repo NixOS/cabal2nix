@@ -23,6 +23,7 @@ module Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.Fetch
 import Distribution.NixOS.PrettyPrinting
+import Distribution.NixOS.Regex hiding ( empty )
 import Distribution.Package
 import Distribution.Text
 #ifdef __HADDOCK__
@@ -33,7 +34,6 @@ import Data.Version
 import Data.List
 import Data.Char
 import Data.Function
-import Text.Regex.Posix hiding ( empty )
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -60,6 +60,7 @@ data Derivation = MkDerivation
   , doCheck             :: Bool
   , testTarget          :: String
   , hyperlinkSource     :: Bool
+  , enableSplitObjs     :: Bool
   , phaseOverrides      :: String
   , metaSection         :: Meta
   }
@@ -79,18 +80,19 @@ renderDerivation deriv =
   funargs (map text ("cabal" : inputs)) $$ vcat
   [ text ""
   , text "cabal.mkDerivation" <+> lparen <> text "self" <> colon <+> lbrace
-  , nest 2 $ vcat $
+  , nest 2 $ vcat
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
     , sourceAttr (src deriv)
     , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
-    , listattr "buildDepends" (buildDepends deriv)
-    , listattr "testDepends" (testDepends deriv)
-    , listattr "buildTools" (buildTools deriv)
-    , listattr "extraLibraries" (extraLibs deriv)
-    , listattr "pkgconfigDepends" (pkgConfDeps deriv)
+    , listattr "buildDepends" empty (buildDepends deriv)
+    , listattr "testDepends" empty (testDepends deriv)
+    , listattr "buildTools" empty (buildTools deriv)
+    , listattr "extraLibraries" empty (extraLibs deriv)
+    , listattr "pkgconfigDepends" empty (pkgConfDeps deriv)
     , onlyIf renderedFlags $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
+    , boolattr "enableSplitObjs"  (not (enableSplitObjs deriv)) (enableSplitObjs deriv)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
     , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
@@ -137,11 +139,12 @@ parseDerivation buf
   , rev       <- buf `regsubmatch` "rev *= *\"([^\"]+)\""
   , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
   , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
-  , maint     <- buf `regsubmatch` "maintainers *= *\\[([^\"]+)]"
+  , maint     <- buf `regsubmatch` "maintainers *= *(with [^;]+;)? \\[([^\"]+)]"
   , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
   , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
   , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
   , hyperlSrc <- buf `regsubmatch` "hyperlinkSource *= *(true|false) *;"
+  , splitObj  <- buf `regsubmatch` "enableSplitObjs *= *(true|false) *;"
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
@@ -166,19 +169,15 @@ parseDerivation buf
                   , doCheck        = docheck == ["true"] || null docheck
                   , testTarget     = ""
                   , hyperlinkSource = hyperlSrc == ["true"] || null hyperlSrc
+                  , enableSplitObjs = splitObj  /= ["false"]
                   , phaseOverrides = ""
                   , metaSection  = Meta
                                    { homepage       = ""
                                    , description    = ""
                                    , license        = Unknown Nothing
-                                   , maintainers    = concatMap words maint
+                                   , maintainers    = if null maint then [] else concatMap words (tail maint)
                                    , platforms      = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
                                    , hydraPlatforms = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) hplats)
                                    }
                   }
   | otherwise = Nothing
-
-regsubmatch :: String -> String -> [String]
-regsubmatch buf patt = let (_,_,_,x) = f in x
-  where f :: (String,String,String,[String])
-        f = match (makeRegexOpts compExtended execBlank patt) buf

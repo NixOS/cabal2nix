@@ -2,8 +2,8 @@
 
 module Cabal2Nix.PostProcess ( postProcess ) where
 
-import Distribution.NixOS.Derivation.Cabal
 import Data.List
+import Distribution.NixOS.Derivation.Cabal
 
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
@@ -19,6 +19,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
+  | pname == "cookie"           = deriv { phaseOverrides = cookieDoCheckHook }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.gcc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
@@ -36,7 +37,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gloss-raster"     = deriv { extraLibs = "llvm":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
-  | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs, buildDepends = delete "gio" buildDepends }
+  | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gtkglext"         = deriv { pkgConfDeps = "pangox_compat":pkgConfDeps }
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
@@ -46,13 +47,11 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
-  | pname == "hflags"           = deriv { metaSection = metaSection { license = Unknown (Just "Apache-2.0") } }
-  | pname == "hfsevents"        = deriv { buildTools = "gccApple":buildTools, phaseOverrides = "configureFlags = \"--ghc-option=-pgmc=${gccApple}/bin/gcc\";" }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hlibgit2"         = deriv { testDepends = "git":testDepends }
   | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
-  | pname == "hmatrix"          = deriv { extraLibs = "gsl":"liblapack":"blas":extraLibs }
+  | pname == "hmatrix"          = deriv { extraLibs = "liblapack":"blas": filter (/= "lapack") extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
   | pname == "HTTP" && version >= Version [4000,2,14] []
@@ -96,8 +95,8 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { doCheck = True, phaseOverrides = sybDoCheck }
   | pname == "tar"              = deriv { runHaddock = True, phaseOverrides = tarNoHaddock }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
-  | pname == "text-icu"         = deriv { doCheck = True, phaseOverrides = textIcuDoCheckHook }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
+  | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
   | pname == "transformers" && version >= Version [0,4,1] []
                                 = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
@@ -254,8 +253,8 @@ doctestNoHaddock = markdownUnlitNoHaddock
 cabal2nixDoCheckHook :: String
 cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.version;"
 
-textIcuDoCheckHook :: String
-textIcuDoCheckHook = "doCheck = !self.stdenv.isDarwin;"
+cookieDoCheckHook :: String
+cookieDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
 
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
@@ -269,7 +268,7 @@ transformersNoHaddock = httpNoHaddock
 agdaPostInstall :: String
 agdaPostInstall = unlines
   [ "postInstall = ''"
-  , "  $out/bin/agda -c --no-main $out/share/Agda-*/lib/prim/Agda/Primitive.agda"
+  , "  $out/bin/agda -c --no-main $(find $out/share -name Primitive.agda)"
   , "  $out/bin/agda-mode compile"
   , "'';"
   ]

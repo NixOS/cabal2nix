@@ -31,9 +31,9 @@ onlyIf p d = if not (null p) then d else empty
 boolattr :: String -> Bool -> Bool -> Doc
 boolattr n p v = if p then attr n (bool v) else empty
 
-listattr :: String -> [String] -> Doc
-listattr n vs = onlyIf vs $
-                sep [ text n <+> equals <+> lbrack,
+listattr :: String -> Doc -> [String] -> Doc
+listattr n prefix vs = onlyIf vs $
+                sep [ text n <+> equals <+> prefix <+> lbrack,
                       nest 2 $ fsep $ map text vs,
                       rbrack <> semi
                     ]

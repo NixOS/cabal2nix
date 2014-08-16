@@ -23,16 +23,20 @@ import Distribution.Text
 
 -- | A representation of the @meta@ section used in Nix expressions.
 --
--- > > putStrLn (display (Meta "http://example.org" "an example package" (Unknown Nothing)
--- > >                   ["stdenv.lib.platforms."++x | x<-["unix","cygwin"]]
--- > >                   ["stdenv.lib.maintainers."++x | x<-["joe","jane"]]))
--- > meta = {
--- >   homepage = "http://example.org";
--- >   description = "an example package";
--- >   license = "unknown";
--- >   platforms = stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
--- >   maintainers = [ stdenv.lib.maintainers.joe stdenv.lib.maintainers.jane ];
--- > };
+-- >>> :{
+--   putStrLn (display (Meta "http://example.org" "an example package" (Unknown Nothing)
+--                      ["stdenv.lib.platforms."++x | x <- ["unix","cygwin"]]
+--                      ["stdenv.lib.platforms.none"]
+--                      ["joe","jane"]))
+-- :}
+-- meta = {
+--   homepage = "http://example.org";
+--   description = "an example package";
+--   license = "unknown";
+--   platforms = stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
+--   hydraPlatforms = stdenv.lib.platforms.none;
+--   maintainers = with self.stdenv.lib.maintainers; [ joe jane ];
+-- };
 --
 -- Note that the "Text" instance definition provides pretty-printing,
 -- but no parsing as of now!
@@ -62,7 +66,7 @@ renderMeta meta = vcat
       [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
     , onlyIf (hydraPlatforms meta) $ sep
       [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
-    , listattr "maintainers" (maintainers meta)
+    , listattr "maintainers" (text "with self.stdenv.lib.maintainers;") (maintainers meta)
     ]
   , rbrace <> semi
   ]

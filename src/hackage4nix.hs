@@ -72,7 +72,7 @@ discoverNixFiles yield dirOrFile = do
     (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
-regenerateDerivation _ buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches")
+regenerateDerivation _ buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches|broken")
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
@@ -103,36 +103,53 @@ discoverUpdates name vers = do
 
 updateNixPkgs :: [FilePath] -> Hackage4Nix ()
 updateNixPkgs paths = do
-  msgDebug $ "updating = " ++ show paths
-  forM_ paths $ \fileOrDir ->
+  -- Traverse the given directorcy structure and discover all available
+  -- Haskell packages.
+  forM_ paths $ \fileOrDir -> do
+    msgDebug $ "scanning " ++ show fileOrDir
     flip discoverNixFiles fileOrDir $ \file -> do
       nix' <- io (readFile file) >>= parseNixFile file
-      flip (maybe (return ())) nix' $ \nix -> do
-        let Pkg deriv path regenerate = nix
-            maints = maintainers (metaSection deriv)
-            plats  = platforms (metaSection deriv)
-            hplats = hydraPlatforms (metaSection deriv)
+      flip (maybe (return ())) nix' $ \nix ->
         modify (Set.insert nix)
-        when regenerate $ do
-          msgDebug ("re-generate " ++ path)
-          pkg <- getCabalPackage (pname deriv) (version deriv)
-          let deriv'  = (cabal2nix pkg) { src = src deriv
-                                        , runHaddock = runHaddock deriv
-                                        , doCheck = doCheck deriv
-                                        , jailbreak = jailbreak deriv
-                                        , hyperlinkSource = hyperlinkSource deriv
-                                        }
-              meta    = metaSection deriv'
-              plats'  = if null plats then platforms meta else plats
-              deriv'' = deriv' { metaSection = meta
-                                               { maintainers    = maints -- ++ ["andres","simons"]
-                                               , platforms      = plats'
-                                               , hydraPlatforms = hplats
-                                               }
-                               }
-          io $ writeFile path (show (disp (normalize deriv'')))
-  pkgset <- gets selectLatestVersions
-  updates' <- forM (Set.elems pkgset) $ \pkg -> do
+
+  -- Re-generate all Haskell packages in-place (unless
+  -- 'regenerateDerivation' decided that this particular package
+  -- shouldn't be touched.
+  latestVersions <- gets selectLatestVersions
+  let latestVersionMap :: [(String,Version)]
+      latestVersionMap = [ (pname deriv, version deriv) | Pkg deriv _ _ <- Set.toList latestVersions ]
+  let isLatest :: Derivation -> Bool
+      isLatest deriv = maybe False (version deriv ==) (lookup (pname deriv) latestVersionMap)
+  get >>= \pkgset -> forM_ (Set.toList pkgset) $ \nix -> do
+    let Pkg deriv path regenerate = nix
+        maints = maintainers (metaSection deriv)
+        plats  = platforms (metaSection deriv)
+        hplats = if isLatest deriv then hydraPlatforms (metaSection deriv) else ["self.stdenv.lib.platforms.none"]
+
+    when regenerate $ do
+      msgDebug ("re-generate " ++ path)
+      pkg <- getCabalPackage (pname deriv) (version deriv)
+      let deriv'  = (cabal2nix pkg) { src = src deriv
+                                    , runHaddock = runHaddock deriv
+                                    , doCheck = doCheck deriv
+                                    , jailbreak = jailbreak deriv
+                                    , hyperlinkSource = hyperlinkSource deriv
+                                    , enableSplitObjs = enableSplitObjs deriv
+                                    }
+          meta    = metaSection deriv'
+          plats'  = if null plats then platforms meta else plats
+          deriv'' = deriv' { metaSection = meta
+                                           { maintainers    = maints
+                                           , platforms      = plats'
+                                           , hydraPlatforms = hplats
+                                           }
+                           }
+      io $ writeFile path (show (disp (normalize deriv'')))
+
+  -- Discover available updates and print the appropriate cabal2nix
+  -- command line to the console for the user to execute at his/her
+  -- discretion.
+  updates' <- forM (Set.elems latestVersions) $ \pkg -> do
     let Pkg deriv _ _ = pkg
     updates <- discoverUpdates (pname deriv) (version deriv)
     return (pkg,updates)
@@ -233,8 +250,7 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                     -- Requires platform-specific magic that I don't want to add to cabal2nix.
                   , "pkgs/development/libraries/haskell/fsnotify/default.nix"
                     -- Not registered on Hackage.
-                  , "pkgs/development/compilers/agda/stdlib-0.7.nix"
-                  , "pkgs/development/compilers/agda/stdlib-0.8.nix"
+                  , "pkgs/development/compilers/agda/stdlib.nix"
                   , "pkgs/development/compilers/cryptol/1.8.x.nix"
                   , "pkgs/development/compilers/cryptol/2.0.x.nix"
                   , "pkgs/development/compilers/jhc/default.nix"
