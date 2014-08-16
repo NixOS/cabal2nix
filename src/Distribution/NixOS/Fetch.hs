@@ -70,8 +70,6 @@ fetch f = runMaybeT . fetchers where
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: (Bool, String) -> Source -> MaybeT IO (DerivationSource, FilePath)
 fetchWith (supportsRev, kind) source = do
-  liftIO $ hPutStrLn stderr $ "* trying fetcher: " ++ kind
-
   unless ((sourceRevision source /= "") || isNothing (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
