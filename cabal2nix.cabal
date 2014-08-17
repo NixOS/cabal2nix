@@ -16,7 +16,7 @@ Description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
   commandline syntax is:
   .
-  > Usage: cabal2nix [options] url-to-cabal-file
+  > Usage: cabal2nix [options] url-to-cabal-file-or-repo
   >   -h             --help                   show this help text
   >                  --hackage-db=FILEPATH    path to the local hackage db in tar format
   >                  --sha256=HASH            sha256 hash of source tarball
@@ -33,7 +33,8 @@ Description:
   >   cabal://pkgname                  download latest version of the specified package from Hackage
   >   http://host/path                 fetch the Cabal file via HTTP
   >   file:///local/path               load the Cabal file from the local disk
-  >   /local/path                      abbreviated version of file URI
+  >   /local/path.cabal                abbreviated version of file URI
+  >   <git/svn/bzr/hg URL>             download the source from the specified repository
   .
   The only required argument is the path to the cabal file. For example:
   .
@@ -43,6 +44,11 @@ Description:
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes
   network traffic, obviously.
+  .
+  If the argument refers to a source repository instead of a cabal file,
+  cabal2nix will use that source repository to fetch from instead of hackage.
+  Currently, cabal2nix supports directories, archives (fetched via http or https) and
+  git, mercurial, svn or bazaar repositories.
 
 Source-Repository head
   Type:                 git
