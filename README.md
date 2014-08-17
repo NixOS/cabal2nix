@@ -101,9 +101,8 @@ contains the derivation as the source repository.
 `cabal2nix` currently supports the following respository types:
 
 * directory
-* source archive (zip, tar.gz, ...) downloaded from http or https URL.
+* source archive (zip, tar.gz, ...) from http or https URL or local file.
 * git, mercurial, svn or bazaar repository
-
 
 ### Hackage4nix
 

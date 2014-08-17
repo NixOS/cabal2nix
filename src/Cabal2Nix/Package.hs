@@ -124,14 +124,18 @@ cabalFromDirectory dir = do
     _       -> liftIO $ hPutStrLn stderr "*** found zero or more than one cabal file. Exiting." >> exitFailure
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
-cabalFromFile failHard file = do
-  content <- MaybeT $ either (const Nothing) Just <$> Compat.tryIO (readFile file)
-  case Cabal.parsePackageDescription content of
-    Cabal.ParseFailed e -> do
-      guard failHard
-      liftIO $ do
+cabalFromFile failHard file =
+  -- readFile throws an error if it's used on binary files which contain sequences
+  -- that do not represent valid characters. To catch that exception, we need to
+  -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
+  -- the reading of the file, so we will always catch the expression here.
+  MaybeT $ flip Compat.catchIO (const $ return Nothing) $ do
+    content <- readFile file
+    case Cabal.parsePackageDescription content of
+      Cabal.ParseFailed e | failHard -> do
         let (line, err) = ParseUtils.locatedErrorMsg e
             msg = maybe "" ((++ ": ") . show) line ++ err
         putStrLn $ "*** error parsing cabal file: " ++ msg
         exitFailure
-    Cabal.ParseOk     _ a -> return a
+      Cabal.ParseFailed _  -> return Nothing
+      Cabal.ParseOk     _ a -> return (Just a)
