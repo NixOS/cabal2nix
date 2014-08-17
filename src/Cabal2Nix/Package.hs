@@ -19,6 +19,9 @@ import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import qualified Distribution.PackageDescription.Parse as Cabal
 
+import qualified Distribution.Compat.Exception as Compat
+import qualified Distribution.ParseUtils as ParseUtils
+
 data Package = Package
   { source :: DerivationSource
   , cabal :: Cabal.GenericPackageDescription
@@ -36,7 +39,8 @@ fetchOrFromDB optHackageDB src
   | otherwise                             = do
     r <- fetch cabalFromPath src
     case r of
-      Nothing -> hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
+      Nothing ->
+        hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
       Just (derivSource, (externalSource, pkgDesc)) ->
         return (derivSource <$ guard externalSource, pkgDesc)
 
@@ -75,7 +79,7 @@ sourceFromHackage :: Maybe String -> String -> IO DerivationSource
 sourceFromHackage optHash pkgId = do
   cacheFile <- hashCachePath pkgId
   let cachedHash = MaybeT $ maybe (readFileMay cacheFile) (return . Just) optHash
-  let url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
+      url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
 
   -- Use the cached hash (either from cache file or given on cmdline via sha256 opt)
   -- if available, otherwise download from hackage to compute hash.
@@ -109,19 +113,25 @@ cabalFromPath :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 cabalFromPath path = do
   d <- liftIO $ doesDirectoryExist path
   (,) d <$> if d
-    then cabalFromDirectory path
-    else cabalFromFile      path
+    then cabalFromDirectory  path
+    else cabalFromFile False path
 
 cabalFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromDirectory dir = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
-    [cabalFile] -> cabalFromFile cabalFile
+    [cabalFile] -> cabalFromFile True cabalFile
     _       -> liftIO $ hPutStrLn stderr "*** found zero or more than one cabal file. Exiting." >> exitFailure
 
-cabalFromFile :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
-cabalFromFile file = do
-  content <- liftIO $ readFile file
+cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
+cabalFromFile failHard file = do
+  content <- MaybeT $ either (const Nothing) Just <$> Compat.tryIO (readFile file)
   case Cabal.parsePackageDescription content of
-    Cabal.ParseFailed _ -> mzero
+    Cabal.ParseFailed e -> do
+      guard failHard
+      liftIO $ do
+        let (line, err) = ParseUtils.locatedErrorMsg e
+            msg = maybe "" ((++ ": ") . show) line ++ err
+        putStrLn $ "*** error parsing cabal file: " ++ msg
+        exitFailure
     Cabal.ParseOk     _ a -> return a
