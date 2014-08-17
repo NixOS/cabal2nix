@@ -1,9 +1,9 @@
 module Cabal2Nix.Package where
 
+import Control.Applicative
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
-import Data.Functor ( (<$>), (<$) )
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe ( listToMaybe )
 import Distribution.NixOS.Derivation.Cabal
@@ -74,15 +74,28 @@ hashCachePath pid = do
 sourceFromHackage :: Maybe String -> String -> IO DerivationSource
 sourceFromHackage optHash pkgId = do
   cacheFile <- hashCachePath pkgId
-  hash <- maybe (readFileMay cacheFile) (return . Just) optHash
-  res <- runMaybeT $ fst <$> fetchWith (False, "url") (Source ("mirror://hackage/" ++ pkgId ++ ".tar.gz") "" hash)
-  case res of
-    Just r -> writeFile cacheFile (derivHash r) >> return r
+  let cachedHash = MaybeT $ maybe (readFileMay cacheFile) (return . Just) optHash
+  let url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
+
+  -- Use the cached hash (either from cache file or given on cmdline via sha256 opt)
+  -- if available, otherwise download from hackage to compute hash.
+  maybeHash <- runMaybeT $ cachedHash <|> derivHash . fst <$> fetchWith (False, "url") (Source url "" Nothing)
+  case maybeHash of
+    Just hash ->
+      -- We need to force the hash here. If we didn't do this, then when reading the
+      -- hash from the cache file, the cache file will still be open for reading
+      -- (because lazy io) when writeFile opens the file again for writing. By forcing
+      -- the hash here, we ensure that the file is closed before opening it again.
+      seq (length hash) $
+      DerivationSource "url" url "" hash <$ writeFile cacheFile hash
     Nothing -> do
       hPutStr stderr $ unlines
         [ "*** cannot compute hash. (Not a hackage project?)"
-        , " Specify hash explicitly via --sha256 and add appropriate \"src\" attribute"
-        , " to resulting nix expression."
+        , " If your project is not on hackage, please supply the path to the root directory of"
+        , " the project, not to the cabal file."
+        , ""
+        , " If your project is on hackage but you still want to specify the hash manually, you"
+        , " can use the --sha256 option."
         ]
       exitFailure
 
