@@ -62,7 +62,15 @@ fetch f = runMaybeT . fetchers where
     existsFile <- liftIO $ doesFileExist path
     existsDir  <- liftIO $ doesDirectoryExist path
     guard $ existsDir || existsFile
-    process (DerivationSource "" path "" "", path)
+    let path' | '/' `elem` path = path
+              | otherwise       = "./" ++ path
+    process (DerivationSource "" path' "" "", path') <|> localArchive path'
+
+  localArchive :: FilePath -> MaybeT IO (DerivationSource, a)
+  localArchive path = do
+    absolutePath <- liftIO $ canonicalizePath path
+    unpacked <- snd <$> fetchWith (False, "zip") (Source ("file://" ++ absolutePath) "" Nothing)
+    process (DerivationSource "" absolutePath "" "", unpacked)
 
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
   process (derivSource, file) = (,) derivSource <$> f file

@@ -1,9 +1,9 @@
 module Cabal2Nix.Package where
 
+import Control.Applicative
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
-import Data.Functor ( (<$>), (<$) )
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe ( listToMaybe )
 import Distribution.NixOS.Derivation.Cabal
@@ -18,6 +18,9 @@ import qualified Distribution.Hackage.DB as DB
 import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import qualified Distribution.PackageDescription.Parse as Cabal
+
+import qualified Distribution.Compat.Exception as Compat
+import qualified Distribution.ParseUtils as ParseUtils
 
 data Package = Package
   { source :: DerivationSource
@@ -36,7 +39,8 @@ fetchOrFromDB optHackageDB src
   | otherwise                             = do
     r <- fetch cabalFromPath src
     case r of
-      Nothing -> hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
+      Nothing ->
+        hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
       Just (derivSource, (externalSource, pkgDesc)) ->
         return (derivSource <$ guard externalSource, pkgDesc)
 
@@ -74,15 +78,28 @@ hashCachePath pid = do
 sourceFromHackage :: Maybe String -> String -> IO DerivationSource
 sourceFromHackage optHash pkgId = do
   cacheFile <- hashCachePath pkgId
-  hash <- maybe (readFileMay cacheFile) (return . Just) optHash
-  res <- runMaybeT $ fst <$> fetchWith (False, "url") (Source ("mirror://hackage/" ++ pkgId ++ ".tar.gz") "" hash)
-  case res of
-    Just r -> writeFile cacheFile (derivHash r) >> return r
+  let cachedHash = MaybeT $ maybe (readFileMay cacheFile) (return . Just) optHash
+      url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
+
+  -- Use the cached hash (either from cache file or given on cmdline via sha256 opt)
+  -- if available, otherwise download from hackage to compute hash.
+  maybeHash <- runMaybeT $ cachedHash <|> derivHash . fst <$> fetchWith (False, "url") (Source url "" Nothing)
+  case maybeHash of
+    Just hash ->
+      -- We need to force the hash here. If we didn't do this, then when reading the
+      -- hash from the cache file, the cache file will still be open for reading
+      -- (because lazy io) when writeFile opens the file again for writing. By forcing
+      -- the hash here, we ensure that the file is closed before opening it again.
+      seq (length hash) $
+      DerivationSource "url" url "" hash <$ writeFile cacheFile hash
     Nothing -> do
       hPutStr stderr $ unlines
         [ "*** cannot compute hash. (Not a hackage project?)"
-        , " Specify hash explicitly via --sha256 and add appropriate \"src\" attribute"
-        , " to resulting nix expression."
+        , " If your project is not on hackage, please supply the path to the root directory of"
+        , " the project, not to the cabal file."
+        , ""
+        , " If your project is on hackage but you still want to specify the hash manually, you"
+        , " can use the --sha256 option."
         ]
       exitFailure
 
@@ -96,19 +113,29 @@ cabalFromPath :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 cabalFromPath path = do
   d <- liftIO $ doesDirectoryExist path
   (,) d <$> if d
-    then cabalFromDirectory path
-    else cabalFromFile      path
+    then cabalFromDirectory  path
+    else cabalFromFile False path
 
 cabalFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromDirectory dir = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
-    [cabalFile] -> cabalFromFile cabalFile
+    [cabalFile] -> cabalFromFile True cabalFile
     _       -> liftIO $ hPutStrLn stderr "*** found zero or more than one cabal file. Exiting." >> exitFailure
 
-cabalFromFile :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
-cabalFromFile file = do
-  content <- liftIO $ readFile file
-  case Cabal.parsePackageDescription content of
-    Cabal.ParseFailed _ -> mzero
-    Cabal.ParseOk     _ a -> return a
+cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
+cabalFromFile failHard file =
+  -- readFile throws an error if it's used on binary files which contain sequences
+  -- that do not represent valid characters. To catch that exception, we need to
+  -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
+  -- the reading of the file, so we will always catch the expression here.
+  MaybeT $ flip Compat.catchIO (const $ return Nothing) $ do
+    content <- readFile file
+    case Cabal.parsePackageDescription content of
+      Cabal.ParseFailed e | failHard -> do
+        let (line, err) = ParseUtils.locatedErrorMsg e
+            msg = maybe "" ((++ ": ") . show) line ++ err
+        putStrLn $ "*** error parsing cabal file: " ++ msg
+        exitFailure
+      Cabal.ParseFailed _  -> return Nothing
+      Cabal.ParseOk     _ a -> return (Just a)
