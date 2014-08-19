@@ -18,9 +18,9 @@ import qualified Distribution.Hackage.DB as DB
 import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import qualified Distribution.PackageDescription.Parse as Cabal
-
-import qualified Distribution.Compat.Exception as Compat
 import qualified Distribution.ParseUtils as ParseUtils
+
+import qualified Control.Exception as Exception
 
 data Package = Package
   { source :: DerivationSource
@@ -123,13 +123,16 @@ cabalFromDirectory dir = do
     [cabalFile] -> cabalFromFile True cabalFile
     _       -> liftIO $ hPutStrLn stderr "*** found zero or more than one cabal file. Exiting." >> exitFailure
 
+handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
+handleIO = Exception.handle
+
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =
   -- readFile throws an error if it's used on binary files which contain sequences
   -- that do not represent valid characters. To catch that exception, we need to
   -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
   -- the reading of the file, so we will always catch the expression here.
-  MaybeT $ flip Compat.catchIO (const $ return Nothing) $ do
+  MaybeT $ handleIO (const $ return Nothing) $ do
     content <- readFile file
     case Cabal.parsePackageDescription content of
       Cabal.ParseFailed e | failHard -> do
