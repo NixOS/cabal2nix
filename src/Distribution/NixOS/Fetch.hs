@@ -41,10 +41,10 @@ fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision $ Just
 
 -- | Fetch a source, trying any of the various nix-prefetch-* scripts.
 fetch :: forall a. (String -> MaybeT IO a)      -- ^ This function is passed the output path name as an argument.
-                                         -- It should return 'Nothing' if the file doesn't match the expected format.
-                                         -- This is required, because we cannot always check if a download succeeded otherwise.
-      -> Source                           -- ^ The source to fetch from.
-      -> IO (Maybe (DerivationSource, a)) -- ^ The derivation source and the result of the processing function. Returns Nothing if the download failed.
+                                                -- It should return 'Nothing' if the file doesn't match the expected format.
+                                                -- This is required, because we cannot always check if a download succeeded otherwise.
+      -> Source                                 -- ^ The source to fetch from.
+      -> IO (Maybe (DerivationSource, a))       -- ^ The derivation source and the result of the processing function. Returns Nothing if the download failed.
 fetch f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
