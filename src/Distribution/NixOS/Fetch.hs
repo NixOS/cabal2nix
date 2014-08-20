@@ -86,7 +86,7 @@ fetchWith (supportsRev, kind) source = do
     (Nothing, Just stdoutH, _, processH) <- createProcess (proc script args)
       { env = Just $ ("PRINT_PATH", "1") : envs
       , std_in = Inherit
-      , std_err = CreatePipe
+      , std_err = Inherit
       , std_out = CreatePipe
       }
 
