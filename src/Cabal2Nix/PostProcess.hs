@@ -45,6 +45,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "haddock" && version < Version [2,14] []
                                 = deriv { buildTools = "alex":"happy":buildTools }
+  | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
   | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
@@ -300,3 +301,6 @@ mimeMailConfigureFlags = unlines
 sybDoCheck, splitDoCheck :: String
 sybDoCheck = "doCheck = self.stdenv.lib.versionOlder self.ghc.version \"7.9\";"
 splitDoCheck = sybDoCheck
+
+haddockPreCheck :: String
+haddockPreCheck = "preCheck = \"unset GHC_PACKAGE_PATH\";"
