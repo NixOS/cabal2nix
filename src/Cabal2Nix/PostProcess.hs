@@ -57,6 +57,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hmatrix"          = deriv { extraLibs = "liblapack":"blas": filter (/= "lapack") extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
+  | pname == "hsyslog"          = deriv { phaseOverrides = hsyslogNoHaddock }
   | pname == "HTTP" && version >= Version [4000,2,14] []
                                 = deriv { runHaddock = True, phaseOverrides = httpNoHaddock }
   | pname == "GlomeVec"         = deriv { buildTools = "llvm":buildTools }
@@ -258,11 +259,12 @@ cookieDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.ver
 eitherNoHaddock :: String
 eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
 
-httpNoHaddock, quickCheckNoHaddock, tarNoHaddock, transformersNoHaddock :: String
+httpNoHaddock, quickCheckNoHaddock, tarNoHaddock, transformersNoHaddock, hsyslogNoHaddock :: String
 httpNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"6.11\";"
 quickCheckNoHaddock = httpNoHaddock
 tarNoHaddock = httpNoHaddock
 transformersNoHaddock = httpNoHaddock
+hsyslogNoHaddock = httpNoHaddock
 
 agdaPostInstall :: String
 agdaPostInstall = unlines
