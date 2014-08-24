@@ -30,7 +30,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
   | pname == "either"           = deriv { runHaddock = True, phaseOverrides = eitherNoHaddock }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":buildTools }
+  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":"makeWrapper":buildTools }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"lsof":"openssh":"which":"bup":"perl":buildTools }
@@ -152,14 +152,10 @@ ghcModPostInstall = unlines
   , "  cd .."
   , "  ensureDir \"$out/share/emacs\""
   , "  mv $pname-$version emacs/site-lisp"
-  , "  mv $out/bin/ghc-mod $out/bin/.ghc-mod-wrapped"
-  , "  cat - > $out/bin/ghc-mod <<EOF"
-  , "  #! ${self.stdenv.shell}"
-  , "  COMMAND=\\$1"
-  , "  shift"
-  , "  eval exec $out/bin/.ghc-mod-wrapped \\$COMMAND \\$( ${self.ghc.GHCGetPackages} ${self.ghc.version} | tr \" \" \"\\n\" | tail -n +2 | paste -d \" \" - - | sed 's/.*/-g \"&\"/' | tr \"\\n\" \" \") \"\\$@\""
-  , "  EOF"
-  , "  chmod +x $out/bin/ghc-mod"
+  , "  wrapProgram $out/bin/ghc-mod --add-flags \\"
+  , "    \"\\$(${self.ghc.GHCGetPackages} ${self.ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
+  , "  wrapProgram $out/bin/ghc-modi --add-flags \\"
+  , "    \"\\$(${self.ghc.GHCGetPackages} ${self.ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
   , "'';"
   ]
 
