@@ -63,11 +63,11 @@ fetch f = runMaybeT . fetchers where
 
   fetchLocal :: Source -> MaybeT IO (DerivationSource, a)
   fetchLocal src = do
-    let path = stripPrefix "file://" $ sourceUrl src
+    let path = stripSlashSuffix $ stripPrefix "file://" $ sourceUrl src
     existsFile <- liftIO $ doesFileExist path
     existsDir  <- liftIO $ doesDirectoryExist path
     guard $ existsDir || existsFile
-    let path' | '/' `elem` path = stripSlashSuffix path
+    let path' | '/' `elem` path = path
               | otherwise       = "./" ++ path
     process (DerivationSource "" path' "" "", path') <|> localArchive path'
 
