@@ -56,9 +56,14 @@ fetch f = runMaybeT . fetchers where
     , (True, "bzr")
     ]
 
+  -- | Remove '/' from the end of the path. Nix doesn't accept paths that
+  -- end in a slash.
+  stripSlashSuffix :: String -> String
+  stripSlashSuffix = reverse . dropWhile (== '/') . reverse
+
   fetchLocal :: Source -> MaybeT IO (DerivationSource, a)
   fetchLocal src = do
-    let path = stripPrefix "file://" $ sourceUrl src
+    let path = stripSlashSuffix $ stripPrefix "file://" $ sourceUrl src
     existsFile <- liftIO $ doesFileExist path
     existsDir  <- liftIO $ doesDirectoryExist path
     guard $ existsDir || existsFile
