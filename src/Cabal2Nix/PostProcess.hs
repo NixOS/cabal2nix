@@ -46,6 +46,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haddock" && version < Version [2,14] []
                                 = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
+  | pname == "hakyll"           = deriv { testDepends = "utillinux":testDepends }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
   | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
