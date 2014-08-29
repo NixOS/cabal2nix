@@ -86,6 +86,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "poppler"          = deriv { extraLibs = "libc":extraLibs }
   | pname == "QuickCheck" && version >= Version [2,7,3] []
                                 = deriv { runHaddock = True, phaseOverrides = quickCheckNoHaddock }
+  | pname == "Rasterific" = deriv { doCheck = False }
   | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
   | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
