@@ -206,10 +206,7 @@ xmonadPostInstall = unlines
 
 gitAnnexOverrides :: String
 gitAnnexOverrides = unlines
-  [ "preConfigure = ''"
-  , "  export HOME=\"$NIX_BUILD_TOP/tmp\""
-  , "  mkdir \"$HOME\""
-  , "'';"
+  [ "preConfigure = \"export HOME=$TEMPDIR\";"
   , "installPhase = \"./Setup install\";"
   , "checkPhase = ''"
   , "  cp dist/build/git-annex/git-annex git-annex"
