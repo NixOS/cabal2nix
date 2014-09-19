@@ -13,6 +13,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "hslua"              = [enable "system-lua"]
  | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
+ | name == "pandoc"             = [enable "https", enable "make-pandoc-man-pages"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
  | name == "xmobar"             = [enable "all_extensions"]
