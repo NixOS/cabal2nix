@@ -97,13 +97,12 @@ main :: IO ()
 main = execParser mainOptions >>= runCompiler buildPackageSet
   where
     parseCompilerId :: Parser CompilerId
-    parseCompilerId = nullOption
-                      (    long "compiler"
-                        <> eitherReader (\s -> maybe (Left (show s ++ " is no valid compiler id")) Right (simpleParse s))
-                        <> help "identifier of the compiler"
-                        <> metavar "COMPILER-ID"
-                        <> value (fromJust (simpleParse "ghc-7.8.2"))
-                        <> showDefaultWith display
+    parseCompilerId = option (eitherReader (\s -> maybe (Left (show s ++ " is no valid compiler id")) Right (simpleParse s)))
+                      (  long "compiler"
+                      <> help "identifier of the compiler"
+                      <> metavar "COMPILER-ID"
+                      <> value (fromJust (simpleParse "ghc-7.8.2"))
+                      <> showDefaultWith display
                       )
 
     parseOptions :: Parser Options

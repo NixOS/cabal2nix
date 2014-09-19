@@ -104,7 +104,7 @@ Executable hackage2nix
   main-is:              hackage2nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.16,
-                        mtl, containers, directory, filepath, hackage-db, optparse-applicative,
+                        mtl, containers, directory, filepath, hackage-db, optparse-applicative >= 0.10,
                         IfElse, deepseq
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
