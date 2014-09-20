@@ -247,8 +247,6 @@ badPackagePaths = [ -- These expression are not found on Hackage:
                     -- This build is way too complicated to maintain it automatically.
                   , "pkgs/development/compilers/pakcs/default.nix"
                   , "pkgs/development/libraries/haskell/hoogle/local.nix"
-                    -- Requires platform-specific magic that I don't want to add to cabal2nix.
-                  , "pkgs/development/libraries/haskell/fsnotify/default.nix"
                     -- Not registered on Hackage.
                   , "pkgs/development/compilers/agda/stdlib.nix"
                   , "pkgs/development/compilers/cryptol/1.8.x.nix"
