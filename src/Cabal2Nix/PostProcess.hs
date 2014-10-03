@@ -33,6 +33,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":"makeWrapper":buildTools }
   | pname == "ghc-parser"       = deriv { buildTools = "cpphs":"happy":buildTools, phaseOverrides = ghcParserPatchPhase }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
+  | pname == "ghc-parser"       = deriv { buildTools = "happy":"cpphs":buildTools }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"lsof":"openssh":"which":"bup":"perl":buildTools }
   | pname == "github-backup"    = deriv { buildTools = "git":buildTools }
