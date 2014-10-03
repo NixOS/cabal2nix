@@ -3,7 +3,7 @@
 { cabal2nixSrc ? { outPath = ./.; revCount = 0; gitTag = "dirty"; }
 , releaseBuild ? false
 , supportedPlatforms ? if releaseBuild then ["i686-linux" "x86_64-linux" "x86_64-darwin"] else ["x86_64-linux"]
-, supportedCompilers ? if releaseBuild then ["ghc783"] else ["ghc6104" "ghc6123" "ghc704" "ghc722" "ghc742" "ghc763" "ghc783" "ghcHEAD"]
+, supportedCompilers ? if releaseBuild then ["ghc783"] else ["ghc704" "ghc722" "ghc742" "ghc763" "ghc783" "ghcHEAD"]
 }:
 
 let
@@ -14,6 +14,9 @@ in
     let
       pkgs = import <nixpkgs> { inherit system; };
       haskellPackages = pkgs.lib.getAttrFromPath ["haskellPackages_${ghcVer}"] pkgs;
+      nativeCabal = pkgs.stdenv.lib.versionOlder "7.8" haskellPackages.ghc.version;
+      Cabal = if nativeCabal then null else haskellPackages.Cabal_1_18_1_3;
+      hackageDb = haskellPackages.hackageDb.override { Cabal = Cabal; };
     in
     haskellPackages.cabal.mkDerivation (self: {
       pname = "cabal2nix";
@@ -23,7 +26,7 @@ in
       isExecutable = true;
       buildDepends = with haskellPackages; [ Cabal filepath hackageDb mtl regexPosix transformers ];
       testDepends = with haskellPackages; [ doctest ];
-      doCheck = self.stdenv.lib.versionOlder "7.6" self.ghc.version;
+      doCheck = nativeCabal;
       meta = {
         homepage = "http://github.com/NixOS/cabal2nix";
         description = "Convert Cabal files into Nix build instructions";
