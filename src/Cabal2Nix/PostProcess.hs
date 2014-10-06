@@ -251,7 +251,7 @@ markdownUnlitNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.vers
 doctestNoHaddock = markdownUnlitNoHaddock
 
 cabal2nixDoCheckHook :: String
-cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.6\" self.ghc.version;"
+cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
 
 cookieDoCheckHook :: String
 cookieDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
