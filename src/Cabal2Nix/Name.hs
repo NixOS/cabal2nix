@@ -73,6 +73,7 @@ libNixName "pangocairo"                         = return "pango"
 libNixName "pcre"                               = return "pcre"
 libNixName "png"                                = return "libpng"
 libNixName "poppler-glib"                       = return "popplerGlib"
+libNixName "portaudio-2.0"                      = return "portaudio"
 libNixName "pq"                                 = return "postgresql"
 libNixName "pthread"                            = []
 libNixName "sdl2"                               = return "SDL2"
