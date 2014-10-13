@@ -11,6 +11,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "git-annex"          = [enable "Assistant" , enable "Production"]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "hslua"              = [enable "system-lua"]
+ | name == "hxt"                = [enable "network-uri"]
  | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "pandoc"             = [enable "https", enable "make-pandoc-man-pages"]
