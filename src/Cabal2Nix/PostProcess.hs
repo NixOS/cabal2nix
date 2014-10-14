@@ -117,6 +117,7 @@ postProcess deriv@(MkDerivation {..})
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
                                         }
   | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
+  | pname == "yi"               = deriv { runHaddock = True, phaseOverrides = yiPhases, buildTools = "makeWrapper":buildTools }
   | otherwise                   = deriv
 
 cudaConfigurePhase :: String
@@ -203,6 +204,17 @@ xmonadPostInstall = unlines
   , "  # Patch to make xmonad use XMONAD_{GHC,XMESSAGE} (if available)."
   , "  ./xmonad_ghc_var_0.11.patch"
   , "];"
+  ]
+
+yiFixHaddock :: String
+yiFixHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.8\";"
+
+yiPhases :: String
+yiPhases = unlines
+  [ yiFixHaddock
+  , "postInstall = ''"
+  , "  wrapProgram $out/bin/yi --suffix GHC_PACKAGE_PATH : $out/lib/ghc-${self.ghc.version}/package.conf.d/yi-$version.installedconf:$GHC_PACKAGE_PATH"
+  , "'';"
   ]
 
 gitAnnexOverrides :: String
