@@ -108,6 +108,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
+  | pname == "vector"           = deriv { configureFlags = "${self.stdenv.lib.optionalString self.stdenv.isi686 \"--ghc-options=-msse2\"}":configureFlags }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "X11" && version >= Version [1,6] []
