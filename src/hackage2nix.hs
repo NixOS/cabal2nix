@@ -173,15 +173,13 @@ buildPackageSet :: Compile ()
 buildPackageSet = do
   mapM_ registerPackage corePackages
   mapM_ (addPackage . fromJust . simpleParse)
-    [ "network < 2.5"           -- required because of hslogger
+    [
+    -- commit te specific packages
     -- here comes the actual payload
-    , "cabal2nix"
-    , "hledger"
+      "hledger"
     , "hledger-web"
-    , "idris"
-    , "Elm"
     , "Agda"
-    , "git-annex"
+    -- , "git-annex"
     ]
 
   State pkgDb <- get
