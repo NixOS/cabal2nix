@@ -101,7 +101,7 @@ main = execParser mainOptions >>= runCompiler buildPackageSet
                       (  long "compiler"
                       <> help "identifier of the compiler"
                       <> metavar "COMPILER-ID"
-                      <> value (fromJust (simpleParse "ghc-7.8.2"))
+                      <> value (fromJust (simpleParse "ghc-7.8.3"))
                       <> showDefaultWith display
                       )
 
