@@ -107,7 +107,7 @@ Executable hackage2nix
                         mtl, containers, directory, filepath, hackage-db, optparse-applicative >= 0.10,
                         IfElse, deepseq
   Extensions:           PatternGuards, RecordWildCards, CPP
-  Ghc-Options:          -Wall
+  Ghc-Options:          -Wall -O2 -funbox-strict-fields -threaded -with-rtsopts=-N
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
