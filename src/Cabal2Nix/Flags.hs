@@ -10,6 +10,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "folds"              = [disable "test-hlint"]
  | name == "git-annex"          = [enable "Assistant" , enable "Production"]
  | name == "haskeline"          = [enable "terminfo"]
+ | name == "haste-compiler"     = [enable "portable"]
  | name == "hslua"              = [enable "system-lua"]
  | name == "hxt"                = [enable "network-uri"]
  | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
