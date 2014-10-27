@@ -57,6 +57,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "hlibgit2"         = deriv { testDepends = "git":testDepends }
   | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = "liblapack":"blas": filter (/= "lapack") extraLibs }
+  | pname == "hmatrix-special"  = deriv { extraLibs = "gsl":extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
   | pname == "hsyslog"          = deriv { phaseOverrides = hsyslogNoHaddock }
