@@ -13,7 +13,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "haste-compiler"     = [enable "portable"]
  | name == "hslua"              = [enable "system-lua"]
  | name == "hxt"                = [enable "network-uri"]
- | name == "idris"              = [enable "llvm", enable "gmp", enable "ffi"]
+ | name == "idris"              = [enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "pandoc"             = [enable "https", enable "make-pandoc-man-pages"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
