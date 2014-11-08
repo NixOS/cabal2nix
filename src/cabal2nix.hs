@@ -91,7 +91,11 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   pkg <- getPackage (optHackageDb cfg) $ Source (head args) (optRevision cfg) (optSha256 cfg)
 
-  let deriv  = (cabal2nix $ cabal pkg) { src = source pkg, runHaddock = optHaddock cfg, jailbreak = optJailbreak cfg }
+  let deriv  = (cabal2nix $ cabal pkg) { src = source pkg
+                                       , runHaddock = optHaddock cfg
+                                       , jailbreak = optJailbreak cfg
+                                       , hyperlinkSource = optHyperlinkSource cfg
+                                       }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = optMaintainer cfg
                                      , platforms   = optPlatform cfg
