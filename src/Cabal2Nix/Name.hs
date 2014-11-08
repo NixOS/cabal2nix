@@ -81,6 +81,7 @@ libNixName "sndfile"                            = return "libsndfile"
 libNixName "sqlite3"                            = return "sqlite"
 libNixName "ssl"                                = return "openssl"
 libNixName "stdc++"                             = []  -- in stdenv
+libNixName "systemd-journal"                    = return "systemd"
 libNixName "webkit-1.0"                         = return "webkit"
 libNixName "X11"                                = return "libX11"
 libNixName "Xext"                               = return "libXext"
