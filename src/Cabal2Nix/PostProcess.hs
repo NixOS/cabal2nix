@@ -87,6 +87,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "pcap"             = deriv { extraLibs = "libpcap":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
   | pname == "poppler"          = deriv { extraLibs = "libc":extraLibs }
+  | pname == "purescript"       = deriv { testDepends = "nodejs":testDepends }
   | pname == "QuickCheck" && version >= Version [2,7,3] []
                                 = deriv { runHaddock = True, phaseOverrides = quickCheckNoHaddock }
   | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
