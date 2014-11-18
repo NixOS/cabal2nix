@@ -4,7 +4,7 @@ How to maintain Haskell Packages in Nix
 ## Overview over the tool-chain
 
 There are two utilities, `cabal2nix` and `hackage4nix`, that automate
-maintenance to a large extend. We intend to merge them into one program,
+maintenance to a large extent. We intend to merge them into one program,
 eventually, but the necessary re-factoring hasn't been done yet since
 this is not a high priority.
 
