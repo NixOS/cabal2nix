@@ -48,12 +48,12 @@ fetch :: forall a. (String -> MaybeT IO a)      -- ^ This function is passed the
 fetch f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, "zip")
-    , (False, "url")
-    , (True, "git")
-    , (True, "hg")
-    , (True, "svn")
-    , (True, "bzr")
+    [ (False, "zip", [])
+    , (False, "url", [])
+    , (True, "git", ["--fetch-submodules"])
+    , (True, "hg", [])
+    , (True, "svn", [])
+    , (True, "bzr", [])
     ]
 
   -- | Remove '/' from the end of the path. Nix doesn't accept paths that
@@ -74,15 +74,15 @@ fetch f = runMaybeT . fetchers where
   localArchive :: FilePath -> MaybeT IO (DerivationSource, a)
   localArchive path = do
     absolutePath <- liftIO $ canonicalizePath path
-    unpacked <- snd <$> fetchWith (False, "zip") (Source ("file://" ++ absolutePath) "" Nothing)
+    unpacked <- snd <$> fetchWith (False, "zip", []) (Source ("file://" ++ absolutePath) "" Nothing)
     process (DerivationSource "" absolutePath "" "", unpacked)
 
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
   process (derivSource, file) = (,) derivSource <$> f file
 
 -- | Like 'fetch', but allows to specify which script to use.
-fetchWith :: (Bool, String) -> Source -> MaybeT IO (DerivationSource, FilePath)
-fetchWith (supportsRev, kind) source = do
+fetchWith :: (Bool, String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
+fetchWith (supportsRev, kind, addArgs) source = do
   unless ((sourceRevision source /= "") || isNothing (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
@@ -106,7 +106,7 @@ fetchWith (supportsRev, kind) source = do
    script = "nix-prefetch-" ++ kind
 
    args :: [String]
-   args = sourceUrl source : [ sourceRevision source | supportsRev ] ++ maybeToList (sourceHash source)
+   args = addArgs ++ sourceUrl source : [ sourceRevision source | supportsRev ] ++ maybeToList (sourceHash source)
 
    processOutputWithRev :: [String] -> IO (DerivationSource, FilePath)
    processOutputWithRev [rev,hash,path] = return (DerivationSource kind (sourceUrl source) (extractRevision rev) hash, path)

@@ -83,7 +83,7 @@ sourceFromHackage optHash pkgId = do
 
   -- Use the cached hash (either from cache file or given on cmdline via sha256 opt)
   -- if available, otherwise download from hackage to compute hash.
-  maybeHash <- runMaybeT $ cachedHash <|> derivHash . fst <$> fetchWith (False, "url") (Source url "" Nothing)
+  maybeHash <- runMaybeT $ cachedHash <|> derivHash . fst <$> fetchWith (False, "url", []) (Source url "" Nothing)
   case maybeHash of
     Just hash ->
       -- We need to force the hash here. If we didn't do this, then when reading the
