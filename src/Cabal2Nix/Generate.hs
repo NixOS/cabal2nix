@@ -17,7 +17,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
   , src            = error "cabal2nix left the src field undefined"
-  , isLibrary      = isJust (Cabal.library tpkg)
+  , isLibrary      = maybe False Cabal.libExposed (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
   , extraFunctionArgs = []
   , buildDepends   = map unDep deps
