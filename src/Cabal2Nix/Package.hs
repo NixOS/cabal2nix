@@ -26,6 +26,7 @@ data Package = Package
   { source :: DerivationSource
   , cabal :: Cabal.GenericPackageDescription
   }
+  deriving (Show)
 
 getPackage :: Maybe String -> Source -> IO Package
 getPackage optHackageDB source = do

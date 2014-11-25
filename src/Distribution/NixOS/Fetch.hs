@@ -23,7 +23,7 @@ import System.Process
 data Source = Source
   { sourceUrl       :: String       -- ^ URL to fetch from.
   , sourceRevision  :: String       -- ^ Revision to use. For protocols where this doesn't make sense (such as HTTP), this
-                                   --   should be the empty string.
+                                    --   should be the empty string.
   , sourceHash      :: Maybe String -- ^ The expected hash of the source, if available.
   } deriving (Show, Eq, Ord)
 
