@@ -18,6 +18,7 @@ Description:
   .
   > Usage: cabal2nix [options] url-to-cabal-file-or-repo
   >   -h             --help                   show this help text
+  >   -v             --version                print version
   >                  --hackage-db=FILEPATH    path to the local hackage db in tar format
   >                  --sha256=HASH            sha256 hash of source tarball
   >   -m MAINTAINER  --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
@@ -58,7 +59,7 @@ Executable cabal2nix
   main-is:              cabal2nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
-                        filepath, directory, process, hackage-db, transformers
+                        filepath, directory, process, hackage-db, transformers, data-default-class
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
@@ -69,6 +70,7 @@ Executable cabal2nix
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
                         Cabal2Nix.PostProcess
+                        Cabal2Nix.Version
                         Distribution.NixOS.Fetch
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
