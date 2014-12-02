@@ -3,7 +3,8 @@ module Main ( main ) where
 import Cabal2Nix.Generate ( cabal2nix )
 import Cabal2Nix.Normalize ( normalize )
 import Cabal2Nix.Package
-import Distribution.NixOS.Derivation.Cabal
+import Cabal2Nix.Version
+import Distribution.NixOS.Derivation.Cabal hiding ( version )
 import Distribution.NixOS.Fetch
 
 import Control.Exception ( bracket )
@@ -47,6 +48,7 @@ defaultConfiguration = Configuration
 options :: [OptDescr (Configuration -> Configuration)]
 options =
   [ Option "h" ["help"]       (NoArg (\o -> o { optPrintHelp = True }))                                  "show this help text"
+  , Option "v" ["version"]    (NoArg (\o -> o { optPrintVersion = True }))                               "print version"
   , Option ""  ["hackage-db"] (ReqArg (\x o -> o { optHackageDb = Just x }) "FILEPATH")                  "path to the local hackage db in tar format"
   , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                         "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
@@ -87,6 +89,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                   (_,_,errs) -> cmdlineError (concatMap ("*** "++) errs)
 
   when (optPrintHelp cfg) (putStr usage >> exitSuccess)
+  when (optPrintVersion cfg) (putStrLn version >> exitSuccess)
   when (length args /= 1) (cmdlineError "*** exactly one url-to-cabal-file must be specified\n")
 
   pkg <- getPackage (optHackageDb cfg) $ Source (head args) (optRevision cfg) (optSha256 cfg)
