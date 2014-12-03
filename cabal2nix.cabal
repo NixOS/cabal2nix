@@ -59,7 +59,7 @@ Executable cabal2nix
   main-is:              cabal2nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
-                        filepath, directory, process, hackage-db, transformers
+                        filepath, directory, process, hackage-db, transformers, data-default-class
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages

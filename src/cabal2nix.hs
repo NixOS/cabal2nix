@@ -9,6 +9,7 @@ import Distribution.NixOS.Fetch
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )
+import Data.Default.Class
 import Distribution.Text ( disp )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
@@ -30,20 +31,20 @@ data Configuration = Configuration
   }
   deriving (Show)
 
-defaultConfiguration :: Configuration
-defaultConfiguration = Configuration
-  { optPrintHelp = False
-  , optPrintVersion = False
-  , optSha256 = Nothing
-  , optMaintainer = []
-  , optPlatform = []
-  , optHaddock = True
-  , optDoCheck = True
-  , optJailbreak = False
-  , optRevision = ""
-  , optHyperlinkSource = True
-  , optHackageDb = Nothing
-  }
+instance Default Configuration where
+  def = Configuration
+    { optPrintHelp = False
+    , optPrintVersion = False
+    , optSha256 = Nothing
+    , optMaintainer = []
+    , optPlatform = []
+    , optHaddock = True
+    , optDoCheck = True
+    , optJailbreak = False
+    , optRevision = ""
+    , optHyperlinkSource = True
+    , optHackageDb = Nothing
+    }
 
 options :: [OptDescr (Configuration -> Configuration)]
 options =
@@ -85,7 +86,7 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   args' <- getArgs
   (cfg,args) <- case getOpt Permute options args' of
-                  (o,n,[]  ) -> return (foldl (flip ($)) defaultConfiguration o,n)
+                  (o,n,[]  ) -> return (foldl (flip ($)) def o,n)
                   (_,_,errs) -> cmdlineError (concatMap ("*** "++) errs)
 
   when (optPrintHelp cfg) (putStr usage >> exitSuccess)
