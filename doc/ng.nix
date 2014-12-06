@@ -7,15 +7,16 @@ let
   pkgs = import <nixpkgs> {};
   lib = pkgs.lib;
 
-  inherit (lib) callPackageWith;
+  inherit (pkgs) newScope;
 
-  fix = f: let tmp = rec { x = f x; }; in tmp.x;
+  fix = f: let x = f x // { __unfix__ = f; }; in x;
 
   extend = rattrs: f: self: let super = rattrs self; in super // f self super;
 
   hpkgs = self:
     let
-      simplePackage = { name, buildInputs ? [], override, overrideDerivation, deepOverride }: pkgs.stdenv.mkDerivation {
+
+      _buildCabal = { name, buildInputs ? [], ... }: pkgs.stdenv.mkDerivation {
         inherit name buildInputs;
         phases = ["installPhase"];
         installPhase = ''
@@ -26,20 +27,26 @@ let
         '';
       };
 
-      package = f: args: simplePackage (callPackageWith self f args);
+      buildCabal = pkg: pkg; #{ name, buildInputs ? [], ... }: { inherit name buildInputs; };
+
+      definePackage = pkg: overrides: buildCabal (newScope (fix (extend (self.__unfix__) overrides)) pkg {});
+
     in
     {
-      hsemail = package ({ mtl, parsec } : { name = "hsemail-0"; buildInputs = [mtl parsec]; }) { mtl = self.mtl2; };
-      mtl1 = package ({ transformers } : { name = "mtl-1"; buildInputs = [transformers]; }) {};
-      mtl2 = package ({ transformers } : { name = "mtl-2"; buildInputs = [transformers]; }) {};
-      parsec = package ({ mtl } : { name = "parsec-0"; buildInputs = [mtl]; }) {};
-      transformers = package ({} : { name = "transformers-0"; }) {};
+      hsemail = definePackage ({ mtl, parsec } : { name = "hsemail-0"; buildInputs = [mtl parsec]; }) (self: super: {});
+      mtl1 = definePackage ({ transformers } : { name = "mtl-1"; buildInputs = [transformers]; }) (self: super: {});
+      mtl2 = definePackage ({ transformers } : { name = "mtl-2"; buildInputs = [transformers]; }) (self: super: {});
+      mtl3 = definePackage ({ transformers } : { name = "mtl-3"; buildInputs = [transformers]; }) (self: super: {});
+      mtl = self.mtl1;
+      parsec = definePackage ({ mtl } : { name = "parsec-0"; buildInputs = [mtl]; }) (self: super: {});
+      transformers = definePackage ({} : { name = "transformers-0"; }) (self: super: {});
     };
 
-  defaultConfiguration = self: super: { mtl = self.mtl1; };
+  defaultConfiguration = self: super: { };
 
   otherConfiguration = self: super: { };
 
+  haskellPackages = fix (extend (extend hpkgs defaultConfiguration) otherConfiguration);
 in
 
-  fix (extend (extend hpkgs defaultConfiguration) otherConfiguration)
+  haskellPackages # .hsemail.deepOverride { mtl = haskellPackages.mtl2; }
