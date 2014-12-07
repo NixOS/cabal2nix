@@ -39,7 +39,9 @@ Description:
    quickly, but the inital cost of reading @00-index.tar@ is fairly
    high.
    .
-   This package is known to work on Linux and Mac OS X, but not Windows.
+   This package is known to work on Linux and Mac OS X, but it's
+   probably not going to work on Windows (because no-one tested it, as
+   far as I know).
 
 Source-Repository head
   Type:                 git
