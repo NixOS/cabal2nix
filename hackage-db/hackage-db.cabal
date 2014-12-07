@@ -49,5 +49,6 @@ Library
   Build-Depends:        base >= 3 && < 5, tar >= 0.4, Cabal, containers,
                         directory, filepath, bytestring, utf8-string
   hs-source-dirs:       src
-  Ghc-Options:          -Wall
-  Exposed-Modules:      Distribution.Hackage.DB
+  Exposed-Modules:      Distribution.Hackage.DB.Unparsed
+                        Distribution.Hackage.DB.Parsed
+                        Distribution.Hackage.DB
