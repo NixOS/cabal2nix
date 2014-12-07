@@ -71,14 +71,16 @@ main = execParser mainOptions >>= runCompiler buildPackageSet
       )
 
 nixAttr :: String -> Version -> String
-nixAttr name ver = toNixName name ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
+nixAttr name ver = toNixName name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
 
 buildPackageSet :: Compile ()
 buildPackageSet = do
   db <- asks _hackage
   pkgs <- liftIO $ runParIO $ parMapM generatePackage (Map.toList db)
   forM_ pkgs $ \(name, version, nixExpr) ->
-    liftIO $ print $ hang (text (nixAttr name version) <+> equals) 2 (disp nixExpr) <> semi
+    liftIO $ print $ hang (text (nixAttr name version) <+> equals <+> text "definePackage") 2 (parens (disp nixExpr))
+    <> text " (self: super: {})"
+    <> semi
 
 generatePackage :: (String, Map Version GenericPackageDescription) -> ParIO (String,Version,Derivation)
 generatePackage (name, versions) = do
