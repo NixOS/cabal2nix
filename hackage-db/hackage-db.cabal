@@ -1,5 +1,5 @@
 Name:                   hackage-db
-Version:                1.9
+Version:                1.9.1
 Copyright:              Peter Simons
 License:                BSD3
 License-File:           LICENSE
@@ -53,4 +53,5 @@ Library
   hs-source-dirs:       src
   Exposed-Modules:      Distribution.Hackage.DB.Unparsed
                         Distribution.Hackage.DB.Parsed
+                        Distribution.Hackage.DB.Path
                         Distribution.Hackage.DB
