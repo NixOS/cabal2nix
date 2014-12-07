@@ -105,9 +105,9 @@ Executable hackage2nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.16,
                         mtl, containers, directory, filepath, hackage-db, optparse-applicative >= 0.10,
-                        IfElse, deepseq
+                        IfElse, transformers, process
+  Ghc-Options:          -O -threaded -rtsopts -with-rtsopts=-N
   Extensions:           PatternGuards, RecordWildCards, CPP
-  Ghc-Options:          -Wall -O2 -funbox-strict-fields -threaded -with-rtsopts=-N
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate

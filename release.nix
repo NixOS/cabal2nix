@@ -24,7 +24,10 @@ in
       version = cabal2nixSrc.gitTag;
       isLibrary = false;
       isExecutable = true;
-      buildDepends = with haskellPackages; [ Cabal filepath hackageDb mtl regexPosix transformers IfElse optparseApplicative ];
+      buildDepends = with haskellPackages; [
+        Cabal filepath hackage-db IfElse mtl optparse-applicative
+        regex-posix transformers
+      ];
       testDepends = with haskellPackages; [ doctest ];
       doCheck = nativeCabal;
       meta = {
