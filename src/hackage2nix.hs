@@ -6,6 +6,8 @@ import Cabal2Nix.Generate
 import Cabal2Nix.Name
 import Cabal2Nix.Package
 import Control.Monad.IfElse
+import Control.Monad.Par.Combinator
+import Control.Monad.Par.IO
 import Control.Monad.Reader
 import Control.Monad.State.Strict hiding ( State )
 import qualified Data.Map as Map
@@ -74,10 +76,13 @@ nixAttr name ver = toNixName name ++ "_" ++ [ if c == '.' then '_' else c | c <-
 buildPackageSet :: Compile ()
 buildPackageSet = do
   db <- asks _hackage
-  forM_ (Map.toList db) $ \(name, versions) -> do
-    let latestVersion = Set.findMax (Map.keysSet versions)
-        pkgDescription = (Map.!) versions latestVersion
-    srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display latestVersion)
-    let nixExpr = (cabal2nix pkgDescription) { src = srcSpec }
-    liftIO $ print $ hang (text (nixAttr name latestVersion) <+> equals) 2 (disp nixExpr) <> semi
-    fail "yo"
+  pkgs <- liftIO $ runParIO $ parMapM generatePackage (Map.toList db)
+  forM_ pkgs $ \(name, version, nixExpr) ->
+    liftIO $ print $ hang (text (nixAttr name version) <+> equals) 2 (disp nixExpr) <> semi
+
+generatePackage :: (String, Map Version GenericPackageDescription) -> ParIO (String,Version,Derivation)
+generatePackage (name, versions) = do
+  let latestVersion = Set.findMax (Map.keysSet versions)
+      pkgDescription = (Map.!) versions latestVersion
+  srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display latestVersion)
+  return (name, latestVersion, (cabal2nix pkgDescription) { src = srcSpec })
