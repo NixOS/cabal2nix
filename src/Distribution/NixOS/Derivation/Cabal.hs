@@ -20,20 +20,21 @@ module Distribution.NixOS.Derivation.Cabal
   )
   where
 
+import Control.DeepSeq
+import Data.Char
+import Data.Function
+import Data.List
+import Data.Version
 import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.Fetch
 import Distribution.NixOS.PrettyPrinting
 import Distribution.NixOS.Regex hiding ( empty )
 import Distribution.Package
-import Distribution.Text
 #ifdef __HADDOCK__
 import Distribution.PackageDescription ( PackageDescription )
 #endif
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
-import Data.Version
-import Data.List
-import Data.Char
-import Data.Function
+import Distribution.Text
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -72,6 +73,17 @@ instance Text Derivation where
 
 instance Package Derivation where
   packageId deriv = PackageIdentifier (PackageName (pname deriv)) (version deriv)
+
+instance NFData Derivation where
+  rnf (MkDerivation a b c d e f g h i j k l m n o p q r t u v) =
+    a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` g `deepseq`
+    h `deepseq` i `deepseq` j `deepseq` k `deepseq` l `deepseq` m `deepseqFlagAssignment` n `deepseq`
+    o `deepseq` p `deepseq` q `deepseq` r `deepseq` t `deepseq` u `deepseq` v `deepseq` ()
+
+-- FlagName has no NFData instance in old version of Cabal.
+deepseqFlagAssignment :: FlagAssignment -> a -> a
+deepseqFlagAssignment [] b = b
+deepseqFlagAssignment ((FlagName n, v):as) b = n `deepseq` v `deepseq` as `deepseqFlagAssignment` b
 
 renderDerivation :: Derivation -> Doc
 renderDerivation deriv =

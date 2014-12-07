@@ -17,8 +17,9 @@ module Distribution.NixOS.Derivation.Meta
   )
   where
 
-import Distribution.NixOS.PrettyPrinting
+import Control.DeepSeq
 import Distribution.NixOS.Derivation.License
+import Distribution.NixOS.PrettyPrinting
 import Distribution.Text
 
 -- | A representation of the @meta@ section used in Nix expressions.
@@ -54,6 +55,9 @@ data Meta = Meta
 instance Text Meta where
   disp  = renderMeta
   parse = error "parsing Distribution.NixOS.Derivation.Cabal.Meta is not supported yet"
+
+instance NFData Meta where
+  rnf (Meta a b c d e f) = a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` ()
 
 renderMeta :: Meta -> Doc
 renderMeta meta = vcat

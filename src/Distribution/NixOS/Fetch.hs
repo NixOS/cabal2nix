@@ -9,6 +9,7 @@ module Distribution.NixOS.Fetch
   ) where
 
 import Control.Applicative
+import Control.DeepSeq
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
@@ -35,6 +36,9 @@ data DerivationSource = DerivationSource
   , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
   , derivHash     :: String -- ^ The hash of the source.
   } deriving (Show, Eq, Ord)
+
+instance NFData DerivationSource where
+  rnf (DerivationSource a b c d) = a `deepseq` b `deepseq` c `deepseq` d `deepseq` ()
 
 fromDerivationSource :: DerivationSource -> Source
 fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision $ Just derivHash
