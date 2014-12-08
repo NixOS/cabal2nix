@@ -1,5 +1,7 @@
 {-# LANGUAGE Rank2Types #-}
 
+-- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >hackage-packages.nix
+
 module Main ( main ) where
 
 import Cabal2Nix.Generate
@@ -13,12 +15,14 @@ import Control.Monad.State.Strict hiding ( State )
 import qualified Data.Map as Map
 import Data.Monoid
 import qualified Data.Set as Set
-import Distribution.Hackage.DB
+import Distribution.Hackage.DB ( Hackage, readHackage, GenericPackageDescription )
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.PrettyPrinting hiding ( (<>) )
 import Distribution.Text
 import Options.Applicative
 import System.IO
+
+type Map = Map.Map
 
 data Options = Options
   { verbose :: Bool
@@ -31,7 +35,7 @@ data Config = Config
   }
   deriving (Show)
 
-type Compile a = MonadIO m => StateT () (ReaderT Config m) a
+type Compile a = (Functor m, MonadIO m) => StateT () (ReaderT Config m) a
 
 yell :: String -> Compile ()
 yell = liftIO . hPutStrLn stderr
@@ -41,7 +45,7 @@ msgInfo = whenM (asks _verbose) . yell . showString "INFO: "
 msgNote = yell . showString "NOTE: "
 msgWarn = yell . showString "WARN: "
 
-runCompiler :: MonadIO m => Compile a -> Options -> m a
+runCompiler :: (Functor m, MonadIO m) => Compile a -> Options -> m a
 runCompiler f opts = do
   db <- liftIO readHackage
   let cfg = Config
@@ -71,16 +75,21 @@ main = execParser mainOptions >>= runCompiler buildPackageSet
       )
 
 nixAttr :: String -> Version -> String
-nixAttr name ver = toNixName name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
+nixAttr name ver = show $ toNixName name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
 
 buildPackageSet :: Compile ()
 buildPackageSet = do
-  db <- asks _hackage
+  db <- fmap (\db -> foldr Map.delete db ["smtLib", "testPkg"]) (asks _hackage)
   pkgs <- liftIO $ runParIO $ parMapM generatePackage (Map.toList db)
-  forM_ pkgs $ \(name, version, nixExpr) ->
-    liftIO $ print $ hang (text (nixAttr name version) <+> equals <+> text "definePackage") 2 (parens (disp nixExpr))
-    <> text " (self: super: {})"
-    <> semi
+  liftIO $ putStrLn "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
+  liftIO $ putStrLn ""
+  liftIO $ putStrLn "{ stdenv, ghc, pkgs, definePackage }:"
+  liftIO $ putStrLn ""
+  liftIO $ putStrLn "{"
+  forM_ pkgs $ \(name, version, nixExpr) -> do
+    liftIO $ print $ nest 2 $ hang (text (nixAttr name version) <+> equals <+> text "definePackage {}") 2 (parens (disp nixExpr)) <> semi
+    liftIO $ putStrLn ""
+  liftIO $ putStrLn "}"
 
 generatePackage :: (String, Map Version GenericPackageDescription) -> ParIO (String,Version,Derivation)
 generatePackage (name, versions) = do

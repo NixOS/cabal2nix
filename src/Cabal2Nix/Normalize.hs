@@ -65,6 +65,6 @@ normalizeMaintainers maints = normalizeList
   [ (m `regsubmatch` "^([^.].*\\.)?([^.]+)$") !! 1 | m <- maints ]
 
 normalizePlatforms :: [String] -> [String]
-normalizePlatforms [] = ["self.ghc.meta.platforms"]
+normalizePlatforms [] = ["ghc.meta.platforms"]
 normalizePlatforms plats = normalizeList
-  [ if '.' `elem` p then p else "self.stdenv.lib.platforms." ++ p | p <- plats ]
+  [ if '.' `elem` p then p else "stdenv.lib.platforms." ++ p | p <- plats ]

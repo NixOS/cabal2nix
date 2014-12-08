@@ -87,8 +87,8 @@ deepseqFlagAssignment ((FlagName n, v):as) b = n `deepseq` v `deepseq` as `deeps
 
 renderDerivation :: Derivation -> Doc
 renderDerivation deriv =
-  funargs (map text inputs) $$ vcat
-  [ lbrace
+  funargs (map text ("buildCabal":inputs)) $$ vcat
+  [ text "buildCabal" <+> lbrace
   , nest 2 $ vcat
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
@@ -113,11 +113,11 @@ renderDerivation deriv =
   , rbrace
   ]
   where
-    inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
-              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
-           ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
-    renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
-                  ++ map text (configureFlags deriv)
+    inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "stdenv.") $
+             buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
+             ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
+    renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
+                    ++ map text (configureFlags deriv)
     isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl (src deriv)
     sourceAttr (DerivationSource{..})
       | isHackagePackage = attr "sha256" $ string derivHash

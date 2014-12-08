@@ -4,6 +4,7 @@ module Cabal2Nix.PostProcess ( postProcess ) where
 
 import Data.List
 import Distribution.NixOS.Derivation.Cabal
+import Distribution.Text ( display )
 
 postProcess :: Derivation -> Derivation
 postProcess deriv@(MkDerivation {..})
@@ -23,7 +24,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "cookie"           = deriv { phaseOverrides = cookieDoCheckHook }
-  | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"self.stdenv.cc":extraLibs }
+  | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"stdenv.cc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
   | pname == "doctest"          = deriv { runHaddock = True, phaseOverrides = doctestNoHaddock }
@@ -31,7 +32,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
   | pname == "either"           = deriv { runHaddock = True, phaseOverrides = eitherNoHaddock }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall, buildTools = "emacs":"makeWrapper":buildTools }
+  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version, buildTools = "emacs":"makeWrapper":buildTools }
   | pname == "ghc-parser"       = deriv { buildTools = "cpphs":"happy":buildTools, phaseOverrides = ghcParserPatchPhase }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
@@ -114,8 +115,8 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { runHaddock = True, phaseOverrides = transformersNoHaddock }
   | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
-  | pname == "vector"           = deriv { configureFlags = "${self.stdenv.lib.optionalString self.stdenv.isi686 \"--ghc-options=-msse2\"}":configureFlags }
-  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall }
+  | pname == "vector"           = deriv { configureFlags = "${stdenv.lib.optionalString stdenv.isi686 \"--ghc-options=-msse2\"}":configureFlags }
+  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall version }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "X11" && version >= Version [1,6] []
                                 = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
@@ -135,7 +136,7 @@ cudaConfigurePhase = unlines
   , "# library. GHC's linker fails if the wrong version is found first."
   , "# We solve this by eliminating lib64 from the path on 32-bit"
   , "# platforms and putting lib64 first on 64-bit platforms."
-  , "libPaths = if self.stdenv.is64bit then \"lib64 lib\" else \"lib\";"
+  , "libPaths = if stdenv.is64bit then \"lib64 lib\" else \"lib\";"
   , "configurePhase = ''"
   , "  for i in Setup.hs Setup.lhs; do"
   , "    test -f $i && ghc --make $i"
@@ -154,9 +155,9 @@ cudaConfigurePhase = unlines
   , "'';"
   ]
 
-ghcModPostInstall :: String
-ghcModPostInstall = unlines
-  [ "configureFlags = \"--datasubdir=${self.pname}-${self.version}\";"
+ghcModPostInstall :: String -> Version -> String
+ghcModPostInstall pname version = unlines
+  [ "configureFlags = \"--datasubdir=" ++ pname ++ "-" ++ display version ++ "\";"
   , "postInstall = ''"
   , "  cd $out/share/$pname-$version"
   , "  make"
@@ -165,16 +166,16 @@ ghcModPostInstall = unlines
   , "  ensureDir \"$out/share/emacs\""
   , "  mv $pname-$version emacs/site-lisp"
   , "  wrapProgram $out/bin/ghc-mod --add-flags \\"
-  , "    \"\\$(${self.ghc.GHCGetPackages} ${self.ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
+  , "    \"\\$(${ghc.GHCGetPackages} ${ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
   , "  wrapProgram $out/bin/ghc-modi --add-flags \\"
-  , "    \"\\$(${self.ghc.GHCGetPackages} ${self.ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
+  , "    \"\\$(${ghc.GHCGetPackages} ${ghc.version} \\\"\\$(dirname \\$0)\\\" \\\"-g -package-db -g\\\")\""
   , "'';"
   ]
 
-wxcPostInstall :: String
-wxcPostInstall = unlines
+wxcPostInstall :: Version -> String
+wxcPostInstall version = unlines
   [ "postInstall = ''"
-  , "  cp -v dist/build/libwxc.so.${self.version} $out/lib/libwxc.so"
+  , "  cp -v dist/build/libwxc.so." ++ display version ++ " $out/lib/libwxc.so"
   , "'';"
   ]
 
@@ -214,7 +215,7 @@ xmonadPostInstall = unlines
   ]
 
 yiFixHaddock :: String
-yiFixHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.8\";"
+yiFixHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"7.8\";"
 
 gitAnnexOverrides :: String
 gitAnnexOverrides = unlines
@@ -258,20 +259,20 @@ ncursesPatchPhase :: String
 ncursesPatchPhase = "patchPhase = \"find . -type f -exec sed -i -e 's|ncursesw/||' {} \\\\;\";"
 
 doctestNoHaddock, markdownUnlitNoHaddock :: String
-markdownUnlitNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.4\";"
+markdownUnlitNoHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"7.4\";"
 doctestNoHaddock = markdownUnlitNoHaddock
 
 cabal2nixDoCheckHook :: String
-cabal2nixDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
+cabal2nixDoCheckHook = "doCheck = stdenv.lib.versionOlder \"7.8\" ghc.version;"
 
 cookieDoCheckHook :: String
-cookieDoCheckHook = "doCheck = self.stdenv.lib.versionOlder \"7.8\" self.ghc.version;"
+cookieDoCheckHook = "doCheck = stdenv.lib.versionOlder \"7.8\" ghc.version;"
 
 eitherNoHaddock :: String
-eitherNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"7.6\";"
+eitherNoHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"7.6\";"
 
 httpNoHaddock, quickCheckNoHaddock, tarNoHaddock, transformersNoHaddock, hsyslogNoHaddock :: String
-httpNoHaddock = "noHaddock = self.stdenv.lib.versionOlder self.ghc.version \"6.11\";"
+httpNoHaddock = "noHaddock = stdenv.lib.versionOlder ghc.version \"6.11\";"
 quickCheckNoHaddock = httpNoHaddock
 tarNoHaddock = httpNoHaddock
 transformersNoHaddock = httpNoHaddock
@@ -308,7 +309,7 @@ mimeMailConfigureFlags = unlines
   ]
 
 sybDoCheck, splitDoCheck :: String
-sybDoCheck = "doCheck = self.stdenv.lib.versionOlder self.ghc.version \"7.9\";"
+sybDoCheck = "doCheck = stdenv.lib.versionOlder ghc.version \"7.9\";"
 splitDoCheck = sybDoCheck
 
 haddockPreCheck :: String
