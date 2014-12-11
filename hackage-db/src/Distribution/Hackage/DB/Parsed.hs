@@ -57,19 +57,20 @@ parseUnparsedHackage = Data.Map.mapWithKey parsePackages
     parsePackages :: String -> Map Version ByteString -> Map Version GenericPackageDescription
     parsePackages name = Data.Map.mapWithKey (parsePackage name)
 
--- | Parse a single Cabal file. Failure is reported with 'error'.
+-- | Convenience wrapper around 'parsePackage'' to parse a single Cabal
+-- file. Failure is reported with 'error'.
 
 parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
 parsePackage name version buf = case parsePackage' buf of
                            Right a  -> a
                            Left err -> error $ "cannot parse cabal package " ++ show name ++ "-" ++ display version ++ ": " ++ err
 
--- | Parse a single Cabal file. Failure is reported with 'fail'.
+-- | Parse a single Cabal file.
 
-parsePackage' :: Monad m => ByteString -> m GenericPackageDescription
+parsePackage' :: ByteString -> Either String GenericPackageDescription
 parsePackage' buf = case parsePackageDescription (decodeUTF8 buf) of
-                     ParseOk _ a     -> return a
-                     ParseFailed err -> fail (show err)
+                     ParseOk _ a     -> Right a
+                     ParseFailed err -> Left (show err)
   where
     decodeUTF8 :: ByteString -> String
     decodeUTF8 = toString . fromRep . BSC.unpack
