@@ -12,6 +12,7 @@
 module Distribution.Hackage.DB.Parsed
   ( Hackage, readHackage, readHackage', parseHackage
   , parseUnparsedHackage
+  , parsePackage, parsePackage'
   )
   where
 
@@ -25,9 +26,9 @@ import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text ( display )
 
--- | A 'Map' representation of the Hackage database. For sake of
--- simplicity, we use 'String' rather than 'PackageName' to represent
--- the name of a package.
+-- | A 'Map' representation of the Hackage database. Every package name
+-- maps to a non-empty set of version, and for every version there is a
+-- parsed Cabal file.
 
 type Hackage = Map String (Map Version GenericPackageDescription)
 
@@ -56,10 +57,19 @@ parseUnparsedHackage = Data.Map.mapWithKey parsePackages
     parsePackages :: String -> Map Version ByteString -> Map Version GenericPackageDescription
     parsePackages name = Data.Map.mapWithKey (parsePackage name)
 
-    parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
-    parsePackage name version buf = case parsePackageDescription (decodeUTF8 buf) of
-      ParseOk _ a     -> a
-      ParseFailed err -> error ("Hackage.DB.parseHackage: cannot parse cabal file " ++ show name ++ "-" ++ display version ++ ": " ++ show err)
+-- | Parse a single Cabal file. Failure is reported with 'error'.
 
+parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
+parsePackage name version buf = case parsePackage' buf of
+                           Right a  -> a
+                           Left err -> error $ "cannot parse cabal package " ++ show name ++ "-" ++ display version ++ ": " ++ err
+
+-- | Parse a single Cabal file. Failure is reported with 'fail'.
+
+parsePackage' :: Monad m => ByteString -> m GenericPackageDescription
+parsePackage' buf = case parsePackageDescription (decodeUTF8 buf) of
+                     ParseOk _ a     -> return a
+                     ParseFailed err -> fail (show err)
+  where
     decodeUTF8 :: ByteString -> String
     decodeUTF8 = toString . fromRep . BSC.unpack
