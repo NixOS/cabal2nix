@@ -1,5 +1,5 @@
 Name:                   cabal2nix
-Version:                1.73
+Version:                2.0
 Copyright:              Peter Simons, Andres Loeh
 License:                BSD3
 License-File:           LICENSE
@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               Convert Cabal files into Nix build instructions
 Cabal-Version:          >= 1.8
 Build-Type:             Custom
-Tested-With:            GHC >= 7.0.4 && <= 7.8.3
+Tested-With:            GHC == 7.8.3
 Data-files:             README.md
 Description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
@@ -39,8 +39,8 @@ Description:
   .
   The only required argument is the path to the cabal file. For example:
   .
-  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/1.73/cabal2nix.cabal
-  > cabal2nix cabal://cabal2nix-1.73
+  > cabal2nix http://hackage.haskell.org/packages/archive/cabal2nix/2.0/cabal2nix.cabal
+  > cabal2nix cabal://cabal2nix-2.0
   .
   If the @--sha256@ option has not been specified, cabal2nix calls
   @nix-prefetch-url@ to determine the hash automatically. This causes
@@ -103,9 +103,9 @@ Executable hackage4nix
 Executable hackage2nix
   main-is:              hackage2nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.16,
-                        mtl, containers, directory, filepath, hackage-db >= 1.11, optparse-applicative >= 0.10,
-                        IfElse, transformers, process, monad-par, monad-par-extras, deepseq
+  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
+                        filepath, directory, process, hackage-db >= 1.11, transformers, deepseq,
+                        containers, mtl, monad-par, monad-par-extras
   Ghc-Options:          -Wall -threaded -rtsopts -with-rtsopts=-N
   Extensions:           PatternGuards, RecordWildCards, CPP
   other-modules:        Cabal2Nix.CorePackages

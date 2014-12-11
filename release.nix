@@ -25,8 +25,8 @@ in
       isLibrary = false;
       isExecutable = true;
       buildDepends = with haskellPackages; [
-        Cabal filepath hackageDb IfElse mtl optparseApplicative
-        regexPosix transformers monadPar monadParExtras deepseq
+        Cabal deepseq filepath hackageDb monadPar monadParExtras mtl
+        regexPosix transformers
       ];
       testDepends = with haskellPackages; [ doctest ];
       doCheck = nativeCabal;
