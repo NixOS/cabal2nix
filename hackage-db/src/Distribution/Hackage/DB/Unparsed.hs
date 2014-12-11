@@ -20,9 +20,9 @@ import qualified Data.ByteString.Lazy.Char8 as BS8 ( readFile )
 import Data.Map
 import Data.Maybe ( fromMaybe )
 import Data.Version
+import Distribution.Hackage.DB.Path
 import Distribution.Text ( simpleParse )
-import System.Directory ( getHomeDirectory )
-import System.FilePath ( joinPath, splitDirectories )
+import System.FilePath ( splitDirectories )
 
 -- | A 'Map' representation of the Hackage database. Every package name
 -- maps to a non-empty set of version, and for every version there is a
@@ -60,12 +60,3 @@ parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
 
     pVersion :: String -> Version
     pVersion str = fromMaybe (error $ "Hackage.DB.parseHackage: cannot parse version " ++ show str) (simpleParse str)
-
--- | Determine the default path of the Hackage database, which typically
--- resides at @"$HOME\/.cabal\/packages\/hackage.haskell.org\/00-index.tar"@.
--- Running the command @"cabal update"@ will keep that file up-to-date.
-
-hackagePath :: IO FilePath
-hackagePath = do
-  homedir <- getHomeDirectory
-  return $ joinPath [homedir, ".cabal", "packages", "hackage.haskell.org", "00-index.tar"]
