@@ -16,6 +16,7 @@ fromCabalLicense (AGPL Nothing)                         = Unknown (Just "AGPL")
 fromCabalLicense (AGPL (Just (Version [3] [])))         = Known "stdenv.lib.licenses.agpl3"
 fromCabalLicense (AGPL (Just (Version [3,0] [])))       = Known "stdenv.lib.licenses.agpl3"
 fromCabalLicense (UnknownLicense "BSD2")                = Known "stdenv.lib.licenses.bsd2"
+fromCabalLicense (UnknownLicense "MPL-2.0")             = Known "stdenv.lib.licenses.mpl20"
 fromCabalLicense BSD3                                   = Known "stdenv.lib.licenses.bsd3"
 fromCabalLicense BSD4                                   = Unknown (Just "BSD4")
 fromCabalLicense MIT                                    = Known "stdenv.lib.licenses.mit"
