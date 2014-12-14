@@ -58,8 +58,8 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
     Right (tpkg, _) = finalizePackageDescription
                         (configureCabalFlags pkg)
                         (const True)
-                        (Platform I386 Linux)                   -- shouldn't be hardcoded
-                        (CompilerId GHC (Version [7,6,3] []))   -- dito
+                        (Platform X86_64 Linux)                 -- shouldn't be hardcoded
+                        (CompilerId GHC (Version [7,8,3] []))   -- dito
                         [] cabal
 
 unDep :: Cabal.Dependency -> String
