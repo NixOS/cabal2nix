@@ -61,18 +61,14 @@ instance NFData Meta where
 
 renderMeta :: Meta -> Doc
 renderMeta meta = vcat
-  [ text "meta" <+> equals <+> lbrace
-  , nest 2 $ vcat
-    [ onlyIf (homepage meta) $ attr "homepage" $ string (homepage meta)
-    , onlyIf (description meta) $ attr "description" $ string (description meta)
-    , attr "license" $ disp (license meta)
-    , onlyIf (platforms meta) $ sep
-      [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
-    , onlyIf (hydraPlatforms meta) $ sep
-      [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
-    , listattr "maintainers" (text "with self.stdenv.lib.maintainers;") (maintainers meta)
-    ]
-  , rbrace <> semi
+  [ onlyIf (not (null (homepage meta))) $ attr "homepage" $ string (homepage meta)
+  , onlyIf (not (null (description meta))) $ attr "description" $ string (description meta)
+  , attr "license" $ disp (license meta)
+  , onlyIf (not (null (platforms meta)) && platforms meta /= ["ghc.meta.platforms"]) $ sep
+    [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
+  , onlyIf (not (null (hydraPlatforms meta))) $ sep
+    [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
+  , listattr "maintainers" (text "with self.stdenv.lib.maintainers;") (maintainers meta)
   ]
 
 renderPlatformList :: [String] -> Doc

@@ -1,11 +1,15 @@
-module Cabal2Nix.Name ( toNixName, libNixName, buildToolNixName ) where
+module Cabal2Nix.Name ( toNixName, toNixName', libNixName, buildToolNixName ) where
 
 import Data.Char
 
 -- | Map Cabal names to Nix attribute names.
 toNixName :: String -> String
-toNixName []      = error "toNixName: empty string is not a valid argument"
-toNixName name    = f name
+toNixName = id
+
+-- | The old mapping function. This may be useful to generate a compatibility layer.
+toNixName' :: String -> String
+toNixName' []      = error "toNixName: empty string is not a valid argument"
+toNixName' name    = f name
   where
     f []                            = []
     f ('-':c:cs) | c `notElem` "-"  = toUpper c : f cs
@@ -124,8 +128,8 @@ libNixName x                                    = return x
 
 -- | Map build tool names to Nix attribute names.
 buildToolNixName :: String -> [String]
-buildToolNixName "cabal"                        = return "cabalInstall"
-buildToolNixName "gtk2hsC2hs"                   = return "gtk2hsBuildtools"
-buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hsBuildtools"
-buildToolNixName "gtk2hsTypeGen"                = return "gtk2hsBuildtools"
+buildToolNixName "cabal"                        = return "cabal-install"
+buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
+buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
+buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
 buildToolNixName x                              = return (toNixName x)

@@ -25,14 +25,14 @@ import Text.PrettyPrint
 attr :: String -> Doc -> Doc
 attr n v = text n <+> equals <+> v <> semi
 
-onlyIf :: [a] -> Doc -> Doc
-onlyIf p d = if not (null p) then d else empty
+onlyIf :: Bool -> Doc -> Doc
+onlyIf b d = if b then d else empty
 
 boolattr :: String -> Bool -> Bool -> Doc
 boolattr n p v = if p then attr n (bool v) else empty
 
 listattr :: String -> Doc -> [String] -> Doc
-listattr n prefix vs = onlyIf vs $
+listattr n prefix vs = onlyIf (not (null vs)) $
                 sep [ text n <+> equals <+> prefix <+> lbrack,
                       nest 2 $ fsep $ map text vs,
                       rbrack <> semi

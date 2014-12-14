@@ -22,19 +22,24 @@ main :: IO ()
 main = readHackage >>= runParIO . generatePackageSet
 
 nixAttr :: String -> Version -> String
-nixAttr name _ = show $ toNixName name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
+nixAttr name ver = name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
 
 generatePackageSet :: Hackage -> ParIO ()
-generatePackageSet db' = do
-  let db = foldr Map.delete db' ["smtLib", "testPkg"]
+generatePackageSet db = do
   pkgs <- parMapM generatePackage (Map.toList db)
   liftIO $ putStrLn "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
   liftIO $ putStrLn ""
-  liftIO $ putStrLn "{ stdenv, ghc, pkgs, definePackage }:"
+  liftIO $ putStrLn "{ pkgs, stdenv, callPackage }:"
   liftIO $ putStrLn ""
-  liftIO $ putStrLn "{"
+  liftIO $ putStrLn "self: {"
+  liftIO $ putStrLn ""
   forM_ pkgs $ \(name, version, nixExpr) -> do
-    liftIO $ print $ nest 2 $ hang (text (nixAttr name version) <+> equals <+> text "definePackage {}") 2 (parens (disp nixExpr)) <> semi
+    -- when (name /= toNixName' name) $
+    --   liftIO $ print $ nest 2 $ (string (toNixName' name) <+> equals <+> text ("self." ++ show (nixAttr name version))) <> semi
+    -- liftIO $ print $ nest 2 $ (string (toNixName' name) <+> equals <+> text ("self." ++ show (nixAttr name version))) <> semi
+    -- when (name /= toNixName' name) $
+    --   liftIO $ print $ nest 2 $ (string name <+> equals <+> text ("self." ++ show (nixAttr name version))) <> semi
+    liftIO $ print $ nest 2 $ hang (string (nixAttr name version) <+> equals <+> text "callPackage") 2 (parens (disp nixExpr)) <+> (text "{}" <> semi)
     liftIO $ putStrLn ""
   liftIO $ putStrLn "}"
 
