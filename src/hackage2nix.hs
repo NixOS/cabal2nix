@@ -12,6 +12,7 @@ import Control.Monad.Trans
 import Data.Map ( Map )
 import qualified Data.Map as Map
 import Data.Monoid
+import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Hackage.DB ( Hackage, readHackage, GenericPackageDescription )
 import Distribution.NixOS.Derivation.Cabal
@@ -22,10 +23,12 @@ main :: IO ()
 main = readHackage >>= runParIO . generatePackageSet
 
 nixAttr :: String -> Version -> String
-nixAttr name ver = name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
+nixAttr name _ = name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
 
 generatePackageSet :: Hackage -> ParIO ()
 generatePackageSet db = do
+  let selectHackageNames :: Set String -> Set String
+      selectHackageNames = Set.intersection (Map.keysSet db)
   pkgs <- parMapM generatePackage (Map.toList db)
   liftIO $ putStrLn "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
   liftIO $ putStrLn ""
@@ -34,12 +37,15 @@ generatePackageSet db = do
   liftIO $ putStrLn "self: {"
   liftIO $ putStrLn ""
   forM_ pkgs $ \(name, version, nixExpr) -> do
+    let conflicts = Set.toAscList $ selectHackageNames $ Set.fromList (extraLibs nixExpr ++ pkgConfDeps nixExpr)
+        overrides | null conflicts = empty
+                  | otherwise      = text " inherit (pkgs) " <> hsep (map text conflicts) <> text "; "
     -- when (name /= toNixName' name) $
     --   liftIO $ print $ nest 2 $ (string (toNixName' name) <+> equals <+> text ("self." ++ show (nixAttr name version))) <> semi
     -- liftIO $ print $ nest 2 $ (string (toNixName' name) <+> equals <+> text ("self." ++ show (nixAttr name version))) <> semi
     -- when (name /= toNixName' name) $
     --   liftIO $ print $ nest 2 $ (string name <+> equals <+> text ("self." ++ show (nixAttr name version))) <> semi
-    liftIO $ print $ nest 2 $ hang (string (nixAttr name version) <+> equals <+> text "callPackage") 2 (parens (disp nixExpr)) <+> (text "{}" <> semi)
+    liftIO $ print $ nest 2 $ hang (string (nixAttr name version) <+> equals <+> text "callPackage") 2 (parens (disp nixExpr)) <+> (braces overrides <> semi)
     liftIO $ putStrLn ""
   liftIO $ putStrLn "}"
 
