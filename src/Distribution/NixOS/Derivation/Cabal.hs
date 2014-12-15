@@ -45,6 +45,7 @@ import Distribution.Text
 data Derivation = MkDerivation
   { pname               :: String
   , version             :: Version
+  , revision            :: Int
   , src                 :: DerivationSource
   , isLibrary           :: Bool
   , isExecutable        :: Bool
@@ -63,6 +64,7 @@ data Derivation = MkDerivation
   , hyperlinkSource     :: Bool
   , enableSplitObjs     :: Bool
   , phaseOverrides      :: String
+  , editedCabalFile     :: String
   , metaSection         :: Meta
   }
   deriving (Show, Eq, Ord)
@@ -75,10 +77,11 @@ instance Package Derivation where
   packageId deriv = PackageIdentifier (PackageName (pname deriv)) (version deriv)
 
 instance NFData Derivation where
-  rnf (MkDerivation a b c d e f g h i j k l m n o p q r t u v) =
+  rnf (MkDerivation a b c d e f g h i j k l m n o p q r t u v w x) =
     a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` g `deepseq`
-    h `deepseq` i `deepseq` j `deepseq` k `deepseq` l `deepseq` m `deepseqFlagAssignment` n `deepseq`
-    o `deepseq` p `deepseq` q `deepseq` r `deepseq` t `deepseq` u `deepseq` v `deepseq` ()
+    h `deepseq` i `deepseq` j `deepseq` k `deepseq` l `deepseq` m `deepseq` n `deepseqFlagAssignment`
+    o `deepseq` p `deepseq` q `deepseq` r `deepseq` t `deepseq` u `deepseq` v `deepseq`
+    w `deepseq` x `deepseq` ()
 
 -- FlagName has no NFData instance in old version of Cabal.
 deepseqFlagAssignment :: FlagAssignment -> a -> a
@@ -93,6 +96,7 @@ renderDerivation deriv =
     [ attr "pname"   $ string (pname deriv)
     , attr "version" $ doubleQuotes (disp (version deriv))
     , sourceAttr (src deriv)
+    , onlyIf (not (null (editedCabalFile deriv))) $ attr "editedCabalFile" $ string (editedCabalFile deriv)
     , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
     , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
     , listattr "buildDepends" empty (buildDepends deriv)
@@ -153,9 +157,11 @@ parseDerivation buf
   , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
   , hyperlSrc <- buf `regsubmatch` "hyperlinkSource *= *(true|false) *;"
   , splitObj  <- buf `regsubmatch` "enableSplitObjs *= *(true|false) *;"
+  , edtdCabal <- buf `regsubmatch` "editedCabalFile *= *\"([^\"]+)\""
               = Just MkDerivation
                   { pname          = name
                   , version        = vers
+                  , revision       = 0
                   , src            = case (sr,url) of
                                        ([]   , _      ) -> DerivationSource "url" ("mirror://hackage/" ++ name ++ "-" ++ vers' ++ ".tar.gz") "" $ head sha
                                        (sr':_, []     ) -> DerivationSource "" sr' "" ""
@@ -179,6 +185,7 @@ parseDerivation buf
                   , hyperlinkSource = hyperlSrc == ["true"] || null hyperlSrc
                   , enableSplitObjs = splitObj  /= ["false"]
                   , phaseOverrides = ""
+                  , editedCabalFile = if null edtdCabal then [] else head edtdCabal
                   , metaSection  = Meta
                                    { homepage       = ""
                                    , description    = ""

@@ -16,6 +16,7 @@ cabal2nix :: Cabal.GenericPackageDescription -> Derivation
 cabal2nix cabal = normalize $ postProcess MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
+  , revision       = maybe 0 read (lookup "x-revision" xfields)
   , src            = error "cabal2nix left the src field undefined"
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
@@ -34,6 +35,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , hyperlinkSource = True
   , enableSplitObjs = True
   , phaseOverrides = ""
+  , editedCabalFile= ""
   , metaSection    = Meta
                    { homepage       = Cabal.homepage descr
                    , description    = Cabal.synopsis descr
@@ -45,6 +47,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   }
   where
     descr   = Cabal.packageDescription cabal
+    xfields = Cabal.customFieldsPD descr
     pkg     = Cabal.package descr
     deps    = Cabal.buildDepends tpkg
     tests   = map Cabal.testBuildInfo (Cabal.testSuites tpkg)

@@ -72,7 +72,7 @@ discoverNixFiles yield dirOrFile = do
     (False,_)    -> io (readDirectory dirOrFile) >>= mapM_ (discoverNixFiles yield . (dirOrFile </>))
 
 regenerateDerivation :: Derivation -> String -> Bool
-regenerateDerivation _ buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches|broken|editedCabalFile")
+regenerateDerivation _ buf = not (buf =~ "(pre|post)Configure|(pre|post)Install|patchPhase|patches|broken")
 
 parseNixFile :: FilePath -> String -> Hackage4Nix (Maybe Pkg)
 parseNixFile path buf
