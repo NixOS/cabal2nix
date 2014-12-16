@@ -193,6 +193,7 @@ parseDerivation buf
                                    , maintainers    = if null maint then [] else concatMap words (tail maint)
                                    , platforms      = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
                                    , hydraPlatforms = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) hplats)
+                                   , broken         = False
                                    }
                   }
   | otherwise = Nothing

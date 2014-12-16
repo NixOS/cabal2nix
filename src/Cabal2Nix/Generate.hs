@@ -43,6 +43,7 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
                    , platforms      = []
                    , hydraPlatforms = []
                    , maintainers    = []
+                   , broken         = False
                    }
   }
   where

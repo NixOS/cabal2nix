@@ -49,6 +49,7 @@ data Meta = Meta
   , platforms      :: [String]  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
   , hydraPlatforms :: [String]  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
   , maintainers    :: [String]  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
+  , broken         :: Bool      -- ^ set to @true@ if the build is known to fail
   }
   deriving (Show, Eq, Ord)
 
@@ -57,7 +58,7 @@ instance Text Meta where
   parse = error "parsing Distribution.NixOS.Derivation.Cabal.Meta is not supported yet"
 
 instance NFData Meta where
-  rnf (Meta a b c d e f) = a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` ()
+  rnf (Meta a b c d e f g) = a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` g `deepseq` ()
 
 renderMeta :: Meta -> Doc
 renderMeta meta = vcat
@@ -69,6 +70,7 @@ renderMeta meta = vcat
   , onlyIf (not (null (hydraPlatforms meta))) $ sep
     [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
   , listattr "maintainers" (text "with self.stdenv.lib.maintainers;") (maintainers meta)
+  , boolattr "broken" (broken meta) (broken meta)
   ]
 
 renderPlatformList :: [String] -> Doc
