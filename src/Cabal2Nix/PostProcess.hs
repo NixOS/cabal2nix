@@ -96,7 +96,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "tz"               = deriv { extraFunctionArgs = ["pkgs_tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${pkgs_tzdata}/share/zoneinfo\";" }
+  | pname == "tz"               = deriv { extraFunctionArgs = ["tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${tzdata}/share/zoneinfo\";" }
   | pname == "vacuum"           = deriv { extraLibs = "ghcPaths":extraLibs }
   | pname == "vector"           = deriv { configureFlags = "${stdenv.lib.optionalString stdenv.isi686 \"--ghc-options=-msse2\"}":configureFlags }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall version }
