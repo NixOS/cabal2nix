@@ -15,6 +15,7 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { buildTools = "perl":buildTools }
   | pname == "alex" && version >= Version [3,1] []
                                 = deriv { buildTools = "perl":"happy":buildTools }
+  | pname == "apache-md5"       = deriv { testDepends = delete "crypto" testDepends }
   | pname == "bindings-GLFW"    = deriv { extraLibs = "libXext":"libXfixes":extraLibs }
   | pname == "bits-extras"      = deriv { configureFlags = "--ghc-option=-lgcc_s":configureFlags, extraLibs = filter (/= "gcc_s") extraLibs }
   | pname == "Cabal"            = deriv { phaseOverrides = "preCheck = \"unset GHC_PACKAGE_PATH; export HOME=$NIX_BUILD_TOP\";" }
@@ -38,7 +39,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gloss-raster"     = deriv { extraLibs = "llvm":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
-  | pname == "graphviz"         = deriv { testDepends = "systemGraphviz":testDepends }
   | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gtkglext"         = deriv { pkgConfDeps = "pangox_compat":pkgConfDeps }
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
