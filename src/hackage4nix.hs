@@ -7,7 +7,7 @@ import Control.Monad.RWS
 import Data.List
 import qualified Data.Set as Set
 import Data.Version
-import qualified Distribution.Hackage.DB as DB
+import qualified Cabal2Nix.Hackage as DB
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.Package
 import Distribution.PackageDescription ( GenericPackageDescription() )
@@ -222,7 +222,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   when (PrintHelp `elem` opts) (cmdlineError "")
 
-  hackage <- DB.readHackage
+  hackage <- DB.readHashedHackage
   let cfg = defaultConfiguration
             { _msgDebug  = if Verbose `elem` opts then _msgDebug defaultConfiguration else const (return ())
             , _hackageDb = hackage

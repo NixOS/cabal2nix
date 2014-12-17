@@ -14,7 +14,7 @@ import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
 import System.IO ( hPutStrLn, stderr, hPutStr )
 
-import qualified Distribution.Hackage.DB as DB
+import qualified Cabal2Nix.Hackage as DB
 import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import qualified Distribution.PackageDescription.Parse as Cabal
@@ -47,7 +47,7 @@ fetchOrFromDB optHackageDB src
 
 fromDB :: Maybe String -> String -> IO Cabal.GenericPackageDescription
 fromDB optHackageDB pkg = do
-  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> maybe DB.readHackage DB.readHackage' optHackageDB
+  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> maybe DB.readHashedHackage DB.readHackage' optHackageDB
   case pkgDesc of
     Just r -> return r
     Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure

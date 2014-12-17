@@ -59,13 +59,15 @@ Executable cabal2nix
   main-is:              cabal2nix.hs
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
-                        filepath, directory, process, hackage-db >= 1.11, transformers, deepseq
+                        filepath, directory, process, hackage-db >= 1.11, transformers,
+                        deepseq, bytestring, SHA
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
                         Cabal2Nix.Package
+                        Cabal2Nix.Hackage
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
@@ -83,12 +85,14 @@ Executable hackage4nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
                         mtl, containers, directory, filepath, hackage-db >= 1.11,
-                        transformers, process, deepseq
+                        transformers, process, deepseq, bytestring, SHA
   Extensions:           PatternGuards, RecordWildCards, CPP
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
+                        Cabal2Nix.Package
+                        Cabal2Nix.Hackage
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
@@ -112,6 +116,7 @@ Executable hackage2nix
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
                         Cabal2Nix.Package
+                        Cabal2Nix.Hackage
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize

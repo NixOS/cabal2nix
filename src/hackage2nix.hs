@@ -5,46 +5,20 @@ module Main ( main ) where
 import Cabal2Nix.Generate
 -- import Cabal2Nix.Name
 import Cabal2Nix.Package
+import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans
-import Data.ByteString.Lazy ( ByteString )
-import Data.Digest.Pure.SHA ( sha256, showDigest )
 import Data.Map ( Map )
 import qualified Data.Map as Map
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Distribution.Hackage.DB ( Hackage )
-import qualified Distribution.Hackage.DB.Parsed as Unparsed ( parsePackage )
-import qualified Distribution.Hackage.DB.Unparsed as Unparsed
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.PrettyPrinting hiding ( (<>) )
 import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
 import Distribution.Text
-
--- | A variant of 'readHackage' that adds the SHA256 digest of the
--- original Cabal file to the parsed 'GenericPackageDescription'. That
--- hash is required to build packages with an "edited" cabal file,
--- because Nix needs to download the edited file and patch it into the
--- original tarball.
-
-readHashedHackage :: IO Hackage
-readHashedHackage = fmap parseUnparsedHackage Unparsed.readHackage
-  where
-    parseUnparsedHackage :: Unparsed.Hackage -> Hackage
-    parseUnparsedHackage = Map.mapWithKey (Map.mapWithKey . parsePackage)
-
-    parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
-    parsePackage name version buf =
-      let pkg = Unparsed.parsePackage name version buf
-          hash = showDigest (sha256 buf)
-      in
-       pkg { packageDescription = (packageDescription pkg) {
-                customFieldsPD = ("x-cabal-file-hash", hash) : (customFieldsPD (packageDescription pkg))
-                }
-           }
 
 main :: IO ()
 main = readHashedHackage >>= runParIO . generatePackageSet
