@@ -1,39 +1,53 @@
--- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >hackage-packages.nix
+-- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix
 
 module Main ( main ) where
 
 import Cabal2Nix.Generate
-import Cabal2Nix.Name
+-- import Cabal2Nix.Name
 import Cabal2Nix.Package
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans
-import Control.Monad.Trans.Maybe
+import Data.ByteString.Lazy ( ByteString )
+import Data.Digest.Pure.SHA ( sha256, showDigest )
 import Data.Map ( Map )
 import qualified Data.Map as Map
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Distribution.Hackage.DB ( Hackage, readHackage, GenericPackageDescription )
+import Distribution.Hackage.DB ( Hackage )
+import qualified Distribution.Hackage.DB.Parsed as Unparsed ( parsePackage )
+import qualified Distribution.Hackage.DB.Unparsed as Unparsed
 import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.Derivation.Meta
-import Distribution.NixOS.Fetch
 import Distribution.NixOS.PrettyPrinting hiding ( (<>) )
 import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
 import Distribution.Text
 
-main :: IO ()
-main = readHackage >>= runParIO . generatePackageSet
+-- | A variant of 'readHackage' that adds the SHA256 digest of the
+-- original Cabal file to the parsed 'GenericPackageDescription'. That
+-- hash is required to build packages with an "edited" cabal file,
+-- because Nix needs to download the edited file and patch it into the
+-- original tarball.
 
-getEditedCabalFileHash :: String -> Version -> IO String
-getEditedCabalFileHash name version =
-  fmap (maybe failure (derivHash . fst)) (runMaybeT $ fetchWith (False,"url",[]) srcspec)
+readHashedHackage :: IO Hackage
+readHashedHackage = fmap parseUnparsedHackage Unparsed.readHackage
   where
-    url = "mirror://hackage/" ++ pkgid ++ "/" ++ name ++ ".cabal"
-    srcspec = Source url "" Nothing
-    pkgid = name ++ "-" ++ display version
-    failure = fail $ "cannot determine edited cabal file hash for " ++ pkgid
+    parseUnparsedHackage :: Unparsed.Hackage -> Hackage
+    parseUnparsedHackage = Map.mapWithKey (Map.mapWithKey . parsePackage)
+
+    parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
+    parsePackage name version buf =
+      let pkg = Unparsed.parsePackage name version buf
+          hash = showDigest (sha256 buf)
+      in
+       pkg { packageDescription = (packageDescription pkg) {
+                customFieldsPD = ("x-cabal-file-hash", hash) : (customFieldsPD (packageDescription pkg))
+                }
+           }
+
+main :: IO ()
+main = readHashedHackage >>= runParIO . generatePackageSet
 
 nixAttr :: String -> Version -> String
 nixAttr name _ = name -- ++ "_" ++ [ if c == '.' then '_' else c | c <- display ver ]
@@ -88,10 +102,8 @@ generatePackage (name, versions) = do
       pkgDescription = (Map.!) versions latestVersion
   srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display latestVersion)
   let drv' = (cabal2nix pkgDescription) { src = srcSpec }
-  drv <- if revision drv' > 0
-           then do cabalFileHash <- liftIO $ getEditedCabalFileHash (pname drv') (version drv')
-                   return $ drv' { editedCabalFile = cabalFileHash }
-           else return drv'
+      Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription pkgDescription))
+      drv  = drv' { editedCabalFile = if revision drv' == 0 then "" else cabalFileHash }
   return (name, latestVersion, drv)
 
 -- TODO: We should obtain the list of valid attributes in Nixpkgs at
