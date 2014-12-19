@@ -158,6 +158,7 @@ missingSystemLibraries = Set.fromList
   , "f77blas"
   , "fann"
   , "fftw3"
+  , "fftw3f"
   , "fltk"
   , "fltk_images"
   , "fmodex"
