@@ -34,7 +34,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "ghc-parser"       = deriv { buildTools = "cpphs":"happy":buildTools, phaseOverrides = ghcParserPatchPhase }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"lsof":"openssh":"which":"bup":"perl":buildTools }
+  | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"wget":"lsof":"openssh":"which":"bup":"perl":buildTools }
   | pname == "github-backup"    = deriv { buildTools = "git":buildTools }
   | pname == "glade"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs, pkgConfDeps = "gtkC":delete "gtk" pkgConfDeps }
   | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
