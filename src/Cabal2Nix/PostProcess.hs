@@ -48,7 +48,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
   | pname == "hakyll"           = deriv { testDepends = "utillinux":testDepends }
   | pname == "happy"            = deriv { buildTools = "perl":buildTools }
-  | pname == "haskeline"        = deriv { buildDepends = "utf8String":buildDepends }
+  | pname == "haskeline"        = deriv { buildDepends = "utf8-string":buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
@@ -71,7 +71,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "MFlow"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "multiarg"         = deriv { buildDepends = "utf8String":buildDepends }
+  | pname == "multiarg"         = deriv { buildDepends = "utf8-string":buildDepends }
   | pname == "mime-mail"        = deriv { extraFunctionArgs = ["sendmail ? \"sendmail\""], phaseOverrides = mimeMailConfigureFlags }
   | pname == "mysql"            = deriv { buildTools = "mysqlConfig":buildTools, extraLibs = "zlib":extraLibs }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
