@@ -22,7 +22,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cabal-bounds"     = deriv { buildTools = "cabal-install":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
-  | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
   | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"stdenv.cc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
@@ -35,14 +34,10 @@ postProcess deriv@(MkDerivation {..})
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"wget":"lsof":"openssh":"which":"bup":"perl":buildTools }
   | pname == "github-backup"    = deriv { buildTools = "git":buildTools }
-  | pname == "glade"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs, pkgConfDeps = "gtkC":delete "gtk" pkgConfDeps }
-  | pname == "glib"             = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gloss-raster"     = deriv { extraLibs = "llvm":extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
-  | pname == "gtk"              = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "gtkglext"         = deriv { pkgConfDeps = "pangox_compat":pkgConfDeps }
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
-  | pname == "gtksourceview2"   = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "haddock" && version < Version [2,14] []
                                 = deriv { buildTools = "alex":"happy":buildTools }
   | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
@@ -79,10 +74,8 @@ postProcess deriv@(MkDerivation {..})
   | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
   | pname == "pandoc"           = deriv { buildDepends = "alex":"happy":buildDepends }
-  | pname == "pango"            = deriv { extraLibs = "pkgconfig":"libc":extraLibs }
   | pname == "pcap"             = deriv { extraLibs = "libpcap":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
-  | pname == "poppler"          = deriv { extraLibs = "libc":extraLibs }
   | pname == "purescript"       = deriv { testDepends = "nodejs":testDepends }
   | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
@@ -92,7 +85,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
   | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
   | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
-  | pname == "svgcairo"         = deriv { extraLibs = "libc":extraLibs }
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
