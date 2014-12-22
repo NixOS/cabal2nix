@@ -110,6 +110,7 @@ libNixName "ssl"                                = return "openssl"
 libNixName "stdc++.dll"                         = [] -- What is that?
 libNixName "stdc++"                             = [] -- What is that?
 libNixName "systemd-journal"                    = return "systemd"
+libNixName "uuid"                               = return "libossp_uuid";
 libNixName "vte-2.90"                           = return "vte"
 libNixName "webkit-1.0"                         = return "webkit"
 libNixName "webkitgtk-3.0"                      = return "webkitgtk"
