@@ -28,16 +28,16 @@ import Distribution.Text
 --   putStrLn (display (Meta "http://example.org" "an example package" (Unknown Nothing)
 --                      ["stdenv.lib.platforms."++x | x <- ["unix","cygwin"]]
 --                      ["stdenv.lib.platforms.none"]
---                      ["joe","jane"]))
+--                      ["joe","jane"]
+--                      True))
 -- :}
--- meta = {
---   homepage = "http://example.org";
---   description = "an example package";
---   license = "unknown";
---   platforms = stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
---   hydraPlatforms = stdenv.lib.platforms.none;
---   maintainers = with self.stdenv.lib.maintainers; [ joe jane ];
--- };
+-- homepage = "http://example.org";
+-- description = "an example package";
+-- license = "unknown";
+-- platforms = stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
+-- hydraPlatforms = stdenv.lib.platforms.none;
+-- maintainers = with self.stdenv.lib.maintainers; [ joe jane ];
+-- broken = true;
 --
 -- Note that the "Text" instance definition provides pretty-printing,
 -- but no parsing as of now!
