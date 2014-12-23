@@ -21,6 +21,7 @@ main = do
              , "src/Cabal2Nix/CorePackages.hs"
              , "src/Cabal2Nix/Flags.hs"
              , "src/Cabal2Nix/Generate.hs"
+             , "src/Cabal2Nix/Hackage.hs"
              , "src/Cabal2Nix/Name.hs"
              , "src/Cabal2Nix/Normalize.hs"
              , "src/Cabal2Nix/Package.hs"
