@@ -83,6 +83,7 @@ libNixName "libzmq"                             = return "zeromq"
 libNixName "m"                                  = []  -- in stdenv
 libNixName "mono-2.0"                           = return "mono"
 libNixName "ncursesw"                           = return "ncurses"
+libNixName "notify"                             = return "libnotify"
 libNixName "panelw"                             = return "ncurses"
 libNixName "pangocairo"                         = return "pango"
 libNixName "pcap"                               = return "libpcap"
