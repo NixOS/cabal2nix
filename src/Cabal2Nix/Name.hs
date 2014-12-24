@@ -89,6 +89,7 @@ libNixName "m"                                  = []  -- in stdenv
 libNixName "mono-2.0"                           = return "mono"
 libNixName "ncursesw"                           = return "ncurses"
 libNixName "notify"                             = return "libnotify"
+libNixName "odbc"                               = return "unixODBC"
 libNixName "panelw"                             = return "ncurses"
 libNixName "pangocairo"                         = return "pango"
 libNixName "pcap"                               = return "libpcap"
