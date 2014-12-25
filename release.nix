@@ -26,7 +26,7 @@ in
       isExecutable = true;
       buildDepends = with haskellPackages; [
         Cabal deepseq filepath hackageDb monadPar monadParExtras mtl
-        regexPosix transformers SHA
+        regexPosix transformers SHA aeson split utf8String
       ];
       testDepends = with haskellPackages; [ doctest ];
       doCheck = nativeCabal;

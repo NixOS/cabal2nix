@@ -17,11 +17,11 @@ import Test.DocTest
 main :: IO ()
 main = do
   let libs = [ "dist/build/autogen/Paths_cabal2nix.hs"
-             , "src/Cabal2Nix/License.hs"
              , "src/Cabal2Nix/CorePackages.hs"
              , "src/Cabal2Nix/Flags.hs"
              , "src/Cabal2Nix/Generate.hs"
              , "src/Cabal2Nix/Hackage.hs"
+             , "src/Cabal2Nix/License.hs"
              , "src/Cabal2Nix/Name.hs"
              , "src/Cabal2Nix/Normalize.hs"
              , "src/Cabal2Nix/Package.hs"
@@ -31,6 +31,7 @@ main = do
              , "src/Distribution/NixOS/Derivation/License.hs"
              , "src/Distribution/NixOS/Derivation/Meta.hs"
              , "src/Distribution/NixOS/Fetch.hs"
+             , "src/Distribution/NixOS/PackageMap.hs"
              , "src/Distribution/NixOS/PrettyPrinting.hs"
              , "src/Distribution/NixOS/Regex.hs"
              ]

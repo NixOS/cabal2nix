@@ -102,6 +102,7 @@ Executable hackage4nix
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
                         Distribution.NixOS.PrettyPrinting
+                        Distribution.NixOS.PackageMap
                         Distribution.NixOS.Regex
 
 Executable hackage2nix
@@ -109,7 +110,8 @@ Executable hackage2nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
                         filepath, directory, process, hackage-db >= 1.11, transformers, deepseq,
-                        containers, mtl, monad-par, monad-par-extras, bytestring, SHA
+                        containers, mtl, monad-par, monad-par-extras, bytestring, SHA, aeson,
+                        split, utf8-string
   Ghc-Options:          -Wall -threaded -rtsopts -with-rtsopts=-N
   Extensions:           PatternGuards, RecordWildCards, CPP
   other-modules:        Cabal2Nix.CorePackages
