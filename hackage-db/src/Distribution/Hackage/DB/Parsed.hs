@@ -16,7 +16,6 @@ module Distribution.Hackage.DB.Parsed
   )
   where
 
-import qualified Data.ByteString.Lazy as BSC ( unpack )
 import Data.ByteString.Lazy.Char8 ( ByteString )
 import Data.Map
 import Data.String.UTF8 ( toString, fromRep )
@@ -73,4 +72,4 @@ parsePackage' buf = case parsePackageDescription (decodeUTF8 buf) of
                      ParseFailed err -> Left (show err)
   where
     decodeUTF8 :: ByteString -> String
-    decodeUTF8 = toString . fromRep . BSC.unpack
+    decodeUTF8 = toString . fromRep
