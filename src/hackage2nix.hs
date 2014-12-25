@@ -1,4 +1,4 @@
--- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix
+-- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix-new && mv ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix-new ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix
 
 module Main ( main ) where
 
