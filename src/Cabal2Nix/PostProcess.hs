@@ -179,12 +179,10 @@ xmonadPostInstall = unlines
 gitAnnexOverrides :: String
 gitAnnexOverrides = unlines
   [ "preConfigure = \"export HOME=$TEMPDIR\";"
-  , "installPhase = \"./Setup install\";"
   , "checkPhase = ''"
   , "  cp dist/build/git-annex/git-annex git-annex"
   , "  ./git-annex test"
   , "'';"
-  , "propagatedUserEnvPkgs = [git lsof];"
   ]
 
 ghciPostInstall :: String
