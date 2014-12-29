@@ -7,8 +7,8 @@ import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 -- import Cabal2Nix.Name
 import Cabal2Nix.Package
 import Control.Monad
--- import Control.Monad.Par.Combinator
--- import Control.Monad.Par.IO
+import Control.Monad.Par.Combinator
+import Control.Monad.Par.IO
 -- import Control.Monad.RWS
 import Control.Monad.Trans
 -- import Data.Map ( Map )
@@ -31,9 +31,9 @@ main :: IO ()
 main = do
   hackage <- readHashedHackage
   nixpkgs <- readNixpkgPackageMap
-  generatePackageSet hackage nixpkgs
+  runParIO (generatePackageSet hackage nixpkgs)
 
-generatePackageSet :: Hackage -> PackageMap -> IO ()
+generatePackageSet :: Hackage -> PackageMap -> ParIO ()
 generatePackageSet hackage nixpkgs = do
   let db = buildPackageSet hackage
   liftIO $ do putStrLn "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
@@ -42,26 +42,31 @@ generatePackageSet hackage nixpkgs = do
               putStrLn ""
               putStrLn "self: {"
               putStrLn ""
-  forM_ (Map.toList db) $ \(name, versions) -> do
+  pkgs <- (flip parMapM) (Map.toList db) $ \(name, versions) -> do
     let multiVersionPackage :: Bool
         multiVersionPackage = Map.size versions > 1
 
         latestVersion :: Version
         latestVersion = fst (Map.findMax versions)
 
-    forM_ (Map.toList versions) $ \(version, descr) -> do
+    pkg <- forM (Map.toList versions) $ \(version, descr) -> do
       (drv, overrides) <- generatePackage db nixpkgs name version descr
 
       let nixAttr = name ++ if multiVersionPackage then "_" ++ [ if c == '.' then '_' else c | c <- display version ] else ""
 
-      liftIO $ do print $ nest 2 $ hang ((string nixAttr) <+> equals <+> text "callPackage") 2 (parens (disp drv)) <+> (braces overrides <> semi)
-                  putStrLn ""
-      when (multiVersionPackage && version == latestVersion) $
-        liftIO $ print $ nest 2 $ (string name <+> equals <+> text ("self." ++ show nixAttr)) <> semi
+      let def = nest 2 $ hang ((string nixAttr) <+> equals <+> text "callPackage") 2 (parens (disp drv)) <+> (braces overrides <> semi)
+      let overr = if multiVersionPackage && version == latestVersion
+                  then nest 2 $ (string name <+> equals <+> text ("self." ++ show nixAttr)) <> semi
+                  else empty
 
+      return (def $+$ overr)
+
+    return (render (vcat pkg $+$ text ""))
+
+  liftIO $ mapM_ putStrLn pkgs
   liftIO $ putStrLn "}"
 
-generatePackage :: Hackage -> PackageMap -> String -> Version -> GenericPackageDescription -> IO (Derivation, Doc)
+generatePackage :: Hackage -> PackageMap -> String -> Version -> GenericPackageDescription -> ParIO (Derivation, Doc)
 generatePackage hackage nixpkgs name version descr = do
   srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display version)
   let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
