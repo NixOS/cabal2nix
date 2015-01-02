@@ -104,7 +104,7 @@ renderDerivation deriv =
     , listattr "buildTools" empty (buildTools deriv)
     , listattr "extraLibraries" empty (extraLibs deriv)
     , listattr "pkgconfigDepends" empty (pkgConfDeps deriv)
-    , onlyIf (not (null renderedFlags)) $ attr "configureFlags" $ doubleQuotes (sep renderedFlags)
+    , listattr "configureFlags" empty (map (show . show) renderedFlags)
     , boolattr "enableSplitObjs"  (not (enableSplitObjs deriv)) (enableSplitObjs deriv)
     , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
