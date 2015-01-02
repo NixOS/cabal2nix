@@ -2,10 +2,11 @@
 
 module Main ( main ) where
 
-import Cabal2Nix.Generate
+import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 -- import Cabal2Nix.Name
 import Cabal2Nix.Package
+import Cabal2Nix.Flags ( configureCabalFlags )
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
@@ -26,6 +27,9 @@ import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTo
 import Distribution.Text
 import Distribution.Version
 -- import Options.Applicative hiding ( empty )
+import Distribution.PackageDescription.Configuration
+import Distribution.System
+import Distribution.Compiler
 
 main :: IO ()
 main = do
@@ -71,6 +75,24 @@ generatePackage hackage nixpkgs name version descr = do
   srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display version)
   let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
 
+      matches :: PackageIdentifier -> Dependency -> Bool
+      matches (PackageIdentifier pn v) (Dependency dn vr) = pn == dn && v `withinRange` vr
+
+      resolver :: Dependency -> Bool
+      resolver dep@(Dependency (PackageName pkg) vrange) =
+        any (`matches` dep) corePackages ||
+        maybe False (not . Map.null . Map.filterWithKey (\k _ -> k `withinRange` vrange)) (Map.lookup pkg hackage)
+
+  -- TODO: Include list of broken dependencies in the generated output.
+  (missingDeps,drv') <- case cabal2nix resolver descr of
+            Left ds -> do let Right x = cabal2nix (const True) descr
+                          return (ds,x)
+            Right x -> return ([],x)
+
+  let drv = drv' { src = srcSpec
+                 , editedCabalFile = if revision drv == 0 then "" else cabalFileHash
+                 }
+
       selectHackageNames :: Set String -> Set String
       selectHackageNames = Set.intersection (Map.keysSet hackage)
 
@@ -95,11 +117,7 @@ generatePackage hackage nixpkgs name version descr = do
       overrides :: Doc
       overrides = conflictOverrides $+$ missingOverrides
 
-      drv = (cabal2nix descr) { src = srcSpec
-                              , editedCabalFile = if revision drv == 0 then "" else cabalFileHash
-                              }
-
-  return $ (drv { metaSection = (metaSection drv) { broken = not (Set.null missing) } }, overrides)
+  return $ (drv { metaSection = (metaSection drv) { broken = not (Set.null missing) || not (null missingDeps) } }, overrides)
 
 isKnownNixpkgAttribute :: PackageMap -> Hackage -> String -> Bool
 isKnownNixpkgAttribute nixpkgs hackage name
@@ -170,3 +188,50 @@ selectors = map (\s -> maybe (error (show s ++ " is not a valid package selector
 --       (  fullDesc
 --          <> header "hackage2nix -- convert the Hackage database into Nix build instructions"
 --       )
+
+cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> Either [Dependency] Derivation
+cabal2nix resolver cabal = case finalize of
+  Left ds -> Left ds
+  Right (descr, flags) -> Right (cabal2nix' descr) { configureFlags = [ "-f" ++ (if b then "" else "-") ++ n | (FlagName n, b) <- flags ] }
+  where
+    finalize :: Either [Dependency] (PackageDescription, FlagAssignment)
+    finalize = finalizePackageDescription
+                 (configureCabalFlags (package (packageDescription cabal)))
+                 resolver
+                 (Platform X86_64 Linux)                 -- shouldn't be hardcoded
+                 (CompilerId GHC (Version [7,8,4] []))   -- dito
+                 []
+                 cabal
+
+corePackages :: [PackageIdentifier]
+corePackages = map (\s -> maybe (error (show s ++ " is not a valid core package")) id (simpleParse s))
+  [ "Cabal-1.18.1.5"
+  , "array-0.5.0.0"
+  , "base-4.7.0.2"
+  , "bin-package-db-0.0.0.0"
+  , "binary-0.7.1.0"
+  , "bytestring-0.10.4.0"
+  , "containers-0.5.5.1"
+  , "deepseq-1.3.0.2"
+  , "directory-1.2.1.0"
+  , "filepath-1.3.0.2"
+  , "ghc-7.8.4"
+  , "ghc-prim-0.3.1.0"
+  , "haskeline-0.7.1.2"
+  , "haskell2010-1.1.2.0"
+  , "haskell98-2.0.0.3"
+  , "hoopl-3.10.0.1"
+  , "hpc-0.6.0.1"
+  , "integer-gmp-0.5.1.0"
+  , "old-locale-1.0.0.6"
+  , "old-time-1.1.0.2"
+  , "pretty-1.1.1.1"
+  , "process-1.2.0.0"
+  , "rts-1.0"
+  , "template-haskell-2.9.0.0"
+  , "terminfo-0.4.0.0"
+  , "time-1.4.2"
+  , "transformers-0.3.0.0"
+  , "unix-2.7.0.1"
+  , "xhtml-3000.2.1"
+  ]

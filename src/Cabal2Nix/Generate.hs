@@ -1,4 +1,4 @@
-module Cabal2Nix.Generate ( cabal2nix ) where
+module Cabal2Nix.Generate ( cabal2nix, cabal2nix' ) where
 
 import Cabal2Nix.Flags
 import Cabal2Nix.License
@@ -13,7 +13,17 @@ import Distribution.PackageDescription.Configuration
 import Distribution.System
 
 cabal2nix :: Cabal.GenericPackageDescription -> Derivation
-cabal2nix cabal = normalize $ postProcess MkDerivation
+cabal2nix cabal = cabal2nix' descr
+  where Right (descr, _) = finalizePackageDescription
+                            (configureCabalFlags (Cabal.package (Cabal.packageDescription cabal)))
+                            (const True)
+                            (Platform X86_64 Linux)                 -- shouldn't be hardcoded
+                            (CompilerId GHC (Version [7,8,4] []))   -- dito
+                            []
+                            cabal
+
+cabal2nix' :: Cabal.PackageDescription -> Derivation
+cabal2nix' tpkg = normalize $ postProcess MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
   , revision       = maybe 0 read (lookup "x-revision" xfields)
@@ -37,9 +47,9 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
   , phaseOverrides = ""
   , editedCabalFile= if isJust (lookup "x-revision" xfields) then fromJust (lookup "x-cabal-file-hash" xfields) else ""
   , metaSection    = Meta
-                   { homepage       = Cabal.homepage descr
-                   , description    = Cabal.synopsis descr
-                   , license        = fromCabalLicense (Cabal.license descr)
+                   { homepage       = Cabal.homepage tpkg
+                   , description    = Cabal.synopsis tpkg
+                   , license        = fromCabalLicense (Cabal.license tpkg)
                    , platforms      = []
                    , hydraPlatforms = []
                    , maintainers    = []
@@ -47,9 +57,8 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
                    }
   }
   where
-    descr   = Cabal.packageDescription cabal
-    xfields = Cabal.customFieldsPD descr
-    pkg     = Cabal.package descr
+    xfields = Cabal.customFieldsPD tpkg
+    pkg     = Cabal.package tpkg
     deps    = Cabal.buildDepends tpkg
     tests   = map Cabal.testBuildInfo (Cabal.testSuites tpkg)
     libDeps = map Cabal.libBuildInfo (maybeToList (Cabal.library tpkg))
@@ -59,12 +68,6 @@ cabal2nix cabal = normalize $ postProcess MkDerivation
     tools   = concatMap Cabal.buildTools (libDeps ++ exeDeps)
     libs    = concatMap Cabal.extraLibs (libDeps ++ exeDeps)
     pcs     = map unDep (concatMap Cabal.pkgconfigDepends (libDeps ++ exeDeps))
-    Right (tpkg, _) = finalizePackageDescription
-                        (configureCabalFlags pkg)
-                        (const True)
-                        (Platform X86_64 Linux)                 -- shouldn't be hardcoded
-                        (CompilerId GHC (Version [7,8,3] []))   -- dito
-                        [] cabal
 
 unDep :: Cabal.Dependency -> String
 unDep (Cabal.Dependency (Cabal.PackageName x) _) = x
