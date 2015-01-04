@@ -213,6 +213,13 @@ selectLatestMatchingPackage (Dependency (PackageName name) vrange) db =
 --          <> header "hackage2nix -- convert the Hackage database into Nix build instructions"
 --       )
 
+-- TODO: This function returns either a (minimal) list of missing dependencies
+-- or a finalized package description of the build. Unfortunately, missing
+-- dependencies for *testing* or *benchmarking* are not considered. I suppose,
+-- we could turn test suites into executables for the processing to capture
+-- their dependencies, and then add an automatic 'doCheck = false' if that
+-- doesn't work. This whole are needs some cleanup.
+
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> Either [Dependency] Derivation
 cabal2nix resolver cabal = case finalize of
   Left ds -> Left ds
