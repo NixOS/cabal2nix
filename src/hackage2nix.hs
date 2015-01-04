@@ -158,7 +158,13 @@ defaultPackageOverrides :: [Dependency]
 defaultPackageOverrides = map (\s -> maybe (error (show s ++ " is not a valid override selector")) id (simpleParse s))
   [ "mtl == 2.1.*"
   , "monad-control == 0.3.*"
-  ]
+  ] ++
+  [ Dependency n (thisVersion v) | PackageIdentifier n v <- corePackages ]
+     -- TODO: This is necessary because otherwise we may end up having a
+     -- version that's "too new" in the default package set. The problem
+     -- is that we don't want those packages generated, really, so maybe
+     -- we should remove them from the final package set after the
+     -- resover has been constructed?
 
 -- These packages are added to the generated set, but the play no role during dependency resolution.
 extraPackages :: [Dependency]
