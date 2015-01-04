@@ -48,7 +48,7 @@ generatePackageSet hackage nixpkgs = do
 
       resolver :: Dependency -> Bool
       resolver dep@(Dependency (PackageName pkg) vrange) =
-        any (`matches` dep) corePackages ||
+        any (`matches` dep) (corePackages ++ hardCorePackages) ||
         maybe False (not . Map.null . Map.filterWithKey (\k _ -> k `withinRange` vrange)) (Map.lookup pkg defaultPackageSet)
 
   forM_ (Map.assocs defaultPackageSet) $ \(name, vdb) ->
@@ -104,10 +104,10 @@ generatePackage hackage resolver nixpkgs  name version descr = do
                  }
 
       selectHackageNames :: Set String -> Set String
-      selectHackageNames = Set.intersection (Map.keysSet hackage `Set.union` Set.fromList [ n | PackageIdentifier (PackageName n) _ <- corePackages ])
+      selectHackageNames = Set.intersection (Map.keysSet hackage `Set.union` Set.fromList [ n | PackageIdentifier (PackageName n) _ <- corePackages ++ hardCorePackages ])
 
       selectMissingHackageNames  :: Set String -> Set String
-      selectMissingHackageNames = flip Set.difference (Map.keysSet hackage `Set.union` Set.fromList [ n | PackageIdentifier (PackageName n) _ <- corePackages ])
+      selectMissingHackageNames = flip Set.difference (Map.keysSet hackage `Set.union` Set.fromList [ n | PackageIdentifier (PackageName n) _ <- corePackages ++ hardCorePackages ])
 
       conflicts :: Set String
       conflicts = Set.difference (selectHackageNames $ Set.fromList (extraLibs drv ++ pkgConfDeps drv)) missing
@@ -130,7 +130,7 @@ generatePackage hackage resolver nixpkgs  name version descr = do
       overrides :: Doc
       overrides = conflictOverrides $+$ missingOverrides
 
-  return $ (drv { metaSection = (metaSection drv) { broken = not (Set.null missing) || not (null missingDeps) } }, overrides)
+  return (drv, overrides)
 
 isKnownNixpkgAttribute :: PackageMap -> Hackage -> String -> Bool
 isKnownNixpkgAttribute nixpkgs hackage name
@@ -246,19 +246,17 @@ cabal2nix resolver cabal = case finalize of
                  []
                  cabal
 
-corePackages :: [PackageIdentifier]
+corePackages :: [PackageIdentifier]             -- Core packages found on Hackageg
 corePackages = map (\s -> maybe (error (show s ++ " is not a valid core package")) id (simpleParse s))
   [ "Cabal-1.18.1.5"
   , "array-0.5.0.0"
   , "base-4.7.0.2"
-  , "bin-package-db-0.0.0.0"
   , "binary-0.7.1.0"
   , "bytestring-0.10.4.0"
   , "containers-0.5.5.1"
   , "deepseq-1.3.0.2"
   , "directory-1.2.1.0"
   , "filepath-1.3.0.2"
-  , "ghc-7.8.4"
   , "ghc-prim-0.3.1.0"
   , "haskeline-0.7.1.2"
   , "haskell2010-1.1.2.0"
@@ -270,11 +268,17 @@ corePackages = map (\s -> maybe (error (show s ++ " is not a valid core package"
   , "old-time-1.1.0.2"
   , "pretty-1.1.1.1"
   , "process-1.2.0.0"
-  , "rts-1.0"
   , "template-haskell-2.9.0.0"
   , "terminfo-0.4.0.0"
   , "time-1.4.2"
   , "transformers-0.3.0.0"
   , "unix-2.7.0.1"
   , "xhtml-3000.2.1"
+  ]
+
+hardCorePackages :: [PackageIdentifier]         -- Core packages not found on Hackage.
+hardCorePackages = map (\s -> maybe (error (show s ++ " is not a valid core package")) id (simpleParse s))
+  [ "bin-package-db-0.0.0.0"
+  , "ghc-7.8.4"
+  , "rts-1.0"
   ]
