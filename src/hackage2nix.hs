@@ -91,6 +91,9 @@ generatePackage hackage resolver nixpkgs  name version descr = do
   let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
 
   -- TODO: Include list of broken dependencies in the generated output.
+  -- Currently, we add overrides that set "pkgname = null", but this is
+  -- unsatisfactory because these dependencies may very well work when building
+  -- the same package set with a different GHC version.
   (missingDeps,drv') <- case cabal2nix resolver descr of
             Left ds -> do let Right x = cabal2nix (const True) descr
                           return (ds,x)
@@ -114,8 +117,11 @@ generatePackage hackage resolver nixpkgs  name version descr = do
                         | otherwise          = text " inherit (pkgs) " <> hsep (map text (Set.toAscList conflicts)) <> text "; "
 
       missing :: Set String
-      missing = Set.union (Set.fromList (filter (not . isKnownNixpkgAttribute nixpkgs hackage) (extraLibs drv ++ pkgConfDeps drv ++ buildTools drv)))
-                          (selectMissingHackageNames (Set.fromList (buildDepends drv ++ testDepends drv)))
+      missing = Set.unions
+                [ Set.fromList (filter (not . isKnownNixpkgAttribute nixpkgs hackage) (extraLibs drv ++ pkgConfDeps drv ++ buildTools drv))
+                , selectMissingHackageNames (Set.fromList (buildDepends drv ++ testDepends drv))
+                , Set.fromList [ n | Dependency (PackageName n) _ <- missingDeps ]
+                ]
 
       missingOverrides :: Doc
       missingOverrides | Set.null missing = empty
