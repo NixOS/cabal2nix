@@ -94,10 +94,7 @@ generatePackage hackage resolver nixpkgs  name version descr = do
   -- Currently, we add overrides that set "pkgname = null", but this is
   -- unsatisfactory because these dependencies may very well work when building
   -- the same package set with a different GHC version.
-  (missingDeps,drv') <- case cabal2nix resolver descr of
-            Left ds -> do let Right x = cabal2nix (const True) descr
-                          return (ds,x)
-            Right x -> return ([],x)
+      (missingDeps, _, drv') = cabal2nix resolver descr
 
   let drv = drv' { src = srcSpec
                  , editedCabalFile = if revision drv == 0 then "" else cabalFileHash
@@ -225,26 +222,37 @@ selectLatestMatchingPackage (Dependency (PackageName name) vrange) db =
 --          <> header "hackage2nix -- convert the Hackage database into Nix build instructions"
 --       )
 
--- TODO: This function returns either a (minimal) list of missing dependencies
--- or a finalized package description of the build. Unfortunately, missing
--- dependencies for *testing* or *benchmarking* are not considered. I suppose,
--- we could turn test suites into executables for the processing to capture
--- their dependencies, and then add an automatic 'doCheck = false' if that
--- doesn't work. This whole are needs some cleanup.
-
-cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> Either [Dependency] Derivation
-cabal2nix resolver cabal = case finalize of
-  Left ds -> Left ds
-  Right (descr, flags) -> Right (cabal2nix' descr) { configureFlags = [ "-f" ++ (if b then "" else "-") ++ n | (FlagName n, b) <- flags ] }
+cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
+cabal2nix resolver cabal = (missingDeps, flags, drv)
   where
-    finalize :: Either [Dependency] (PackageDescription, FlagAssignment)
-    finalize = finalizePackageDescription
-                 (configureCabalFlags (package (packageDescription cabal)))
-                 resolver
-                 (Platform X86_64 Linux)                 -- shouldn't be hardcoded
-                 (CompilerId GHC (Version [7,8,4] []))   -- dito
-                 []
-                 cabal
+    drv = (cabal2nix' descr) { configureFlags = [ "-f" ++ (if b then "" else "-") ++ n | (FlagName n, b) <- flags ] }
+
+    Right (descr, flags) = finalize (if null missingDeps then resolver else (const True)) cabal
+
+    missingDeps :: [Dependency]
+    missingDeps = either id (const [])  (finalize resolver cabal')
+
+    finalize :: (Dependency -> Bool) -> GenericPackageDescription -> Either [Dependency] (PackageDescription, FlagAssignment)
+    finalize resolver' = finalizePackageDescription
+                           (configureCabalFlags (package (packageDescription cabal)))
+                           resolver'
+                           (Platform X86_64 Linux)                 -- shouldn't be hardcoded
+                           (CompilerId GHC (Version [7,8,4] []))   -- ditto
+                           []                                      -- no additional constraints
+
+    -- A variant of the cabal file that has all test suites enabled to ensure
+    -- that their dependencies are recognized by finalizePackageDescription.
+    cabal' :: GenericPackageDescription
+    cabal' = cabal { condTestSuites = flaggedTests }
+
+    flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
+    flaggedTests = map (\(n, t) -> (n, mapTreeData enableTest t)) (condTestSuites cabal)
+
+    enableTest :: TestSuite -> TestSuite
+    enableTest t = t { testEnabled = True }
+
+
+
 
 corePackages :: [PackageIdentifier]             -- Core packages found on Hackageg
 corePackages = map (\s -> maybe (error (show s ++ " is not a valid core package")) id (simpleParse s))
