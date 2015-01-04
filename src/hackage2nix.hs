@@ -120,7 +120,7 @@ generatePackage hackage resolver nixpkgs  name version descr = do
       missing = Set.unions
                 [ Set.fromList (filter (not . isKnownNixpkgAttribute nixpkgs hackage) (extraLibs drv ++ pkgConfDeps drv ++ buildTools drv))
                 , selectMissingHackageNames (Set.fromList (buildDepends drv ++ testDepends drv))
-                , Set.fromList [ n | Dependency (PackageName n) _ <- missingDeps ]
+                , Set.fromList [ n | Dependency (PackageName n) _ <- missingDeps, n /= name ]
                 ]
 
       missingOverrides :: Doc
