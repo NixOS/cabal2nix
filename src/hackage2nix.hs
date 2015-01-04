@@ -101,10 +101,10 @@ generatePackage hackage resolver nixpkgs  name version descr = do
                  }
 
       selectHackageNames :: Set String -> Set String
-      selectHackageNames = Set.intersection (Map.keysSet hackage)
+      selectHackageNames = Set.intersection (Map.keysSet hackage `Set.union` Set.fromList [ n | PackageIdentifier (PackageName n) _ <- corePackages ])
 
       selectMissingHackageNames  :: Set String -> Set String
-      selectMissingHackageNames = flip Set.difference (Map.keysSet hackage)
+      selectMissingHackageNames = flip Set.difference (Map.keysSet hackage `Set.union` Set.fromList [ n | PackageIdentifier (PackageName n) _ <- corePackages ])
 
       conflicts :: Set String
       conflicts = Set.difference (selectHackageNames $ Set.fromList (extraLibs drv ++ pkgConfDeps drv)) missing
