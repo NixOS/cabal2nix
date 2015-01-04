@@ -71,6 +71,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
   | pname == "lhs2tex"          = deriv { extraLibs = "texLive":extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = delete "ffi" extraLibs }
+  | pname == "liquid-fixpoint"  = deriv { buildTools = "ocaml":buildTools }
   | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
