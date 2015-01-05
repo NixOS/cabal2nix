@@ -1,12 +1,12 @@
--- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix-new && mv ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix-new ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix
+-- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >hackage-packages.nix && mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix && nix-env -qaP | tail -1
 
 module Main ( main ) where
 
+import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 -- import Cabal2Nix.Name
 import Cabal2Nix.Package
-import Cabal2Nix.Flags ( configureCabalFlags )
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
@@ -14,22 +14,22 @@ import Control.Monad.Par.IO
 import Control.Monad.Trans
 -- import Data.Map ( Map )
 import qualified Data.Map as Map
--- import Data.Maybe
+import Data.Maybe
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Distribution.Compiler
 -- import Distribution.Compiler
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.PackageMap ( PackageMap, readNixpkgPackageMap )
 import Distribution.NixOS.PrettyPrinting hiding ( (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
-import Distribution.Text
-import Distribution.Version
 -- import Options.Applicative hiding ( empty )
 import Distribution.PackageDescription.Configuration
 import Distribution.System
-import Distribution.Compiler
+import Distribution.Text
+import Distribution.Version
 
 main :: IO ()
 main = do
