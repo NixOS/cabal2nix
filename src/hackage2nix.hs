@@ -168,7 +168,7 @@ extraPackages :: [Dependency]
 extraPackages =
   map (\(Dependency name _) -> Dependency name anyVersion) defaultPackageOverrides ++
   map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
-  [
+  [ "Cabal < 1.22"
   ]
 
 selectLatestMatchingPackage :: Dependency -> Hackage -> Hackage
