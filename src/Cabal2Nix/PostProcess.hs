@@ -129,12 +129,12 @@ ghcModPostInstall :: String -> Version -> String
 ghcModPostInstall pname version = unlines
   [ "configureFlags = \"--datasubdir=" ++ pname ++ "-" ++ display version ++ "\";"
   , "postInstall = ''"
-  , "  cd $out/share/$pname-$version"
+  , "  cd $out/share/" ++ pname ++ "-" ++ display version
   , "  make"
   , "  rm Makefile"
   , "  cd .."
   , "  ensureDir \"$out/share/emacs\""
-  , "  mv $pname-$version emacs/site-lisp"
+  , "  mv " ++ pname ++ "-" ++ display version ++ " emacs/site-lisp"
   , "'';"
   ]
 
