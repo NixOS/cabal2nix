@@ -94,7 +94,7 @@ generatePackage hackage resolver nixpkgs  name version descr = do
   -- Currently, we add overrides that set "pkgname = null", but this is
   -- unsatisfactory because these dependencies may very well work when building
   -- the same package set with a different GHC version.
-      (missingDeps, _, drv') = cabal2nix resolver descr
+      (_, _, drv') = cabal2nix resolver descr
 
   let drv = drv' { src = srcSpec
                  , editedCabalFile = if revision drv == 0 then "" else cabalFileHash
@@ -117,7 +117,7 @@ generatePackage hackage resolver nixpkgs  name version descr = do
       missing = Set.unions
                 [ Set.fromList (filter (not . isKnownNixpkgAttribute nixpkgs hackage) (extraLibs drv ++ pkgConfDeps drv ++ buildTools drv))
                 , selectMissingHackageNames (Set.fromList (buildDepends drv ++ testDepends drv))
-                , Set.fromList [ n | Dependency (PackageName n) _ <- missingDeps, n /= name ]
+             -- , Set.fromList [ n | Dependency (PackageName n) _ <- missingDeps, n /= name ]
                 ]
 
       missingOverrides :: Doc
