@@ -16,8 +16,9 @@ postProcess deriv@(MkDerivation {..})
                                 = deriv { buildTools = "perl":"happy":buildTools }
   | pname == "bindings-GLFW"    = deriv { extraLibs = "libXext":"libXfixes":extraLibs }
   | pname == "bits-extras"      = deriv { configureFlags = "--ghc-option=-lgcc_s":configureFlags, extraLibs = filter (/= "gcc_s") extraLibs }
+  | pname == "Cabal"            = deriv { phaseOverrides = "preCheck = \"unset GHC_PACKAGE_PATH; export HOME=$NIX_BUILD_TOP\";" }
   | pname == "cabal2nix"        = deriv { doCheck = True, phaseOverrides = cabal2nixDoCheckHook }
-  | pname == "cabal-bounds"      = deriv { buildTools = "cabalInstall":buildTools }
+  | pname == "cabal-bounds"     = deriv { buildTools = "cabalInstall":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "cairo"            = deriv { extraLibs = "pkgconfig":"libc":"cairo":"zlib":extraLibs }
