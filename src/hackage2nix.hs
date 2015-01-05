@@ -61,7 +61,7 @@ generatePackageSet hackage nixpkgs = do
               putStrLn ""
               putStrLn "self: {"
               putStrLn ""
-  pkgs <- (flip parMapM) (Map.toList db) $ \(name, versions) -> do
+  pkgs <- flip parMapM (Map.toList db) $ \(name, versions) -> do
     let multiVersionPackage :: Bool
         multiVersionPackage = Map.size versions > 1
 
@@ -73,7 +73,7 @@ generatePackageSet hackage nixpkgs = do
 
       let nixAttr = name ++ if multiVersionPackage then "_" ++ [ if c == '.' then '_' else c | c <- display version ] else ""
 
-      let def = nest 2 $ hang ((string nixAttr) <+> equals <+> text "callPackage") 2 (parens (disp drv)) <+> (braces overrides <> semi)
+      let def = nest 2 $ hang (string nixAttr <+> equals <+> text "callPackage") 2 (parens (disp drv)) <+> (braces overrides <> semi)
       let overr = if multiVersionPackage && version == defaultVersion
                   then nest 2 $ (string name <+> equals <+> text ("self." ++ show nixAttr)) <> semi
                   else empty
@@ -152,7 +152,7 @@ mergePackageSet = Map.unionWith Map.union
 
 -- These packages replace the latest respective version during dependency resolution.
 defaultPackageOverrides :: [Dependency]
-defaultPackageOverrides = map (\s -> maybe (error (show s ++ " is not a valid override selector")) id (simpleParse s))
+defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
   [ "mtl == 2.1.*"
   , "monad-control == 0.3.*"
   ] ++
@@ -167,7 +167,7 @@ defaultPackageOverrides = map (\s -> maybe (error (show s ++ " is not a valid ov
 extraPackages :: [Dependency]
 extraPackages =
   map (\(Dependency name _) -> Dependency name anyVersion) defaultPackageOverrides ++
-  map (\s -> maybe (error (show s ++ " is not a valid extra package selector")) id (simpleParse s))
+  map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
   [
   ]
 
@@ -227,7 +227,7 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
   where
     drv = (cabal2nix' descr) { configureFlags = [ "-f" ++ (if b then "" else "-") ++ n | (FlagName n, b) <- flags ] }
 
-    Right (descr, flags) = finalize (if null missingDeps then resolver else (const True)) cabal
+    Right (descr, flags) = finalize (if null missingDeps then resolver else const True) cabal
 
     missingDeps :: [Dependency]
     missingDeps = either id (const [])  (finalize resolver cabal')
@@ -251,11 +251,8 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
     enableTest :: TestSuite -> TestSuite
     enableTest t = t { testEnabled = True }
 
-
-
-
 corePackages :: [PackageIdentifier]             -- Core packages found on Hackageg
-corePackages = map (\s -> maybe (error (show s ++ " is not a valid core package")) id (simpleParse s))
+corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
   [ "Cabal-1.18.1.5"
   , "array-0.5.0.0"
   , "base-4.7.0.2"
@@ -285,7 +282,7 @@ corePackages = map (\s -> maybe (error (show s ++ " is not a valid core package"
   ]
 
 hardCorePackages :: [PackageIdentifier]         -- Core packages not found on Hackage.
-hardCorePackages = map (\s -> maybe (error (show s ++ " is not a valid core package")) id (simpleParse s))
+hardCorePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
   [ "bin-package-db-0.0.0.0"
   , "ghc-7.8.4"
   , "rts-1.0"
