@@ -8,11 +8,12 @@ import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 -- import Cabal2Nix.Name
 import Cabal2Nix.Package
 import Control.Monad
+import Control.Applicative hiding ( empty )
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 -- import Control.Monad.RWS
 import Control.Monad.Trans
--- import Data.Map ( Map )
+import Data.Map ( Map )
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Monoid
@@ -31,27 +32,81 @@ import Distribution.System
 import Distribution.Text
 import Distribution.Version
 
+type Nixpkgs = PackageMap       -- Map String (Set [String])
+type PackageSet = Map String Version
+type PackageMultiSet = Map String (Set Version)
+
+type Constraint = Dependency
+
+(!) :: Hackage -> String -> Map Version GenericPackageDescription
+(!) hackage pkg = fromMaybe (error (show pkg ++ " is not a valid hackage package")) (Map.lookup pkg hackage)
+
+resolveConstraint :: Constraint -> Hackage -> Version
+resolveConstraint c = fromMaybe (error ("constraint " ++ display c ++ " cannot be resolved in Hackage")) .
+                        resolveConstraint' c
+
+resolveConstraint' :: Constraint -> Hackage -> Maybe Version
+resolveConstraint' (Dependency (PackageName name) vrange) hackage | Set.null vs = Nothing
+                                                                  | otherwise   = Just (Set.findMax vs)
+  where vs = Set.filter (`withinRange` vrange) (Map.keysSet (hackage ! name))
+
 main :: IO ()
 main = do
   hackage <- readHashedHackage
   nixpkgs <- readNixpkgPackageMap
-  runParIO (generatePackageSet hackage nixpkgs)
+  runParIO (generatePackageSet (Map.delete "type" hackage) nixpkgs)
 
-generatePackageSet :: Hackage -> PackageMap -> ParIO ()
+generatePackageSet :: Hackage -> Nixpkgs -> ParIO ()
 generatePackageSet hackage nixpkgs = do
-  let defaultPackageSet = buildDefaultPackageSet hackage defaultPackageOverrides
-      extendedPackageSet = buildExtendedPackageSet hackage extraPackages
-      db = defaultPackageSet `mergePackageSet` extendedPackageSet
+  let
 
-      matches :: PackageIdentifier -> Dependency -> Bool
-      matches (PackageIdentifier pn v) (Dependency dn vr) = pn == dn && v `withinRange` vr
+    corePackageSet :: PackageSet
+    corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- corePackages ++ hardCorePackages ]
 
-      resolver :: Dependency -> Bool
-      resolver dep@(Dependency (PackageName pkg) vrange) =
-        any (`matches` dep) (corePackages ++ hardCorePackages) ||
-        maybe False (not . Map.null . Map.filterWithKey (\k _ -> k `withinRange` vrange)) (Map.lookup pkg defaultPackageSet)
+    latestVersionSet :: PackageSet
+    latestVersionSet = Map.map (Set.findMax . Map.keysSet) hackage
 
-  forM_ (Map.assocs defaultPackageSet) $ \(name, vdb) ->
+    defaultPackageOverridesSet :: PackageSet
+    defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
+
+    generatedDefaultPackageSet :: PackageSet
+    generatedDefaultPackageSet = (defaultPackageOverridesSet `Map.union` latestVersionSet) `Map.difference` corePackageSet
+
+    latestCorePackageSet :: PackageSet
+    latestCorePackageSet = latestVersionSet `Map.intersection` corePackageSet
+
+    latestOverridePackageSet :: PackageSet
+    latestOverridePackageSet = latestVersionSet `Map.intersection` defaultPackageOverridesSet
+
+    extraPackageSet :: PackageMultiSet
+    extraPackageSet = Map.unionsWith Set.union $
+                        [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency (PackageName name) _) <- extraPackages ] ++
+                        [ Map.map Set.singleton latestCorePackageSet ] ++
+                        [ Map.map Set.singleton latestOverridePackageSet ]
+
+    defaultPkgs :: Hackage
+    defaultPkgs = Map.mapWithKey (\k v -> Map.singleton v (hackage ! k Map.! v)) generatedDefaultPackageSet
+
+    extraPkgs :: Hackage
+    extraPkgs = Map.mapWithKey (\k -> Set.foldr (\v -> Map.insert v (hackage ! k Map.! v)) Map.empty) extraPackageSet
+
+    db :: Hackage
+    db = Map.unionWith Map.union defaultPkgs extraPkgs
+
+  {-
+    defaultPackageSet = buildDefaultPackageSet hackage defaultPackageOverrides
+    extendedPackageSet = buildExtendedPackageSet hackage extraPackages
+    db = defaultPackageSet `mergePackageSet` extendedPackageSet
+   -}
+    matches :: PackageIdentifier -> Dependency -> Bool
+    matches (PackageIdentifier pn v) (Dependency dn vr) = pn == dn && v `withinRange` vr
+
+    resolver :: Dependency -> Bool
+    resolver dep@(Dependency (PackageName pkg) vrange) =
+      any (`matches` dep) (corePackages ++ hardCorePackages) ||
+      maybe False (not . Map.null . Map.filterWithKey (\k _ -> k `withinRange` vrange)) (Map.lookup pkg defaultPkgs)
+
+  forM_ (Map.assocs defaultPkgs) $ \(name, vdb) ->
     when (Map.size vdb /= 1) $
       fail ("invalid defaut package set: " ++ show (name, Map.keys vdb))
 
@@ -62,30 +117,30 @@ generatePackageSet hackage nixpkgs = do
               putStrLn "self: {"
               putStrLn ""
   pkgs <- flip parMapM (Map.toList db) $ \(name, versions) -> do
-    let multiVersionPackage :: Bool
-        multiVersionPackage = Map.size versions > 1
-
-        defaultVersion :: Version
-        defaultVersion = fst $ Map.findMax $ (Map.!) defaultPackageSet name
-
     pkg <- forM (Map.toList versions) $ \(version, descr) -> do
+      let isDefaultVersion :: Bool
+          isDefaultVersion
+            | Just _ <- Map.lookup name corePackageSet             = False
+            | Just v <- Map.lookup name generatedDefaultPackageSet = v == version
+            | otherwise                                            = False
+
       (drv, overrides) <- generatePackage db resolver nixpkgs name version descr
 
-      let nixAttr = name ++ if multiVersionPackage then "_" ++ [ if c == '.' then '_' else c | c <- display version ] else ""
+      let nixAttr = name ++ if isDefaultVersion then "" else "_" ++ [ if c == '.' then '_' else c | c <- display version ]
 
       let def = nest 2 $ hang (string nixAttr <+> equals <+> text "callPackage") 2 (parens (disp drv)) <+> (braces overrides <> semi)
-      let overr = if multiVersionPackage && version == defaultVersion
-                  then nest 2 $ (string name <+> equals <+> text ("self." ++ show nixAttr)) <> semi
-                  else empty
+      -- let overr = if not isDefaultVersion && isJust (Map.lookup name corePackageSet)
+      --             then nest 2 $ (string name <+> equals <+> text "null") <> semi
+      --             else empty
 
-      return (def $+$ overr)
+      return (def {- $+$ overr -})
 
     return (render (vcat pkg $+$ text ""))
 
   liftIO $ mapM_ putStrLn pkgs
   liftIO $ putStrLn "}"
 
-generatePackage :: Hackage -> (Dependency -> Bool) -> PackageMap -> String -> Version -> GenericPackageDescription -> ParIO (Derivation, Doc)
+generatePackage :: Hackage -> (Dependency -> Bool) -> Nixpkgs -> String -> Version -> GenericPackageDescription -> ParIO (Derivation, Doc)
 generatePackage hackage resolver nixpkgs  name version descr = do
   srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display version)
   let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
@@ -129,7 +184,7 @@ generatePackage hackage resolver nixpkgs  name version descr = do
 
   return (drv, overrides)
 
-isKnownNixpkgAttribute :: PackageMap -> Hackage -> String -> Bool
+isKnownNixpkgAttribute :: Nixpkgs -> Hackage -> String -> Bool
 isKnownNixpkgAttribute nixpkgs hackage name
   | '.' `elem` name                     = True
   | Just _ <- Map.lookup name hackage   = True
@@ -155,29 +210,28 @@ defaultPackageOverrides :: [Dependency]
 defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
   [ "mtl == 2.1.*"
   , "monad-control == 0.3.*"
-  ] ++
+  ] {- ++
   [ Dependency n (thisVersion v) | PackageIdentifier n v <- corePackages ]
      -- TODO: This is necessary because otherwise we may end up having a
      -- version that's "too new" in the default package set. The problem
      -- is that we don't want those packages generated, really, so maybe
      -- we should remove them from the final package set after the
      -- resover has been constructed?
+  -}
 
 -- These packages are added to the generated set, but the play no role during dependency resolution.
 extraPackages :: [Dependency]
 extraPackages =
-  map (\(Dependency name _) -> Dependency name anyVersion) defaultPackageOverrides ++
+  -- map (\(Dependency name _) -> Dependency name anyVersion) defaultPackageOverrides ++
   map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
   [ "Cabal < 1.22"
   ]
 
 selectLatestMatchingPackage :: Dependency -> Hackage -> Hackage
-selectLatestMatchingPackage (Dependency (PackageName name) vrange) db =
-  case Map.lookup name db of
-    Nothing -> error (show name ++ " is not a valid Hackage package")
-    Just vdb -> let (key,val) = Map.findMax (Map.filterWithKey (\k _ -> k `withinRange` vrange) vdb)
-                in  Map.singleton name (Map.singleton key val)
-
+selectLatestMatchingPackage (Dependency (PackageName name) vrange) db = Map.singleton name (Map.singleton key val)
+  where
+    vdb = db ! name
+    (key,val) = Map.findMax (Map.filterWithKey (\k _ -> k `withinRange` vrange) vdb)
 
 -- data Options = Options
 --   { verbose :: Bool
@@ -188,7 +242,7 @@ selectLatestMatchingPackage (Dependency (PackageName name) vrange) db =
 -- data Config = Config
 --   { _verbose :: Bool
 --   , _hackage :: Hackage
---   , _nixpkgs :: PackageMap
+--   , _nixpkgs :: Nixpkgs
 --   }
 --   deriving (Show)
 --
