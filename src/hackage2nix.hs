@@ -133,7 +133,7 @@ generatePackageSet hackage nixpkgs = do
       --             then nest 2 $ (string name <+> equals <+> text "null") <> semi
       --             else empty
 
-      return (def {- $+$ overr -})
+      return def -- $+$ overr
 
     return (render (vcat pkg $+$ text ""))
 
