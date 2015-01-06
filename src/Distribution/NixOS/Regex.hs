@@ -1,11 +1,10 @@
-{-# LANGUAGE PatternGuards, CPP #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.Cabal
    License     :  BSD3
 
-   Maintainer  :  nix-dev@cs.uu.nl
+   Maintainer  :  simons@cryp.to
    Stability   :  provisional
-   Portability :  PatternGuards
+   Portability :  portable
 
    A represtation of Nix expressions based on Cabal builder defined in
    @pkgs\/development\/libraries\/haskell\/cabal\/cabal.nix@.

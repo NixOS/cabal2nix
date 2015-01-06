@@ -2,7 +2,7 @@
    Module      :  Distribution.NixOS.PrettyPrinting
    License     :  BSD3
 
-   Maintainer  :  nix-dev@cs.uu.nl
+   Maintainer  :  simons@cryp.to
    Stability   :  provisional
    Portability :  portable
 
