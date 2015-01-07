@@ -35,6 +35,8 @@ import Distribution.PackageDescription ( PackageDescription )
 #endif
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Text
+import Cabal2Nix.CorePackages
+import Cabal2Nix.Name ( toNixName, buildToolNixName )
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -118,8 +120,12 @@ renderDerivation deriv =
   ]
   where
     inputs = nub $ sortBy (compare `on` map toLower) $ filter (/="cabal") $ filter (not . isPrefixOf "self.") $
-              buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
+              (map (defaultNullIfCore coreNixPackages) (buildDepends deriv ++ testDepends deriv)) ++ (map (defaultNullIfCore coreNixBuildTools) (buildTools deriv)) ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
            ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
+    defaultNullIfCore set name =
+        name ++ (if elem name set then " ? null" else "")
+    coreNixPackages = map toNixName corePackages
+    coreNixBuildTools = concatMap buildToolNixName coreBuildTools
     renderedFlags =  [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                   ++ map text (configureFlags deriv)
     isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl (src deriv)
