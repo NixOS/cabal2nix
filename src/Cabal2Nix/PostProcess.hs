@@ -22,7 +22,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "cabal-bounds"     = deriv { buildTools = "cabal-install":buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
-  | pname == "cuda"             = deriv { phaseOverrides = cudaConfigurePhase, extraLibs = "cudatoolkit":"nvidia_x11":"stdenv.cc":extraLibs }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
   | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
@@ -100,30 +99,6 @@ postProcess deriv@(MkDerivation {..})
                                         }
   | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
   | otherwise                   = deriv
-
-cudaConfigurePhase :: String
-cudaConfigurePhase = unlines
-  [ "# The cudatoolkit provides both 64 and 32-bit versions of the"
-  , "# library. GHC's linker fails if the wrong version is found first."
-  , "# We solve this by eliminating lib64 from the path on 32-bit"
-  , "# platforms and putting lib64 first on 64-bit platforms."
-  , "configurePhase = ''"
-  , "  for i in Setup.hs Setup.lhs; do"
-  , "    test -f $i && ghc --make $i"
-  , "  done"
-  , "  for p in $extraBuildInputs $propagatedNativeBuildInputs; do"
-  , "    if [ -d \"$p/include\" ]; then"
-  , "      extraLibDirs=\"$extraLibDirs --extra-include-dir=$p/include\""
-  , "    fi"
-  , "    for d in ${if stdenv.is64bit then \"lib64 lib\" else \"lib\"}; do"
-  , "      if [ -d \"$p/$d\" ]; then"
-  , "        extraLibDirs=\"$extraLibDirs --extra-lib-dir=$p/$d\""
-  , "      fi"
-  , "    done"
-  , "  done"
-  , "  ./Setup configure --verbose --prefix=\"$out\" $libraryProfiling $extraLibDirs $configureFlags"
-  , "'';"
-  ]
 
 ghcModPostInstall :: String -> Version -> String
 ghcModPostInstall pname version = unlines
