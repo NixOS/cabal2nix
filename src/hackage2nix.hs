@@ -136,7 +136,6 @@ generatePackageSet hackage nixpkgs = do
 
 isKnownNixpkgAttribute :: Nixpkgs -> Hackage -> String -> Bool
 isKnownNixpkgAttribute nixpkgs hackage name
-  | '.' `elem` name                     = True  -- TODO: remove this crap once the cuda expression has a proper post-process hook.
   | Just _ <- Map.lookup name hackage   = True
   | otherwise                           = maybe False goodScope (Map.lookup name nixpkgs)
   where
