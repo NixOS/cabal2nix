@@ -4,7 +4,6 @@ module Cabal2Nix.Normalize ( normalize, normalizeList ) where
 
 import Distribution.NixOS.Derivation.Cabal
 import Cabal2Nix.Name
-import Cabal2Nix.CorePackages
 import Data.List
 import Data.Char
 import Data.Function
@@ -12,9 +11,9 @@ import Distribution.NixOS.Regex ( regsubmatch )
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
-  { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) buildDepends)
-  , testDepends  = normalizeNixNames (filter (`notElem` (pname : corePackages)) testDepends)
-  , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) buildTools)
+  { buildDepends = normalizeNixNames (filter ((/=) pname) buildDepends)
+  , testDepends  = normalizeNixNames (filter ((/=) pname) testDepends)
+  , buildTools   = normalizeNixBuildTools buildTools
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
   , metaSection  = normalizeMeta metaSection
