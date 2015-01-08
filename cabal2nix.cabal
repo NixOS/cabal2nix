@@ -80,31 +80,6 @@ Executable cabal2nix
                         Distribution.NixOS.PrettyPrinting
                         Distribution.NixOS.Regex
 
-Executable hackage4nix
-  main-is:              hackage4nix.hs
-  hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
-                        mtl, containers, directory, filepath, hackage-db >= 1.11,
-                        transformers, process, deepseq, bytestring, SHA
-  Extensions:           PatternGuards, RecordWildCards, CPP
-  Ghc-Options:          -Wall
-  other-modules:        Cabal2Nix.CorePackages
-                        Cabal2Nix.Flags
-                        Cabal2Nix.Generate
-                        Cabal2Nix.Package
-                        Cabal2Nix.Hackage
-                        Cabal2Nix.License
-                        Cabal2Nix.Name
-                        Cabal2Nix.Normalize
-                        Cabal2Nix.PostProcess
-                        Distribution.NixOS.Fetch
-                        Distribution.NixOS.Derivation.Cabal
-                        Distribution.NixOS.Derivation.License
-                        Distribution.NixOS.Derivation.Meta
-                        Distribution.NixOS.PrettyPrinting
-                        Distribution.NixOS.PackageMap
-                        Distribution.NixOS.Regex
-
 Executable hackage2nix
   main-is:              hackage2nix.hs
   hs-source-dirs:       src
