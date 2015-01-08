@@ -2,8 +2,8 @@
 
 { cabal2nixSrc ? { outPath = ./.; revCount = 0; gitTag = "dirty"; }
 , releaseBuild ? false
-, supportedPlatforms ? if releaseBuild then ["i686-linux" "x86_64-linux" /*"x86_64-darwin"*/] else ["x86_64-linux"]
-, supportedCompilers ? if true then ["ghc784"] else ["ghc704" "ghc722" "ghc742" "ghc763" "ghc784" /*"ghcHEAD"*/]
+, supportedPlatforms ? ["x86_64-linux"] ++ (if releaseBuild then ["i686-linux" /*"x86_64-darwin"*/] else [])
+, supportedCompilers ? [/*"ghc704" "ghc722" "ghc742" "ghc763"*/ "ghc784" /*"ghcHEAD"*/]
 }:
 
 let
@@ -13,28 +13,27 @@ in
   cabal2nix = genAttrs supportedCompilers (ghcVer: genAttrs supportedPlatforms (system:
     let
       pkgs = import <nixpkgs> { inherit system; };
-      haskellPackages = pkgs.lib.getAttrFromPath ["haskellPackages_${ghcVer}"] pkgs;
+      haskellPackages = pkgs.lib.getAttrFromPath ["haskell-ng" "packages" ghcVer] pkgs;
       nativeCabal = pkgs.stdenv.lib.versionOlder "7.8" haskellPackages.ghc.version;
-      Cabal = if nativeCabal then null else haskellPackages.Cabal_1_18_1_3;
+      Cabal = if nativeCabal then null else haskellPackages.Cabal_1_20_0_3;
       hackageDb = haskellPackages.hackageDb.override { Cabal = Cabal; };
     in
-    haskellPackages.cabal.mkDerivation (self: {
+    haskellPackages.mkDerivation {
       pname = "cabal2nix";
-      src = cabal2nixSrc;
       version = cabal2nixSrc.gitTag;
+      src = cabal2nixSrc;
       isLibrary = false;
       isExecutable = true;
       buildDepends = with haskellPackages; [
-        Cabal deepseq filepath hackageDb monadPar monadParExtras mtl
-        regexPosix transformers SHA aeson split utf8String
+        aeson base bytestring Cabal containers deepseq directory filepath
+        hackage-db monad-par monad-par-extras mtl pretty process
+        regex-posix SHA split transformers utf8-string
       ];
-      testDepends = with haskellPackages; [ doctest ];
-      doCheck = nativeCabal;
-      meta = {
-        homepage = "http://github.com/NixOS/cabal2nix";
-        description = "Convert Cabal files into Nix build instructions";
-        license = self.stdenv.lib.licenses.bsd3;
-        maintainers = [ self.stdenv.lib.maintainers.simons ];
-      };
-    })));
+      testDepends = with haskellPackages; [ base doctest ];
+      homepage = "http://github.com/NixOS/cabal2nix";
+      description = "Convert Cabal files into Nix build instructions";
+      license = pkgs.stdenv.lib.licenses.bsd3;
+      maintainers = [ pkgs.stdenv.lib.maintainers.simons ];
+    }
+  ));
 }
