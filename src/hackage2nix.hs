@@ -146,9 +146,6 @@ isKnownNixpkgAttribute nixpkgs hackage name
 defaultPackageOverrides :: [Constraint]
 defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
   [ "mtl == 2.1.*"                      -- newer versions require transformers > 4, which we cannot provide in GHC 7.8.x
-  , "amazonka-core < 0.0.8"             -- newer versions require time >= 1.5, which we cannot provide in GHC 7.8.x
-  , "amazonka < 0.0.8"                  -- must match the version of amazonka-core
-  , "amazonka-cloudwatch < 0.0.8"       -- must match the version of amazonka-core
   ]
 
 -- These packages are added to the generated set, but the play no role during dependency resolution.
@@ -156,7 +153,6 @@ extraPackages :: [Constraint]
 extraPackages =
   map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
   [ "Cabal < 1.22"                      -- required for jailbreak-cabal
-  , "nats < 1"                          -- required by amazonka et al.
   ]
 
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
