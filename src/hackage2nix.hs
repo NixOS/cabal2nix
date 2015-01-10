@@ -146,6 +146,7 @@ isKnownNixpkgAttribute nixpkgs hackage name
 defaultPackageOverrides :: [Constraint]
 defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
   [ "mtl == 2.1.*"                      -- newer versions require transformers > 4, which we cannot provide in GHC 7.8.x
+  , "HStringTemplate < 0.8"             -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
   ]
 
 -- These packages are added to the generated set, but the play no role during dependency resolution.
