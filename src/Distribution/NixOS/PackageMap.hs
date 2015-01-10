@@ -14,7 +14,7 @@ type Path = [Attribute]
 
 readNixpkgAttributeSet :: IO (Set Attribute)
 readNixpkgAttributeSet = do
-  buf <- readProcess "nix-env" ["-qaP", "--json"] ""
+  buf <- readProcess "nix-env" ["-qaP", "--json", "-f<nixpkgs>"] ""
   let pkgmap :: Either String (Map Attribute JSON.Object)
       pkgmap = JSON.eitherDecodeStrict (UTF8.toRep (UTF8.fromString buf))
   either fail (return . Map.keysSet) pkgmap
