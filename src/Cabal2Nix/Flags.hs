@@ -7,6 +7,7 @@ configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "arithmoi"           = [disable "llvm"]
  | name == "accelerate-examples"= [disable "opencl"]
+ | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
  | name == "diagrams-builder"   = [enable "cairo", enable "svg", enable "ps", enable "rasterific"]
  | name == "folds"              = [disable "test-hlint"]
  | name == "git-annex"          = [enable "Assistant" , enable "Production"]
