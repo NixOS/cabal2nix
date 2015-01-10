@@ -104,6 +104,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      , platforms   = optPlatform cfg
                                      }
                      , doCheck = doCheck deriv && optDoCheck cfg
+                     , extraFunctionArgs = "stdenv" : extraFunctionArgs deriv
                      }
 
   putStr (show (disp (normalize deriv')))
