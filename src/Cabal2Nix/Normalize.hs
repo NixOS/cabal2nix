@@ -17,6 +17,7 @@ normalize deriv@(MkDerivation {..}) = deriv
   , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) buildTools)
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
+  , configureFlags = normalizeList configureFlags
   , metaSection  = normalizeMeta metaSection
   }
 
