@@ -10,6 +10,7 @@ import Distribution.NixOS.Fetch
 import Control.Exception ( bracket )
 import Control.Monad ( when )
 import Distribution.Text ( disp )
+import Distribution.NixOS.PrettyPrinting
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
@@ -27,6 +28,7 @@ data Configuration = Configuration
   , optRevision :: String
   , optHyperlinkSource :: Bool
   , optHackageDb :: Maybe FilePath
+  , optNixShellOutput :: Bool
   }
   deriving (Show)
 
@@ -43,6 +45,7 @@ defaultConfiguration = Configuration
   , optRevision = ""
   , optHyperlinkSource = True
   , optHackageDb = Nothing
+  , optNixShellOutput = False
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
@@ -58,6 +61,7 @@ options =
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
   , Option ""  ["rev"]        (ReqArg (\x o -> o { optRevision = x }) "REVISION")                        "revision, only used when fetching from VCS"
   , Option ""  ["no-hyperlink-source"] (NoArg (\o -> o { optHyperlinkSource = False }))                  "don't add pretty-printed source code to the documentation"
+  , Option ""  ["shell"]      (NoArg (\o -> o { optNixShellOutput = True }))                             "generate output suitable for nix-shell"
   ]
 
 usage :: String
@@ -107,4 +111,18 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                      , extraFunctionArgs = "stdenv" : extraFunctionArgs deriv
                      }
 
-  putStr (show (disp (normalize deriv')))
+      deriv'' :: Doc
+      deriv'' = disp (normalize deriv')
+
+      shell :: Doc -> Doc
+      shell expr = vcat
+              [ text "with (import <nixpkgs> {}).pkgs;"
+              , text "let pkg = " <> hang (text "haskellngPackages.callPackage") 2 (parens (expr)) <+> braces empty <> semi
+              , text "in"
+              , text "  pkg.env"
+              ]
+
+      deriv''' | optNixShellOutput cfg = shell deriv''
+               | otherwise             = deriv''
+
+  putStrLn (show deriv''')
