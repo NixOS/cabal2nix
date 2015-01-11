@@ -153,7 +153,8 @@ defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a vali
 extraPackages :: [Constraint]
 extraPackages =
   map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
-  [ "Cabal < 1.22"                      -- required for jailbreak-cabal
+  [ "Cabal == 1.20.*"                   -- required for cabal-install et al on old GHC versions
+  , "Cabal == 1.18.*"
   ]
 
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
