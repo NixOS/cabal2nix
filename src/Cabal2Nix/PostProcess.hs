@@ -46,7 +46,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
-  | pname == "hlibgit2"         = deriv { testDepends = "git":testDepends }
+  | pname == "hlibgit2"         = deriv { buildTools = "git":buildTools }
   | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = "liblapack":"blas": filter (/= "lapack") extraLibs }
   | pname == "hmatrix-special"  = deriv { extraLibs = "gsl":extraLibs }
@@ -74,7 +74,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "pandoc"           = deriv { buildDepends = "alex":"happy":buildDepends }
   | pname == "pcap"             = deriv { extraLibs = "libpcap":extraLibs }
   | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
-  | pname == "purescript"       = deriv { testDepends = "nodejs":testDepends }
+  | pname == "purescript"       = deriv { buildTools = "nodejs":buildTools }
   | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
   | pname == "saltine"          = deriv { extraLibs = map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
@@ -99,9 +99,12 @@ postProcess deriv@(MkDerivation {..})
                                         }
   | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
 
--- good post-processing
+-- Unbreak packages during hackage2nix generation:
+
   | pname == "hnetcdf"          = deriv { testDepends = delete "netcdf" testDepends }
   | pname == "SDL2-ttf"         = deriv { buildDepends = delete "SDL2" buildDepends }
+  | pname == "jsaddle"          = deriv { buildDepends = delete "ghcjs-base" buildDepends, testDepends = delete "ghcjs-base" testDepends }
+  | pname == "hzk"              = deriv { testDepends = delete "zookeeper_mt" testDepends, buildTools = "zookeeper_mt":buildTools }
   | otherwise                   = deriv
 
 ghcModPostInstall :: String -> Version -> String
