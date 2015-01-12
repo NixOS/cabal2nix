@@ -1,4 +1,4 @@
--- Run: cabal build -j hackage2nix && dist/build/hackage2nix/hackage2nix >hackage-packages.nix && mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix && nix-env -qaP | tail -1
+-- Run: cabal build -j hackage2nix && time dist/build/hackage2nix/hackage2nix >hackage-packages.nix && mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix && nix-env -qaP | tail -1
 
 module Main ( main ) where
 
@@ -7,6 +7,7 @@ import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 import Cabal2Nix.Package
 import Data.List
+import Data.Function
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
@@ -19,7 +20,7 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.PackageMap ( PackageMap, readNixpkgPackageMap )
+import Distribution.NixOS.PackageMap
 import Distribution.NixOS.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
@@ -104,26 +105,32 @@ generatePackageSet hackage nixpkgs = do
           -- TODO: Include list of broken dependencies in the generated output.
           descr = hackage Map.! name Map.! version
           (_, _, drv') = cabal2nix resolver descr
-          drv = drv' { src = srcSpec, editedCabalFile = if revision drv == 0 then "" else cabalFileHash }
+          drv = drv' { src = srcSpec, editedCabalFile = if revision drv == 0 then "" else cabalFileHash
+                     , metaSection = (metaSection drv') { broken = not (Set.null missing) } -- Missing Haskell dependencies!
+                     }
 
           missing :: Set String
-          missing = Set.fromList $
-                      filter (not . isKnownNixpkgAttribute nixpkgs hackage) (extraLibs drv ++ pkgConfDeps drv ++ buildTools drv) ++
-                      filter (flip Set.notMember knownAttributesSet) (buildDepends drv ++ testDepends drv)
+          missing = Set.fromList $ filter (`Set.notMember` knownAttributesSet) (buildDepends drv ++ testDepends drv)
 
-          missingOverrides :: Doc
-          missingOverrides | Set.null missing = empty
-                           | otherwise        = fcat [ text (' ':dep++" = null;") | dep <- Set.toAscList missing ] <> space
+          buildInputs :: Map Attribute (Maybe Path)
+          buildInputs = Map.unions
+                        [ Map.fromList [ (n, Nothing) | n <- Set.toList missing ]
+                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList (Set.fromList (extraLibs drv ++ pkgConfDeps drv)) ]
+                        , Map.fromList [ (n, resolveNixpkgsOrHackageAttribute nixpkgs hackage n) | n <- Set.toAscList (Set.fromList (buildTools drv)) ]
+                        ]
 
-          conflicts :: Set String
-          conflicts = Set.intersection knownAttributesSet (Set.fromList (extraLibs drv ++ pkgConfDeps drv))
+          systemOverrides :: Doc
+          systemOverrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
 
-          conflictOverrides :: Doc
-          conflictOverrides | Set.null conflicts = empty
-                            | otherwise          = text " inherit (pkgs) " <> hsep (map text (Set.toAscList conflicts)) <> text "; "
+          formatOverride :: Attribute -> Maybe Path -> Doc
+          formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
+          formatOverride n (Just [])                                            -- Haskell package:
+            | n == name              = formatOverride n Nothing                 --     refers to a missing system library
+            | otherwise              = empty                                    --     found by callPackage
+          formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
 
           overrides :: Doc
-          overrides = conflictOverrides $+$ missingOverrides
+          overrides = systemOverrides
 
           attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == version = name
                | otherwise                                                          = name ++ '_' : [ if c == '.' then '_' else c | c <- display version ]
@@ -134,13 +141,23 @@ generatePackageSet hackage nixpkgs = do
   liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
   liftIO $ putStrLn "}"
 
-isKnownNixpkgAttribute :: Nixpkgs -> Hackage -> String -> Bool
-isKnownNixpkgAttribute nixpkgs hackage name
-  | Just _ <- Map.lookup name hackage   = True
-  | otherwise                           = maybe False goodScope (Map.lookup name nixpkgs)
+resolveNixpkgsOrHackageAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
+resolveNixpkgsOrHackageAttribute nixpkgs hackage name
+  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name   = p
+  | Just _ <- Map.lookup name hackage                   = Just []
+  | otherwise                                           = Nothing
+
+resolveNixpkgsAttribute :: Nixpkgs -> Attribute -> Maybe Path
+resolveNixpkgsAttribute nixpkgs name
+  | Just paths <- Map.lookup name nixpkgs = getShortestPath (Set.toList (paths `Set.intersection` goodScopes))
+  | otherwise                             = Nothing
   where
-    goodScope :: Set [String] -> Bool
-    goodScope = not . Set.null . Set.intersection (Set.fromList [[], ["xlibs"], ["gnome"]])
+    goodScopes :: Set Path
+    goodScopes = Set.fromList [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]]
+
+    getShortestPath :: [Path] -> Maybe Path
+    getShortestPath [] = Nothing
+    getShortestPath ps = Just ("pkgs" : minimumBy (on compare length) ps)
 
 -- These packages replace the latest respective version during dependency resolution.
 defaultPackageOverrides :: [Constraint]
