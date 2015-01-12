@@ -172,6 +172,7 @@ extraPackages =
   map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
   [ "Cabal == 1.20.*"                   -- required for cabal-install et al on old GHC versions
   , "Cabal == 1.18.*"
+  , "optparse-applicative == 0.10.*"    -- required for elm-make 0.1.1 and elm-package 0.4
   ]
 
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
