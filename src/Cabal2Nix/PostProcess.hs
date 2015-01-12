@@ -98,6 +98,10 @@ postProcess deriv@(MkDerivation {..})
                                         , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
                                         }
   | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
+
+-- good post-processing
+  | pname == "hnetcdf"          = deriv { testDepends = delete "netcdf" testDepends }
+  | pname == "SDL2-ttf"         = deriv { buildDepends = delete "SDL2" buildDepends }
   | otherwise                   = deriv
 
 ghcModPostInstall :: String -> Version -> String
