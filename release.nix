@@ -29,7 +29,7 @@ in
         hackage-db monad-par monad-par-extras mtl pretty process
         regex-posix SHA split transformers utf8-string
       ];
-      testDepends = with haskellPackages; [ base doctest ];
+      testDepends = with haskellPackages; [ base doctest QuickCheck deepseq-generics hspec ];
       homepage = "http://github.com/NixOS/cabal2nix";
       description = "Convert Cabal files into Nix build instructions";
       license = pkgs.stdenv.lib.licenses.bsd3;

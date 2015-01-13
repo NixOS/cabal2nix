@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.Meta
    License     :  BSD3
@@ -17,10 +18,11 @@ module Distribution.NixOS.Derivation.Meta
   )
   where
 
-import Control.DeepSeq
+import Control.DeepSeq.Generics
 import Distribution.NixOS.Derivation.License
 import Distribution.NixOS.PrettyPrinting
 import Distribution.Text
+import GHC.Generics ( Generic )
 
 -- | A representation of the @meta@ section used in Nix expressions.
 --
@@ -51,14 +53,13 @@ data Meta = Meta
   , maintainers    :: [String]  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   , broken         :: Bool      -- ^ set to @true@ if the build is known to fail
   }
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
 
 instance Text Meta where
   disp  = renderMeta
   parse = error "parsing Distribution.NixOS.Derivation.Cabal.Meta is not supported yet"
 
-instance NFData Meta where
-  rnf (Meta a b c d e f g) = a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` g `deepseq` ()
+instance NFData Meta where rnf = genericRnf
 
 renderMeta :: Meta -> Doc
 renderMeta meta = vcat

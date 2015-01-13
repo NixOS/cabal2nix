@@ -1,4 +1,5 @@
-{-# LANGUAGE PatternGuards, RecordWildCards, CPP #-}
+{-# LANGUAGE PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 {- |
    Module      :  Distribution.NixOS.Derivation.Cabal
    License     :  BSD3
@@ -20,7 +21,7 @@ module Distribution.NixOS.Derivation.Cabal
   )
   where
 
-import Control.DeepSeq
+import Control.DeepSeq.Generics
 import Data.Char
 import Data.Function
 import Data.List
@@ -35,6 +36,7 @@ import Distribution.PackageDescription ( PackageDescription )
 #endif
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Text
+import GHC.Generics ( Generic )
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -67,7 +69,7 @@ data Derivation = MkDerivation
   , editedCabalFile     :: String
   , metaSection         :: Meta
   }
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
 
 instance Text Derivation where
   disp  = renderDerivation
@@ -76,17 +78,10 @@ instance Text Derivation where
 instance Package Derivation where
   packageId deriv = PackageIdentifier (PackageName (pname deriv)) (version deriv)
 
-instance NFData Derivation where
-  rnf (MkDerivation a b c d e f g h i j k l m n o p q r t u v w x) =
-    a `deepseq` b `deepseq` c `deepseq` d `deepseq` e `deepseq` f `deepseq` g `deepseq`
-    h `deepseq` i `deepseq` j `deepseq` k `deepseq` l `deepseq` m `deepseq` n `deepseqFlagAssignment`
-    o `deepseq` p `deepseq` q `deepseq` r `deepseq` t `deepseq` u `deepseq` v `deepseq`
-    w `deepseq` x `deepseq` ()
+instance NFData Derivation where rnf = genericRnf
 
--- FlagName has no NFData instance in old version of Cabal.
-deepseqFlagAssignment :: FlagAssignment -> a -> a
-deepseqFlagAssignment [] b = b
-deepseqFlagAssignment ((FlagName n, v):as) b = n `deepseq` v `deepseq` as `deepseqFlagAssignment` b
+deriving instance Generic FlagName
+instance NFData FlagName where rnf = genericRnf
 
 renderDerivation :: Derivation -> Doc
 renderDerivation deriv =

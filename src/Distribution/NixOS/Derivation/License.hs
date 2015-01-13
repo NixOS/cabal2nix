@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.License
    License     :  BSD3
@@ -13,10 +14,11 @@
 
 module Distribution.NixOS.Derivation.License ( License(..) ) where
 
-import Control.DeepSeq
+import Control.DeepSeq.Generics
 import Data.Maybe
 import Distribution.NixOS.PrettyPrinting
 import Distribution.Text
+import GHC.Generics ( Generic )
 
 -- | The representation for licenses used in Nix derivations. Known
 -- licenses are Nix expressions -- such as @stdenv.lib.licenses.bsd3@
@@ -44,13 +46,11 @@ import Distribution.Text
 
 data License = Known String
              | Unknown (Maybe String)
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
 
 instance Text License where
   disp (Known x)   = text x
   disp (Unknown x) = string (fromMaybe "unknown" x)
   parse = error "parsing Distribution.NixOS.Derivation.License is not supported yet"
 
-instance NFData License where
-  rnf (Known s) = rnf s
-  rnf (Unknown s) = rnf s
+instance NFData License where rnf = genericRnf

@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DeriveGeneric #-}
 module Distribution.NixOS.Fetch
   ( Source(..)
   , DerivationSource(..), fromDerivationSource
@@ -9,11 +10,12 @@ module Distribution.NixOS.Fetch
   ) where
 
 import Control.Applicative
-import Control.DeepSeq
+import Control.DeepSeq.Generics
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Maybe
+import GHC.Generics ( Generic )
 import System.Directory
 import System.Environment
 import System.Exit
@@ -26,7 +28,9 @@ data Source = Source
   , sourceRevision  :: String       -- ^ Revision to use. For protocols where this doesn't make sense (such as HTTP), this
                                     --   should be the empty string.
   , sourceHash      :: Maybe String -- ^ The expected hash of the source, if available.
-  } deriving (Show, Eq, Ord)
+  } deriving (Show, Eq, Ord, Generic)
+
+instance NFData Source where rnf = genericRnf
 
 -- | A source for a derivation. It always needs a hash and also has a protocol attached to it (url, git, svn, ...).
 -- A @DerivationSource@ also always has it's revision fully resolved (not relative revisions like @master@, @HEAD@, etc).
@@ -35,10 +39,10 @@ data DerivationSource = DerivationSource
   , derivUrl      :: String -- ^ URL to fetch from.
   , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
   , derivHash     :: String -- ^ The hash of the source.
-  } deriving (Show, Eq, Ord)
+  }
+  deriving (Show, Eq, Ord, Generic)
 
-instance NFData DerivationSource where
-  rnf (DerivationSource a b c d) = a `deepseq` b `deepseq` c `deepseq` d `deepseq` ()
+instance NFData DerivationSource where rnf = genericRnf
 
 fromDerivationSource :: DerivationSource -> Source
 fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision $ Just derivHash

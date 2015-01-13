@@ -60,8 +60,8 @@ Executable cabal2nix
   hs-source-dirs:       src
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
                         filepath, directory, process, hackage-db >= 1.11, transformers,
-                        deepseq, bytestring, SHA
-  Extensions:           PatternGuards, RecordWildCards, CPP
+                        deepseq, bytestring, SHA, deepseq-generics
+  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
   Ghc-Options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
@@ -86,9 +86,9 @@ Executable hackage2nix
   Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
                         filepath, directory, process, hackage-db >= 1.11, transformers, deepseq,
                         containers, mtl, monad-par, monad-par-extras, bytestring, SHA, aeson,
-                        split, utf8-string
+                        split, utf8-string, deepseq-generics
   Ghc-Options:          -Wall -threaded -rtsopts -with-rtsopts=-N
-  Extensions:           PatternGuards, RecordWildCards, CPP
+  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
@@ -107,4 +107,18 @@ Test-Suite doctest-cabal2nix
   type:                 exitcode-stdio-1.0
   main-is:              doc-test.hs
   hs-source-dirs:       test
+  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
   build-depends:        base, doctest
+
+Test-Suite self-test
+  type:                 exitcode-stdio-1.0
+  main-is:              spec.hs
+  hs-source-dirs:       src, test
+  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
+  build-depends:        base, regex-posix, pretty, Cabal >= 1.18,
+                        filepath, directory, process, hackage-db >= 1.11, transformers, deepseq,
+                        containers, mtl, monad-par, monad-par-extras, bytestring, SHA, aeson,
+                        split, utf8-string, deepseq-generics, hspec, QuickCheck
+  other-modules:        Distribution.NixOS.Derivation.Cabal
+                        Distribution.NixOS.Derivation.License
+                        Distribution.NixOS.Derivation.Meta
