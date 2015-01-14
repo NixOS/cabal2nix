@@ -88,7 +88,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
   | pname == "tz"               = deriv { extraFunctionArgs = ["tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${tzdata}/share/zoneinfo\";" }
   | pname == "vacuum"           = deriv { extraLibs = "ghc-paths":extraLibs }
-  | pname == "vector"           = deriv { configureFlags = "${stdenv.lib.optionalString stdenv.isi686 \"--ghc-options=-msse2\"}":configureFlags }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall version }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
   | pname == "X11" && version >= Version [1,6] []
