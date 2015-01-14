@@ -104,9 +104,10 @@ generatePackageSet hackage nixpkgs = do
 
           -- TODO: Include list of broken dependencies in the generated output.
           descr = hackage Map.! name Map.! version
-          (_, _, drv') = cabal2nix resolver descr
+          (missingDeps, _, drv') = cabal2nix resolver descr
           drv = drv' { src = srcSpec, editedCabalFile = if revision drv == 0 then "" else cabalFileHash
                      , metaSection = (metaSection drv') { broken = not (Set.null missing) } -- Missing Haskell dependencies!
+                     , jailbreak = not (null missingDeps) -- Dependency constraints aren't fulfilled
                      }
 
           missing :: Set String
@@ -178,7 +179,7 @@ extraPackages =
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
 cabal2nix resolver cabal = (missingDeps, flags, drv)
   where
-    drv = (cabal2nix' descr) { configureFlags = [ "-f" ++ (if b then "" else "-") ++ n | (FlagName n, b) <- flags ] }
+    drv = (cabal2nix' descr) -- { configureFlags = [ "-f" ++ (if b then "" else "-") ++ n | (FlagName n, b) <- flags ] }
 
     Right (descr, flags) = finalize (if null missingDeps then resolver else const True) cabal
 
