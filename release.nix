@@ -25,11 +25,17 @@ in
       isLibrary = false;
       isExecutable = true;
       buildDepends = with haskellPackages; [
-        aeson base bytestring Cabal containers deepseq directory filepath
-        hackage-db monad-par monad-par-extras mtl pretty process
+        aeson base bytestring Cabal containers deepseq deepseq-generics
+        directory filepath hackage-db monad-par monad-par-extras mtl pretty
+        prettyclass process QuickCheck regex-posix SHA split transformers
+        utf8-string
+      ];
+      testDepends = with haskellPackages; [
+        aeson base bytestring Cabal containers deepseq deepseq-generics
+        directory doctest filepath hackage-db hspec monad-par
+        monad-par-extras mtl pretty prettyclass process QuickCheck
         regex-posix SHA split transformers utf8-string
       ];
-      testDepends = with haskellPackages; [ base doctest QuickCheck deepseq-generics hspec ];
       homepage = "http://github.com/NixOS/cabal2nix";
       description = "Convert Cabal files into Nix build instructions";
       license = pkgs.stdenv.lib.licenses.bsd3;

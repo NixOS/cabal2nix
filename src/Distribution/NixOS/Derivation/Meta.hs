@@ -20,8 +20,7 @@ module Distribution.NixOS.Derivation.Meta
 
 import Control.DeepSeq.Generics
 import Distribution.NixOS.Derivation.License
-import Distribution.NixOS.PrettyPrinting
-import Distribution.Text
+import Distribution.NixOS.Util.PrettyPrinting
 import GHC.Generics ( Generic )
 
 -- | A representation of the @meta@ section used in Nix expressions.
@@ -55,9 +54,8 @@ data Meta = Meta
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Text Meta where
-  disp  = renderMeta
-  parse = error "parsing Distribution.NixOS.Derivation.Cabal.Meta is not supported yet"
+instance Pretty Meta where
+  pPrint  = renderMeta
 
 instance NFData Meta where rnf = genericRnf
 
@@ -65,7 +63,7 @@ renderMeta :: Meta -> Doc
 renderMeta meta = vcat
   [ onlyIf (not (null (homepage meta))) $ attr "homepage" $ string (homepage meta)
   , onlyIf (not (null (description meta))) $ attr "description" $ string (description meta)
-  , attr "license" $ disp (license meta)
+  , attr "license" $ pPrint (license meta)
   , onlyIf (not (null (platforms meta)) && platforms meta /= ["ghc.meta.platforms"]) $ sep
     [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
   , onlyIf (not (null (hydraPlatforms meta))) $ sep

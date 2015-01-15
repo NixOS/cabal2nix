@@ -1,4 +1,4 @@
-{-# LANGUAGE PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving #-}
+{-# LANGUAGE PatternGuards, RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 {- |
    Module      :  Distribution.NixOS.Derivation.Cabal
@@ -14,7 +14,7 @@
 
 module Distribution.NixOS.Derivation.Cabal
   ( Derivation(..)
-  , parseDerivation
+  , renderDerivation
   , DerivationSource(..)
   , module Distribution.NixOS.Derivation.Meta
   , module Data.Version
@@ -28,14 +28,9 @@ import Data.List
 import Data.Version
 import Distribution.NixOS.Derivation.Meta
 import Distribution.NixOS.Fetch
-import Distribution.NixOS.PrettyPrinting
-import Distribution.NixOS.Regex hiding ( empty )
+import Distribution.NixOS.Util.PrettyPrinting
 import Distribution.Package
-#ifdef __HADDOCK__
-import Distribution.PackageDescription ( PackageDescription )
-#endif
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
-import Distribution.Text
 import GHC.Generics ( Generic )
 
 -- | A represtation of Nix expressions for building Haskell packages.
@@ -71,9 +66,8 @@ data Derivation = MkDerivation
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Text Derivation where
-  disp  = renderDerivation
-  parse = error "parsing Distribution.NixOS.Derivation.Cabal.Derivation is not supported yet"
+instance Pretty Derivation where
+  pPrint  = renderDerivation
 
 instance Package Derivation where
   packageId deriv = PackageIdentifier (PackageName (pname deriv)) (version deriv)
@@ -107,7 +101,7 @@ renderDerivation deriv =
     , onlyIf (not (null (testTarget deriv))) $ attr "testTarget" $ string (testTarget deriv)
     , boolattr "hyperlinkSource" (not (hyperlinkSource deriv)) (hyperlinkSource deriv)
     , onlyIf (not (null (phaseOverrides deriv))) $ vcat ((map text . lines) (phaseOverrides deriv))
-    , disp (metaSection deriv)
+    , pPrint (metaSection deriv)
     ]
   , rbrace
   ]
@@ -130,65 +124,3 @@ renderDerivation deriv =
          , rbrace <> semi
          ]
       | otherwise = attr "src" $ text derivUrl
-
--- | A very incomplete parser that extracts 'pname', 'version',
--- 'sha256', 'platforms', 'hydraPlatforms', 'maintainers', 'doCheck',
--- 'jailbreak', and 'runHaddock' from the given Nix expression.
-parseDerivation :: String -> Maybe Derivation
-parseDerivation buf
-  | buf =~ "cabal.mkDerivation"
-  , [name]    <- buf `regsubmatch` "pname *= *\"([^\"]+)\""
-  , [vers']   <- buf `regsubmatch` "version *= *\"([^\"]+)\""
-  , Just vers <- simpleParse vers'
-  , sha       <- buf `regsubmatch` "sha256 *= *\"([^\"]+)\""
-  , sr        <- buf `regsubmatch` "src *= *([^;]+);"
-  , url       <- buf `regsubmatch` "url *= *\"?([^;\"]+)\"? *;"
-  , rev       <- buf `regsubmatch` "rev *= *\"([^\"]+)\""
-  , hplats    <- buf `regsubmatch` "hydraPlatforms *= *([^;]+);"
-  , plats     <- buf `regsubmatch` "platforms *= *([^;]+);"
-  , maint     <- buf `regsubmatch` "maintainers *= *(with [^;]+;)? \\[([^\"]+)]"
-  , noHaddock <- buf `regsubmatch` "noHaddock *= *(true|false) *;"
-  , jailBreak <- buf `regsubmatch` "jailbreak *= *(true|false) *;"
-  , docheck   <- buf `regsubmatch` "doCheck *= *(true|false) *;"
-  , hyperlSrc <- buf `regsubmatch` "hyperlinkSource *= *(true|false) *;"
-  , splitObj  <- buf `regsubmatch` "enableSplitObjs *= *(true|false) *;"
-  , edtdCabal <- buf `regsubmatch` "editedCabalFile *= *\"([^\"]+)\""
-              = Just MkDerivation
-                  { pname          = name
-                  , version        = vers
-                  , revision       = 0
-                  , src            = case (sr,url) of
-                                       ([]   , _      ) -> DerivationSource "url" ("mirror://hackage/" ++ name ++ "-" ++ vers' ++ ".tar.gz") "" $ head sha
-                                       (sr':_, []     ) -> DerivationSource "" sr' "" ""
-                                       (sr':_, url':_ ) -> DerivationSource (drop (length "fetch") . head . words $ sr')
-                                                                           url' (head $ rev ++ [""]) $ head sha
-
-                  , isLibrary      = False
-                  , isExecutable   = False
-                  , extraFunctionArgs = []
-                  , buildDepends   = []
-                  , testDepends    = []
-                  , buildTools     = []
-                  , extraLibs      = []
-                  , pkgConfDeps    = []
-                  , configureFlags = []
-                  , cabalFlags     = []
-                  , runHaddock     = noHaddock /= ["true"]
-                  , jailbreak      = jailBreak == ["true"]
-                  , doCheck        = docheck == ["true"] || null docheck
-                  , testTarget     = ""
-                  , hyperlinkSource = hyperlSrc == ["true"] || null hyperlSrc
-                  , enableSplitObjs = splitObj  /= ["false"]
-                  , phaseOverrides = ""
-                  , editedCabalFile = if null edtdCabal then [] else head edtdCabal
-                  , metaSection  = Meta
-                                   { homepage       = ""
-                                   , description    = ""
-                                   , license        = Unknown Nothing
-                                   , maintainers    = if null maint then [] else concatMap words (tail maint)
-                                   , platforms      = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) plats)
-                                   , hydraPlatforms = concatMap words (map (map (\c -> if c == '+' then ' ' else c)) hplats)
-                                   , broken         = False
-                                   }
-                  }
-  | otherwise = Nothing

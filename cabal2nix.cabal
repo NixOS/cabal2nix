@@ -1,18 +1,17 @@
-Name:                   cabal2nix
-Version:                2.0
-Copyright:              Peter Simons, Andres Loeh
-License:                BSD3
-License-File:           LICENSE
-Author:                 Peter Simons <simons@cryp.to>, Andres Loeh <mail@andres-loeh.de>
-Maintainer:             Nix Developers <nix-dev@lists.science.uu.nl>
-Homepage:               http://github.com/NixOS/cabal2nix
-Category:               Distribution
-Synopsis:               Convert Cabal files into Nix build instructions
-Cabal-Version:          >= 1.8
-Build-Type:             Custom
-Tested-With:            GHC == 7.8.4
-Data-files:             README.md
-Description:
+name:                   cabal2nix
+version:                2.0
+copyright:              Peter Simons, Andres Loeh
+license:                BSD3
+license-file:           LICENSE
+author:                 Peter Simons <simons@cryp.to>, Andres Loeh <mail@andres-loeh.de>
+maintainer:             Nix Developers <nix-dev@lists.science.uu.nl>
+homepage:               http://github.com/NixOS/cabal2nix
+category:               Distribution
+synopsis:               Convert Cabal files into Nix build instructions
+cabal-version:          >= 1.8
+build-type:             Simple
+data-files:             README.md
+description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
   commandline syntax is:
   .
@@ -51,74 +50,146 @@ Description:
   Currently, cabal2nix supports directories, archives (fetched via http or https) and
   git, mercurial, svn or bazaar repositories.
 
-Source-Repository head
-  Type:                 git
-  Location:             git://github.com/NixOS/cabal2nix.git
+source-repository head
+  type:                 git
+  location:             git://github.com/NixOS/cabal2nix.git
 
-Executable cabal2nix
+executable cabal2nix
   main-is:              cabal2nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
-                        filepath, directory, process, hackage-db >= 1.11, transformers,
-                        deepseq, bytestring, SHA, deepseq-generics
-  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
-  Ghc-Options:          -Wall
+  build-depends:        aeson
+                      , base < 100
+                      , bytestring
+                      , Cabal >= 1.18
+                      , containers
+                      , deepseq
+                      , deepseq-generics
+                      , directory
+                      , filepath
+                      , hackage-db >= 1.11
+                      , monad-par
+                      , monad-par-extras
+                      , mtl
+                      , pretty
+                      , prettyclass
+                      , process
+                      , QuickCheck
+                      , regex-posix
+                      , SHA
+                      , split
+                      , transformers
+                      , utf8-string
+  extensions:           PatternGuards, RecordWildCards, DeriveGeneric, StandaloneDeriving
+  ghc-options:          -Wall
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
-                        Cabal2Nix.Package
                         Cabal2Nix.Hackage
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
+                        Cabal2Nix.Package
                         Cabal2Nix.PostProcess
                         Cabal2Nix.Version
-                        Distribution.NixOS.Fetch
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
-                        Distribution.NixOS.PrettyPrinting
-                        Distribution.NixOS.Regex
+                        Distribution.NixOS.Fetch
+                        Distribution.NixOS.PackageMap
+                        Distribution.NixOS.Util.PrettyPrinting
 
-Executable hackage2nix
+executable hackage2nix
   main-is:              hackage2nix.hs
   hs-source-dirs:       src
-  Build-Depends:        base >= 3 && < 5, regex-posix, pretty, Cabal >= 1.18,
-                        filepath, directory, process, hackage-db >= 1.11, transformers, deepseq,
-                        containers, mtl, monad-par, monad-par-extras, bytestring, SHA, aeson,
-                        split, utf8-string, deepseq-generics
-  Ghc-Options:          -Wall -threaded -rtsopts -with-rtsopts=-N
-  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
+  build-depends:        aeson
+                      , base < 100
+                      , bytestring
+                      , Cabal >= 1.18
+                      , containers
+                      , deepseq
+                      , deepseq-generics
+                      , directory
+                      , regex-posix
+                      , filepath
+                      , hackage-db >= 1.11
+                      , monad-par
+                      , monad-par-extras
+                      , mtl
+                      , pretty
+                      , prettyclass
+                      , process
+                      , QuickCheck
+                      , SHA
+                      , split
+                      , transformers
+                      , utf8-string
+  ghc-options:          -Wall -threaded -rtsopts -with-rtsopts=-N
+  extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
   other-modules:        Cabal2Nix.CorePackages
                         Cabal2Nix.Flags
                         Cabal2Nix.Generate
-                        Cabal2Nix.Package
                         Cabal2Nix.Hackage
                         Cabal2Nix.License
                         Cabal2Nix.Name
                         Cabal2Nix.Normalize
+                        Cabal2Nix.Package
                         Cabal2Nix.PostProcess
+                        Cabal2Nix.Version
                         Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
-                        Distribution.NixOS.PrettyPrinting
+                        Distribution.NixOS.Fetch
+                        Distribution.NixOS.PackageMap
+                        Distribution.NixOS.Util.PrettyPrinting
 
-Test-Suite doctest-cabal2nix
+test-suite doctest-cabal2nix
   type:                 exitcode-stdio-1.0
   main-is:              doc-test.hs
   hs-source-dirs:       test
-  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
+  extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
   build-depends:        base, doctest
 
-Test-Suite self-test
+test-suite self-test
   type:                 exitcode-stdio-1.0
   main-is:              spec.hs
   hs-source-dirs:       src, test
-  Extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
-  build-depends:        base, regex-posix, pretty, Cabal >= 1.18,
-                        filepath, directory, process, hackage-db >= 1.11, transformers, deepseq,
-                        containers, mtl, monad-par, monad-par-extras, bytestring, SHA, aeson,
-                        split, utf8-string, deepseq-generics, hspec, QuickCheck
-  other-modules:        Distribution.NixOS.Derivation.Cabal
+  extensions:           PatternGuards, RecordWildCards, CPP, DeriveGeneric, StandaloneDeriving
+  build-depends:        aeson
+                      , base
+                      , bytestring
+                      , Cabal >= 1.18
+                      , containers
+                      , deepseq
+                      , deepseq-generics
+                      , directory
+                      , regex-posix
+                      , filepath
+                      , hackage-db >= 1.11
+                      , hspec
+                      , monad-par
+                      , monad-par-extras
+                      , mtl
+                      , pretty
+                      , prettyclass
+                      , process
+                      , QuickCheck
+                      , SHA
+                      , split
+                      , transformers
+                      , utf8-string
+  other-modules:        Cabal2Nix.CorePackages
+                        Cabal2Nix.Flags
+                        Cabal2Nix.Generate
+                        Cabal2Nix.Hackage
+                        Cabal2Nix.License
+                        Cabal2Nix.Name
+                        Cabal2Nix.Normalize
+                        Cabal2Nix.Package
+                        Cabal2Nix.PostProcess
+                        Cabal2Nix.Version
+                        Distribution.NixOS.Derivation.Cabal
                         Distribution.NixOS.Derivation.License
                         Distribution.NixOS.Derivation.Meta
+                        Distribution.NixOS.Fetch
+                        Distribution.NixOS.PackageMap
+                        Distribution.NixOS.Util.PrettyPrinting

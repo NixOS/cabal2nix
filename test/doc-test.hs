@@ -32,7 +32,7 @@ main = do
              , "src/Distribution/NixOS/Derivation/Meta.hs"
              , "src/Distribution/NixOS/Fetch.hs"
              , "src/Distribution/NixOS/PackageMap.hs"
-             , "src/Distribution/NixOS/PrettyPrinting.hs"
+             , "src/Distribution/NixOS/Util/PrettyPrinting.hs"
              , "src/Distribution/NixOS/Regex.hs"
              ]
   doctest $ "src/cabal2nix.hs" : libs

@@ -8,7 +8,7 @@ import Cabal2Nix.CorePackages
 import Data.List
 import Data.Char
 import Data.Function
-import Distribution.NixOS.Regex ( regsubmatch )
+import Distribution.NixOS.Util.Regex ( regsubmatch )
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv

@@ -1,26 +1,20 @@
-{- |
-   Module      :  Distribution.NixOS.PrettyPrinting
-   License     :  BSD3
+-- | Internal pretty-printing helpers for Nix expressions.
 
-   Maintainer  :  simons@cryp.to
-   Stability   :  provisional
-   Portability :  portable
-
-   Internal pretty-printing helpers for Nix expressions.
--}
-
-module Distribution.NixOS.PrettyPrinting
+module Distribution.NixOS.Util.PrettyPrinting
   ( onlyIf
   , listattr
   , boolattr
   , attr
   , string
   , funargs
-  , module Text.PrettyPrint
+  -- * Re-exports from other modules
+  , module Text.PrettyPrint.HughesPJClass
+  , Text, disp
   )
   where
 
-import Text.PrettyPrint
+import Text.PrettyPrint.HughesPJClass
+import Distribution.Text ( Text, disp )
 
 attr :: String -> Doc -> Doc
 attr n v = text n <+> equals <+> v <> semi

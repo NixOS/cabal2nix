@@ -9,8 +9,7 @@ import Distribution.NixOS.Fetch
 
 import Control.Exception ( bracket )
 import Control.Monad ( when )
-import Distribution.Text ( disp )
-import Distribution.NixOS.PrettyPrinting
+import Distribution.NixOS.Util.PrettyPrinting
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
@@ -112,7 +111,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                      }
 
       deriv'' :: Doc
-      deriv'' = disp (normalize deriv')
+      deriv'' = pPrint (normalize deriv')
 
       shell :: Doc -> Doc
       shell expr = vcat

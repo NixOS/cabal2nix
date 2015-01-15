@@ -16,8 +16,7 @@ module Distribution.NixOS.Derivation.License ( License(..) ) where
 
 import Control.DeepSeq.Generics
 import Data.Maybe
-import Distribution.NixOS.PrettyPrinting
-import Distribution.Text
+import Distribution.NixOS.Util.PrettyPrinting
 import GHC.Generics ( Generic )
 
 -- | The representation for licenses used in Nix derivations. Known
@@ -48,9 +47,8 @@ data License = Known String
              | Unknown (Maybe String)
   deriving (Show, Eq, Ord, Generic)
 
-instance Text License where
-  disp (Known x)   = text x
-  disp (Unknown x) = string (fromMaybe "unknown" x)
-  parse = error "parsing Distribution.NixOS.Derivation.License is not supported yet"
+instance Pretty License where
+  pPrint (Known x)   = text x
+  pPrint (Unknown x) = string (fromMaybe "unknown" x)
 
 instance NFData License where rnf = genericRnf

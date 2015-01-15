@@ -21,7 +21,7 @@ import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.PackageMap
-import Distribution.NixOS.PrettyPrinting hiding ( attr, (<>) )
+import Distribution.NixOS.Util.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
 import Distribution.PackageDescription.Configuration
@@ -136,7 +136,7 @@ generatePackageSet hackage nixpkgs = do
           attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == version = name
                | otherwise                                                          = name ++ '_' : [ if c == '.' then '_' else c | c <- display version ]
 
-      return $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (disp drv)) <+> (braces overrides <> semi)
+      return $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     return (intercalate "\n\n" (map render defs))
 
   liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
