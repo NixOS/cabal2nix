@@ -1,17 +1,16 @@
-Name:                   hackage-db
-Version:                1.23
-Copyright:              Peter Simons
-License:                BSD3
-License-File:           LICENSE
-Author:                 Peter Simons <simons@cryp.to>
-Maintainer:             Peter Simons <simons@cryp.to>
-Homepage:               http://github.com/peti/hackage-db
-Category:               Distribution
-Synopsis:               access Hackage's package database via Data.Map
-Cabal-Version:          >= 1.6
-Build-Type:             Simple
-Tested-With:            GHC >= 6.10.4 && <= 7.8.4
-Description:
+name:                   hackage-db
+version:                1.23
+copyright:              Peter Simons
+license:                BSD3
+license-file:           LICENSE
+author:                 Peter Simons <simons@cryp.to>
+maintainer:             Peter Simons <simons@cryp.to>
+homepage:               http://github.com/peti/hackage-db
+category:               Distribution
+synopsis:               access Hackage's package database via Data.Map
+cabal-version:          >= 1.6
+build-type:             Simple
+description:
    This module provides simple access to the Hackage database by means
    of @Data.Map@. Suppose you wanted to implement a utility that queries
    the set of available versions for a given package, the following
@@ -34,24 +33,16 @@ Description:
    > 0.1.0.0 0.1.0.1 0.2.0.0 0.2.0.1 0.3.0.0 0.4.0.0
    > 1.0.0.0 1.1.0.0 1.1.0.1 1.1.0.2
    > 0.4.0 0.5.0 0.5.1 0.5.2 0.6.0 0.6.2 0.6.4 0.8.0 0.8.2 0.10.0 0.10.2
-   .
-   Note that once the database has been parsed, it can be accessed
-   quickly, but the inital cost of reading @00-index.tar@ is fairly
-   high.
-   .
-   This package is known to work on Linux and Mac OS X, but it's
-   probably not going to work on Windows (because no-one tested it, as
-   far as I know).
 
-Source-Repository head
-  Type:                 git
-  Location:             git://github.com/peti/hackage-db.git
+source-repository head
+  type:                 git
+  location:             git://github.com/peti/hackage-db.git
 
-Library
-  Build-Depends:        base >= 3 && < 5, tar >= 0.4, Cabal, containers,
+library
+  build-depends:        base >= 3 && < 5, tar >= 0.4, Cabal, containers,
                         directory, filepath, bytestring, utf8-string
   hs-source-dirs:       src
-  Exposed-Modules:      Distribution.Hackage.DB.Unparsed
+  exposed-modules:      Distribution.Hackage.DB.Unparsed
                         Distribution.Hackage.DB.Parsed
                         Distribution.Hackage.DB.Path
                         Distribution.Hackage.DB
