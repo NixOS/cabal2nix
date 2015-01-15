@@ -1,5 +1,5 @@
 Name:                   hackage-db
-Version:                1.11
+Version:                1.22
 Copyright:              Peter Simons
 License:                BSD3
 License-File:           LICENSE
@@ -10,7 +10,7 @@ Category:               Distribution
 Synopsis:               access Hackage's package database via Data.Map
 Cabal-Version:          >= 1.6
 Build-Type:             Simple
-Tested-With:            GHC >= 6.10.4 && <= 7.8.3
+Tested-With:            GHC >= 6.10.4 && <= 7.8.4
 Description:
    This module provides simple access to the Hackage database by means
    of @Data.Map@. Suppose you wanted to implement a utility that queries
