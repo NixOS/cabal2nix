@@ -11,7 +11,7 @@
 
 module Distribution.Hackage.DB.Path ( hackagePath ) where
 
-import System.Directory ( getHomeDirectory )
+import System.Directory ( getAppUserDataDirectory )
 import System.FilePath ( joinPath )
 
 -- | Determine the default path of the Hackage database, which typically
@@ -20,5 +20,5 @@ import System.FilePath ( joinPath )
 
 hackagePath :: IO FilePath
 hackagePath = do
-  homedir <- getHomeDirectory
-  return $ joinPath [homedir, ".cabal", "packages", "hackage.haskell.org", "00-index.tar"]
+  cabalDir <- getAppUserDataDirectory "cabal"
+  return $ joinPath [cabalDir, "packages", "hackage.haskell.org", "00-index.tar"]
