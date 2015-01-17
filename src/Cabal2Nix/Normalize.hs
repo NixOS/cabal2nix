@@ -41,7 +41,7 @@ quote (c:cs)      = c : quote cs
 quote []          = []
 
 normalizeList :: [String] -> [String]
-normalizeList = nub . sortBy (compare `on` map toLower)
+normalizeList = nub . sortBy (compare `on` map toLower) . filter (not . null)
 
 normalizeNixNames :: [String] -> [String]
 normalizeNixNames = normalizeList . map toNixName
