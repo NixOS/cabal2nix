@@ -95,7 +95,7 @@ renderDerivation deriv =
     , listattr "pkgconfigDepends" empty (pkgConfDeps deriv)
     , listattr "configureFlags" empty (map (show . show) renderedFlags)
     , boolattr "enableSplitObjs"  (not (enableSplitObjs deriv)) (enableSplitObjs deriv)
-    , boolattr "noHaddock" (not (runHaddock deriv)) (not (runHaddock deriv))
+    , boolattr "doHaddock" (not (runHaddock deriv)) (runHaddock deriv)
     , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
     , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
     , onlyIf (not (null (testTarget deriv))) $ attr "testTarget" $ string (testTarget deriv)
