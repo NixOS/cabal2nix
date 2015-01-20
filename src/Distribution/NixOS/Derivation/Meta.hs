@@ -26,16 +26,16 @@ import GHC.Generics ( Generic )
 -- | A representation of the @meta@ section used in Nix expressions.
 --
 -- >>> :{
---   putStrLn (display (Meta "http://example.org" "an example package" (Unknown Nothing)
---                      ["stdenv.lib.platforms."++x | x <- ["unix","cygwin"]]
---                      ["stdenv.lib.platforms.none"]
---                      ["joe","jane"]
---                      True))
+--   print (pPrint (Meta "http://example.org" "an example package" (Unknown Nothing)
+--                  ["stdenv.lib.platforms.unix"]
+--                  ["stdenv.lib.platforms.none"]
+--                  ["joe","jane"]
+--                  True))
 -- :}
 -- homepage = "http://example.org";
 -- description = "an example package";
 -- license = "unknown";
--- platforms = stdenv.lib.platforms.unix ++ stdenv.lib.platforms.cygwin;
+-- platforms = stdenv.lib.platforms.unix;
 -- hydraPlatforms = stdenv.lib.platforms.none;
 -- maintainers = with self.stdenv.lib.maintainers; [ joe jane ];
 -- broken = true;

@@ -33,7 +33,7 @@ main = do
              , "src/Distribution/NixOS/Fetch.hs"
              , "src/Distribution/NixOS/PackageMap.hs"
              , "src/Distribution/NixOS/Util/PrettyPrinting.hs"
-             , "src/Distribution/NixOS/Regex.hs"
+             , "src/Distribution/NixOS/Util/Regex.hs"
              ]
   doctest $ "src/cabal2nix.hs" : libs
   doctest $ "src/hackage2nix.hs" : libs
