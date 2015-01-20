@@ -175,7 +175,9 @@ defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a vali
 extraPackages :: [Constraint]
 extraPackages =
   map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
-  [ "Cabal == 1.20.*"                   -- required for cabal-install et al on old GHC versions
+  [ "aeson < 0.8"                       -- newer versions don't work with GHC 6.12.3
+  , "c2hs < 0.21"                       -- newer versions cannot compile ncurses
+  , "Cabal == 1.20.*"                   -- required for cabal-install et al on old GHC versions
   , "Cabal == 1.18.*"
   , "containers < 0.5"                  -- required to build alex with GHC 6.12.3
   , "deepseq == 1.3.0.1"                -- required to build Cabal with GHC 6.12.3
@@ -2271,7 +2273,6 @@ brokenPackages = Set.fromList $ map PackageName
   , "narc"
   , "natural-number"
   , "nc-indicators"
-  , "ncurses"
   , "nerf"
   , "netclock"
   , "netcore"
