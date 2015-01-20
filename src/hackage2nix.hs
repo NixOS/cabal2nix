@@ -180,8 +180,10 @@ extraPackages =
   , "containers < 0.5"                  -- required to build alex with GHC 6.12.3
   , "deepseq == 1.3.0.1"                -- required to build Cabal with GHC 6.12.3
   , "optparse-applicative == 0.10.*"    -- required for elm-make 0.1.1 and elm-package 0.4
+  , "parallel == 3.2.0.3"               -- newer versions don't work with GHC 6.12.3
   , "primitive == 0.5.1.*"              -- required to build alex with GHC 6.12.3
   , "split < 0.2"                       -- newer versions don't work with GHC 6.12.3
+  , "vector < 0.10.10"                  -- newer versions don't work with GHC 6.12.3
   ]
 
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
