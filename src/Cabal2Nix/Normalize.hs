@@ -1,14 +1,16 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Cabal2Nix.Normalize ( normalize, normalizeList ) where
+module Cabal2Nix.Normalize ( normalize, normalizeList, normalizeCabalFlags ) where
 
-import Distribution.NixOS.Derivation.Cabal
-import Cabal2Nix.Name
 import Cabal2Nix.CorePackages
-import Data.List
+import Cabal2Nix.Name
 import Data.Char
 import Data.Function
+import Data.List
+import Distribution.NixOS.Derivation.Cabal
 import Distribution.NixOS.Util.Regex ( regsubmatch )
+import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
+import Distribution.Simple.Utils ( lowercase )
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
@@ -18,6 +20,7 @@ normalize deriv@(MkDerivation {..}) = deriv
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
   , configureFlags = normalizeList configureFlags
+  , cabalFlags   = normalizeCabalFlags cabalFlags
   , metaSection  = normalizeMeta metaSection
   }
 
@@ -69,3 +72,16 @@ normalizePlatforms :: [String] -> [String]
 normalizePlatforms [] = ["ghc.meta.platforms"]
 normalizePlatforms plats = normalizeList
   [ if '.' `elem` p then p else "stdenv.lib.platforms." ++ p | p <- plats ]
+
+
+-- |When a flag is specified multiple times, the first occurrence
+-- counts. This is counter-intuitive, IMHO, but it's how cabal does it.
+-- Flag names are spelled in all lowercase.
+--
+-- >>> normalizeCabalFlags [(FlagName "foo", True), (FlagName "FOO", True), (FlagName "Foo", False)]
+-- [(FlagName "foo",True)]
+
+normalizeCabalFlags :: FlagAssignment -> FlagAssignment
+normalizeCabalFlags flags' = nubBy ((==) `on` fst) (sortBy (compare `on` fst) flags)
+  where
+    flags = [ (FlagName (lowercase n), b) | (FlagName n, b) <- flags' ]

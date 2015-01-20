@@ -15,17 +15,20 @@ description:
   The @cabal2nix@ utility converts Cabal files into Nix build instructions. The
   commandline syntax is:
   .
-  > Usage: cabal2nix [options] url-to-cabal-file-or-repo
+  > Usage: cabal2nix [options] URI
   >   -h             --help                   show this help text
   >   -v             --version                print version
   >                  --hackage-db=FILEPATH    path to the local hackage db in tar format
   >                  --sha256=HASH            sha256 hash of source tarball
   >   -m MAINTAINER  --maintainer=MAINTAINER  maintainer of this package (may be specified multiple times)
   >   -p PLATFORM    --platform=PLATFORM      supported build platforms (may be specified multiple times)
+  >   -f FLAG        --flag=FLAG              Cabal flag (may be specified multiple times)
   >                  --jailbreak              don't honor version restrictions on build inputs
   >                  --no-haddock             don't run Haddock when building this package
   >                  --no-check               don't run regression test suites of this package
+  >                  --rev=REVISION           revision, only used when fetching from VCS
   >                  --no-hyperlink-source    don't add pretty-printed source code to the documentation
+  >                  --shell                  generate output suitable for nix-shell
   >
   > Recognized URI schemes:
   >

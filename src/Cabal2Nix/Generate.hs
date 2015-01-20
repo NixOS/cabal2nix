@@ -12,10 +12,12 @@ import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
 import Distribution.System
 
-cabal2nix :: Cabal.GenericPackageDescription -> Derivation
-cabal2nix cabal = cabal2nix' descr
-  where Right (descr, _) = finalizePackageDescription
-                            (configureCabalFlags (Cabal.package (Cabal.packageDescription cabal)))
+cabal2nix :: Cabal.FlagAssignment -> Cabal.GenericPackageDescription -> Derivation
+cabal2nix flags' cabal = drv { cabalFlags = flags }
+  where drv = cabal2nix' descr
+        flags = normalizeCabalFlags (flags' ++ configureCabalFlags (Cabal.package (Cabal.packageDescription cabal)))
+        Right (descr, _) = finalizePackageDescription
+                            flags
                             (const True)
                             (Platform X86_64 Linux)                 -- shouldn't be hardcoded
                             (CompilerId GHC (Version [7,8,4] []))   -- dito

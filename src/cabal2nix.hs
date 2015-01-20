@@ -4,16 +4,17 @@ import Cabal2Nix.Generate ( cabal2nix )
 import Cabal2Nix.Normalize ( normalize )
 import Cabal2Nix.Package
 import Cabal2Nix.Version
-import Distribution.NixOS.Derivation.Cabal hiding ( version )
-import Distribution.NixOS.Fetch
-
 import Control.Exception ( bracket )
 import Control.Monad ( when )
+import Distribution.NixOS.Derivation.Cabal hiding ( version )
+import Distribution.NixOS.Fetch
 import Distribution.NixOS.Util.PrettyPrinting
+import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.IO ( hPutStrLn, hFlush, stdout, stderr )
+import Distribution.Simple.Utils ( lowercase )
 
 data Configuration = Configuration
   { optPrintHelp :: Bool
@@ -28,6 +29,7 @@ data Configuration = Configuration
   , optHyperlinkSource :: Bool
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
+  , optFlags :: [String]
   }
   deriving (Show)
 
@@ -45,6 +47,7 @@ defaultConfiguration = Configuration
   , optHyperlinkSource = True
   , optHackageDb = Nothing
   , optNixShellOutput = False
+  , optFlags = []
   }
 
 options :: [OptDescr (Configuration -> Configuration)]
@@ -55,6 +58,7 @@ options =
   , Option ""  ["sha256"]     (ReqArg (\x o -> o { optSha256 = Just x }) "HASH")                         "sha256 hash of source tarball"
   , Option "m" ["maintainer"] (ReqArg (\x o -> o { optMaintainer = x : optMaintainer o }) "MAINTAINER")  "maintainer of this package (may be specified multiple times)"
   , Option "p" ["platform"]   (ReqArg (\x o -> o { optPlatform = x : optPlatform o }) "PLATFORM")        "supported build platforms (may be specified multiple times)"
+  , Option "f" ["flag"]       (ReqArg (\x o -> o { optFlags = x : optFlags o }) "FLAG")                  "Cabal flag (may be specified multiple times)"
   , Option ""  ["jailbreak"]  (NoArg (\o -> o { optJailbreak = True }))                                  "don't honor version restrictions on build inputs"
   , Option ""  ["no-haddock"] (NoArg (\o -> o { optHaddock = False }))                                   "don't run Haddock when building this package"
   , Option ""  ["no-check"]   (NoArg (\o -> o { optDoCheck = False }))                                   "don't run regression test suites of this package"
@@ -97,11 +101,13 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   pkg <- getPackage (optHackageDb cfg) $ Source (head args) (optRevision cfg) (optSha256 cfg)
 
-  let deriv  = (cabal2nix $ cabal pkg) { src = source pkg
-                                       , runHaddock = optHaddock cfg
-                                       , jailbreak = optJailbreak cfg
-                                       , hyperlinkSource = optHyperlinkSource cfg
-                                       }
+  let flags = readFlagList (optFlags cfg)
+
+      deriv  = (cabal2nix flags $ cabal pkg) { src = source pkg
+                                             , runHaddock = optHaddock cfg
+                                             , jailbreak = optJailbreak cfg
+                                             , hyperlinkSource = optHyperlinkSource cfg
+                                             }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = optMaintainer cfg
                                      , platforms   = optPlatform cfg
@@ -125,3 +131,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                | otherwise             = deriv''
 
   print deriv'''
+
+readFlagList :: [String] -> FlagAssignment
+readFlagList = map tagWithValue
+  where tagWithValue ('-':fname) = (FlagName (lowercase fname), False)
+        tagWithValue fname       = (FlagName (lowercase fname), True)
