@@ -55,8 +55,8 @@ normalizeNixLibs = normalizeList . concatMap libNixName
 normalizeNixBuildTools :: [String] -> [String]
 normalizeNixBuildTools = normalizeList . concatMap buildToolNixName
 
--- |Strip the "self.ghc.meta.platforms" prefix from platform names, filter
--- duplicates, and sort the resulting list alphabetically.
+-- |Strip any kind of path prefix from maintainer names, filter duplicates, and
+-- sort the resulting list alphabetically.
 --
 -- >>> normalizeMaintainers ["self.stdenv.lib.maintainers.foobar", "foobar"]
 -- ["foobar"]
