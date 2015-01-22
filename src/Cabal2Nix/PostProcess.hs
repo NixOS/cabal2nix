@@ -7,7 +7,13 @@ import Distribution.NixOS.Derivation.Cabal
 import Distribution.Text ( display )
 
 postProcess :: Derivation -> Derivation
-postProcess deriv@(MkDerivation {..})
+postProcess = postProcess' . fixGtkBuilds
+
+fixGtkBuilds :: Derivation -> Derivation
+fixGtkBuilds deriv@(MkDerivation {..}) = deriv { pkgConfDeps = pkgConfDeps \\ buildDepends }
+
+postProcess' :: Derivation -> Derivation
+postProcess' deriv@(MkDerivation {..})
   | pname == "aeson" && version > Version [0,7] []
                                 = deriv { buildDepends = "blaze-builder":buildDepends }
   | pname == "Agda"             = deriv { buildTools = "emacs":buildTools, phaseOverrides = agdaPostInstall }
