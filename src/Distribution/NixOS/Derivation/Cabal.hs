@@ -106,8 +106,8 @@ renderDerivation deriv =
   , rbrace
   ]
   where
-    inputs = nub $ sortBy (compare `on` map toLower) $ filter (not . isPrefixOf "stdenv.") $
-             buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv ++ extraFunctionArgs deriv
+    inputs = nub $ sortBy (compare `on` map toLower) $
+             buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
              ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
     renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
                     ++ map text (configureFlags deriv)
