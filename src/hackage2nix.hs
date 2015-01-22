@@ -231,8 +231,9 @@ defaultConfiguration = Configuration
   , compilerId = CompilerId GHC (Version [7,8,4] [])
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [ "mtl == 2.1.*"                      -- newer versions require transformers > 4, which we cannot provide in GHC 7.8.x
-    , "HStringTemplate < 0.8"             -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
+    [ "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
+    , "mtl == 2.1.*"                    -- newer versions require transformers > 4, which we cannot provide in GHC 7.8.x
+    , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
