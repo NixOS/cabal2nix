@@ -104,6 +104,7 @@ postProcess deriv@(MkDerivation {..})
   | pname == "SDL2-ttf"         = deriv { buildDepends = delete "SDL2" buildDepends }
   | pname == "jsaddle"          = deriv { buildDepends = delete "ghcjs-base" buildDepends, testDepends = delete "ghcjs-base" testDepends }
   | pname == "hzk"              = deriv { testDepends = delete "zookeeper_mt" testDepends, buildTools = "zookeeper_mt":buildTools }
+  | pname == "zip-archive"      = deriv { testDepends = delete "zip" testDepends, buildTools = "zip":buildTools }
   | otherwise                   = deriv
 
 ghcModPostInstall :: String -> Version -> String
