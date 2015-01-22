@@ -37,7 +37,7 @@ import GHC.Generics ( Generic )
 -- license = "unknown";
 -- platforms = stdenv.lib.platforms.unix;
 -- hydraPlatforms = stdenv.lib.platforms.none;
--- maintainers = with self.stdenv.lib.maintainers; [ joe jane ];
+-- maintainers = with stdenv.lib.maintainers; [ joe jane ];
 -- broken = true;
 --
 -- Note that the "Text" instance definition provides pretty-printing,
@@ -68,7 +68,7 @@ renderMeta meta = vcat
     [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
   , onlyIf (not (null (hydraPlatforms meta))) $ sep
     [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
-  , listattr "maintainers" (text "with self.stdenv.lib.maintainers;") (maintainers meta)
+  , listattr "maintainers" (text "with stdenv.lib.maintainers;") (maintainers meta)
   , boolattr "broken" (broken meta) (broken meta)
   ]
 
