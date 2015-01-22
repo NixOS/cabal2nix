@@ -65,7 +65,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "MFlow"            = deriv { buildTools = "cpphs":buildTools }
   | pname == "multiarg"         = deriv { buildDepends = "utf8-string":buildDepends }
-  | pname == "mime-mail"        = deriv { extraFunctionArgs = ["sendmail ? \"sendmail\""], phaseOverrides = mimeMailConfigureFlags }
   | pname == "mysql"            = deriv { buildTools = "mysqlConfig":buildTools, extraLibs = "zlib":extraLibs }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "Omega"            = deriv { testDepends = delete "stdc++" testDepends }
@@ -86,7 +85,6 @@ postProcess deriv@(MkDerivation {..})
   | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
   | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "tz"               = deriv { extraFunctionArgs = ["tzdata"], phaseOverrides = "preConfigure = \"export TZDIR=${tzdata}/share/zoneinfo\";" }
   | pname == "vacuum"           = deriv { extraLibs = "ghc-paths":extraLibs }
   | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall version }
   | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
@@ -220,11 +218,6 @@ sloanePostInstall = unlines
   , "  mkdir -p $out/share/man/man1"
   , "  cp sloane.1 $out/share/man/man1/"
   , "'';"
-  ]
-
-mimeMailConfigureFlags :: String
-mimeMailConfigureFlags = unlines
-  [ "configureFlags = \"--ghc-option=-DMIME_MAIL_SENDMAIL_PATH=\\\"${sendmail}\\\"\";"
   ]
 
 haddockPreCheck :: String
