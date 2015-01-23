@@ -1,10 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Cabal2Nix.Normalize ( normalize, normalizeList, normalizeCabalFlags ) where
+module Cabal2Nix.Normalize ( normalize, normalizeList, normalizeSet, normalizeCabalFlags ) where
 
 import Cabal2Nix.CorePackages
 import Cabal2Nix.Name
 import Data.Char
+import Data.Set ( Set )
+import qualified Data.Set as Set
 import Data.Function
 import Data.List
 import Distribution.NixOS.Derivation.Cabal
@@ -14,12 +16,12 @@ import Distribution.Simple.Utils ( lowercase )
 
 normalize :: Derivation -> Derivation
 normalize deriv@(MkDerivation {..}) = deriv
-  { buildDepends = normalizeNixNames (filter (`notElem` (pname : corePackages)) buildDepends)
-  , testDepends  = normalizeNixNames (filter (`notElem` (pname : corePackages)) testDepends)
-  , buildTools   = normalizeNixBuildTools (filter (`notElem` coreBuildTools) buildTools)
+  { buildDepends = normalizeNixNames (Set.delete pname buildDepends)
+  , testDepends  = normalizeNixNames (Set.delete pname testDepends)
+  , buildTools   = normalizeNixBuildTools (Set.filter (`notElem` coreBuildTools) buildTools)
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
-  , configureFlags = normalizeList configureFlags
+  , configureFlags = normalizeSet configureFlags
   , cabalFlags   = normalizeCabalFlags cabalFlags
   , metaSection  = normalizeMeta metaSection
   }
@@ -46,14 +48,17 @@ quote []          = []
 normalizeList :: [String] -> [String]
 normalizeList = nub . sortBy (compare `on` map toLower) . filter (not . null)
 
-normalizeNixNames :: [String] -> [String]
-normalizeNixNames = normalizeList . map toNixName
+normalizeSet :: Set String -> Set String
+normalizeSet = Set.filter (not . null)
 
-normalizeNixLibs :: [String] -> [String]
-normalizeNixLibs = normalizeList . concatMap libNixName
+normalizeNixNames :: Set String -> Set String
+normalizeNixNames = normalizeSet . Set.map toNixName
 
-normalizeNixBuildTools :: [String] -> [String]
-normalizeNixBuildTools = normalizeList . concatMap buildToolNixName
+normalizeNixLibs :: Set String -> Set String
+normalizeNixLibs = normalizeSet . Set.fromList . concatMap libNixName . Set.toList
+
+normalizeNixBuildTools :: Set String -> Set String
+normalizeNixBuildTools = normalizeSet . Set.fromList . concatMap buildToolNixName . Set.toList
 
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.

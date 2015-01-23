@@ -11,6 +11,7 @@ import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
 import Distribution.System
+import qualified Data.Set as Set
 
 cabal2nix :: Cabal.FlagAssignment -> Cabal.GenericPackageDescription -> Derivation
 cabal2nix flags' cabal = drv { cabalFlags = flags }
@@ -32,13 +33,13 @@ cabal2nix' tpkg = normalize $ postProcess $ normalize $ MkDerivation
   , src            = error "cabal2nix left the src field undefined"
   , isLibrary      = isJust (Cabal.library tpkg)
   , isExecutable   = not (null (Cabal.executables tpkg))
-  , extraFunctionArgs = []
-  , buildDepends   = map unDep deps
-  , testDepends    = map unDep tstDeps ++ concatMap Cabal.extraLibs tests
-  , buildTools     = map unDep tools
-  , extraLibs      = libs
-  , pkgConfDeps    = pcs
-  , configureFlags = []
+  , extraFunctionArgs = Set.empty
+  , buildDepends   = Set.fromList $ map unDep deps
+  , testDepends    = Set.fromList $ map unDep tstDeps ++ concatMap Cabal.extraLibs tests
+  , buildTools     = Set.fromList $ map unDep tools
+  , extraLibs      = Set.fromList libs
+  , pkgConfDeps    = Set.fromList pcs
+  , configureFlags = Set.empty
   , cabalFlags     = configureCabalFlags pkg
   , runHaddock     = True
   , jailbreak      = False

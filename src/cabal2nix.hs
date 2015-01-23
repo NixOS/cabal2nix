@@ -15,6 +15,7 @@ import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.IO ( hPutStrLn, hFlush, stdout, stderr )
 import Distribution.Simple.Utils ( lowercase )
+import qualified Data.Set as Set
 
 data Configuration = Configuration
   { optPrintHelp :: Bool
@@ -113,7 +114,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                      , platforms   = optPlatform cfg
                                      }
                      , doCheck = doCheck deriv && optDoCheck cfg
-                     , extraFunctionArgs = "stdenv" : extraFunctionArgs deriv
+                     , extraFunctionArgs = Set.insert "stdenv" (extraFunctionArgs deriv)
                      }
 
       deriv'' :: Doc

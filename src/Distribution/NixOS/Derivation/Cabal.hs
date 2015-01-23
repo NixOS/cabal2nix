@@ -23,6 +23,8 @@ module Distribution.NixOS.Derivation.Cabal
 
 import Control.DeepSeq.Generics
 import Data.Char
+import Data.Set ( Set )
+import qualified Data.Set as Set
 import Data.Function
 import Data.List
 import Data.Version
@@ -32,6 +34,9 @@ import Distribution.NixOS.Util.PrettyPrinting
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
+
+toAscList :: Set String -> [String]
+toAscList = sortBy (compare `on` map toLower) . Set.toList
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -46,13 +51,13 @@ data Derivation = MkDerivation
   , src                 :: DerivationSource
   , isLibrary           :: Bool
   , isExecutable        :: Bool
-  , extraFunctionArgs   :: [String]
-  , buildDepends        :: [String]
-  , testDepends         :: [String]
-  , buildTools          :: [String]
-  , extraLibs           :: [String]
-  , pkgConfDeps         :: [String]
-  , configureFlags      :: [String]
+  , extraFunctionArgs   :: Set String
+  , buildDepends        :: Set String
+  , testDepends         :: Set String
+  , buildTools          :: Set String
+  , extraLibs           :: Set String
+  , pkgConfDeps         :: Set String
+  , configureFlags      :: Set String
   , cabalFlags          :: FlagAssignment
   , runHaddock          :: Bool
   , jailbreak           :: Bool
@@ -78,40 +83,40 @@ deriving instance Generic FlagName
 instance NFData FlagName where rnf = genericRnf
 
 renderDerivation :: Derivation -> Doc
-renderDerivation deriv =
-  funargs (map text ("mkDerivation":inputs)) $$ vcat
+renderDerivation (MkDerivation {..}) =
+  funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
   [ text "mkDerivation" <+> lbrace
   , nest 2 $ vcat
-    [ attr "pname"   $ string (pname deriv)
-    , attr "version" $ doubleQuotes (disp (version deriv))
-    , sourceAttr (src deriv)
-    , onlyIf (not (null (editedCabalFile deriv))) $ attr "editedCabalFile" $ string (editedCabalFile deriv)
-    , boolattr "isLibrary" (not (isLibrary deriv) || isExecutable deriv) (isLibrary deriv)
-    , boolattr "isExecutable" (not (isLibrary deriv) || isExecutable deriv) (isExecutable deriv)
-    , listattr "buildDepends" empty (buildDepends deriv)
-    , listattr "testDepends" empty (testDepends deriv)
-    , listattr "buildTools" empty (buildTools deriv)
-    , listattr "extraLibraries" empty (extraLibs deriv)
-    , listattr "pkgconfigDepends" empty (pkgConfDeps deriv)
+    [ attr "pname"   $ string pname
+    , attr "version" $ doubleQuotes (disp version)
+    , sourceAttr src
+    , onlyIf (not (null editedCabalFile)) $ attr "editedCabalFile" $ string editedCabalFile
+    , boolattr "isLibrary" ((not isLibrary) || isExecutable) isLibrary
+    , boolattr "isExecutable" ((not isLibrary) || isExecutable) isExecutable
+    , listattr "buildDepends" empty (toAscList buildDepends)
+    , listattr "testDepends" empty (toAscList testDepends)
+    , listattr "buildTools" empty (toAscList buildTools)
+    , listattr "extraLibraries" empty (toAscList extraLibs)
+    , listattr "pkgconfigDepends" empty (toAscList pkgConfDeps)
     , listattr "configureFlags" empty (map (show . show) renderedFlags)
-    , boolattr "enableSplitObjs"  (not (enableSplitObjs deriv)) (enableSplitObjs deriv)
-    , boolattr "doHaddock" (not (runHaddock deriv)) (runHaddock deriv)
-    , boolattr "jailbreak" (jailbreak deriv) (jailbreak deriv)
-    , boolattr "doCheck" (not (doCheck deriv)) (doCheck deriv)
-    , onlyIf (not (null (testTarget deriv))) $ attr "testTarget" $ string (testTarget deriv)
-    , boolattr "hyperlinkSource" (not (hyperlinkSource deriv)) (hyperlinkSource deriv)
-    , onlyIf (not (null (phaseOverrides deriv))) $ vcat ((map text . lines) (phaseOverrides deriv))
-    , pPrint (metaSection deriv)
+    , boolattr "enableSplitObjs"  (not enableSplitObjs) enableSplitObjs
+    , boolattr "doHaddock" (not runHaddock) runHaddock
+    , boolattr "jailbreak" jailbreak jailbreak
+    , boolattr "doCheck" (not doCheck) doCheck
+    , onlyIf (not (null testTarget)) $ attr "testTarget" $ string testTarget
+    , boolattr "hyperlinkSource" (not hyperlinkSource) hyperlinkSource
+    , onlyIf (not (null phaseOverrides)) $ vcat ((map text . lines) phaseOverrides)
+    , pPrint metaSection
     ]
   , rbrace
   ]
   where
-    inputs = nub $ sortBy (compare `on` map toLower) $
-             buildDepends deriv ++ testDepends deriv ++ buildTools deriv ++ extraLibs deriv ++ pkgConfDeps deriv
-             ++ ["fetch" ++ derivKind (src deriv) | derivKind (src deriv) /= "" && not isHackagePackage]
-    renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags deriv ]
-                    ++ map text (configureFlags deriv)
-    isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl (src deriv)
+    inputs = Set.unions [ buildDepends, testDepends, buildTools, extraLibs, pkgConfDeps
+                        , Set.fromList ["fetch" ++ derivKind src | derivKind src /= "" && not isHackagePackage]
+                        ]
+    renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags ]
+                    ++ map text (toAscList configureFlags)
+    isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl src
     sourceAttr (DerivationSource{..})
       | isHackagePackage = attr "sha256" $ string derivHash
       | derivKind /= "" = vcat

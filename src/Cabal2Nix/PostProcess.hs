@@ -2,7 +2,7 @@
 
 module Cabal2Nix.PostProcess ( postProcess ) where
 
-import Data.List
+import qualified Data.Set as Set
 import Distribution.NixOS.Derivation.Cabal
 import Distribution.Text ( display )
 
@@ -10,105 +10,116 @@ postProcess :: Derivation -> Derivation
 postProcess = postProcess' . fixGtkBuilds
 
 fixGtkBuilds :: Derivation -> Derivation
-fixGtkBuilds deriv@(MkDerivation {..}) = deriv { pkgConfDeps = pkgConfDeps \\ buildDepends }
+fixGtkBuilds deriv@(MkDerivation {..}) = deriv { pkgConfDeps = pkgConfDeps `Set.difference` buildDepends }
 
 postProcess' :: Derivation -> Derivation
 postProcess' deriv@(MkDerivation {..})
   | pname == "aeson" && version > Version [0,7] []
-                                = deriv { buildDepends = "blaze-builder":buildDepends }
-  | pname == "Agda"             = deriv { buildTools = "emacs":buildTools, phaseOverrides = agdaPostInstall }
+                                = deriv { buildDepends = Set.insert "blaze-builder" buildDepends }
+  | pname == "Agda"             = deriv { buildTools = Set.insert "emacs" buildTools, phaseOverrides = agdaPostInstall }
   | pname == "alex" && version < Version [3,1] []
-                                = deriv { buildTools = "perl":buildTools }
+                                = deriv { buildTools = Set.insert "perl" buildTools }
   | pname == "alex" && version >= Version [3,1] []
-                                = deriv { buildTools = "perl":"happy":buildTools }
-  | pname == "apache-md5"       = deriv { testDepends = delete "crypto" testDepends }
-  | pname == "bindings-GLFW"    = deriv { extraLibs = "libXext":"libXfixes":extraLibs }
-  | pname == "bits-extras"      = deriv { configureFlags = "--ghc-option=-lgcc_s":configureFlags, extraLibs = filter (/= "gcc_s") extraLibs }
+                                = deriv { buildTools = Set.insert "perl" (Set.insert "happy" buildTools) }
+  | pname == "apache-md5"       = deriv { testDepends = Set.delete "crypto" testDepends }
+  | pname == "bindings-GLFW"    = deriv { extraLibs = Set.insert "libXext" (Set.insert "libXfixes" extraLibs) }
+  | pname == "bits-extras"      = deriv { configureFlags = Set.insert "--ghc-option=-lgcc_s" configureFlags
+                                        , extraLibs = Set.filter (/= "gcc_s") extraLibs
+                                        }
   | pname == "Cabal"            = deriv { phaseOverrides = "preCheck = \"unset GHC_PACKAGE_PATH; export HOME=$NIX_BUILD_TOP\";" }
-  | pname == "cabal-bounds"     = deriv { buildTools = "cabal-install":buildTools }
+  | pname == "cabal-bounds"     = deriv { buildTools = Set.insert "cabal-install" buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
                                 = deriv { phaseOverrides = cabalInstallPostInstall }
   | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
   | pname == "dns"              = deriv { testTarget = "spec" }
-  | pname == "editline"         = deriv { extraLibs = "libedit":extraLibs }
-  | pname == "epic"             = deriv { extraLibs = "gmp":"boehmgc":extraLibs, buildTools = "happy":buildTools }
+  | pname == "editline"         = deriv { extraLibs = Set.insert "libedit" extraLibs }
+  | pname == "epic"             = deriv { extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs)
+                                        , buildTools = Set.insert "happy" buildTools
+                                        }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version, buildTools = "emacs":"makeWrapper":buildTools }
-  | pname == "ghc-parser"       = deriv { buildTools = "cpphs":"happy":buildTools, phaseOverrides = ghcParserPatchPhase }
+  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version
+                                        , buildTools = Set.insert "emacs" (Set.insert "makeWrapper" buildTools) }
+  | pname == "ghc-parser"       = deriv { buildTools = Set.insert "cpphs" (Set.insert "happy" buildTools)
+                                        , phaseOverrides = ghcParserPatchPhase }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides, buildTools = "git":"rsync":"gnupg1":"curl":"wget":"lsof":"openssh":"which":"bup":"perl":buildTools }
-  | pname == "github-backup"    = deriv { buildTools = "git":buildTools }
-  | pname == "gloss-raster"     = deriv { extraLibs = "llvm":extraLibs }
-  | pname == "GLUT"             = deriv { extraLibs = "glut":"libSM":"libICE":"libXmu":"libXi":"mesa":extraLibs }
-  | pname == "gtkglext"         = deriv { pkgConfDeps = "pangox_compat":pkgConfDeps }
-  | pname == "gtk2hs-buildtools"= deriv { buildDepends = "hashtables":buildDepends }
+  | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides
+                                        , buildTools = Set.fromList ["git","rsync","gnupg1","curl","wget","lsof","openssh","which","bup","perl"] `Set.union` buildTools }
+  | pname == "github-backup"    = deriv { buildTools = Set.insert "git" buildTools }
+  | pname == "gloss-raster"     = deriv { extraLibs = Set.insert "llvm" extraLibs }
+  | pname == "GLUT"             = deriv { extraLibs = Set.fromList ["glut","libSM","libICE","libXmu","libXi","mesa"] `Set.union` extraLibs }
+  | pname == "gtkglext"         = deriv { pkgConfDeps = Set.insert "pangox_compat" pkgConfDeps }
+  | pname == "gtk2hs-buildtools"= deriv { buildDepends = Set.insert "hashtables" buildDepends }
   | pname == "haddock" && version < Version [2,14] []
-                                = deriv { buildTools = "alex":"happy":buildTools }
+                                = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
   | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
-  | pname == "happy"            = deriv { buildTools = "perl":buildTools }
-  | pname == "haskeline"        = deriv { buildDepends = "utf8-string":buildDepends }
-  | pname == "haskell-src"      = deriv { buildTools = "happy":buildTools }
-  | pname == "haskell-src-meta" = deriv { buildDepends = "uniplate":buildDepends }
+  | pname == "happy"            = deriv { buildTools = Set.insert "perl" buildTools }
+  | pname == "haskeline"        = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
+  | pname == "haskell-src"      = deriv { buildTools = Set.insert "happy" buildTools }
+  | pname == "haskell-src-meta" = deriv { buildDepends = Set.insert "uniplate" buildDepends }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
-  | pname == "hlibgit2"         = deriv { buildTools = "git":buildTools }
-  | pname == "HList"            = deriv { buildTools = "diffutils":buildTools }
-  | pname == "hmatrix"          = deriv { extraLibs = "liblapack":"blas": filter (/= "lapack") extraLibs }
-  | pname == "hmatrix-special"  = deriv { extraLibs = "gsl":extraLibs }
+  | pname == "hlibgit2"         = deriv { buildTools = Set.insert "git" buildTools }
+  | pname == "HList"            = deriv { buildTools = Set.insert "diffutils" buildTools }
+  | pname == "hmatrix"          = deriv { extraLibs = Set.insert "liblapack" (Set.insert "blas" (Set.filter (/= "lapack") extraLibs)) }
+  | pname == "hmatrix-special"  = deriv { extraLibs = Set.insert "gsl" extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
-  | pname == "GlomeVec"         = deriv { buildTools = "llvm":buildTools }
-  | pname == "idris"            = deriv { buildTools = "happy":buildTools, extraLibs = "gmp":"boehmgc":extraLibs }
-  | pname == "language-c-quote" = deriv { buildTools = "alex":"happy":buildTools }
-  | pname == "language-java"    = deriv { buildDepends = "syb":buildDepends }
-  | pname == "leksah-server"    = deriv { buildDepends = "process-leksah":buildDepends }
-  | pname == "lhs2tex"          = deriv { extraLibs = "texLive":extraLibs, phaseOverrides = lhs2texPostInstall }
-  | pname == "libffi"           = deriv { extraLibs = delete "ffi" extraLibs }
-  | pname == "liquid-fixpoint"  = deriv { buildTools = "ocaml":buildTools }
-  | pname == "llvm-base"        = deriv { extraLibs = "llvm":extraLibs }
+  | pname == "GlomeVec"         = deriv { buildTools = Set.insert "llvm" buildTools }
+  | pname == "idris"            = deriv { buildTools = Set.insert "happy" buildTools, extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs) }
+  | pname == "language-c-quote" = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
+  | pname == "language-java"    = deriv { buildDepends = Set.insert "syb" buildDepends }
+  | pname == "leksah-server"    = deriv { buildDepends = Set.insert "process-leksah" buildDepends }
+  | pname == "lhs2tex"          = deriv { extraLibs = Set.insert "texLive" extraLibs, phaseOverrides = lhs2texPostInstall }
+  | pname == "libffi"           = deriv { extraLibs = Set.delete "ffi" extraLibs }
+  | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "ocaml" buildTools }
+  | pname == "llvm-base"        = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
-  | pname == "MFlow"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "multiarg"         = deriv { buildDepends = "utf8-string":buildDepends }
-  | pname == "mysql"            = deriv { buildTools = "mysqlConfig":buildTools, extraLibs = "zlib":extraLibs }
+  | pname == "MFlow"            = deriv { buildTools = Set.insert "cpphs" buildTools }
+  | pname == "multiarg"         = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
+  | pname == "mysql"            = deriv { buildTools = Set.insert "mysqlConfig" buildTools, extraLibs = Set.insert "zlib" extraLibs }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
-  | pname == "Omega"            = deriv { testDepends = delete "stdc++" testDepends }
-  | pname == "OpenAL"           = deriv { extraLibs = "openal":extraLibs }
-  | pname == "OpenGL"           = deriv { extraLibs = "mesa":"libX11":extraLibs }
-  | pname == "pandoc"           = deriv { buildDepends = "alex":"happy":buildDepends }
-  | pname == "pcap"             = deriv { extraLibs = "libpcap":extraLibs }
-  | pname == "persistent"       = deriv { extraLibs = "sqlite3":extraLibs }
-  | pname == "purescript"       = deriv { buildTools = "nodejs":buildTools }
-  | pname == "repa-algorithms"  = deriv { extraLibs = "llvm":extraLibs }
-  | pname == "repa-examples"    = deriv { extraLibs = "llvm":extraLibs }
-  | pname == "saltine"          = deriv { extraLibs = map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
-  | pname == "SDL-image"        = deriv { extraLibs = "SDL_image":extraLibs }
-  | pname == "SDL-mixer"        = deriv { extraLibs = "SDL_mixer":extraLibs }
-  | pname == "SDL-ttf"          = deriv { extraLibs = "SDL_ttf":extraLibs }
+  | pname == "Omega"            = deriv { testDepends = Set.delete "stdc++" testDepends }
+  | pname == "OpenAL"           = deriv { extraLibs = Set.insert "openal" extraLibs }
+  | pname == "OpenGL"           = deriv { extraLibs = Set.insert "mesa" (Set.insert "libX11" extraLibs) }
+  | pname == "pandoc"           = deriv { buildDepends = Set.insert "alex" (Set.insert "happy" buildDepends) }
+  | pname == "pcap"             = deriv { extraLibs = Set.insert "libpcap" extraLibs }
+  | pname == "persistent"       = deriv { extraLibs = Set.insert "sqlite3" extraLibs }
+  | pname == "purescript"       = deriv { buildTools = Set.insert "nodejs" buildTools }
+  | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
+  | pname == "repa-examples"    = deriv { extraLibs = Set.insert "llvm" extraLibs }
+  | pname == "saltine"          = deriv { extraLibs = Set.map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
+  | pname == "SDL-image"        = deriv { extraLibs = Set.insert "SDL_image" extraLibs }
+  | pname == "SDL-mixer"        = deriv { extraLibs = Set.insert "SDL_mixer" extraLibs }
+  | pname == "SDL-ttf"          = deriv { extraLibs = Set.insert "SDL_ttf" extraLibs }
   | pname == "sloane"           = deriv { phaseOverrides = sloanePostInstall }
-  | pname == "structured-haskell-mode" = deriv { buildTools = "emacs":buildTools, phaseOverrides = structuredHaskellModePostInstall }
-  | pname == "terminfo"         = deriv { extraLibs = "ncurses":extraLibs }
-  | pname == "threadscope"      = deriv { configureFlags = "--ghc-options=-rtsopts":configureFlags }
-  | pname == "thyme"            = deriv { buildTools = "cpphs":buildTools }
-  | pname == "vacuum"           = deriv { extraLibs = "ghc-paths":extraLibs }
-  | pname == "wxc"              = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs, phaseOverrides = wxcPostInstall version }
-  | pname == "wxcore"           = deriv { extraLibs = "wxGTK":"mesa":"libX11":extraLibs }
+  | pname == "structured-haskell-mode" = deriv { buildTools = Set.insert "emacs" buildTools
+                                               , phaseOverrides = structuredHaskellModePostInstall
+                                               }
+  | pname == "terminfo"         = deriv { extraLibs = Set.insert "ncurses" extraLibs }
+  | pname == "threadscope"      = deriv { configureFlags = Set.insert "--ghc-options=-rtsopts" configureFlags }
+  | pname == "thyme"            = deriv { buildTools = Set.insert "cpphs" buildTools }
+  | pname == "vacuum"           = deriv { extraLibs = Set.insert "ghc-paths" extraLibs }
+  | pname == "wxc"              = deriv { extraLibs = Set.fromList ["wxGTK","mesa","libX11"] `Set.union` extraLibs
+                                        , phaseOverrides = wxcPostInstall version
+                                        }
+  | pname == "wxcore"           = deriv { extraLibs = Set.fromList ["wxGTK","mesa","libX11"] `Set.union` extraLibs }
   | pname == "X11" && version >= Version [1,6] []
-                                = deriv { extraLibs = "libXinerama":"libXext":"libXrender":extraLibs }
-  | pname == "X11"              = deriv { extraLibs = "libXinerama":"libXext":extraLibs }
-  | pname == "X11-xft"          = deriv { extraLibs = "pkgconfig":"freetype":"fontconfig":extraLibs
-                                        , configureFlags = "--extra-include-dirs=${freetype}/include/freetype2":configureFlags
+                                = deriv { extraLibs = Set.fromList ["libXinerama","libXext","libXrender"] `Set.union` extraLibs }
+  | pname == "X11"              = deriv { extraLibs = Set.insert "libXinerama" (Set.insert "libXext" extraLibs) }
+  | pname == "X11-xft"          = deriv { extraLibs = Set.fromList ["pkgconfig","freetype","fontconfig"] `Set.union` extraLibs
+                                        , configureFlags = Set.insert "--extra-include-dirs=${freetype}/include/freetype2" configureFlags
                                         }
   | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
 
 -- Unbreak packages during hackage2nix generation:
 
-  | pname == "hnetcdf"          = deriv { testDepends = delete "netcdf" testDepends }
-  | pname == "SDL2-ttf"         = deriv { buildDepends = delete "SDL2" buildDepends }
-  | pname == "jsaddle"          = deriv { buildDepends = delete "ghcjs-base" buildDepends, testDepends = delete "ghcjs-base" testDepends }
-  | pname == "hzk"              = deriv { testDepends = delete "zookeeper_mt" testDepends, buildTools = "zookeeper_mt":buildTools }
-  | pname == "zip-archive"      = deriv { testDepends = delete "zip" testDepends, buildTools = "zip":buildTools }
+  | pname == "hnetcdf"          = deriv { testDepends = Set.delete "netcdf" testDepends }
+  | pname == "SDL2-ttf"         = deriv { buildDepends = Set.delete "SDL2" buildDepends }
+  | pname == "jsaddle"          = deriv { buildDepends = Set.delete "ghcjs-base" buildDepends, testDepends = Set.delete "ghcjs-base" testDepends }
+  | pname == "hzk"              = deriv { testDepends = Set.delete "zookeeper_mt" testDepends, buildTools = Set.insert "zookeeper_mt" buildTools }
+  | pname == "zip-archive"      = deriv { testDepends = Set.delete "zip" testDepends, buildTools = Set.insert "zip" buildTools }
   | otherwise                   = deriv
 
 ghcModPostInstall :: String -> Version -> String
@@ -150,7 +161,7 @@ darcsInstallPostInstall = unlines
 highlightingKatePostProcessing :: Derivation -> Derivation
 highlightingKatePostProcessing deriv@(MkDerivation {..}) = deriv
   { phaseOverrides = "prePatch = \"sed -i -e 's|regex-pcre-builtin >= .*|regex-pcre|' highlighting-kate.cabal\";"
-  , buildDepends = "regex-pcre" : filter (/="regex-pcre-builtin") buildDepends
+  , buildDepends = Set.insert "regex-pcre" (Set.delete "regex-pcre-builtin" buildDepends)
   }
 
 xmonadPostInstall :: String

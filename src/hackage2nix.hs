@@ -146,13 +146,13 @@ generatePackageSet config hackage nixpkgs = do
                      }
 
           missing :: Set String
-          missing = Set.fromList $ filter (`Set.notMember` knownAttributesSet) (buildDepends drv ++ testDepends drv)
+          missing = Set.filter (`Set.notMember` knownAttributesSet) (buildDepends drv `Set.union` testDepends drv)
 
           buildInputs :: Map Attribute (Maybe Path)
           buildInputs = Map.unions
                         [ Map.fromList [ (n, Nothing) | n <- Set.toList missing ]
-                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList (Set.fromList (extraLibs drv ++ pkgConfDeps drv)) ]
-                        , Map.fromList [ (n, resolveNixpkgsOrHackageAttribute nixpkgs hackage n) | n <- Set.toAscList (Set.fromList (buildTools drv)) ]
+                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList (extraLibs drv `Set.union` pkgConfDeps drv) ]
+                        , Map.fromList [ (n, resolveNixpkgsOrHackageAttribute nixpkgs hackage n) | n <- Set.toAscList (buildTools drv) ]
                         ]
 
           systemOverrides :: Doc
