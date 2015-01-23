@@ -110,8 +110,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                              , hyperlinkSource = optHyperlinkSource cfg
                                              }
       deriv' = deriv { metaSection = (metaSection deriv)
-                                     { maintainers = optMaintainer cfg
-                                     , platforms   = optPlatform cfg
+                                     { maintainers = Set.fromList (optMaintainer cfg)
+                                     , platforms   = Set.fromList (optPlatform cfg)
                                      }
                      , doCheck = doCheck deriv && optDoCheck cfg
                      , extraFunctionArgs = Set.insert "stdenv" (extraFunctionArgs deriv)

@@ -7,13 +7,14 @@ import Control.DeepSeq
 import Control.Exception
 import Distribution.NixOS.Derivation.License
 import Distribution.NixOS.Derivation.Meta
+import Data.Set ( empty )
 
 main :: IO ()
 main = do
   hspec $ do
     describe "DeepSeq instances work properly for" $ do
       it "License" $ mapM_ hitsBottom [Known undefined, Unknown (Just undefined)]
-      it "Meta" $ do let meta = Meta "" "" (Unknown Nothing) [] [] [] False
+      it "Meta" $ do let meta = Meta "" "" (Unknown Nothing) empty empty empty False
                      mapM_ hitsBottom
                        [ meta { homepage = undefined }
                        , meta { description = undefined }

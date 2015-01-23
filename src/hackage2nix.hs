@@ -139,7 +139,7 @@ generatePackageSet config hackage nixpkgs = do
           drv = drv' { src = srcSpec, editedCabalFile = if revision drv == 0 then "" else cabalFileHash
                      , metaSection = (metaSection drv') { broken = not (Set.null missing)   -- Missing Haskell dependencies!
                                                         , hydraPlatforms = if PackageName name `Set.member` brokenPackages config
-                                                                           then ["stdenv.lib.platforms.none"]
+                                                                           then Set.singleton "stdenv.lib.platforms.none"
                                                                            else hydraPlatforms (metaSection drv')
                                                         }
                      , jailbreak = not (null missingDeps) -- Dependency constraints aren't fulfilled

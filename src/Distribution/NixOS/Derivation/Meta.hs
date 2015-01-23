@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric, RecordWildCards #-}
 {- |
    Module      :  Distribution.NixOS.Derivation.Meta
    License     :  BSD3
@@ -22,14 +22,16 @@ import Control.DeepSeq.Generics
 import Distribution.NixOS.Derivation.License
 import Distribution.NixOS.Util.PrettyPrinting
 import GHC.Generics ( Generic )
+import Data.Set ( Set )
+import qualified Data.Set as Set
 
 -- | A representation of the @meta@ section used in Nix expressions.
 --
 -- >>> :{
 --   print (pPrint (Meta "http://example.org" "an example package" (Unknown Nothing)
---                  ["stdenv.lib.platforms.unix"]
---                  ["stdenv.lib.platforms.none"]
---                  ["joe","jane"]
+--                  (Set.singleton "stdenv.lib.platforms.unix")
+--                  (Set.singleton "stdenv.lib.platforms.none")
+--                  (Set.fromList ["joe","jane"])
 --                  True))
 -- :}
 -- homepage = "http://example.org";
@@ -37,20 +39,20 @@ import GHC.Generics ( Generic )
 -- license = "unknown";
 -- platforms = stdenv.lib.platforms.unix;
 -- hydraPlatforms = stdenv.lib.platforms.none;
--- maintainers = with stdenv.lib.maintainers; [ joe jane ];
+-- maintainers = with stdenv.lib.maintainers; [ jane joe ];
 -- broken = true;
 --
 -- Note that the "Text" instance definition provides pretty-printing,
 -- but no parsing as of now!
 
 data Meta = Meta
-  { homepage       :: String    -- ^ URL of the package homepage
-  , description    :: String    -- ^ short description of the package
-  , license        :: License   -- ^ licensing terms
-  , platforms      :: [String]  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
-  , hydraPlatforms :: [String]  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
-  , maintainers    :: [String]  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
-  , broken         :: Bool      -- ^ set to @true@ if the build is known to fail
+  { homepage       :: String      -- ^ URL of the package homepage
+  , description    :: String      -- ^ short description of the package
+  , license        :: License     -- ^ licensing terms
+  , platforms      :: Set String  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
+  , hydraPlatforms :: Set String  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
+  , maintainers    :: Set String  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
+  , broken         :: Bool        -- ^ set to @true@ if the build is known to fail
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -60,16 +62,16 @@ instance Pretty Meta where
 instance NFData Meta where rnf = genericRnf
 
 renderMeta :: Meta -> Doc
-renderMeta meta = vcat
-  [ onlyIf (not (null (homepage meta))) $ attr "homepage" $ string (homepage meta)
-  , onlyIf (not (null (description meta))) $ attr "description" $ string (description meta)
-  , attr "license" $ pPrint (license meta)
-  , onlyIf (not (null (platforms meta)) && platforms meta /= ["ghc.meta.platforms"]) $ sep
-    [ text "platforms" <+> equals, renderPlatformList (platforms meta) ]
-  , onlyIf (not (null (hydraPlatforms meta))) $ sep
-    [ text "hydraPlatforms" <+> equals, renderPlatformList (hydraPlatforms meta) ]
-  , listattr "maintainers" (text "with stdenv.lib.maintainers;") (maintainers meta)
-  , boolattr "broken" (broken meta) (broken meta)
+renderMeta (Meta {..}) = vcat
+  [ onlyIf (not (null homepage)) $ attr "homepage" $ string homepage
+  , onlyIf (not (null description)) $ attr "description" $ string description
+  , attr "license" $ pPrint license
+  , onlyIf (not (Set.null platforms) && platforms /= Set.singleton "ghc.meta.platforms") $ sep
+    [ text "platforms" <+> equals, renderPlatformList (Set.toAscList platforms) ]
+  , onlyIf (not (Set.null hydraPlatforms)) $ sep
+    [ text "hydraPlatforms" <+> equals, renderPlatformList (Set.toAscList hydraPlatforms) ]
+  , listattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.toAscList maintainers)
+  , boolattr "broken" broken broken
   ]
 
 renderPlatformList :: [String] -> Doc

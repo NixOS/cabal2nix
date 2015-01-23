@@ -53,9 +53,9 @@ cabal2nix' tpkg = normalize $ postProcess $ normalize $ MkDerivation
                    { homepage       = Cabal.homepage tpkg
                    , description    = Cabal.synopsis tpkg
                    , license        = fromCabalLicense (Cabal.license tpkg)
-                   , platforms      = []
-                   , hydraPlatforms = []
-                   , maintainers    = []
+                   , platforms      = Set.empty
+                   , hydraPlatforms = Set.empty
+                   , maintainers    = Set.empty
                    , broken         = False
                    }
   }

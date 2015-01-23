@@ -63,20 +63,19 @@ normalizeNixBuildTools = normalizeSet . Set.fromList . concatMap buildToolNixNam
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.
 --
--- >>> normalizeMaintainers ["self.stdenv.lib.maintainers.foobar", "foobar"]
--- ["foobar"]
+-- >>> normalizeMaintainers $ Set.fromList ["self.stdenv.lib.maintainers.foobar", "foobar"]
+-- fromList ["foobar"]
 --
--- >>> normalizeMaintainers ["any.prefix.is.recognized.yo", "abc.def"]
--- ["def","yo"]
+-- >>> normalizeMaintainers $ Set.fromList ["any.prefix.is.recognized.yo", "abc.def"]
+-- fromList ["def","yo"]
 
-normalizeMaintainers :: [String] -> [String]
-normalizeMaintainers maints = normalizeList
-  [ (m `regsubmatch` "^([^.].*\\.)?([^.]+)$") !! 1 | m <- maints ]
+normalizeMaintainers :: Set String -> Set String
+normalizeMaintainers = normalizeSet . Set.map
+  (\m -> (m `regsubmatch` "^([^.].*\\.)?([^.]+)$") !! 1)
 
-normalizePlatforms :: [String] -> [String]
-normalizePlatforms [] = ["ghc.meta.platforms"]
-normalizePlatforms plats = normalizeList
-  [ if '.' `elem` p then p else "stdenv.lib.platforms." ++ p | p <- plats ]
+normalizePlatforms :: Set String -> Set String
+normalizePlatforms = normalizeSet . Set.map
+  (\p -> if '.' `elem` p then p else "stdenv.lib.platforms." ++ p)
 
 
 -- |When a flag is specified multiple times, the first occurrence
