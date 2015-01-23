@@ -234,6 +234,7 @@ defaultConfiguration = Configuration
     [ "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
     , "mtl == 2.1.*"                    -- newer versions require transformers > 4, which we cannot provide in GHC 7.8.x
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
+    , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
