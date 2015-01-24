@@ -25,8 +25,8 @@ import GHC.Generics ( Generic )
 -- to @stdenv@ depends on the context defined in the expression. In
 -- Cabal expressions, for example, the BSD3 license would have to be
 -- referred to as @self.stdenv.lib.licenses.bsd3@. Other expressions,
--- however, use different paths to the @licenses@ record.. Because of
--- this station, this library cannot provide an abstract data type that
+-- however, use different paths to the @licenses@ record. Because of tat
+-- situation, the library cannot provide an abstract data type that
 -- encompasses all known licenses. Instead, the @License@ type just
 -- distinguishes references to known and unknown licenses. The
 -- difference between the two is in the way they are pretty-printed:
