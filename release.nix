@@ -24,6 +24,8 @@ in
       src = cabal2nixSrc;
       isLibrary = false;
       isExecutable = true;
+      preConfigure = "runhaskell $setupCompileFlags generate-cabal-file.hs >cabal2nix.cabal";
+      buildTools = with haskellPackages; [ cartel pkgs.git ];
       buildDepends = with haskellPackages; [
         aeson base bytestring Cabal containers deepseq deepseq-generics
         directory filepath hackage-db monad-par monad-par-extras mtl pretty

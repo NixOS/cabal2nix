@@ -1,0 +1,5 @@
+-- generate-cabal-file.hs needs the cartel library, but the Cabal file
+-- doesn't mention that library anywhere, so we need to add it manually
+-- to make haskell-mode's interactive-mode feature happy.
+
+:set -package cartel
