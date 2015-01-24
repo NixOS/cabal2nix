@@ -1,6 +1,8 @@
--- Run: cabal build -j hackage2nix && time dist/build/hackage2nix/hackage2nix >hackage-packages.nix && mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix && nix-env -qaP -A haskellngPackages | tail -1
+{-# LANGUAGE PatternGuards #-}
 
 module Main ( main ) where
+
+-- Run: cabal build -j hackage2nix && time dist/build/hackage2nix/hackage2nix >hackage-packages.nix && mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix && nix-env -qaP -A haskellngPackages | tail -1
 
 import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
