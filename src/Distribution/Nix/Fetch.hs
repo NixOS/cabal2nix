@@ -2,7 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DeriveGeneric #-}
-module Distribution.NixOS.Fetch
+module Distribution.Nix.Fetch
   ( Source(..)
   , DerivationSource(..), fromDerivationSource
   , fetch

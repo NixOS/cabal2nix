@@ -3,7 +3,7 @@
 module Cabal2Nix.PostProcess ( postProcess ) where
 
 import qualified Data.Set as Set
-import Distribution.NixOS.Derivation.Cabal
+import Distribution.Nix.Derivation.Cabal
 import Distribution.Text ( display )
 
 postProcess :: Derivation -> Derivation

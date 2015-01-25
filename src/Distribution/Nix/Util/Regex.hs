@@ -1,4 +1,4 @@
-module Distribution.NixOS.Util.Regex
+module Distribution.Nix.Util.Regex
   ( module Text.Regex.Posix
   , regsubmatch
   )

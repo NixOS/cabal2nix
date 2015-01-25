@@ -1,6 +1,6 @@
 -- | Internal pretty-printing helpers for Nix expressions.
 
-module Distribution.NixOS.Util.PrettyPrinting
+module Distribution.Nix.Util.PrettyPrinting
   ( onlyIf
   , listattr
   , boolattr

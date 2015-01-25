@@ -1,26 +1,19 @@
 {-# LANGUAGE DeriveGeneric, RecordWildCards #-}
 {- |
-   Module      :  Distribution.NixOS.Derivation.Meta
-   License     :  BSD3
-
-   Maintainer  :  simons@cryp.to
-   Stability   :  provisional
-   Portability :  portable
-
    A representation of the @meta@ section used in Nix expressions. A
    detailed description can be found in section 4, \"Meta-attributes\",
    of the Nixpkgs manual at <http://nixos.org/nixpkgs/docs.html>.
  -}
 
-module Distribution.NixOS.Derivation.Meta
+module Distribution.Nix.Derivation.Meta
   ( Meta(..)
-  , module Distribution.NixOS.Derivation.License
+  , module Distribution.Nix.Derivation.License
   )
   where
 
 import Control.DeepSeq.Generics
-import Distribution.NixOS.Derivation.License
-import Distribution.NixOS.Util.PrettyPrinting
+import Distribution.Nix.Derivation.License
+import Distribution.Nix.Util.PrettyPrinting
 import GHC.Generics ( Generic )
 import Data.Set ( Set )
 import qualified Data.Set as Set

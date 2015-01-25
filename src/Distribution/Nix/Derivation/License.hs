@@ -1,22 +1,15 @@
 {-# LANGUAGE DeriveGeneric #-}
 {- |
-   Module      :  Distribution.NixOS.Derivation.License
-   License     :  BSD3
-
-   Maintainer  :  simons@cryp.to
-   Stability   :  provisional
-   Portability :  portable
-
    Known licenses in Nix expressions are represented using the
    attributes defined in @pkgs\/lib\/licenses.nix@, and unknown licenses
    are represented as a literal string.
  -}
 
-module Distribution.NixOS.Derivation.License ( License(..) ) where
+module Distribution.Nix.Derivation.License ( License(..) ) where
 
 import Control.DeepSeq.Generics
 import Data.Maybe
-import Distribution.NixOS.Util.PrettyPrinting
+import Distribution.Nix.Util.PrettyPrinting
 import GHC.Generics ( Generic )
 
 -- | The representation for licenses used in Nix derivations. Known

@@ -100,6 +100,6 @@ main = defaultMain $ do
            , mkExecutable "cabal2nix" []
            , mkExecutable "hackage2nix" [ ghcOptions ["-threaded -rtsopts -with-rtsopts=-N"] ]
            , mkTest "spec" []
-           , mkTest "doc-test" []
+           , mkTest "doctest" []
            ]
          )

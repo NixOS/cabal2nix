@@ -6,9 +6,9 @@ import Cabal2Nix.Package
 import Cabal2Nix.Version
 import Control.Exception ( bracket )
 import Control.Monad ( when )
-import Distribution.NixOS.Derivation.Cabal hiding ( version )
-import Distribution.NixOS.Fetch
-import Distribution.NixOS.Util.PrettyPrinting
+import Distribution.Nix.Derivation.Cabal hiding ( version )
+import Distribution.Nix.Fetch
+import Distribution.Nix.Util.PrettyPrinting
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import System.Console.GetOpt ( OptDescr(..), ArgDescr(..), ArgOrder(..), usageInfo, getOpt )
 import System.Environment ( getArgs )

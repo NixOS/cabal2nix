@@ -9,8 +9,8 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Function
 import Data.List
-import Distribution.NixOS.Derivation.Cabal
-import Distribution.NixOS.Util.Regex ( regsubmatch )
+import Distribution.Nix.Derivation.Cabal
+import Distribution.Nix.Util.Regex ( regsubmatch )
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
 

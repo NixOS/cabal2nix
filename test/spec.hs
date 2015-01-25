@@ -5,8 +5,8 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Control.DeepSeq
 import Control.Exception
-import Distribution.NixOS.Derivation.License
-import Distribution.NixOS.Derivation.Meta
+import Distribution.Nix.Derivation.License
+import Distribution.Nix.Derivation.Meta
 import Data.Set ( empty )
 
 main :: IO ()

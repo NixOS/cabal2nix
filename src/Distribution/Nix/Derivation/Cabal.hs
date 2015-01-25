@@ -1,22 +1,11 @@
 {-# LANGUAGE PatternGuards, RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
-{- |
-   Module      :  Distribution.NixOS.Derivation.Cabal
-   License     :  BSD3
 
-   Maintainer  :  simons@cryp.to
-   Stability   :  provisional
-   Portability :  PatternGuards, RecordWildCards, CPP
-
-   A represtation of Nix expressions based on Cabal builder defined in
-   @pkgs\/development\/libraries\/haskell\/cabal\/cabal.nix@.
--}
-
-module Distribution.NixOS.Derivation.Cabal
+module Distribution.Nix.Derivation.Cabal
   ( Derivation(..)
   , renderDerivation
   , DerivationSource(..)
-  , module Distribution.NixOS.Derivation.Meta
+  , module Distribution.Nix.Derivation.Meta
   , module Data.Version
   )
   where
@@ -28,9 +17,9 @@ import qualified Data.Set as Set
 import Data.Function
 import Data.List
 import Data.Version
-import Distribution.NixOS.Derivation.Meta
-import Distribution.NixOS.Fetch
-import Distribution.NixOS.Util.PrettyPrinting
+import Distribution.Nix.Derivation.Meta
+import Distribution.Nix.Fetch
+import Distribution.Nix.Util.PrettyPrinting
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
