@@ -80,11 +80,6 @@ commonTestOptions = buildDepends
   , unconstrained "QuickCheck"
   ] : commonBuildOptions
 
-library :: Betsy IO [LibraryField]
-library = do
-  ms <- modules "src"
-  return $ exposedModules ms : commonBuildOptions
-
 mkExecutable :: NonEmptyString -> [ExecutableField] -> Section
 mkExecutable exe opt = executable exe $ mainIs (exe++".hs") : opt ++ commonBuildOptions
 
@@ -93,9 +88,10 @@ mkTest test opt = testSuite test $ exitcodeFields (test++".hs") ++ opt ++ hsSour
 
 main :: IO ()
 main = defaultMain $ do
+  libraryModules <- modules "src"
   props <- properties
-  lib <- library
-  return ( props, lib
+  return ( props
+         , exposedModules libraryModules : commonBuildOptions
          , [ githubHead "NixOS" "cabal2nix"
            , mkExecutable "cabal2nix" []
            , mkExecutable "hackage2nix" [ ghcOptions ["-threaded -rtsopts -with-rtsopts=-N"] ]
