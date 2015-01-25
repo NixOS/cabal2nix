@@ -11,6 +11,11 @@ getVersion = do
   let y4:y3:y2:y1:'-':m2:m1:'-':d2:d1:[] = head (words v)
   return (read ('[':y4:y3:y2:y1:',':m2:m1:',':d2:d1:"]"))
 
+getGitVersion :: IO String
+getGitVersion = do
+  [v] <- fmap lines (readProcess "git" ["describe", "--dirty"] "")
+  return v
+
 getAuthors :: IO [NonEmptyString]
 getAuthors = do
   buf <- readProcess "sh" ["-c", "git log --pretty=short | git shortlog --numbered --summary"] ""
@@ -88,6 +93,11 @@ mkTest test opt = testSuite test $ exitcodeFields (test++".hs") ++ opt ++ hsSour
 
 main :: IO ()
 main = defaultMain $ do
+  liftIO $ do ('v':gv) <- getGitVersion
+              writeFile "src/Cabal2Nix/Version.hs" $
+                "module Cabal2Nix.Version where\n\
+                \version :: String\n\
+                \version = " ++ show gv ++ "\n"
   libraryModules <- modules "src"
   props <- properties
   return ( props
