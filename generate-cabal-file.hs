@@ -64,6 +64,7 @@ commonBuildDepends = buildDepends
   , unconstrained "directory"
   , unconstrained "filepath"
   , unconstrained "hackage-db"
+  , unconstrained "lens"
   , unconstrained "monad-par"
   , unconstrained "monad-par-extras"
   , unconstrained "mtl"

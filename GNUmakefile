@@ -1,6 +1,6 @@
 # GNUmakefile
 
-.PHONY: all configure build check check
+.PHONY: all configure build check haddock
 
 all::		check
 
@@ -10,7 +10,10 @@ configure::	cabal2nix.cabal
 build::		configure
 	@cabal build -j
 
-check::		build
+haddock::	build
+	@cabal haddock
+
+check::		haddock
 	@cabal test -j
 
 cabal2nix.cabal:	generate-cabal-file.hs
