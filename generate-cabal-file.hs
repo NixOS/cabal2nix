@@ -100,6 +100,7 @@ main = defaultMain $ do
                 \version :: String\n\
                 \version = " ++ show gv ++ "\n"
   libraryModules <- modules "src"
+  liftIO $ writeFile "test/doctest.hs" (mkDoctest libraryModules)
   props <- properties
   return ( props
          , exposedModules libraryModules : commonBuildOptions
@@ -110,3 +111,17 @@ main = defaultMain $ do
            , mkTest "doctest" []
            ]
          )
+
+mkDoctest :: [NonEmptyString] -> String
+mkDoctest libraryModules =
+  let paths = [ "src/" ++ map toPath l ++ ".hs" | l <- libraryModules ]
+      toPath '.' = '/'
+      toPath c   = c
+  in
+    "module Main ( main ) where\n\
+    \import Test.DocTest\n\
+    \main :: IO ()\n\
+    \main = do\n\
+    \  doctest " ++ show paths ++ "\n\
+    \  doctest [\"-isrc\", \"src/cabal2nix.hs\"]\n\
+    \  doctest [\"-isrc\", \"src/hackage2nix.hs\"]\n"
