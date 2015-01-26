@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Language.Nix.Identifier ( Identifier, string, quotedString, needsQuoting ) where
+module Language.Nix.Identifier ( Identifier(..), ident, quote, needsQuoting ) where
 
 import Data.Char
 import Data.Function
@@ -11,41 +11,37 @@ import Text.Regex.Posix
 
 -- | Identifiers in Nix are essentially strings. Reasonable people restrict
 -- themselves to identifiers of the form @[a-zA-Z\_][a-zA-Z0-9\_\'\-]*@,
--- though, because these don't need quoting. The @Identifier@ type is an
--- instance of the 'IsString' class for construction. The methods of the
--- 'Pretty' class can be used to pretty-print an identifier with proper
--- quoting.
+-- because these don't need quoting. The @Identifier@ type is an instance of
+-- the 'IsString' class for convenience. The methods of the 'Pretty' class can
+-- be used to pretty-print an identifier with proper quoting.
 --
--- >>> let i = fromString "test" :: Identifier in (i, pPrint i)
+-- >>> let i = Identifier "test" in (i, pPrint i)
 -- (Identifier "test",test)
--- >>> let i = fromString "foo.bar" :: Identifier in (i, pPrint i)
+-- >>> let i = Identifier "foo.bar" in (i, pPrint i)
 -- (Identifier "foo.bar","foo.bar")
 --
 -- The 'Ord' instance for identifiers is unusual in that it's aware of
 -- character's case:
 --
--- >>> (fromString "abc" :: Identifier) == fromString "abc"
--- True
--- >>> (fromString "abc" :: Identifier) == fromString "ABC"
+-- >>> Identifier "abc" == Identifier "ABC"
 -- False
--- >>> (fromString "abc" :: Identifier) > fromString "ABC"
+-- >>> Identifier "abc" > Identifier "ABC"
 -- True
--- >>> (fromString "abc" :: Identifier) > fromString "ABC"
+-- >>> Identifier "abc" > Identifier "ABC"
 -- True
--- >>> (fromString "X" :: Identifier) > fromString "a"
+-- >>> Identifier "X" > Identifier "a"
 -- True
--- >>> (fromString "x" :: Identifier) > fromString "A"
+-- >>> Identifier "x" > Identifier "A"
 -- True
 --
 -- prop> \str -> Identifier str == Identifier str
 -- prop> \str -> any (`elem` ['a'..'z']) str ==> Identifier (map toLower str) /= Identifier (map toUpper str)
--- prop> \(NonEmpty str) -> head str `elem` ['a'..'z'] ==> Identifier (map toLower str) >= Identifier (map toUpper str)
 
 newtype Identifier = Identifier String
   deriving (Show, Eq, IsString)
 
 instance Pretty Identifier where
-  pPrint i = text (i ^. string)
+  pPrint i = text (i ^. ident . to quote)
 
 instance Ord Identifier where
   compare (Identifier a) (Identifier b) =
@@ -53,33 +49,33 @@ instance Ord Identifier where
       EQ -> compare a b
       r  -> r
 
-needsQuoting :: Identifier -> Bool
-needsQuoting (Identifier str) = not (str =~ "^[a-zA-Z\\_][a-zA-Z0-9\\_\\'\\-]*$")
+-- | Checks whether a given string would need quoting when interpreted as an
+-- intentifier.
 
--- | Lens that allows conversion from/to the standard 'String' type.
+needsQuoting :: String -> Bool
+needsQuoting str = not (str =~ grammar)
+  where grammar :: String       -- TODO: should be a compiled regular expression
+        grammar = "^[a-zA-Z\\_][a-zA-Z0-9\\_\\'\\-]*$"
+
+-- | Lens that allows conversion from/to the standard 'String' type. The setter
+-- does not evaluate its input, so it's safe to use with 'undefined'.
 --
--- >>> putStrLn $ fromString "abc" ^. string
--- abc
+-- >>> putStrLn $ Identifier "abc.def" ^. ident
+-- abc.def
 --
--- >>> putStrLn $ fromString "abc.def" ^. string
--- "abc.def"
---
--- >>> pPrint $ fromString "" & string .~ "abcdef"
+-- >>> pPrint $ undefined & ident .~ "abcdef"
 -- abcdef
 
-string :: Lens' Identifier String
-string f (Identifier str) = (\str' -> fromString str') `fmap` f s
-  where s = if needsQuoting (Identifier str) then show str else str
+ident :: Lens' Identifier String
+ident f (Identifier str) = Identifier `fmap` f str
 
--- | A variant of 'string' that gives read-only access to a string-representation
--- of the identifier that is always quoted, even if the identifier actually
--- doesn't need quoting.
+-- | Help function that quotes a given identifier string (if necessary).
 --
--- >>> putStrLn $ fromString "abc" ^. quotedString
--- "abc"
+-- >>> putStrLn (quote "abc")
+-- abc
 --
--- >>> putStrLn $ fromString "abc.def" ^. quotedString
+-- >>> putStrLn (quote "abc.def")
 -- "abc.def"
 
-quotedString :: Getter Identifier String
-quotedString f (Identifier str) = fmap fromString (f (show str))
+quote :: String -> String
+quote s = if needsQuoting s then show s else s
