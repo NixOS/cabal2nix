@@ -5,11 +5,11 @@
    are represented as a literal string.
  -}
 
-module Distribution.Nix.Derivation.License ( License(..) ) where
+module Distribution.Nixpkgs.Derivation.License ( License(..) ) where
 
 import Control.DeepSeq.Generics
 import Data.Maybe
-import Distribution.Nix.Util.PrettyPrinting
+import Distribution.Nixpkgs.Util.PrettyPrinting
 import GHC.Generics ( Generic )
 
 -- | The representation for licenses used in Nix derivations. Known

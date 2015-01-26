@@ -3,8 +3,7 @@ module Language.Nix.Path ( Path, mkPath, path ) where
 
 import Control.Lens
 import Control.Applicative
-import Data.String
-import Distribution.Nix.Util.PrettyPrinting ( Pretty(..), text, punctuate, hcat, char )
+import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), punctuate, hcat, char )
 import Language.Nix.Identifier
 
 -- | Paths are non-empty lists of identifiers in Nix.

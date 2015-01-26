@@ -3,8 +3,8 @@ module Main ( main ) where
 import Control.DeepSeq
 import Control.Exception
 import Data.Set ( empty )
-import Distribution.Nix.Derivation.License
-import Distribution.Nix.Derivation.Meta
+import Distribution.Nixpkgs.Derivation.License
+import Distribution.Nixpkgs.Derivation.Meta
 import System.Process
 import Test.Hspec
 import Test.Hspec.QuickCheck

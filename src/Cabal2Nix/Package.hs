@@ -6,8 +6,8 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe ( listToMaybe )
-import Distribution.Nix.Derivation.Cabal
-import Distribution.Nix.Fetch
+import Distribution.Nixpkgs.Derivation.Cabal
+import Distribution.Nixpkgs.Fetch
 import Distribution.Text ( simpleParse )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )

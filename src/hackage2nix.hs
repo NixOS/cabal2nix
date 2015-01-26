@@ -21,9 +21,9 @@ import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
-import Distribution.Nix.Derivation.Cabal
-import Distribution.Nix.PackageMap
-import Distribution.Nix.Util.PrettyPrinting hiding ( attr, (<>) )
+import Distribution.Nixpkgs.Derivation.Cabal
+import Distribution.Nixpkgs.PackageMap
+import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
 import Distribution.PackageDescription.Configuration

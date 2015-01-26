@@ -1,4 +1,4 @@
-module Distribution.Nix.PackageMap where
+module Distribution.Nixpkgs.PackageMap where
 
 import qualified Data.Aeson as JSON
 import Data.List.Split

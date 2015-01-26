@@ -6,7 +6,7 @@ import Data.Char
 import Data.Function
 import Control.Lens
 import Data.String
-import Distribution.Nix.Util.PrettyPrinting ( Pretty(..), text )
+import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), text )
 import Text.Regex.Posix
 
 -- | Identifiers in Nix are essentially strings. Reasonable people restrict

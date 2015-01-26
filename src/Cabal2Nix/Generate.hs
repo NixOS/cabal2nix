@@ -6,7 +6,7 @@ import Cabal2Nix.Normalize
 import Cabal2Nix.PostProcess
 import Data.Maybe
 import Distribution.Compiler
-import Distribution.Nix.Derivation.Cabal
+import Distribution.Nixpkgs.Derivation.Cabal
 import qualified Distribution.Package as Cabal
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration

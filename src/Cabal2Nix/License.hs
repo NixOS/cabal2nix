@@ -1,10 +1,10 @@
 module Cabal2Nix.License ( fromCabalLicense ) where
 
-import Distribution.Nix.Derivation.License
+import Distribution.Nixpkgs.Derivation.License
 import Distribution.License ( License(..) )
 import Data.Version
 
-fromCabalLicense :: Distribution.License.License -> Distribution.Nix.Derivation.License.License
+fromCabalLicense :: Distribution.License.License -> Distribution.Nixpkgs.Derivation.License.License
 fromCabalLicense (GPL Nothing)                          = Unknown (Just "GPL")
 fromCabalLicense (GPL (Just (Version [2] [])))          = Known "stdenv.lib.licenses.gpl2"
 fromCabalLicense (GPL (Just (Version [3] [])))          = Known "stdenv.lib.licenses.gpl3"

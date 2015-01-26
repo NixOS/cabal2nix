@@ -5,15 +5,15 @@
    of the Nixpkgs manual at <http://nixos.org/nixpkgs/docs.html>.
  -}
 
-module Distribution.Nix.Derivation.Meta
+module Distribution.Nixpkgs.Derivation.Meta
   ( Meta(..)
-  , module Distribution.Nix.Derivation.License
+  , module Distribution.Nixpkgs.Derivation.License
   )
   where
 
 import Control.DeepSeq.Generics
-import Distribution.Nix.Derivation.License
-import Distribution.Nix.Util.PrettyPrinting
+import Distribution.Nixpkgs.Derivation.License
+import Distribution.Nixpkgs.Util.PrettyPrinting
 import GHC.Generics ( Generic )
 import Data.Set ( Set )
 import qualified Data.Set as Set
