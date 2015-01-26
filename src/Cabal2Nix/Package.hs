@@ -131,7 +131,7 @@ cabalFromFile failHard file =
   -- that do not represent valid characters. To catch that exception, we need to
   -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
   -- the reading of the file, so we will always catch the expression here.
-  MaybeT $ handleIO (const $ return Nothing) $ do
+  MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
     content <- readFile file
     case Cabal.parsePackageDescription content of
       Cabal.ParseFailed e | failHard -> do
