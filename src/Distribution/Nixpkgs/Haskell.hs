@@ -1,4 +1,4 @@
-{-# LANGUAGE PatternGuards, RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
+{-# LANGUAGE RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 
 module Distribution.Nixpkgs.Haskell
@@ -80,8 +80,8 @@ renderDerivation (MkDerivation {..}) =
     , attr "version" $ doubleQuotes (disp version)
     , sourceAttr src
     , onlyIf (not (null editedCabalFile)) $ attr "editedCabalFile" $ string editedCabalFile
-    , boolattr "isLibrary" ((not isLibrary) || isExecutable) isLibrary
-    , boolattr "isExecutable" ((not isLibrary) || isExecutable) isExecutable
+    , boolattr "isLibrary" (not isLibrary || isExecutable) isLibrary
+    , boolattr "isExecutable" (not isLibrary || isExecutable) isExecutable
     , listattr "buildDepends" empty (toAscList buildDepends)
     , listattr "testDepends" empty (toAscList testDepends)
     , listattr "buildTools" empty (toAscList buildTools)

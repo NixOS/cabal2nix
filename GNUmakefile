@@ -1,6 +1,6 @@
 # GNUmakefile
 
-.PHONY: all configure build check haddock
+.PHONY: all configure build check haddock hlint
 
 all::		check
 
@@ -15,6 +15,9 @@ haddock::	build
 
 check::		haddock
 	@cabal test -j
+
+hlint::
+	hlint src
 
 cabal2nix.cabal:	generate-cabal-file.hs
 	runhaskell "$<" >"$@"

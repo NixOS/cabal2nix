@@ -26,7 +26,7 @@ cabal2nix flags' cabal = drv { cabalFlags = flags }
                             cabal
 
 cabal2nix' :: Cabal.PackageDescription -> Derivation
-cabal2nix' tpkg = normalize $ postProcess $ normalize $ MkDerivation
+cabal2nix' tpkg = normalize $ postProcess $ normalize MkDerivation
   { pname          = let Cabal.PackageName x = Cabal.pkgName pkg in x
   , version        = Cabal.pkgVersion pkg
   , revision       = maybe 0 read (lookup "x-revision" xfields)
