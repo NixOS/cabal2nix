@@ -21,7 +21,7 @@ import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
-import Distribution.Nixpkgs.Derivation.Cabal
+import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package

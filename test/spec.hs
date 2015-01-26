@@ -3,12 +3,9 @@ module Main ( main ) where
 import Control.DeepSeq
 import Control.Exception
 import Data.Set ( empty )
-import Distribution.Nixpkgs.Derivation.License
-import Distribution.Nixpkgs.Derivation.Meta
-import System.Process
+import Distribution.Nixpkgs.License
+import Distribution.Nixpkgs.Meta
 import Test.Hspec
-import Test.Hspec.QuickCheck
-import Test.QuickCheck
 
 main :: IO ()
 main = do

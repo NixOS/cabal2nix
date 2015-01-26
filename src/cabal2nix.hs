@@ -6,7 +6,7 @@ import Cabal2Nix.Package
 import Cabal2Nix.Version
 import Control.Exception ( bracket )
 import Control.Monad ( when )
-import Distribution.Nixpkgs.Derivation.Cabal hiding ( version )
+import Distribution.Nixpkgs.Haskell hiding ( version )
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Util.PrettyPrinting
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
@@ -104,11 +104,11 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let flags = readFlagList (optFlags cfg)
 
-      deriv  = (cabal2nix flags $ cabal pkg) { src = source pkg
-                                             , runHaddock = optHaddock cfg
-                                             , jailbreak = optJailbreak cfg
-                                             , hyperlinkSource = optHyperlinkSource cfg
-                                             }
+      deriv  = (cabal2nix flags $ pkgCabal pkg) { src = pkgSource pkg
+                                                , runHaddock = optHaddock cfg
+                                                , jailbreak = optJailbreak cfg
+                                                , hyperlinkSource = optHyperlinkSource cfg
+                                                }
       deriv' = deriv { metaSection = (metaSection deriv)
                                      { maintainers = Set.fromList (optMaintainer cfg)
                                      , platforms   = Set.fromList (optPlatform cfg)

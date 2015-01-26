@@ -1,11 +1,11 @@
 {-# LANGUAGE PatternGuards, RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 
-module Distribution.Nixpkgs.Derivation.Cabal
+module Distribution.Nixpkgs.Haskell
   ( Derivation(..)
   , renderDerivation
   , DerivationSource(..)
-  , module Distribution.Nixpkgs.Derivation.Meta
+  , module Distribution.Nixpkgs.Meta
   , module Data.Version
   )
   where
@@ -17,7 +17,7 @@ import qualified Data.Set as Set
 import Data.Function
 import Data.List
 import Data.Version
-import Distribution.Nixpkgs.Derivation.Meta
+import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Util.PrettyPrinting
 import Distribution.Package

@@ -1,30 +1,28 @@
 module Cabal2Nix.Package where
 
+import qualified Cabal2Nix.Hackage as DB
 import Control.Applicative
+import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe ( listToMaybe )
-import Distribution.Nixpkgs.Derivation.Cabal
+import Data.Version
 import Distribution.Nixpkgs.Fetch
+import qualified Distribution.Package as Cabal
+import qualified Distribution.PackageDescription as Cabal
+import qualified Distribution.PackageDescription.Parse as Cabal
+import qualified Distribution.ParseUtils as ParseUtils
 import Distribution.Text ( simpleParse )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
 import System.IO ( hPutStrLn, stderr, hPutStr )
 
-import qualified Cabal2Nix.Hackage as DB
-import qualified Distribution.Package as Cabal
-import qualified Distribution.PackageDescription as Cabal
-import qualified Distribution.PackageDescription.Parse as Cabal
-import qualified Distribution.ParseUtils as ParseUtils
-
-import qualified Control.Exception as Exception
-
 data Package = Package
-  { source :: DerivationSource
-  , cabal :: Cabal.GenericPackageDescription
+  { pkgSource :: DerivationSource
+  , pkgCabal :: Cabal.GenericPackageDescription
   }
   deriving (Show)
 

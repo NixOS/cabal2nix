@@ -5,7 +5,7 @@
    are represented as a literal string.
  -}
 
-module Distribution.Nixpkgs.Derivation.License ( License(..) ) where
+module Distribution.Nixpkgs.License ( License(..) ) where
 
 import Control.DeepSeq.Generics
 import Data.Maybe

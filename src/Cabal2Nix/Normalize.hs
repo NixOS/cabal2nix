@@ -9,7 +9,7 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Function
 import Data.List
-import Distribution.Nixpkgs.Derivation.Cabal
+import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Util.Regex ( regsubmatch )
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
