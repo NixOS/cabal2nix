@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Main ( main ) where
 
 import Cabal2Nix.Generate ( cabal2nix )
@@ -5,10 +7,12 @@ import Cabal2Nix.Normalize ( normalize )
 import Cabal2Nix.Package
 import Cabal2Nix.Version
 import Control.Exception ( bracket )
+import Control.Lens
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Fetch
-import Distribution.Nixpkgs.Haskell hiding ( version )
+import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( (<>) )
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
@@ -76,49 +80,44 @@ pinfo = info
 
 main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
-  cfg <- execParser pinfo
+  Options {..} <- execParser pinfo
 
-  pkg <- getPackage (optHackageDb cfg) $ Source (optUrl cfg) (fromMaybe "" (optRevision cfg)) (maybe UnknownHash Guess (optSha256 cfg))
+  pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256)
 
-  let flags = readFlagList (optFlags cfg)
+  let flags = readFlagList optFlags
 
-      deriv  = (cabal2nix flags $ pkgCabal pkg) { src = pkgSource pkg
-                                                , runHaddock = optHaddock cfg
-                                                , jailbreak = optJailbreak cfg
-                                                , hyperlinkSource = optHyperlinkSource cfg
-                                                }
-      deriv' = deriv { metaSection = (metaSection deriv)
-                                     { maintainers = Set.fromList (optMaintainer cfg)
-                                     , platforms   = Set.fromList (optPlatform cfg)
-                                     }
-                     , doCheck = doCheck deriv && optDoCheck cfg
-                     , extraFunctionArgs = Set.insert "stdenv" (extraFunctionArgs deriv)
-                     }
+      deriv :: Derivation
+      deriv = cabal2nix flags (pkgCabal pkg)
+              & src .~ pkgSource pkg
+              & runHaddock .~ optHaddock
+              & jailbreak .~ optJailbreak
+              & hyperlinkSource .~ optHyperlinkSource
+              & metaSection.maintainers .~ Set.fromList optMaintainer
+              & metaSection.platforms .~ Set.fromList optPlatform
+              & doCheck &&~ optDoCheck
+              & extraFunctionArgs . contains "stdenv" .~ True
 
-      deriv'' :: Doc
-      deriv'' = pPrint (normalize deriv')
+      deriv' :: Doc
+      deriv' = pPrint (normalize deriv)
 
-      shell :: Doc -> Doc
-      shell expr = vcat
-                   [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"ghc7101\" }:"
-                   , text ""
-                   , text "let"
-                   , text ""
-                   , text "  inherit (nixpkgs) pkgs;"
-                   , text ""
-                   , hcat [ text "  f = ", expr, semi ]
-                   , text ""
-                   , text "  drv = pkgs.haskell.packages.${compiler}.callPackage f {};"
-                   , text ""
-                   , text "in"
-                   , text ""
-                   , text "  if pkgs.lib.inNixShell then drv.env else drv"
-                   ]
+      shell :: Doc
+      shell = vcat
+              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"ghc7101\" }:"
+              , text ""
+              , text "let"
+              , text ""
+              , text "  inherit (nixpkgs) pkgs;"
+              , text ""
+              , hcat [ text "  f = ", deriv', semi ]
+              , text ""
+              , text "  drv = pkgs.haskell.packages.${compiler}.callPackage f {};"
+              , text ""
+              , text "in"
+              , text ""
+              , text "  if pkgs.lib.inNixShell then drv.env else drv"
+              ]
 
-      deriv''' | optNixShellOutput cfg = shell deriv''
-               | otherwise             = deriv''
-
-  print deriv'''
+  print (if optNixShellOutput then shell else deriv')
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = map tagWithValue

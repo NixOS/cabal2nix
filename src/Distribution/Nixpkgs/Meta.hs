@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveGeneric, RecordWildCards #-}
 {- |
    A representation of the @meta@ section used in Nix expressions. A
@@ -5,13 +6,10 @@
    of the Nixpkgs manual at <http://nixos.org/nixpkgs/docs.html>.
  -}
 
-module Distribution.Nixpkgs.Meta
-  ( Meta(..)
-  , module Distribution.Nixpkgs.License
-  )
-  where
+module Distribution.Nixpkgs.Meta where
 
 import Control.DeepSeq.Generics
+import Control.Lens
 import Distribution.Nixpkgs.License
 import Distribution.Nixpkgs.Util.PrettyPrinting
 import GHC.Generics ( Generic )
@@ -39,33 +37,32 @@ import qualified Data.Set as Set
 -- but no parsing as of now!
 
 data Meta = Meta
-  { homepage       :: String      -- ^ URL of the package homepage
-  , description    :: String      -- ^ short description of the package
-  , license        :: License     -- ^ licensing terms
-  , platforms      :: Set String  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
-  , hydraPlatforms :: Set String  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
-  , maintainers    :: Set String  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
-  , broken         :: Bool        -- ^ set to @true@ if the build is known to fail
+  { _homepage       :: String      -- ^ URL of the package homepage
+  , _description    :: String      -- ^ short description of the package
+  , _license        :: License     -- ^ licensing terms
+  , _platforms      :: Set String  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
+  , _hydraPlatforms :: Set String  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
+  , _maintainers    :: Set String  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
+  , _broken         :: Bool        -- ^ set to @true@ if the build is known to fail
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance Pretty Meta where
-  pPrint  = renderMeta
+makeLenses ''Meta
 
 instance NFData Meta where rnf = genericRnf
 
-renderMeta :: Meta -> Doc
-renderMeta (Meta {..}) = vcat
-  [ onlyIf (not (null homepage)) $ attr "homepage" $ string homepage
-  , onlyIf (not (null description)) $ attr "description" $ string description
-  , attr "license" $ pPrint license
-  , onlyIf (not (Set.null platforms) && platforms /= Set.singleton "ghc.meta.platforms") $ sep
-    [ text "platforms" <+> equals, renderPlatformList (Set.toAscList platforms) ]
-  , onlyIf (not (Set.null hydraPlatforms)) $ sep
-    [ text "hydraPlatforms" <+> equals, renderPlatformList (Set.toAscList hydraPlatforms) ]
-  , listattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.toAscList maintainers)
-  , boolattr "broken" broken broken
-  ]
+instance Pretty Meta where
+  pPrint Meta {..} = vcat
+    [ onlyIf (not (null _homepage)) $ attr "homepage" $ string _homepage
+    , onlyIf (not (null _description)) $ attr "description" $ string _description
+    , attr "license" $ pPrint _license
+    , onlyIf (not (Set.null _platforms) && _platforms /= Set.singleton "ghc.meta.platforms") $ sep
+      [ text "platforms" <+> equals, renderPlatformList (Set.toAscList _platforms) ]
+    , onlyIf (not (Set.null _hydraPlatforms)) $ sep
+      [ text "hydraPlatforms" <+> equals, renderPlatformList (Set.toAscList _hydraPlatforms) ]
+    , listattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.toAscList _maintainers)
+    , boolattr "broken" _broken _broken
+    ]
 
 renderPlatformList :: [String] -> Doc
 renderPlatformList plats =

@@ -2,6 +2,7 @@
 
 module Distribution.Nixpkgs.Util.PrettyPrinting
   ( onlyIf
+  , setattr, toAscList
   , listattr
   , boolattr
   , attr
@@ -13,8 +14,13 @@ module Distribution.Nixpkgs.Util.PrettyPrinting
   )
   where
 
-import Text.PrettyPrint.HughesPJClass
+import Data.Char
+import Data.Function
+import Data.List
+import Data.Set ( Set )
+import qualified Data.Set as Set
 import Distribution.Text ( Text, disp )
+import Text.PrettyPrint.HughesPJClass
 
 attr :: String -> Doc -> Doc
 attr n v = text n <+> equals <+> v <> semi
@@ -31,6 +37,12 @@ listattr n prefix vs = onlyIf (not (null vs)) $
                       nest 2 $ fsep $ map text vs,
                       rbrack <> semi
                     ]
+
+setattr :: String -> Set String -> Doc
+setattr name set = listattr name empty (toAscList set)
+
+toAscList :: Set String -> [String]
+toAscList = sortBy (compare `on` map toLower) . Set.toList
 
 bool :: Bool -> Doc
 bool True  = text "true"

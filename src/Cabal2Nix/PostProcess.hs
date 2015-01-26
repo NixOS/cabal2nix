@@ -1,17 +1,113 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Cabal2Nix.PostProcess ( postProcess ) where
 
+import Control.Lens
+import Data.Maybe
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell
-import Distribution.Text ( display )
+import Distribution.Package
+import Distribution.Text
+import Distribution.Version
 
 postProcess :: Derivation -> Derivation
-postProcess = postProcess' . fixGtkBuilds
+postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
 
 fixGtkBuilds :: Derivation -> Derivation
-fixGtkBuilds deriv@(MkDerivation {..}) = deriv { pkgConfDeps = pkgConfDeps `Set.difference` buildDepends }
+fixGtkBuilds drv = drv & dependencies . pkgconfig %~ (`Set.difference` buildDeps)
+  where
+    buildDeps = drv ^. dependencies . haskell
 
+hooks :: [(Dependency, Derivation -> Derivation)]
+hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ show str)) (simpleParse str))
+  [ ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
+  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [dep "libXext", dep "libXfixes"])))
+  , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
+  , ("darcs", set phaseOverrides darcsInstallPostInstall)
+  , ("git-annex", gitAnnexHook)
+  , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
+  , ("HFuse", set phaseOverrides hfusePreConfigure)
+  , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
+  , ("GlomeVec", set (libraryDepends . pkgconfig . contains (dep "llvm")) True)
+  , ("gtk3", set (libraryDepends . pkgconfig . contains (dep "gtk3")) True)
+  , ("jsaddle", set (dependencies . haskell . contains (dep "ghcjs-base")) False)
+  , ("pango", set (libraryDepends . haskell . contains (dep "cairo")) True)
+  , ("readline", over (libraryDepends . system) (Set.union (Set.fromList [dep "readline", dep "ncurses"])))
+  , ("monad", set phaseOverrides xmonadPostInstall)
+  , ("wxc", wxcHook)
+  ]
+
+dep :: String -> Dependency
+dep s = Dependency (PackageName s) anyVersion
+
+gitAnnexHook :: Derivation -> Derivation
+gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . system) (Set.union buildInputs)
+  where
+    gitAnnexOverrides = unlines
+      [ "preConfigure = \"export HOME=$TEMPDIR\";"
+      , "checkPhase = ''"
+      , "  cp dist/build/git-annex/git-annex git-annex"
+      , "  ./git-annex test"
+      , "'';"
+      ]
+    buildInputs = Set.map dep $ Set.fromList ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
+
+hfusePreConfigure :: String
+hfusePreConfigure = unlines
+  [ "preConfigure = ''"
+  , "  sed -i -e \"s@  Extra-Lib-Dirs:         /usr/local/lib@  Extra-Lib-Dirs:         ${fuse}/lib@\" HFuse.cabal"
+  , "'';"
+  ]
+
+gfPhaseOverrides :: String
+gfPhaseOverrides = unlines
+  [ "postPatch = ''"
+  , "  sed -i \"s|\\\"-s\\\"|\\\"\\\"|\" ./Setup.hs"
+    -- Disable silent compilation. Compiling takes long, it is best to see some
+    -- output, otherwise it looks like the build step has stalled.
+  , "  sed -i \"s|numJobs (bf bi)++||\" ./Setup.hs"
+    -- Parallel compilation fails. Disable it.
+  , "'';"
+  , "preBuild = ''export LD_LIBRARY_PATH=`pwd`/dist/build:$LD_LIBRARY_PATH'';"
+    -- The build step itself, after having built the library, needs to be able
+    -- to find the library it just built in order to compile grammar files.
+  ]
+
+wxcHook :: Derivation -> Derivation
+wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [dep "wxGTK", dep "mesa", dep "libX11"])
+                  & phaseOverrides .~ wxcPostInstall (packageVersion drv)
+  where
+    wxcPostInstall :: Version -> String
+    wxcPostInstall version = unlines
+      [ "postInstall = ''"
+      , "  cp -v dist/build/libwxc.so." ++ display version ++ " $out/lib/libwxc.so"
+      , "'';"
+      ]
+
+cabalInstallPostInstall :: String
+cabalInstallPostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir $out/etc"
+  , "  mv bash-completion $out/etc/bash_completion.d"
+  , "'';"
+  ]
+
+darcsInstallPostInstall :: String
+darcsInstallPostInstall = unlines
+  [ "postInstall = ''"
+  , "  mkdir -p $out/etc/bash_completion.d"
+  , "  mv contrib/darcs_completion $out/etc/bash_completion.d/darcs"
+  , "'';"
+  ]
+
+xmonadPostInstall :: String
+xmonadPostInstall = unlines
+  [ "postInstall = ''"
+  , "  shopt -s globstar"
+  , "  mkdir -p $out/share/man/man1"
+  , "  mv \"$out/\"**\"/man/\"*.1 $out/share/man/man1/"
+  , "'';"
+  ]
+
+{-
 postProcess' :: Derivation -> Derivation
 postProcess' deriv@(MkDerivation {..})
   | pname == "aeson" && version > Version [0,7] []
@@ -22,16 +118,11 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "alex" && version >= Version [3,1] []
                                 = deriv { buildTools = Set.insert "perl" (Set.insert "happy" buildTools) }
   | pname == "apache-md5"       = deriv { testDepends = Set.delete "crypto" testDepends }
-  | pname == "bindings-GLFW"    = deriv { extraLibs = Set.insert "libXext" (Set.insert "libXfixes" extraLibs) }
   | pname == "bits-extras"      = deriv { configureFlags = Set.insert "--ghc-option=-lgcc_s" configureFlags
                                         , extraLibs = Set.filter (/= "gcc_s") extraLibs
                                         }
   | pname == "Cabal"            = deriv { phaseOverrides = "preCheck = \"unset GHC_PACKAGE_PATH; export HOME=$NIX_BUILD_TOP\";" }
   | pname == "cabal-bounds"     = deriv { buildTools = Set.insert "cabal-install" buildTools }
-  | pname == "cabal-install" && version >= Version [0,14] []
-                                = deriv { phaseOverrides = cabalInstallPostInstall }
-  | pname == "darcs"            = deriv { phaseOverrides = darcsInstallPostInstall }
-  | pname == "dns"              = deriv { testTarget = "spec" }
   | pname == "editline"         = deriv { extraLibs = Set.insert "libedit" extraLibs }
   | pname == "epic"             = deriv { extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs)
                                         , buildTools = Set.insert "happy" buildTools
@@ -42,8 +133,6 @@ postProcess' deriv@(MkDerivation {..})
                                         , phaseOverrides = ghcParserPatchPhase }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides
-                                        , buildTools = Set.fromList ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"] `Set.union` buildTools }
   | pname == "github-backup"    = deriv { buildTools = Set.insert "git" buildTools }
   | pname == "gloss-raster"     = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = Set.fromList ["glut","libSM","libICE","libXmu","libXi","mesa"] `Set.union` extraLibs }
@@ -51,15 +140,10 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = Set.insert "hashtables" buildDepends }
   | pname == "haddock" && version < Version [2,14] []
                                 = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
-  | pname == "gf"               = deriv { phaseOverrides = gfPhaseOverrides
-                                        , doCheck = False }
-  | pname == "GlomeVec"         = deriv { buildTools = Set.insert "llvm" buildTools }
-  | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
   | pname == "happy"            = deriv { buildTools = Set.insert "perl" buildTools }
   | pname == "haskeline"        = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = Set.insert "happy" buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = Set.insert "uniplate" buildDepends }
-  | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
   | pname == "hlibgit2"         = deriv { buildTools = Set.insert "git" buildTools }
   | pname == "HList"            = deriv { buildTools = Set.insert "diffutils" buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = Set.insert "liblapack" (Set.insert "blas" (Set.filter (/= "lapack") extraLibs)) }
@@ -87,7 +171,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "pcap"             = deriv { extraLibs = Set.insert "libpcap" extraLibs }
   | pname == "persistent"       = deriv { extraLibs = Set.insert "sqlite3" extraLibs }
   | pname == "purescript"       = deriv { buildTools = Set.insert "nodejs" buildTools }
-  | pname == "readline"         = deriv { extraLibs = Set.insert "readline" (Set.insert "ncurses" extraLibs) }
   | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "saltine"          = deriv { extraLibs = Set.map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
@@ -103,9 +186,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "threadscope"      = deriv { configureFlags = Set.insert "--ghc-options=-rtsopts" configureFlags }
   | pname == "thyme"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "vacuum"           = deriv { extraLibs = Set.insert "ghc-paths" extraLibs }
-  | pname == "wxc"              = deriv { extraLibs = Set.fromList ["wxGTK","mesa","libX11"] `Set.union` extraLibs
-                                        , phaseOverrides = wxcPostInstall version
-                                        }
   | pname == "wxcore"           = deriv { extraLibs = Set.fromList ["wxGTK","mesa","libX11"] `Set.union` extraLibs }
   | pname == "X11" && version >= Version [1,6] []
                                 = deriv { extraLibs = Set.fromList ["libXinerama","libXext","libXrender"] `Set.union` extraLibs }
@@ -119,7 +199,6 @@ postProcess' deriv@(MkDerivation {..})
 
   | pname == "hnetcdf"          = deriv { testDepends = Set.delete "netcdf" testDepends }
   | pname == "SDL2-ttf"         = deriv { buildDepends = Set.delete "SDL2" buildDepends }
-  | pname == "jsaddle"          = deriv { buildDepends = Set.delete "ghcjs-base" buildDepends, testDepends = Set.delete "ghcjs-base" testDepends }
   | pname == "hzk"              = deriv { testDepends = Set.delete "zookeeper_mt" testDepends, buildTools = Set.insert "zookeeper_mt" buildTools }
   | pname == "z3"               = deriv { phaseOverrides = "preBuild = stdenv.lib.optionalString stdenv.isDarwin \"export DYLD_LIBRARY_PATH=${z3}/lib\";" }
   | pname == "zip-archive"      = deriv { testDepends = Set.delete "zip" testDepends, buildTools = Set.insert "zip" buildTools }
@@ -138,47 +217,6 @@ ghcModPostInstall pname version = unlines
   , "'';"
   ]
 
-wxcPostInstall :: Version -> String
-wxcPostInstall version = unlines
-  [ "postInstall = ''"
-  , "  cp -v dist/build/libwxc.so." ++ display version ++ " $out/lib/libwxc.so"
-  , "'';"
-  ]
-
-cabalInstallPostInstall :: String
-cabalInstallPostInstall = unlines
-  [ "postInstall = ''"
-  , "  mkdir $out/etc"
-  , "  mv bash-completion $out/etc/bash_completion.d"
-  , "'';"
-  ]
-
-darcsInstallPostInstall :: String
-darcsInstallPostInstall = unlines
-  [ "postInstall = ''"
-  , "  mkdir -p $out/etc/bash_completion.d"
-  , "  mv contrib/darcs_completion $out/etc/bash_completion.d/darcs"
-  , "'';"
-  ]
-
-xmonadPostInstall :: String
-xmonadPostInstall = unlines
-  [ "postInstall = ''"
-  , "  shopt -s globstar"
-  , "  mkdir -p $out/share/man/man1"
-  , "  mv \"$out/\"**\"/man/\"*.1 $out/share/man/man1/"
-  , "'';"
-  ]
-
-gitAnnexOverrides :: String
-gitAnnexOverrides = unlines
-  [ "preConfigure = \"export HOME=$TEMPDIR\";"
-  , "checkPhase = ''"
-  , "  cp dist/build/git-annex/git-annex git-annex"
-  , "  ./git-annex test"
-  , "'';"
-  ]
-
 ghciPostInstall :: String
 ghciPostInstall = unlines
   [ "postInstall = ''"
@@ -187,12 +225,6 @@ ghciPostInstall = unlines
   , "'';"
   ]
 
-hfusePreConfigure :: String
-hfusePreConfigure = unlines
-  [ "preConfigure = ''"
-  , "  sed -i -e \"s@  Extra-Lib-Dirs:         /usr/local/lib@  Extra-Lib-Dirs:         ${fuse}/lib@\" HFuse.cabal"
-  , "'';"
-  ]
 
 ghcPathsPatches :: String
 ghcPathsPatches = "patches = [ ./ghc-paths-nix.patch ];"
@@ -244,16 +276,4 @@ ghcParserPatchPhase = unlines
   , "'';"
   ]
 
-gfPhaseOverrides :: String
-gfPhaseOverrides = unlines
-  [ "postPatch = ''"
-  , "  sed -i \"s|\\\"-s\\\"|\\\"\\\"|\" ./Setup.hs"
-    -- Disable silent compilation. Compiling takes long, it is best to see some
-    -- output, otherwise it looks like the build step has stalled.
-  , "  sed -i \"s|numJobs (bf bi)++||\" ./Setup.hs"
-    -- Parallel compilation fails. Disable it.
-  , "'';"
-  , "preBuild = ''export LD_LIBRARY_PATH=`pwd`/dist/build:$LD_LIBRARY_PATH'';"
-    -- The build step itself, after having built the library, needs to be able
-    -- to find the library it just built in order to compile grammar files.
-  ]
+-}

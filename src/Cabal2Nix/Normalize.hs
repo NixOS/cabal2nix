@@ -1,42 +1,51 @@
-{-# LANGUAGE RecordWildCards #-}
-
-module Cabal2Nix.Normalize ( normalize, normalizeList, normalizeSet, normalizeCabalFlags ) where
+module Cabal2Nix.Normalize ( normalize, normalizeCabalFlags ) where
 
 import Cabal2Nix.CorePackages
 import Cabal2Nix.Name
-import Data.Char
-import Data.Set ( Set )
-import qualified Data.Set as Set
+import Control.Lens
 import Data.Function
 import Data.List
+import Data.Set ( Set )
+import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Util.Regex ( regsubmatch )
+import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
+import Distribution.Version
 
 normalize :: Derivation -> Derivation
-normalize deriv@(MkDerivation {..}) = deriv
-  { buildDepends = normalizeNixNames (Set.delete pname buildDepends)
+normalize drv = drv
+  & over libraryDepends (normalizeBuildInfo (packageName drv))
+  & over executableDepends (normalizeBuildInfo (packageName drv))
+  & over testDepends (normalizeBuildInfo (packageName drv))
+  & over metaSection normalizeMeta
+  & over cabalFlags normalizeCabalFlags
+
+normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
+normalizeBuildInfo pname bi = bi
+  & haskell . contains (Dependency pname anyVersion) .~ False
+  & tool %~ normalizeNixBuildTools . Set.filter (\(Dependency (PackageName n) _) -> n `notElem` coreBuildTools)
+
+  {-
+  {
   , testDepends  = normalizeNixNames (Set.delete pname testDepends)
-  , buildTools   = normalizeNixBuildTools (Set.filter (`notElem` coreBuildTools) buildTools)
   , extraLibs    = normalizeNixLibs extraLibs
   , pkgConfDeps  = normalizeNixLibs pkgConfDeps
   , configureFlags = normalizeSet configureFlags
-  , cabalFlags   = normalizeCabalFlags cabalFlags
-  , metaSection  = normalizeMeta metaSection
   }
+-}
 
 normalizeMeta :: Meta -> Meta
-normalizeMeta meta@(Meta {..}) = meta
-  { description = normalizeDescription description
-  , maintainers = normalizeMaintainers maintainers
-  , platforms   = normalizePlatforms platforms
-  }
+normalizeMeta = over description normalizeSynopsis
+              . over maintainers normalizeMaintainers
+              . over platforms normalizePlatforms
 
-normalizeDescription :: String -> String
-normalizeDescription desc
+normalizeSynopsis :: String -> String
+normalizeSynopsis desc
   | null desc                                             = []
-  | last desc == '.' && length (filter ('.'==) desc) == 1 = normalizeDescription (init desc)
+  | last desc == '.' && length (filter ('.'==) desc) == 1 = normalizeSynopsis (init desc)
   | otherwise                                             = quote (unwords (words desc))
 
 quote :: String -> String
@@ -45,20 +54,20 @@ quote ('"':cs)    = '\\' : '"' : quote cs
 quote (c:cs)      = c : quote cs
 quote []          = []
 
-normalizeList :: [String] -> [String]
-normalizeList = nub . sortBy (compare `on` map toLower) . filter (not . null)
-
 normalizeSet :: Set String -> Set String
 normalizeSet = Set.filter (not . null)
 
-normalizeNixNames :: Set String -> Set String
-normalizeNixNames = normalizeSet . Set.map toNixName
+-- normalizeNixNames :: Set String -> Set String
+-- normalizeNixNames = normalizeSet . Set.map toNixName
 
-normalizeNixLibs :: Set String -> Set String
-normalizeNixLibs = normalizeSet . Set.fromList . concatMap libNixName . Set.toList
+-- normalizeNixLibs :: Set String -> Set String
+-- normalizeNixLibs = normalizeSet . Set.fromList . concatMap libNixName . Set.toList
 
-normalizeNixBuildTools :: Set String -> Set String
-normalizeNixBuildTools = normalizeSet . Set.fromList . concatMap buildToolNixName . Set.toList
+normalizeNixBuildTools :: Set Dependency -> Set Dependency
+normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName' . Set.toList
+  where
+    buildToolNixName' :: Dependency -> [Dependency]
+    buildToolNixName' (Dependency (PackageName n) vr) = [ Dependency (PackageName n') vr | n' <- buildToolNixName n ]
 
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.

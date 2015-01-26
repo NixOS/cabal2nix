@@ -29,6 +29,7 @@ import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
 import Cabal2Nix.Package
 import Data.List
+import Control.Lens
 import Data.Function
 import Control.Monad
 import Control.Monad.Par.Combinator
@@ -43,6 +44,7 @@ import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
@@ -158,29 +160,27 @@ generatePackageSet config hackage nixpkgs = do
   pkgs <- flip parMapM (Map.toAscList db) $ \(name, vs) -> do
     defs <- forM (Set.toAscList vs) $ \pkgversion -> do
       srcSpec <- liftIO $ sourceFromHackage UnknownHash (name ++ "-" ++ display pkgversion)
-      let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
-
-          -- TODO: Include list of broken dependencies in the generated output.
+      let -- TODO: Include list of broken dependencies in the generated output.
           descr = hackage Map.! name Map.! pkgversion
           (missingDeps, _, drv') = cabal2nix resolver descr
-          drv = drv' { src = srcSpec, editedCabalFile = if revision drv == 0 then "" else cabalFileHash
-                     , metaSection = (metaSection drv') { broken = not (Set.null missing)   -- Missing Haskell dependencies!
-                                                        , hydraPlatforms = if PackageName name `Set.member` brokenPackages config
-                                                                           then Set.singleton "stdenv.lib.platforms.none"
-                                                                           else hydraPlatforms (metaSection drv')
-                                                        }
-                     , jailbreak =    not (null missingDeps)      -- Dependency constraints aren't fulfilled
-                                   && name /= "jailbreak-cabal"   -- Recursion: see "recursion".
-                     }
+
+          haskellDependencies :: Set String
+          haskellDependencies = Set.map unDep $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
+
+          systemDependencies :: Set String
+          systemDependencies = Set.map unDep $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
+
+          haskellOrSystemDependencies :: Set String
+          haskellOrSystemDependencies = Set.map unDep $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
 
           missing :: Set String
-          missing = Set.filter (`Set.notMember` knownAttributesSet) (buildDepends drv `Set.union` testDepends drv)
+          missing = Set.filter (`Set.notMember` knownAttributesSet) haskellDependencies
 
           buildInputs :: Map Attribute (Maybe Path)
           buildInputs = Map.unions
                         [ Map.fromList [ (n, Nothing) | n <- Set.toList missing ]
-                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList (extraLibs drv `Set.union` pkgConfDeps drv) ]
-                        , Map.fromList [ (n, resolveNixpkgsOrHackageAttribute nixpkgs hackage n) | n <- Set.toAscList (buildTools drv) ]
+                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
+                        , Map.fromList [ (n, resolveHackageThenNixpkgsAttribute nixpkgs hackage n) | n <- Set.toAscList haskellOrSystemDependencies ]
                         ]
 
           systemOverrides :: Doc
@@ -199,16 +199,23 @@ generatePackageSet config hackage nixpkgs = do
           attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == pkgversion = name
                | otherwise                                                             = name ++ '_' : [ if c == '.' then '_' else c | c <- display pkgversion ]
 
+          drv = drv' & src .~ srcSpec
+                     & jailbreak .~ (not (null missingDeps) && (name /= "jailbreak-cabal")) -- Dependency constraints aren't fulfilled
+                     & metaSection . broken .~ not (Set.null missing)         -- Missing Haskell dependencies!
+                     & metaSection.hydraPlatforms .~ (if PackageName name `Set.member` brokenPackages config
+                                                         then Set.singleton "stdenv.lib.platforms.none"
+                                                         else drv'^.metaSection.hydraPlatforms)
+
       return $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     return (intercalate "\n\n" (map render defs))
 
   liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
   liftIO $ putStrLn "}"
 
-resolveNixpkgsOrHackageAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
-resolveNixpkgsOrHackageAttribute nixpkgs hackage name
-  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name  = p
+resolveHackageThenNixpkgsAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
+resolveHackageThenNixpkgsAttribute nixpkgs hackage name
   | Just _ <- Map.lookup name hackage                   = Just []
+  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name  = p
   | otherwise                                           = Nothing
 
 resolveNixpkgsAttribute :: Nixpkgs -> Attribute -> Maybe Path
