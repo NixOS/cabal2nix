@@ -26,6 +26,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "bits-extras"      = deriv { configureFlags = Set.insert "--ghc-option=-lgcc_s" configureFlags
                                         , extraLibs = Set.filter (/= "gcc_s") extraLibs
                                         }
+  | pname == "bytestring-arbitrary" = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "Cabal"            = deriv { phaseOverrides = "preCheck = \"unset GHC_PACKAGE_PATH; export HOME=$NIX_BUILD_TOP\";" }
   | pname == "cabal-bounds"     = deriv { buildTools = Set.insert "cabal-install" buildTools }
   | pname == "cabal-install" && version >= Version [0,14] []
