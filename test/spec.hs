@@ -1,13 +1,14 @@
 module Main ( main ) where
 
-import Test.QuickCheck
-import Test.Hspec
-import Test.Hspec.QuickCheck
 import Control.DeepSeq
 import Control.Exception
+import Data.Set ( empty )
 import Distribution.Nix.Derivation.License
 import Distribution.Nix.Derivation.Meta
-import Data.Set ( empty )
+import System.Process
+import Test.Hspec
+import Test.Hspec.QuickCheck
+import Test.QuickCheck
 
 main :: IO ()
 main = do
