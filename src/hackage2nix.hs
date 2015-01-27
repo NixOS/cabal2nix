@@ -234,7 +234,7 @@ defaultConfiguration = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
-    , "mtl == 2.1.*"                    -- newer versions require transformers > 4, which we cannot provide in GHC 7.8.x
+    , "mtl == 2.1.*"                    -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
     ]
@@ -275,20 +275,22 @@ defaultConfiguration = Configuration
     ]
 
   , extraPackages = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
-    [ "aeson < 0.8"                       -- newer versions don't work with GHC 6.12.3
-    , "c2hs < 0.21"                       -- newer versions cannot compile ncurses
-    , "Cabal == 1.18.*"                   -- required for cabal-install et al on old GHC versions
-    , "Cabal == 1.20.*"                   -- required for cabal-install et al on old GHC versions
-    , "containers < 0.5"                  -- required to build alex with GHC 6.12.3
-    , "deepseq == 1.3.0.1"                -- required to build Cabal with GHC 6.12.3
-    , "descriptive < 0.1"                 -- required for structured-haskell-mode-1.0.8
-    , "haskell-src-exts < 1.16"           -- required for structured-haskell-mode-1.0.8
-    , "mtl-prelude < 2"                   -- required for to build postgrest on mtl 2.1.x platforms
-    , "optparse-applicative == 0.10.*"    -- required for elm-make 0.1.1 and elm-package 0.4
-    , "parallel == 3.2.0.3"               -- newer versions don't work with GHC 6.12.3
-    , "primitive == 0.5.1.*"              -- required to build alex with GHC 6.12.3
-    , "split < 0.2"                       -- newer versions don't work with GHC 6.12.3
-    , "vector < 0.10.10"                  -- newer versions don't work with GHC 6.12.3
+    [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
+    , "c2hs < 0.21"                     -- newer versions cannot compile ncurses
+    , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
+    , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
+    , "containers < 0.5"                -- required to build alex with GHC 6.12.3
+    , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
+    , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
+    , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
+    , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
+    , "optparse-applicative == 0.10.*"  -- required for elm-make 0.1.1 and elm-package 0.4
+    , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
+    , "primitive == 0.5.1.*"            -- required to build alex with GHC 6.12.3
+    , "seqid < 0.2"                     -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
+    , "seqid-streams < 0.2"             -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
+    , "split < 0.2"                     -- newer versions don't work with GHC 6.12.3
+    , "vector < 0.10.10"                -- newer versions don't work with GHC 6.12.3
     ]
 
   , brokenPackages = Set.fromList $ map PackageName
