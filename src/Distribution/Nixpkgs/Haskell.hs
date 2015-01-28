@@ -100,7 +100,7 @@ renderDerivation (MkDerivation {..}) =
   , rbrace
   ]
   where
-    inputs = Set.unions [ buildDepends, testDepends, buildTools, extraLibs, pkgConfDeps
+    inputs = Set.unions [ buildDepends, testDepends, buildTools, extraLibs, pkgConfDeps, extraFunctionArgs
                         , Set.fromList ["fetch" ++ derivKind src | derivKind src /= "" && not isHackagePackage]
                         ]
     renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- cabalFlags ]
