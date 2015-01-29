@@ -93,7 +93,7 @@ mkTest :: NonEmptyString -> [TestSuiteField] -> Section
 mkTest test opt = testSuite test $ exitcodeFields (test++".hs") ++ opt ++ hsSourceDirs ["test"] : commonTestOptions
 
 main :: IO ()
-main = defaultMain $ do
+main = defaultMainWithHeader (const (return "")) $ do
   liftIO $ do ('v':gv) <- getGitVersion
               writeFile "src/Cabal2Nix/Version.hs" $
                 "module Cabal2Nix.Version where\n\
@@ -106,7 +106,7 @@ main = defaultMain $ do
          , exposedModules libraryModules : commonBuildOptions
          , [ githubHead "NixOS" "cabal2nix"
            , mkExecutable "cabal2nix" []
-           , mkExecutable "hackage2nix" [ ghcOptions ["-threaded -rtsopts -with-rtsopts=-N"] ]
+           , mkExecutable "hackage2nix" [ ghcOptions ["-threaded", "-rtsopts", "-with-rtsopts=-N"] ]
            , mkTest "spec" []
            , mkTest "doctest" []
            ]
