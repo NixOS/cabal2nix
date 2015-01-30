@@ -8,7 +8,7 @@ import Data.List ( intercalate )
 getVersion :: IO Version
 getVersion = do
   v <- readProcess "git" ["log", "-1", "--format=%ci"] ""
-  let y4:y3:y2:y1:'-':m2:m1:'-':d2:d1:[] = head (words v)
+  let [y4,y3,y2,y1,'-',m2,m1,'-',d2,d1] = head (words v)
   return (read ('[':y4:y3:y2:y1:',':m2:m1:',':d2:d1:"]"))
 
 getGitVersion :: IO String
@@ -24,7 +24,7 @@ getAuthors = do
 properties :: Betsy IO Properties
 properties = do
   v <- liftIO getVersion
-  as <- liftIO $ getAuthors
+  as <- liftIO getAuthors
   return $ blank
     { name = "cabal2nix"
     , version = v
@@ -48,34 +48,36 @@ commonBuildOptions :: HasBuildInfo a => [a]
 commonBuildOptions = hsSourceDirs ["src"] : commonOptions
 
 commonOptions :: HasBuildInfo a => [a]
-commonOptions = commonGhcOptions : commonBuildDepends : []
+commonOptions = commonGhcOptions : commonBuildDepends
 
 commonGhcOptions :: HasBuildInfo a => a
 commonGhcOptions = ghcOptions ["-Wall"]
 
-commonBuildDepends :: HasBuildInfo a => a
-commonBuildDepends = buildDepends
-  [ package "base" (lt [5])
-  , unconstrained "aeson"
-  , unconstrained "bytestring"
-  , unconstrained "Cabal"
-  , unconstrained "containers"
-  , unconstrained "deepseq-generics"
-  , unconstrained "directory"
-  , unconstrained "filepath"
-  , unconstrained "hackage-db"
-  , unconstrained "lens"
-  , unconstrained "monad-par"
-  , unconstrained "monad-par-extras"
-  , unconstrained "mtl"
-  , unconstrained "pretty"
-  , unconstrained "prettyclass"
-  , unconstrained "process"
-  , unconstrained "regex-posix"
-  , unconstrained "SHA"
-  , unconstrained "split"
-  , unconstrained "transformers"
-  , unconstrained "utf8-string"
+commonBuildDepends :: HasBuildInfo a => [a]
+commonBuildDepends =
+  [ condBlock (impl ghc (lt [7,10])) (buildDepends [unconstrained "prettyclass"], []) []
+  , buildDepends
+    [ package "base" (lt [5])
+    , unconstrained "aeson"
+    , unconstrained "bytestring"
+    , unconstrained "Cabal"
+    , unconstrained "containers"
+    , unconstrained "deepseq-generics"
+    , unconstrained "directory"
+    , unconstrained "filepath"
+    , unconstrained "hackage-db"
+    , unconstrained "lens"
+    , unconstrained "monad-par"
+    , unconstrained "monad-par-extras"
+    , unconstrained "mtl"
+    , unconstrained "pretty"
+    , unconstrained "process"
+    , unconstrained "regex-posix"
+    , unconstrained "SHA"
+    , unconstrained "split"
+    , unconstrained "transformers"
+    , unconstrained "utf8-string"
+    ]
   ]
 
 commonTestOptions :: HasBuildInfo a => [a]
