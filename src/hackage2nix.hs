@@ -2579,7 +2579,6 @@ defaultConfiguration = Configuration
     , "reactive-glut"
     , "reactive-thread"
     , "reactor"
-    , "readline"
     , "readline-statevar"
     , "really-simple-xml-parser"
     , "records-th"

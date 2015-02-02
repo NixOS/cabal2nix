@@ -88,6 +88,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "persistent"       = deriv { extraLibs = Set.insert "sqlite3" extraLibs }
   | pname == "purescript"       = deriv { buildTools = Set.insert "nodejs" buildTools }
   | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
+  | pname == "readline"         = deriv { extraLibs = Set.insert "readline" (Set.insert "ncurses" extraLibs) }
   | pname == "repa-examples"    = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "saltine"          = deriv { extraLibs = Set.map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
   | pname == "SDL-image"        = deriv { extraLibs = Set.insert "SDL_image" extraLibs }
