@@ -2,9 +2,9 @@
 
 module Language.Nix.Identifier ( Identifier(..), ident, quote, needsQuoting ) where
 
-import Data.Char
-import Data.Function
 import Control.Lens
+import Data.Char
+import Data.Function ( on )
 import Data.String
 import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), text )
 import Text.Regex.Posix

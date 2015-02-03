@@ -18,7 +18,7 @@ in
       Cabal = if nativeCabal then null else haskellPackages.Cabal_1_20_0_3;
       hackage-db = haskellPackages.hackage-db.override { Cabal = Cabal; };
       nativePrettyClass = pkgs.stdenv.lib.versionOlder "7.10" haskellPackages.ghc.version;
-      prettyclass = if nativePrettyClass then null else haskellPackages.pretty-class;
+      prettyclass = if nativePrettyClass then null else haskellPackages.prettyclass;
     in
     haskellPackages.mkDerivation {
       pname = "cabal2nix";
