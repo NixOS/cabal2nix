@@ -78,7 +78,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "MFlow"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "multiarg"         = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
-  | pname == "mysql"            = deriv { buildTools = Set.insert "mysqlConfig" buildTools, extraLibs = Set.insert "zlib" extraLibs }
+  | pname == "mysql"            = deriv { buildTools = Set.insert "mysql" buildTools, extraLibs = Set.insert "zlib" extraLibs }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "Omega"            = deriv { testDepends = Set.delete "stdc++" testDepends }
   | pname == "OpenAL"           = deriv { extraLibs = Set.insert "openal" extraLibs }
