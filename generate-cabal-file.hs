@@ -124,6 +124,6 @@ mkDoctest libraryModules =
     \import Test.DocTest\n\
     \main :: IO ()\n\
     \main = do\n\
-    \  doctest " ++ show paths ++ "\n\
-    \  doctest [\"-isrc\", \"src/cabal2nix.hs\"]\n\
-    \  doctest [\"-isrc\", \"src/hackage2nix.hs\"]\n"
+    \  doctest $ [\"-isrc\", \"-optP-include\", \"-optPdist/build/autogen/cabal_macros.h\"] ++ " ++ show paths ++ "\n\
+    \  doctest [\"-isrc\", \"-optP-include\", \"-optPdist/build/autogen/cabal_macros.h\", \"src/cabal2nix.hs\"]\n\
+    \  doctest [\"-isrc\", \"-optP-include\", \"-optPdist/build/autogen/cabal_macros.h\", \"src/hackage2nix.hs\"]\n"

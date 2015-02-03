@@ -16,7 +16,9 @@ in
       haskellPackages = pkgs.lib.getAttrFromPath ["haskell-ng" "packages" ghcVer] pkgs;
       nativeCabal = pkgs.stdenv.lib.versionOlder "7.8" haskellPackages.ghc.version;
       Cabal = if nativeCabal then null else haskellPackages.Cabal_1_20_0_3;
-      hackageDb = haskellPackages.hackageDb.override { Cabal = Cabal; };
+      hackage-db = haskellPackages.hackage-db.override { Cabal = Cabal; };
+      nativePrettyClass = pkgs.stdenv.lib.versionOlder "7.10" haskellPackages.ghc.version;
+      prettyclass = if nativePrettyClass then null else haskellPackages.pretty-class;
     in
     haskellPackages.mkDerivation {
       pname = "cabal2nix";

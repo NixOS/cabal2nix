@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Cabal2Nix.Generate ( cabal2nix, cabal2nix' ) where
 
 import Cabal2Nix.Flags
@@ -21,7 +23,11 @@ cabal2nix flags' cabal = drv { cabalFlags = flags }
                             flags
                             (const True)
                             (Platform X86_64 Linux)                 -- shouldn't be hardcoded
-                            (CompilerId GHC (Version [7,8,4] []))   -- dito
+#if MIN_VERSION_Cabal(1,22,0)
+                            (unknownCompilerInfo (CompilerId GHC (Version [7,8,4] [])) NoAbiTag)
+#else
+                            (CompilerId GHC (Version [7,8,4] []))
+#endif
                             []
                             cabal
 

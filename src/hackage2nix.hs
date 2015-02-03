@@ -1,4 +1,4 @@
-{-# LANGUAGE PatternGuards #-}
+{-# LANGUAGE PatternGuards, CPP #-}
 
 module Main ( main ) where
 
@@ -232,7 +232,11 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
                            (configureCabalFlags (package (packageDescription cabal)))
                            resolver'
                            (Platform X86_64 Linux)                 -- shouldn't be hardcoded
-                           (CompilerId GHC (Version [7,8,4] []))   -- ditto
+#if MIN_VERSION_Cabal(1,22,0)
+                           (unknownCompilerInfo (CompilerId GHC (Version [7,8,4] [])) NoAbiTag)
+#else
+                           (CompilerId GHC (Version [7,8,4] []))
+#endif
                            []                                      -- no additional constraints
 
     -- A variant of the cabal file that has all test suites enabled to ensure
