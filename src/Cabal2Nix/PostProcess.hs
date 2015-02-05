@@ -72,7 +72,8 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "leksah-server"    = deriv { buildDepends = Set.insert "process-leksah" buildDepends }
   | pname == "lhs2tex"          = deriv { extraLibs = Set.insert "texLive" extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = Set.delete "ffi" extraLibs }
-  | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "ocaml" buildTools }
+  | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "ocaml" buildTools, configureFlags = Set.insert "-fbuild-external" configureFlags }
+  | pname == "liquidhaskell"    = deriv { doCheck = False } -- test-suite requires cvc4 or z3
   | pname == "llvm-base"        = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
