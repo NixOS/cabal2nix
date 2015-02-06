@@ -1316,7 +1316,6 @@ defaultConfiguration = Configuration
     , "Gtk2hsGenerics"
     , "gtk2hs-hello"
     , "gtk2hs-rpn"
-    , "gtk3"
     , "gtk3-mac-integration"
     , "gtkglext"
     , "GtkGLTV"
