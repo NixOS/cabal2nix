@@ -319,6 +319,8 @@ defaultConfiguration = Configuration
 
   , brokenPackages = Set.fromList $ map PackageName
     [ "3dmodels"
+    , "origami"
+    , "up-grade"
     , "4Blocks"
     , "abcBridge"
     , "abstract-par-accelerate"
