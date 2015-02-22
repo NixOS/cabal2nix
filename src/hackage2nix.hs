@@ -312,6 +312,7 @@ defaultConfiguration = Configuration
     , "optparse-applicative == 0.10.*"  -- required for elm-make 0.1.1 and elm-package 0.4
     , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
     , "primitive == 0.5.1.*"            -- required to build alex with GHC 6.12.3
+    , "QuickCheck < 2"                  -- required by test-framework-quickcheck and its users
     , "seqid < 0.2"                     -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
     , "seqid-streams < 0.2"             -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
     , "split < 0.2"                     -- newer versions don't work with GHC 6.12.3
