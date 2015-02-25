@@ -13,6 +13,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "git-annex"          = [enable "Assistant" , enable "Production"]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
+ | name == "highlighting-kate"  = [enable "pcre-light"]
  | name == "hslua"              = [enable "system-lua"]
  | name == "hxt"                = [enable "network-uri"]
  | name == "idris"              = [enable "gmp", enable "ffi"]

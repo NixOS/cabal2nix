@@ -58,7 +58,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "haskell-src"      = deriv { buildTools = Set.insert "happy" buildTools }
   | pname == "haskell-src-meta" = deriv { buildDepends = Set.insert "uniplate" buildDepends }
   | pname == "HFuse"            = deriv { phaseOverrides = hfusePreConfigure }
-  | pname == "highlighting-kate"= highlightingKatePostProcessing deriv
   | pname == "hlibgit2"         = deriv { buildTools = Set.insert "git" buildTools }
   | pname == "HList"            = deriv { buildTools = Set.insert "diffutils" buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = Set.insert "liblapack" (Set.insert "blas" (Set.filter (/= "lapack") extraLibs)) }
@@ -159,12 +158,6 @@ darcsInstallPostInstall = unlines
   , "  mv contrib/darcs_completion $out/etc/bash_completion.d/darcs"
   , "'';"
   ]
-
-highlightingKatePostProcessing :: Derivation -> Derivation
-highlightingKatePostProcessing deriv@(MkDerivation {..}) = deriv
-  { phaseOverrides = "prePatch = \"sed -i -e 's|regex-pcre-builtin >= .*|regex-pcre|' highlighting-kate.cabal\";"
-  , buildDepends = Set.insert "regex-pcre" (Set.delete "regex-pcre-builtin" buildDepends)
-  }
 
 xmonadPostInstall :: String
 xmonadPostInstall = unlines
