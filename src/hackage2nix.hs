@@ -2870,8 +2870,6 @@ defaultConfiguration = Configuration
     , "tabloid"
     , "tagged-list"
     , "tagged-th"
-    , "taglib"
-    , "taglib-api"
     , "tagsoup-ht"
     , "Takusen"
     , "takusen-oracle"
