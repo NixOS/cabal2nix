@@ -1749,7 +1749,6 @@ defaultConfiguration = Configuration
     , "hspread"
     , "hspresent"
     , "hsql-mysql"
-    , "hsqml"
     , "hsqml-demo-morris"
     , "hsqml-demo-notes"
     , "hsqml-demo-samples"
