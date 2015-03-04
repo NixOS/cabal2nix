@@ -2405,7 +2405,6 @@ defaultConfiguration = Configuration
     , "pool"
     , "pool-conduit"
     , "popenhs"
-    , "poppler"
     , "ports"
     , "positive"
     , "posix-acl"
