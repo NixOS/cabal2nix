@@ -118,6 +118,7 @@ fetchWith (supportsRev, kind, addArgs) source = do
 
    processOutputWithRev :: [String] -> IO (DerivationSource, FilePath)
    processOutputWithRev [rev,hash,path] = return (DerivationSource kind (sourceUrl source) (extractRevision rev) hash, path)
+   processOutputWithRev [rev,_,hash,path] = processOutputWithRev [rev,hash,path]
    processOutputWithRev out = unexpectedOutput out
 
    extractRevision :: String -> String
