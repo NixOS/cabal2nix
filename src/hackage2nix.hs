@@ -263,6 +263,7 @@ defaultConfiguration = Configuration
     , "GLFW-b < 1.4.7"                  -- https://github.com/bsl/bindings-GLFW/issues/20
     , "hscolour < 1.21"                 -- an update triggers a re-build of all Haskell packages
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
+    , "lens < 4.8"                      -- https://github.com/snapframework/snap/issues/141
     , "mtl == 2.1.*"                    -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
     ]
