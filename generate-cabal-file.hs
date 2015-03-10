@@ -9,7 +9,7 @@ getVersion :: IO Version
 getVersion = do
   v <- readProcess "git" ["log", "-1", "--format=%ci"] ""
   let [y4,y3,y2,y1,'-',m2,m1,'-',d2,d1] = head (words v)
-  return (read ('[':y4:y3:y2:y1:',':m2:m1:',':d2:d1:"]"))
+  return (read ('[':y4:y3:y2:y1:m2:m1:d2:d1:"]"))
 
 getGitVersion :: IO String
 getGitVersion = do
