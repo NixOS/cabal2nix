@@ -2255,7 +2255,6 @@ defaultConfiguration = Configuration
     , "Nomyx-Rules"
     , "NonEmptyList"
     , "NoSlow"
-    , "not-gloss"
     , "not-gloss-examples"
     , "notmuch-haskell"
     , "notmuch-web"
