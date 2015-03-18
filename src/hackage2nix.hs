@@ -258,9 +258,7 @@ defaultConfiguration = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
-    , "bindings-GLFW < 3.1"             -- https://github.com/bsl/bindings-GLFW/issues/20
     , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
-    , "GLFW-b < 1.4.7"                  -- https://github.com/bsl/bindings-GLFW/issues/20
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
     , "lens < 4.8"                      -- https://github.com/snapframework/snap/issues/141
     , "mtl == 2.1.*"                    -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
