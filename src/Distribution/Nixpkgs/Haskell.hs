@@ -80,6 +80,7 @@ renderDerivation (MkDerivation {..}) =
   , nest 2 $ vcat
     [ attr "pname"   $ string pname
     , attr "version" $ doubleQuotes (disp version)
+    , onlyIf (revision > 0) $ attr "revision" $ doubleQuotes (int revision)
     , sourceAttr src
     , onlyIf (not (null editedCabalFile)) $ attr "editedCabalFile" $ string editedCabalFile
     , boolattr "isLibrary" (not isLibrary || isExecutable) isLibrary
