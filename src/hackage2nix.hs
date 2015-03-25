@@ -201,7 +201,7 @@ generatePackageSet config hackage nixpkgs = do
 
 resolveNixpkgsOrHackageAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
 resolveNixpkgsOrHackageAttribute nixpkgs hackage name
-  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name   = p
+  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name  = p
   | Just _ <- Map.lookup name hackage                   = Just []
   | otherwise                                           = Nothing
 
