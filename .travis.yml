@@ -1,1 +1,10 @@
 language: haskell
+ghc: 7.8.4
+git:
+  depth: 50000
+
+before_install:
+  - cabal sandbox init
+  - cabal install -j cartel mtl
+  - runhaskell -package-db=.cabal-sandbox/x86_64-linux-ghc-7.8.4-packages.conf.d generate-cabal-file.hs >cabal2nix.cabal
+  - cabal sandbox delete
