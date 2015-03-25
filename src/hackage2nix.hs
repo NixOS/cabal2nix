@@ -207,6 +207,7 @@ resolveNixpkgsOrHackageAttribute nixpkgs hackage name
 
 resolveNixpkgsAttribute :: Nixpkgs -> Attribute -> Maybe Path
 resolveNixpkgsAttribute nixpkgs name
+  | name `elem` ["clang","lldb","llvm"]   = Just ["self","llvmPackages"]
   | Just paths <- Map.lookup name nixpkgs = getShortestPath (Set.toList (paths `Set.intersection` goodScopes))
   | otherwise                             = Nothing
   where
