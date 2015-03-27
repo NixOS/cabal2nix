@@ -234,9 +234,9 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
                            resolver'
                            (Platform X86_64 Linux)                 -- shouldn't be hardcoded
 #if MIN_VERSION_Cabal(1,22,0)
-                           (unknownCompilerInfo (CompilerId GHC (Version [7,8,4] [])) NoAbiTag)
+                           (unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag)
 #else
-                           (CompilerId GHC (Version [7,8,4] []))
+                           (CompilerId GHC (Version [7,10,1] []))
 #endif
                            []                                      -- no additional constraints
 
@@ -255,7 +255,7 @@ defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
 
-  , compilerId = CompilerId GHC (Version [7,8,4] [])
+  , compilerId = CompilerId GHC (Version [7,10,1] [])
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
@@ -268,31 +268,27 @@ defaultConfiguration = Configuration
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
-    [ "Cabal-1.18.1.5"
-    , "array-0.5.0.0"
-    , "base-4.7.0.2"
-    , "binary-0.7.1.0"
-    , "bytestring-0.10.4.0"
-    , "containers-0.5.5.1"
-    , "deepseq-1.3.0.2"
-    , "directory-1.2.1.0"
-    , "filepath-1.3.0.2"
-    , "ghc-prim-0.3.1.0"
-    , "haskeline-0.7.1.2"
-    , "haskell2010-1.1.2.0"
-    , "haskell98-2.0.0.3"
-    , "hoopl-3.10.0.1"
-    , "hpc-0.6.0.1"
-    , "integer-gmp-0.5.1.0"
-    , "old-locale-1.0.0.6"
-    , "old-time-1.1.0.2"
-    , "pretty-1.1.1.1"
-    , "process-1.2.0.0"
-    , "template-haskell-2.9.0.0"
-    , "terminfo-0.4.0.0"
-    , "time-1.4.2"
-    , "transformers-0.3.0.0"
-    , "unix-2.7.0.1"
+    [ "Cabal-1.22.2.0"
+    , "array-0.5.1.0"
+    , "base-4.8.0.0"
+    , "binary-0.7.3.0"
+    , "bytestring-0.10.6.0"
+    , "containers-0.5.6.2"
+    , "deepseq-1.4.1.1"
+    , "directory-1.2.2.0"
+    , "filepath-1.4.0.0"
+    , "ghc-prim-0.4.0.0"
+    , "haskeline-0.7.2.1"
+    , "hoopl-3.10.0.2"
+    , "hpc-0.6.0.2"
+    , "integer-gmp-1.0.0.0"
+    , "pretty-1.1.2.0"
+    , "process-1.2.3.0"
+    , "template-haskell-2.10.0.0"
+    , "terminfo-0.4.0.1"
+    , "time-1.5.0.1"
+    , "transformers-0.4.2.0"
+    , "unix-2.7.1.0"
     , "xhtml-3000.2.1"
     ]
 
