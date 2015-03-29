@@ -68,7 +68,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "idris"            = deriv { buildTools = Set.insert "happy" buildTools, extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs) }
   | pname == "language-c-quote" = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
   | pname == "language-java"    = deriv { buildDepends = Set.insert "syb" buildDepends }
-  | pname == "leksah-server"    = deriv { buildDepends = Set.insert "process-leksah" buildDepends }
   | pname == "lhs2tex"          = deriv { extraLibs = Set.insert "texLive" extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = Set.delete "ffi" extraLibs }
   | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "ocaml" buildTools, configureFlags = Set.insert "-fbuild-external" configureFlags }
