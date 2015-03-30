@@ -259,7 +259,10 @@ defaultConfiguration = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
+    , "blaze-html < 0.8"                -- new versions break pandoc
+    , "blaze-markup < 0.7"              -- new versions break pandoc
     , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
+    , "haddock-library == 1.1.*"        -- new versions break pandoc
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
     , "mtl == 2.1.*"                    -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "primitive < 0.6"                 -- newer versions break lens and others packages
