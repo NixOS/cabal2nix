@@ -310,6 +310,7 @@ defaultConfiguration = Configuration
     , "c2hs < 0.21"                     -- newer versions cannot compile ncurses
     , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
     , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
+    , "haddock-api < 2.16"              -- required on GHC 7.8.x
     , "containers < 0.5"                -- required to build alex with GHC 6.12.3
     , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
     , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
