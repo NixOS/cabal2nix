@@ -2,8 +2,8 @@
 
 { cabal2nixSrc ? { outPath = ./.; revCount = 0; gitTag = "dirty"; }
 , releaseBuild ? false
-, supportedPlatforms ? ["x86_64-linux"] ++ (if releaseBuild then ["i686-linux" /*"x86_64-darwin"*/] else [])
-, supportedCompilers ? [/*"ghc704" "ghc722" "ghc742" "ghc763"*/ "ghc784" "ghc7101" /*"ghcHEAD"*/]
+, supportedPlatforms ? ["x86_64-linux"] ++ (if releaseBuild then ["i686-linux" "x86_64-darwin"] else [])
+, supportedCompilers ? ["ghc784" "ghc7101" "ghcHEAD"]
 }:
 
 let
