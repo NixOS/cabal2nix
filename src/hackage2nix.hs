@@ -313,10 +313,12 @@ defaultConfiguration = Configuration
     , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
     , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
     , "cabal-install == 1.18.*"         -- required for ghc-mod on 7.8.x
+    , "cpphs < 1.19"                    -- required to build Agda
     , "haddock-api < 2.16"              -- required on GHC 7.8.x
     , "containers < 0.5"                -- required to build alex with GHC 6.12.3
     , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
     , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
+    , "equivalence == 0.2.5"            -- required to build Agda with GHC 7.8.x
     , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
     , "lens >=4.1.1 && <4.8"            -- required by idris-0.9.17.1
     , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
