@@ -100,8 +100,10 @@ data Configuration = Configuration
 main :: IO ()
 main = do
   hackage <- readHashedHackage
-  nixpkgs <- readNixpkgPackageMap       -- TODO: nix barfs at the generated "type" attribute for some reason.
-  runParIO (generatePackageSet defaultConfiguration (Map.delete "type" hackage) nixpkgs)
+  nixpkgs <- readNixpkgPackageMap
+  let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
+            . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
+  runParIO $ generatePackageSet defaultConfiguration (fixup hackage) nixpkgs
 
 generatePackageSet :: Configuration -> Hackage -> Nixpkgs -> ParIO ()
 generatePackageSet config hackage nixpkgs = do
