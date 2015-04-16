@@ -151,12 +151,12 @@ generatePackageSet config hackage nixpkgs = do
               putStrLn "self: {"
               putStrLn ""
   pkgs <- flip parMapM (Map.toAscList db) $ \(name, vs) -> do
-    defs <- forM (Set.toAscList vs) $ \version -> do
-      srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display version)
+    defs <- forM (Set.toAscList vs) $ \pkgversion -> do
+      srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display pkgversion)
       let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
 
           -- TODO: Include list of broken dependencies in the generated output.
-          descr = hackage Map.! name Map.! version
+          descr = hackage Map.! name Map.! pkgversion
           (missingDeps, _, drv') = cabal2nix resolver descr
           drv = drv' { src = srcSpec, editedCabalFile = if revision drv == 0 then "" else cabalFileHash
                      , metaSection = (metaSection drv') { broken = not (Set.null missing)   -- Missing Haskell dependencies!
@@ -190,8 +190,8 @@ generatePackageSet config hackage nixpkgs = do
           overrides :: Doc
           overrides = systemOverrides
 
-          attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == version = name
-               | otherwise                                                          = name ++ '_' : [ if c == '.' then '_' else c | c <- display version ]
+          attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == pkgversion = name
+               | otherwise                                                             = name ++ '_' : [ if c == '.' then '_' else c | c <- display pkgversion ]
 
       return $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     return (intercalate "\n\n" (map render defs))
