@@ -270,6 +270,7 @@ defaultConfiguration = Configuration
     , "primitive < 0.6"                 -- newer versions break lens and others packages
     , "QuickCheck < 2.8"                -- 2.8 breaks chell-quickcheck-0.2.4
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
+    , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
