@@ -21,7 +21,6 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "pandoc"             = [enable "https", enable "make-pandoc-man-pages"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
- | name == "transformers-compat" = [enable "three"]
  | name == "xmobar"             = [enable "all_extensions"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
  | name == "yi"                 = [enable "pango", enable "vty"]

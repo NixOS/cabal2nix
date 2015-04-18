@@ -263,10 +263,8 @@ defaultConfiguration = Configuration
     [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
     , "blaze-html < 0.8"                -- new versions break pandoc
     , "blaze-markup < 0.7"              -- new versions break pandoc
-    , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
     , "haddock-library == 1.1.*"        -- new versions break pandoc
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
-    , "mtl == 2.1.*"                    -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "primitive < 0.6"                 -- newer versions break lens and others packages
     , "QuickCheck < 2.8"                -- 2.8 breaks chell-quickcheck-0.2.4
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
@@ -306,22 +304,24 @@ defaultConfiguration = Configuration
 
   , extraPackages = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
     [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
-    , "blaze-markup >=0.5.2.1 && <0.6.3.0" -- required by idris-0.9.17.1
+    , "annotated-wl-pprint <0.6"        -- required by idris-0.9.17.1
     , "blaze-html < 0.7.1"              -- required by idris-0.9.17.1
+    , "blaze-markup >=0.5.2.1 && <0.6.3.0" -- required by idris-0.9.17.1
     , "c2hs < 0.21"                     -- newer versions cannot compile ncurses
     , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
     , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
     , "cabal-install == 1.18.*"         -- required for ghc-mod on 7.8.x
-    , "cpphs < 1.19"                    -- required to build Agda
-    , "haddock-api < 2.16"              -- required on GHC 7.8.x
     , "containers < 0.5"                -- required to build alex with GHC 6.12.3
+    , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
+    , "cpphs < 1.19"                    -- required to build Agda
     , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
     , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
     , "equivalence == 0.2.5"            -- required to build Agda with GHC 7.8.x
     , "gloss < 1.9.3"                   -- new versions don't compile with GHC 7.8.x
+    , "haddock-api < 2.16"              -- required on GHC 7.8.x
     , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
     , "lens >=4.1.1 && <4.8"            -- required by idris-0.9.17.1
-    , "annotated-wl-pprint <0.6"        -- required by idris-0.9.17.1
+    , "mtl < 2.2"                       -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
     , "optparse-applicative == 0.10.*"  -- required for elm-make 0.1.1 and elm-package 0.4
     , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
