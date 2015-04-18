@@ -321,6 +321,7 @@ defaultConfiguration = Configuration
     , "gloss < 1.9.3"                   -- new versions don't compile with GHC 7.8.x
     , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
     , "lens >=4.1.1 && <4.8"            -- required by idris-0.9.17.1
+    , "annotated-wl-pprint <0.6"        -- required by idris-0.9.17.1
     , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
     , "optparse-applicative == 0.10.*"  -- required for elm-make 0.1.1 and elm-package 0.4
     , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
