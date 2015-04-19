@@ -1589,7 +1589,6 @@ defaultConfiguration = Configuration
     , "HROOT-hist"
     , "HROOT-io"
     , "HROOT-math"
-    , "hruby"
     , "hs2bf"
     , "hs2dot"
     , "Hs2lib"
