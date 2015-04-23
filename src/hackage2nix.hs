@@ -74,7 +74,7 @@ data Configuration = Configuration
 
   -- |Target compiler. Used by 'finalizePackageDescription' to choose
   -- appropriate flags and dependencies.
-  , compilerId :: CompilerId
+  , compilerInfo :: CompilerInfo
 
   -- |Core packages found on Hackageg
   , corePackages :: [PackageIdentifier]
@@ -234,8 +234,8 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
     finalize resolver' = finalizePackageDescription
                            (configureCabalFlags (package (packageDescription cabal)))
                            resolver'
-                           (Platform X86_64 Linux)                 -- shouldn't be hardcoded
-                           (unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag)
+                           (platform defaultConfiguration)
+                           (compilerInfo defaultConfiguration)
                            []                                      -- no additional constraints
 
     -- A variant of the cabal file that has all test suites enabled to ensure
@@ -252,9 +252,7 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
 defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
-
-  , compilerId = CompilerId GHC (Version [7,10,1] [])
-
+  , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
     , "blaze-html < 0.8"                -- new versions break pandoc
