@@ -4,6 +4,7 @@ import Cartel
 import Control.Monad.Trans ( liftIO )
 import System.Process ( readProcess )
 import Data.List ( intercalate )
+import System.Environment ( getArgs )
 
 getVersion :: IO Version
 getVersion = do
@@ -95,24 +96,29 @@ mkTest :: NonEmptyString -> [TestSuiteField] -> Section
 mkTest test opt = testSuite test $ exitcodeFields (test++".hs") ++ opt ++ hsSourceDirs ["test"] : commonTestOptions
 
 main :: IO ()
-main = defaultMainWithHeader (const (return "")) $ do
-  liftIO $ do ('v':gv) <- getGitVersion
-              writeFile "src/Cabal2Nix/Version.hs" $
-                "module Cabal2Nix.Version where\n\
-                \version :: String\n\
-                \version = " ++ show gv ++ "\n"
-  libraryModules <- modules "src"
-  liftIO $ writeFile "test/doctest.hs" (mkDoctest libraryModules)
-  props <- properties
-  return ( props
-         , exposedModules libraryModules : commonBuildOptions
-         , [ githubHead "NixOS" "cabal2nix"
-           , mkExecutable "cabal2nix" []
-           , mkExecutable "hackage2nix" [ ghcOptions ["-threaded", "-rtsopts", "-with-rtsopts=-N"] ]
-           , mkTest "spec" []
-           , mkTest "doctest" []
-           ]
-         )
+main = do
+  args <- getArgs
+  let releaseMode = "--release" `elem` args
+  defaultMainWithHeader (const (return "")) $ do
+    liftIO $ do ('v':gv) <- getGitVersion
+                writeFile "src/Cabal2Nix/Version.hs" $
+                  "module Cabal2Nix.Version where\n\
+                  \version :: String\n\
+                  \version = " ++ show gv ++ "\n"
+    libraryModules <- modules "src"
+    liftIO $ writeFile "test/doctest.hs" (mkDoctest libraryModules)
+    props <- properties
+    return ( props
+           , exposedModules libraryModules : commonBuildOptions
+           , [ githubHead "NixOS" "cabal2nix"
+             , mkExecutable "cabal2nix" []
+             , mkExecutable "hackage2nix" [ buildable (not releaseMode)
+                                          , ghcOptions ["-threaded", "-rtsopts", "-with-rtsopts=-N"]
+                                          ]
+             , mkTest "spec" []
+             , mkTest "doctest" []
+             ]
+           )
 
 mkDoctest :: [NonEmptyString] -> String
 mkDoctest libraryModules =
