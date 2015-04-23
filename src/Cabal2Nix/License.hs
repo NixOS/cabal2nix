@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Cabal2Nix.License ( fromCabalLicense ) where
 
 import Distribution.Nixpkgs.License
@@ -17,23 +15,13 @@ fromCabalLicense (LGPL (Just (Version [3] [])))         = Known "stdenv.lib.lice
 fromCabalLicense (AGPL Nothing)                         = Unknown (Just "AGPL")
 fromCabalLicense (AGPL (Just (Version [3] [])))         = Known "stdenv.lib.licenses.agpl3"
 fromCabalLicense (AGPL (Just (Version [3,0] [])))       = Known "stdenv.lib.licenses.agpl3"
-#if MIN_VERSION_Cabal(1,22,0)
 fromCabalLicense (MPL (Version [2,0] []))               = Known "stdenv.lib.licenses.mpl20"
-#else
-fromCabalLicense (UnknownLicense "MPL-2.0")             = Known "stdenv.lib.licenses.mpl20"
-#endif
-#if MIN_VERSION_Cabal(1,22,0)
-fromCabalLicense (BSD2)                                 = Known "stdenv.lib.licenses.bsd2"
-#else
-fromCabalLicense (UnknownLicense "BSD2")                = Known "stdenv.lib.licenses.bsd2"
-#endif
+fromCabalLicense BSD2                                   = Known "stdenv.lib.licenses.bsd2"
 fromCabalLicense BSD3                                   = Known "stdenv.lib.licenses.bsd3"
 fromCabalLicense BSD4                                   = Unknown (Just "BSD4")
 fromCabalLicense MIT                                    = Known "stdenv.lib.licenses.mit"
 fromCabalLicense PublicDomain                           = Known "stdenv.lib.licenses.publicDomain"
-#if MIN_VERSION_Cabal(1,22,0)
 fromCabalLicense UnspecifiedLicense                     = Known "stdenv.lib.licenses.unfree"
-#endif
 fromCabalLicense AllRightsReserved                      = Known "stdenv.lib.licenses.unfree"
 fromCabalLicense (Apache Nothing)                       = Known "stdenv.lib.licenses.asl20"
 fromCabalLicense (Apache (Just (Version [2,0] [])))     = Known "stdenv.lib.licenses.asl20"

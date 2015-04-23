@@ -38,14 +38,15 @@ properties = do
     , copyright = "Copyright (c) 2011-2015 by Peter Simons et al"
     , author = intercalate ", " as
     , stability = "Experimental"
-    , cabalVersion = Just (1,8)
+    , cabalVersion = Just (1,10)
     , homepage = "http://github.com/NixOS/cabal2nix/"
     , bugReports = "http://github.com/NixOS/cabal2nix/issues"
     , extraSourceFiles = ["README.md"]
+    , testedWith = [(ghc, eq [7,10,1])]
     }
 
 commonBuildOptions :: HasBuildInfo a => [a]
-commonBuildOptions = hsSourceDirs ["src"] : commonOptions
+commonBuildOptions = hsSourceDirs ["src"] : haskell2010 : commonOptions
 
 commonOptions :: HasBuildInfo a => [a]
 commonOptions = commonGhcOptions : commonBuildDepends
@@ -55,12 +56,11 @@ commonGhcOptions = ghcOptions ["-Wall"]
 
 commonBuildDepends :: HasBuildInfo a => [a]
 commonBuildDepends =
-  [ condBlock (impl ghc (lt [7,10])) (buildDepends [unconstrained "prettyclass"], []) []
-  , buildDepends
+  [ buildDepends
     [ package "base" (lt [5])
     , unconstrained "aeson"
     , unconstrained "bytestring"
-    , unconstrained "Cabal"
+    , package "Cabal" (gtEq [1,22,2])
     , unconstrained "containers"
     , unconstrained "deepseq-generics"
     , unconstrained "directory"
@@ -70,7 +70,7 @@ commonBuildDepends =
     , unconstrained "monad-par"
     , unconstrained "monad-par-extras"
     , unconstrained "mtl"
-    , unconstrained "pretty"
+    , package "pretty" (gtEq [1,1,2])
     , unconstrained "process"
     , unconstrained "regex-posix"
     , unconstrained "SHA"

@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, DeriveGeneric, StandaloneDeriving, CPP #-}
+{-# LANGUAGE RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 
 module Distribution.Nixpkgs.Haskell
@@ -68,9 +68,6 @@ instance Package Derivation where
 
 instance NFData Derivation where rnf = genericRnf
 
-#if !MIN_VERSION_Cabal(1,22,0)
-deriving instance Generic FlagName
-#endif
 instance NFData FlagName where rnf = genericRnf
 
 renderDerivation :: Derivation -> Doc
