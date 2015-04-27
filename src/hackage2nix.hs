@@ -681,7 +681,6 @@ defaultConfiguration = Configuration
     , "CabalSearch"
     , "cabal-setup"
     , "cabal-test"
-    , "cabal-test-quickcheck"
     , "cabal-upload"
     , "cake"
     , "cake3"
