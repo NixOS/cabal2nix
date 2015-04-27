@@ -974,7 +974,6 @@ defaultConfiguration = Configuration
     , "ctkl"
     , "ctpl"
     , "cudd"
-    , "curlhs"
     , "curry-base"
     , "CurryDB"
     , "curry-frontend"
