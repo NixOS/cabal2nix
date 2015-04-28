@@ -3415,7 +3415,6 @@ defaultConfiguration = Configuration
     , "shivers-cfg"
     , "showdown"
     , "shpider"
-    , "shuffle"
     , "sifflet"
     , "sifflet-lib"
     , "signals"
