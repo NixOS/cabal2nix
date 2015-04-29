@@ -2457,7 +2457,6 @@ defaultConfiguration = Configuration
     , "language-java-classfile"
     , "language-mixal"
     , "language-objc"
-    , "language-puppet"
     , "language-python-colour"
     , "language-sh"
     , "language-spelling"
