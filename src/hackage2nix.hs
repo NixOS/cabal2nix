@@ -4172,5 +4172,18 @@ defaultConfiguration = Configuration
     , "zsh-battery"
     , "ztail"
     , "Zwaluw"
+    , "BCMtools"
+    , "OpenSCAD"
+    , "SeqAlign"
+    , "bgzf"
+    , "cabocha"
+    , "fftwRaw"
+    , "flowlocks-framework"
+    , "hmm-hmatrix"
+    , "list-t-html-parser"
+    , "step-function"
+    , "th-context"
+    , "timerep"
+    , "yesod-transloadit"
     ]
 }
