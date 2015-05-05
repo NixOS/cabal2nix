@@ -3463,6 +3463,7 @@ defaultConfiguration = Configuration
     , "slack-api"
     , "sloane"
     , "sloth"
+    , "smaoin"
     , "smallarray"
     , "smallpt-hs"
     , "smallstring"
