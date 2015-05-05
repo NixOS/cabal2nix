@@ -695,6 +695,7 @@ defaultConfiguration = Configuration
     , "calc"
     , "caldims"
     , "caledon"
+    , "call-haskell-from-anything"
     , "campfire"
     , "cantor"
     , "cao"
