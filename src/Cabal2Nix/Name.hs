@@ -106,6 +106,7 @@ libNixName "pfs-1.2"                            = return "pfstools"
 libNixName "png"                                = return "libpng"
 libNixName "poppler-glib"                       = return "poppler"
 libNixName "portaudio-2.0"                      = return "portaudio"
+libNixName "pulse-simple"                       = return "pulseaudio"
 libNixName "pq"                                 = return "postgresql"
 libNixName "pthread"                            = []
 libNixName "python-3.3"                         = return "python3"
