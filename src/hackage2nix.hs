@@ -4143,7 +4143,6 @@ defaultConfiguration = Configuration
     , "yesod-static-angular"
     , "yesod-tableview"
     , "yesod-test-json"
-    , "yesod-transloadit"
     , "yesod-vend"
     , "yesod-worker"
     , "YFrob"
