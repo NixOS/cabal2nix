@@ -40,6 +40,7 @@ libNixName "crypto"                             = return "openssl"
 libNixName "crypt"                              = []  -- provided by glibc
 libNixName "c++"                                = []  -- What is that?
 libNixName "dl"                                 = []  -- provided by glibc
+libNixName "fftw3"                              = return "fftw"
 libNixName "gconf-2.0"                          = return "GConf"
 libNixName "gconf"                              = return "GConf"
 libNixName "gdk-2.0"                            = return "gtk"
