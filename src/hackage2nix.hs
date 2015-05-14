@@ -1010,7 +1010,6 @@ defaultConfiguration = Configuration
     , "data-dispersal"
     , "data-easy"
     , "data-extra"
-    , "data-hash"
     , "data-ivar"
     , "data-lens-ixset"
     , "datalog"
