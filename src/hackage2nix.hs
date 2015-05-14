@@ -3844,7 +3844,6 @@ defaultConfiguration = Configuration
     , "udbus"
     , "udbus-model"
     , "udev"
-    , "uhc-light"
     , "uhttpc"
     , "ui-command"
     , "UISF"
