@@ -261,6 +261,7 @@ defaultConfiguration = Configuration
     , "HStringTemplate < 0.8"           -- 0.8 depends on time >= 1.5, which we cannot provide in GHC 7.8.x
     , "primitive < 0.6"                 -- newer versions break lens and others packages
     , "QuickCheck < 2.8"                -- 2.8 breaks chell-quickcheck-0.2.4
+    , "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
     , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
