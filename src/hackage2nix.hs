@@ -254,8 +254,7 @@ defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [ "QuickCheck < 2.8"                -- 2.8 breaks chell-quickcheck-0.2.4
-    , "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
+    [ "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
     , "bifunctors == 4.*"               -- newer versions break lens-4.9.1
     , "profunctors ==4.*"               -- newer versions break lens-4.9.1
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
