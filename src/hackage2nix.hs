@@ -259,7 +259,6 @@ defaultConfiguration = Configuration
     , "bifunctors == 4.*"               -- newer versions break lens-4.9.1
     , "profunctors ==4.*"               -- newer versions break lens-4.9.1
     , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
-    , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
@@ -323,6 +322,7 @@ defaultConfiguration = Configuration
     , "seqid-streams < 0.2"             -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
     , "split < 0.2"                     -- newer versions don't work with GHC 6.12.3
     , "vector < 0.10.10"                -- newer versions don't work with GHC 6.12.3
+    , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
   , brokenPackages = Set.fromList $ map PackageName
