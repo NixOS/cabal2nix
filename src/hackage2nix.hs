@@ -257,7 +257,6 @@ defaultConfiguration = Configuration
     [ "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
     , "bifunctors == 4.*"               -- newer versions break lens-4.9.1
     , "profunctors ==4.*"               -- newer versions break lens-4.9.1
-    , "utf8-string < 1"                 -- version 1 breaks several packages right now, most notably hint
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
