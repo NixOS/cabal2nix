@@ -254,10 +254,7 @@ defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
-    , "blaze-html < 0.8"                -- new versions break pandoc
-    , "blaze-markup < 0.7"              -- new versions break pandoc
-    , "primitive < 0.6"                 -- newer versions break lens and others packages
+    [ "primitive < 0.6"                 -- newer versions break lens and others packages
     , "QuickCheck < 2.8"                -- 2.8 breaks chell-quickcheck-0.2.4
     , "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
     , "bifunctors == 4.*"               -- newer versions break lens-4.9.1
