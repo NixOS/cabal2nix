@@ -257,7 +257,6 @@ defaultConfiguration = Configuration
     [ "blaze-builder < 0.4"             -- the new version breaks many builds, like streaming-commons
     , "blaze-html < 0.8"                -- new versions break pandoc
     , "blaze-markup < 0.7"              -- new versions break pandoc
-    , "haddock-library == 1.1.*"        -- new versions break pandoc
     , "primitive < 0.6"                 -- newer versions break lens and others packages
     , "QuickCheck < 2.8"                -- 2.8 breaks chell-quickcheck-0.2.4
     , "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
