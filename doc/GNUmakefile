@@ -4,7 +4,7 @@ PANDOC_FLAGS := --smart -V papersize:"a4paper"
 
 .PHONY: all clean
 
-all: hal8.pdf hal8.html hal8-folien.pdf
+all: hal8.pdf hal8.html hal8-folien.pdf user-guide.pdf
 
 %.tex : %.md
 	pandoc -s $(PANDOC_FLAGS) -f markdown -t latex $< -o $@
@@ -19,6 +19,9 @@ all: hal8.pdf hal8.html hal8-folien.pdf
 	done
 
 hal8-folien.pdf : hal8-folien.md
+	pandoc -t beamer $< -o $@
+
+user-guide.pdf : user-guide.md
 	pandoc -t beamer $< -o $@
 
 clean:
