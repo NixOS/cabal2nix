@@ -254,9 +254,7 @@ defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [ "semigroupoids >=4 && <4.5"       -- newer versions break profunctors-4.4.1
-    , "bifunctors == 4.*"               -- newer versions break lens-4.9.1
-    , "profunctors ==4.*"               -- newer versions break lens-4.9.1
+    [
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
