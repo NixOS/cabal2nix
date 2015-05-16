@@ -254,7 +254,7 @@ defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [
+    [ "th-orphans < 0.12.0"             -- https://github.com/bmillwood/haskell-src-meta/issues/43
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
