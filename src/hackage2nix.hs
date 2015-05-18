@@ -4052,7 +4052,6 @@ defaultConfiguration = Configuration
     , "wumpus-tree"
     , "WURFL"
     , "wuss"
-    , "wx"
     , "wxAsteroids"
     , "WXDiffCtrl"
     , "wxFruit"
