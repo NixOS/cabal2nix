@@ -290,9 +290,6 @@ defaultConfiguration = Configuration
 
   , extraPackages = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
     [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
-    , "annotated-wl-pprint <0.6"        -- required by idris-0.9.17.1
-    , "blaze-html < 0.7.1"              -- required by idris-0.9.17.1
-    , "blaze-markup >=0.5.2.1 && <0.6.3.0" -- required by idris-0.9.17.1
     , "c2hs < 0.21"                     -- newer versions cannot compile ncurses
     , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
     , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
@@ -307,7 +304,6 @@ defaultConfiguration = Configuration
     , "gloss < 1.9.3"                   -- new versions don't compile with GHC 7.8.x
     , "haddock-api < 2.16"              -- required on GHC 7.8.x
     , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
-    , "lens >=4.1.1 && <4.8"            -- required by idris-0.9.17.1
     , "mtl < 2.2"                       -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
     , "optparse-applicative == 0.10.*"  -- required for elm-make 0.1.1 and elm-package 0.4
