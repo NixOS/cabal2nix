@@ -166,7 +166,8 @@ generatePackageSet config hackage nixpkgs = do
                                                                            then Set.singleton "stdenv.lib.platforms.none"
                                                                            else hydraPlatforms (metaSection drv')
                                                         }
-                     , jailbreak = not (null missingDeps) -- Dependency constraints aren't fulfilled
+                     , jailbreak =    not (null missingDeps)      -- Dependency constraints aren't fulfilled
+                                   && name /= "jailbreak-cabal"   -- Recursion: see "recursion".
                      }
 
           missing :: Set String
