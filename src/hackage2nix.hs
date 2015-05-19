@@ -2121,7 +2121,6 @@ defaultConfiguration = Configuration
     , "ide-backend"
     , "idiii"
     , "idna2008"
-    , "idris"
     , "IDynamic"
     , "ieee-utils"
     , "iException"
