@@ -228,6 +228,75 @@ Every Haskell package has an `env` attribute that provides a temporary shell env
 
 -------------------------------------------------------------------------------
 
+# Create a development environment for your own packages
+
+    $ nix-env -iA cabal2nix
+
+    $ cabal2nix --shell . >shell.nix
+    $ nix-shell --command "cabal configure"
+
+    $ cabal build
+    [...]
+
+-------------------------------------------------------------------------------
+
+# Create a development environment for your own packages
+
+    $ cabal2nix --shell .
+    with (import <nixpkgs> {}).pkgs;
+    let pkg = haskellPackages.callPackage
+                ({ mkDerivation, base, stdenv, transformers }:
+                 mkDerivation {
+                   pname = "mtl";
+                   version = "2.2.1";
+                   src = ./.;
+                   buildDepends = [ base transformers ];
+                   homepage = "http://github.com/ekmett/mtl";
+                   license = stdenv.lib.licenses.bsd3;
+                 }) {};
+    in
+      pkg.env
+
+-------------------------------------------------------------------------------
+
+# Create builds for your own packages
+
+      $ cd ~/src/foo
+      $ cabal2nix . > default.nix
+
+Now edit `~/.nixpkgs/config.nix`:
+
+      {
+        packageOverrides = super: let self = super.pkgs; in
+        {
+          foo = self.haskellPackages.callPackage
+                  ../src/foo {};
+        };
+      }
+
+Build it by running "`nix-env -iA foo`".
+
+-------------------------------------------------------------------------------
+
+# Create builds for your own packages
+
+Use this `~/.nixpkgs/config.nix` file to register the build inside of
+`haskellPackages`, so that other libraries may depend on it:
+
+      {
+        packageOverrides = super: let self = super.pkgs; in
+        {
+          haskellPackages = super.haskellPackages.override {
+            overrides = self: super: {
+              foo = self.callPackage ../src/foo {};
+              bar = self.callPackage ../src/bar {};
+            };
+          };
+        };
+      }
+
+-------------------------------------------------------------------------------
+
 # Where to get help ...
 
 - `https://nixos.org/`
