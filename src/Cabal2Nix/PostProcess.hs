@@ -52,6 +52,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = Set.insert "hashtables" buildDepends }
   | pname == "haddock" && version < Version [2,14] []
                                 = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
+  | pname == "GlomeVec"         = deriv { buildTools = Set.insert "llvm" buildTools }
   | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
   | pname == "happy"            = deriv { buildTools = Set.insert "perl" buildTools }
   | pname == "haskeline"        = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
@@ -64,8 +65,8 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "hmatrix-special"  = deriv { extraLibs = Set.insert "gsl" extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "hspec"            = deriv { doCheck = False }
-  | pname == "GlomeVec"         = deriv { buildTools = Set.insert "llvm" buildTools }
   | pname == "idris"            = deriv { buildTools = Set.insert "happy" buildTools, extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs) }
+  | pname == "inline-c-cpp"     = deriv { testDepends = Set.delete "stdc++" testDepends }
   | pname == "language-c-quote" = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
   | pname == "language-java"    = deriv { buildDepends = Set.insert "syb" buildDepends }
   | pname == "lhs2tex"          = deriv { extraLibs = Set.insert "texLive" extraLibs, phaseOverrides = lhs2texPostInstall }
@@ -86,8 +87,8 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "pcap"             = deriv { extraLibs = Set.insert "libpcap" extraLibs }
   | pname == "persistent"       = deriv { extraLibs = Set.insert "sqlite3" extraLibs }
   | pname == "purescript"       = deriv { buildTools = Set.insert "nodejs" buildTools }
-  | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "readline"         = deriv { extraLibs = Set.insert "readline" (Set.insert "ncurses" extraLibs) }
+  | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "saltine"          = deriv { extraLibs = Set.map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
   | pname == "SDL-image"        = deriv { extraLibs = Set.insert "SDL_image" extraLibs }
