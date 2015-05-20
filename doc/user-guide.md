@@ -1,16 +1,19 @@
 % Nix loves Haskell
 % Peter Simons \<simons@cryp.to\>
-% 2015-05-15
+% 2015-05-21
 
 -------------------------------------------------------------------------------
 
-# What can Nix do for you?
+# Road-map of this presentation
 
-1) Install any Haskell package known to Hackage.
-
-2) Install a Haskell compiler.
-
-3) Create a Haskell development environment.
+- Install Haskell packages from Hackage
+- Install one (or many) Haskell compiler(s)
+- Create a Haskell development environment
+    - permanent environments with `ghcWithPackages`
+    - ad-hoc environments for `nix-shell`
+- Integrate your own (non-public) packages into Nix
+- Take advantage of the central build farm
+- Pitfalls to avoid
 
 -------------------------------------------------------------------------------
 
@@ -203,9 +206,7 @@ To parameterize the compiler version, edit the file as follows:
         ghc = haskell.packages.${compiler}.ghcWithPackages
                 (pkgs: with pkgs; [ aeson lens monad-par ]);
       in
-      stdenv.mkDerivation {
-        [...]
-      }
+      [...]
 
 Now run "`nix-shell --argstr compiler ghc784`" to select a different
 compiler.
@@ -297,7 +298,57 @@ Use this `~/.nixpkgs/config.nix` file to register the build inside of
 
 -------------------------------------------------------------------------------
 
+# How to download binary packages
+
+NixOS users add this setting to `/etc/nixos/configuration.nix`:
+
+      nix.trustedBinaryCaches = [
+        http://hydra.cryp.to
+        http://hydra.nixos.org
+      ];
+
+Everyone else adds this setting to `/etc/nix/nix.conf`:
+
+      trusted-binary-caches = http://hydra.nixos.org \
+        http://hydra.cryp.to
+
+Now run `nix-env`, `nix-build`, and `nix-shell` with this option:
+
+      --option extra-binary-caches http://hydra.nixos.org
+
+-------------------------------------------------------------------------------
+
+# GHC's infamous non-deterministic library ID bug
+
+GHC and distributed build farms don't get along well:
+
+      https://ghc.haskell.org/trac/ghc/ticket/4012
+      https://github.com/NixOS/nixpkgs/issues/7792
+
+When you see an error like this one
+
+      package foo-0.7.1.0 is broken due to missing package
+      text-1.2.0.4-98506efb1b9ada233bb5c2b2db516d91
+
+then you have to garbage collect `foo` and all its dependents,
+and re-install from scratch.
+
+-------------------------------------------------------------------------------
+
 # Where to get help ...
+
+Haskell-specific resources:
+
+- https://github.com/NixOS/nixpkgs/issues/4941
+
+- A Journey into the Haskell NG infrastructure
+    - Part 1: http://lists.science.uu.nl/pipermail/nix-dev/2015-January/015591.html
+    - Part 2: http://lists.science.uu.nl/pipermail/nix-dev/2015-January/015608.html
+    - Part 3: http://lists.science.uu.nl/pipermail/nix-dev/2015-April/016912.html
+
+- Oliver Charles Wiki: http://wiki.ocharles.org.uk/Nix
+
+General Nix resources:
 
 - `https://nixos.org/`
 
