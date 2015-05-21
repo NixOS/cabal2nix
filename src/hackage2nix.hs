@@ -790,6 +790,7 @@ defaultConfiguration = Configuration
     , "codemonitor"
     , "codepad"
     , "cognimeta-utils"
+    , "coinbase-exchange"       -- outdated dependencies
     , "colada"
     , "collada-output"
     , "collada-types"
