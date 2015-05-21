@@ -256,7 +256,7 @@ defaultConfiguration = Configuration
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
-    , "pipes-errors < 3"                -- depends on errors 2.x
+    , "pipes-errors < 0.3"              -- depends on errors 2.x
     , "th-orphans < 0.12.0"             -- https://github.com/bmillwood/haskell-src-meta/issues/43
     ]
 
@@ -1091,6 +1091,7 @@ defaultConfiguration = Configuration
     , "doctest-discover"
     , "doctest-discover-configurator"
     , "DOM"
+    , "dominion"                        -- https://github.com/egonSchiele/dominion/issues/10
     , "dow"
     , "download"
     , "download-media-content"
@@ -2231,6 +2232,7 @@ defaultConfiguration = Configuration
     , "jonathanscard"
     , "jort"
     , "jose"
+    , "jose-jwt"                        -- https://github.com/tekul/jose-jwt/issues/6
     , "jsc"
     , "JsContracts"
     , "js-good-parts"
@@ -2386,6 +2388,7 @@ defaultConfiguration = Configuration
     , "linux-ptrace"
     , "lio-eci11"
     , "lio-simple"
+    , "liquid-fixpoint"                 -- https://github.com/ucsd-progsys/liquid-fixpoint/issues/66
     , "liquidhaskell"
     , "listlike-instances"
     , "list-t-html-parser"
@@ -3038,6 +3041,7 @@ defaultConfiguration = Configuration
     , "remote-debugger"
     , "remotion"
     , "reorderable"
+    , "repa-array"
     , "repa-bytestring"
     , "repa-flow"
     , "repa-plugin"
