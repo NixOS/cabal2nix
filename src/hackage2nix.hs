@@ -1783,6 +1783,7 @@ defaultConfiguration = Configuration
     , "hfann"
     , "hfd"
     , "hfiar"
+    , "hfoil"                 -- https://github.com/ghorn/hfoil/issues/6
     , "hfractal"
     , "hfsevents"
     , "hfusion"
