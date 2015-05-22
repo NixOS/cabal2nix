@@ -37,8 +37,7 @@ postProcess' deriv@(MkDerivation {..})
                                         , buildTools = Set.insert "happy" buildTools
                                         }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
-  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version
-                                        , buildTools = Set.insert "emacs" (Set.insert "makeWrapper" buildTools) }
+  | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version, buildTools = Set.insert "emacs" buildTools }
   | pname == "ghc-parser"       = deriv { buildTools = Set.insert "cpphs" (Set.insert "happy" buildTools)
                                         , phaseOverrides = ghcParserPatchPhase }
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
