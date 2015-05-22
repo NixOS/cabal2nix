@@ -927,7 +927,6 @@ defaultConfiguration = Configuration
     , "ctemplate"
     , "ctkl"
     , "ctpl"
-    , "cuboid"
     , "cudd"
     , "curry-base"
     , "CurryDB"
