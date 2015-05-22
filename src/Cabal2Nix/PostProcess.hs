@@ -71,8 +71,8 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "language-java"    = deriv { buildDepends = Set.insert "syb" buildDepends }
   | pname == "lhs2tex"          = deriv { extraLibs = Set.insert "texLive" extraLibs, phaseOverrides = lhs2texPostInstall }
   | pname == "libffi"           = deriv { extraLibs = Set.delete "ffi" extraLibs }
-  | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "ocaml" buildTools, configureFlags = Set.insert "-fbuild-external" configureFlags }
-  | pname == "liquidhaskell"    = deriv { doCheck = False } -- test-suite requires cvc4 or z3
+  | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "z3" (Set.insert "ocaml" buildTools), configureFlags = Set.insert "-fbuild-external" configureFlags }
+  | pname == "liquidhaskell"    = deriv { buildTools = Set.insert "z3" buildTools }
   | pname == "llvm-base"        = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "llvm-general"     = deriv { doCheck = False }
   | pname == "llvm-general-pure"= deriv { doCheck = False }
