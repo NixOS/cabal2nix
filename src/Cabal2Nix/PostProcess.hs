@@ -97,6 +97,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "structured-haskell-mode" = deriv { buildTools = Set.insert "emacs" buildTools
                                                , phaseOverrides = structuredHaskellModePostInstall
                                                }
+  | pname == "target"           = deriv { buildTools = Set.insert "z3" buildTools }
   | pname == "terminfo"         = deriv { extraLibs = Set.insert "ncurses" extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = Set.insert "--ghc-options=-rtsopts" configureFlags }
   | pname == "thyme"            = deriv { buildTools = Set.insert "cpphs" buildTools }
