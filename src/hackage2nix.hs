@@ -2379,6 +2379,7 @@ defaultConfiguration = Configuration
     , "linear-algebra-cblas"
     , "linear-maps"
     , "linearscan-hoopl"
+    , "linearscan"              -- https://github.com/jwiegley/linearscan/issues/1
     , "LinearSplit"
     , "LinkChecker"
     , "linkchk"
