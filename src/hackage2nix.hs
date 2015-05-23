@@ -2017,7 +2017,6 @@ defaultConfiguration = Configuration
     , "hsp-cgi"
     , "hspec-experimental"
     , "hspec-shouldbe"
-    , "hspec-snap"
     , "HsPerl5"
     , "hs-pgms"
     , "hs-pkpass"
