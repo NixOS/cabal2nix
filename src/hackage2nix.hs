@@ -3968,5 +3968,11 @@ defaultConfiguration = Configuration
     , "zsh-battery"
     , "ztail"
     , "Zwaluw"
+    , "ide-backend-common"
+    , "ide-backend-server"
+    , "pseudo-boolean"
+    , "snaplet-wordpress"
+    , "exherbo-cabal"
+    , "yesod-raml"
     ]
 }
