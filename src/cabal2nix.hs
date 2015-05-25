@@ -122,11 +122,20 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
       shell :: Doc -> Doc
       shell expr = vcat
-              [ text "with (import <nixpkgs> {}).pkgs;"
-              , text "let pkg = " <> hang (text "haskellngPackages.callPackage") 2 (parens expr) <+> braces empty <> semi
-              , text "in"
-              , text "  pkg.env"
-              ]
+                   [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"ghc7101\" }:"
+                   , text ""
+                   , text "let"
+                   , text ""
+                   , text "  inherit (nixpkgs) pkgs;"
+                   , text ""
+                   , text "  f = " <> expr <> semi
+                   , text ""
+                   , text "  drv = pkgs.haskell.packages.${compiler}.callPackage f {};"
+                   , text ""
+                   , text "in"
+                   , text ""
+                   , text "  if pkgs.lib.inNixShell then drv.env else drv"
+                   ]
 
       deriv''' | optNixShellOutput cfg = shell deriv''
                | otherwise             = deriv''
