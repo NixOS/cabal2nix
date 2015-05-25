@@ -3972,5 +3972,6 @@ defaultConfiguration = Configuration
     , "snaplet-wordpress"
     , "exherbo-cabal"
     , "yesod-raml"
+    , "hBDD-CMUBDD"
     ]
 }
