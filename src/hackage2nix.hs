@@ -2495,7 +2495,6 @@ defaultConfiguration = Configuration
     , "mecab"
     , "mediawiki"
     , "mediawiki2latex"
-    , "meep"
     , "mega-sdist"
     , "melody"
     , "memory"
