@@ -266,3 +266,11 @@ When you see an error like this one
 
 then you have to garbage collect `foo` and all its dependents,
 and re-install from scratch.
+
+      # nix-store -q --referrers /nix/store/*-haskell-text-1.2.0.4 | nix-store --repair-path --option binary-caches http://hydra.nixos.org
+
+If you're using a Hydra server other than `hydra.nixos.org`, then it
+might be necessary to disable the binary channels for the duration of
+the previous command, i.e. by running:
+
+      # nix-channel --remove nixos
