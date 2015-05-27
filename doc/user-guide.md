@@ -1,34 +1,96 @@
-% User's Guide for Haskell in Nixpkgs
-% Peter Simons \<simons@cryp.to\>
-% 2015-05-21
+---
+title: User's Guide for Haskell in Nixpkgs
+author: Peter Simons \<simons@cryp.to\>
+date: 2015-05-21
+---
 
-# Install Haskell packages from Hackage
+# How to install Haskell packages
 
-Lookups based on package names like
+Nixpkgs distributes build instructions for all Haskell packages that are
+registered on Hackage[^Hackage], but strangely enough those packages cannot be
+discovered with the normal Nix package look-up:
 
-    $ nix-env -i cabal-install
+    $ nix-env -qa cabal-install
+    error: selector ‘cabal-install’ matches no derivations
 
-don't work! You have to use attribute paths:
+    $ nix-env -i ghc
+    error: selector ‘ghc’ matches no derivations
 
-    $ nix-env -iA haskellPackages.cabal-install
+The reason for this strange behavior is that the Haskell package set is *huge*,
+and if all Haskell packages were visible in the top-level package set, then
+those kind of name-based search/install operations would be slowed down a lot.
+So, instead of that, we keep Haskell-related packages in a separate attribute
+set called `haskellPackages` which can be listed by running:
 
-To list all Haskell packages, run:
+    $ nix-env -f "<nixpkgs>" -qaP -A haskellPackages
+    haskellPackages.a50         a50-0.5
+    haskellPackages.abacate     haskell-abacate-0.0.0.0
+    haskellPackages.abcBridge   haskell-abcBridge-0.12
+    haskellPackages.afv         afv-0.1.1
+    haskellPackages.alex        alex-3.1.4
+    haskellPackages.Allure      Allure-0.4.101.1
+    haskellPackages.alms        alms-0.6.7
+    [... some 8000 entries omitted  ...]
 
-    $ nix-env -qaP -A haskellPackages
+Haskell packages who's Nix name (second column) begins with a `haskell-` prefix
+are packages that provide a library whereas packages without that prefix
+provide just executables. (Libraries may provide executables too, though. The
+package `haskell-pandoc`, for example, installs both a library and an
+application.) You can install and use Haskell executables just like any other
+program in Nixpkgs, but using Haskell libraries for development is a bit
+trickier and we'll address that subject in great detail in the next section.
 
-There is one Haskell package set per compiler:
+To install any of those packages into your profile, refer to them by attribute
+path (first column):
 
-    $ nix-env -qaP -A haskellPackages
-    $ nix-env -qaP -A haskell.packages.ghc6123
-    $ nix-env -qaP -A haskell.packages.ghc763
-    $ nix-env -qaP -A haskell.packages.ghc7101
+    $ nix-env -f "<nixpkgs>" -iA haskellPackages.Allure ...
 
-The default `haskellPackages` currently refers to
-`haskell.packages.ghc7101`.
+The name of every Haskell packages' attribute corresponds exactly to the name
+of the package on Hackage. The package `cabal-install` has the attribute
+`haskellPackages.cabal-install`, and so
+on.[^names-that-cannot-be-mapped-to-attributes]
 
-    $ nix-env -iA haskell.compiler.ghc784
+Attribute paths may vary depending on they way your system is set up. We dodged
+that problem so far by giving `nix-env` an explicit `-f "<nixpkgs>"` parameter,
+but if you call `nix-env` without that flag, then chances are the invocation
+fails:
 
-    $ nix-env -qaP -A haskell.compiler
+    $ nix-env -iA haskellPackages.cabal-install --dry-run
+    error: attribute ‘haskellPackages’ in selection path
+           ‘haskellPackages.cabal-install’ not found
+
+The `-f "<nixpkgs>"` argument ensures that the top-level namespace visible to
+`nix-env` is the Nixpkgs package set. Without that parameter, however, this is
+not necessarily the case. On NixOS, for example, Nixpkgs does by default *not*
+live in the top-level namespace. The easiest way to figure out the proper
+attribute path is to query for the path of a well-known Nixpkgs package, i.e.:
+
+    $ nix-env -qaP coreutils
+    nixos.pkgs.coreutils  coreutils-8.23
+
+If your system responds like that (which most NixOS installatios will), then
+the attribute path to `haskellPackages` is `nixos.pkgs.haskellPackages`, and
+it's also possible to run `nix-env` as follows, ommitting the `-f` flag:
+
+    $ nix-env -qaP -A nixos.pkgs.haskellPackages
+    $ nix-env -iA nixos.pkgs.haskellPackages.cabal-install
+
+## Choosing packages built with different compilers
+
+Nixpkgs contains the latest major release of every GHC since 6.10.4, and
+consequently there is not just one Haskell package set --- there is one per
+compiler:
+
+    $ nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc6123
+    $ nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc763
+    $ nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc7101
+
+The name `haskellPackages` is just a synonym for `haskell.packages.ghc7101`,
+which is our recommended default package set at the moment, but ultimately you
+are free to compile your Haskell packages with any GHC version you please. Run
+the following command to display the complete list of available compilers:
+
+    $ nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
     haskell.compiler.ghc6104        ghc-6.10.4
     haskell.compiler.ghc6123        ghc-6.12.3
     haskell.compiler.ghc704         ghc-7.0.4
@@ -42,15 +104,8 @@ The default `haskellPackages` currently refers to
     haskell.compiler.jhc            jhc-0.8.2
     haskell.compiler.uhc            uhc-1.1.9.0
 
-For every compiler version XYZ, the attributes
-
-        haskell.compiler.ghcXYC
-
-and
-
-        haskell.packages.ghcXYC.ghc
-
-are synonymous.
+For every compiler version *XYZ*, the attributes `haskell.compiler.ghcXYC` and
+`haskell.packages.ghcXYC.ghc` are synonymous.
 
 ## Install more than one Haskell compiler
 
@@ -67,8 +122,8 @@ are synonymous.
 
 ### transient
 
-    $ nix-env -p ~/ghc-7.6.3 -iA haskell.compiler.ghc763
-    $ nix-env -p ~/ghc-7.8.4 -iA haskell.compiler.ghc784
+    $ nix-env -f "<nixpkgs>" -p ~/ghc-7.6.3 -iA haskell.compiler.ghc763
+    $ nix-env -f "<nixpkgs>" -p ~/ghc-7.8.4 -iA haskell.compiler.ghc784
     [...]
 
     $ export PATH=$HOME/ghc-7.6.3/bin:$PATH
@@ -80,7 +135,7 @@ are synonymous.
 ### permanent
 
     $ PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER
-    $ nix-env -p $PROFILE_DIR/ghc-7.6.3 -iA ...
+    $ nix-env -f "<nixpkgs>" -p $PROFILE_DIR/ghc-7.6.3 -iA ...
 
 On NixOS, `/etc/profile` defines `$NIX_USER_PROFILE_DIR` automatically.
 
@@ -100,7 +155,7 @@ Edit the file `~/.nixpkgs/config.nix`:
         };
       }
 
-Now installl with `nix-env -iA myHaskellEnv`.
+Now installl with `nix-env -f "<nixpkgs>" -iA myHaskellEnv`.
 
 The generated `ghc` program is a wrapper script that re-directs the real
 `ghc` to use a "libdir" with all the specified packages installed:
@@ -179,7 +234,7 @@ shell environment in which that package can be built:
 
 ## For `nix-shell`
 
-    $ nix-env -iA cabal2nix
+    $ nix-env -f "<nixpkgs>" -iA cabal2nix
 
     $ cabal2nix --shell . >shell.nix
     $ nix-shell --command "cabal configure"
@@ -215,7 +270,7 @@ Now edit `~/.nixpkgs/config.nix`:
         };
       }
 
-Build it by running "`nix-env -iA foo`".
+Build it by running "`nix-env -f "<nixpkgs>" -iA foo`".
 
 ## For `nix-build`
 
@@ -248,7 +303,7 @@ Everyone else adds this setting to `/etc/nix/nix.conf`:
 
       trusted-binary-caches = http://hydra.nixos.org
 
-Now run `nix-env`, `nix-build`, and `nix-shell` with this option:
+Now run `nix-env -f "<nixpkgs>"`, `nix-build`, and `nix-shell` with this option:
 
       --option extra-binary-caches http://hydra.nixos.org
 
@@ -274,3 +329,13 @@ might be necessary to disable the binary channels for the duration of
 the previous command, i.e. by running:
 
       # nix-channel --remove nixos
+
+
+
+
+[^Hackage]: http://http://hackage.haskell.org/
+
+[^names-that-cannot-be-mapped-to-attributes]: This convention causes trouble
+with packages like `3dmodels` and `4Blocks`, because these names are invalid
+identifiers in the Nix language. The issue of how to deal with these (rare)
+corner cases is currently unresolved.
