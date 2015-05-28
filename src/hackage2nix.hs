@@ -2121,7 +2121,6 @@ defaultConfiguration = Configuration
     , "iconv"
     , "ideas"
     , "ideas-math"
-    , "ide-backend"
     , "idiii"
     , "idna2008"
     , "IDynamic"
