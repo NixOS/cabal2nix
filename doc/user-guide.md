@@ -333,7 +333,7 @@ the previous command, i.e. by running:
 
 
 
-[^Hackage]: http://http://hackage.haskell.org/
+[^Hackage]: http://hackage.haskell.org/
 
 [^names-that-cannot-be-mapped-to-attributes]: This convention causes trouble
 with packages like `3dmodels` and `4Blocks`, because these names are invalid
