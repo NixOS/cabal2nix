@@ -38,6 +38,7 @@ libNixName "CEGUIOgreRenderer-0.7.7"            = return "CEGUIOgreRenderer"
 libNixName "clutter-1.0"                        = return "clutter"
 libNixName "crypto"                             = return "openssl"
 libNixName "crypt"                              = []  -- provided by glibc
+libNixName "curses"                             = return "ncurses"
 libNixName "c++"                                = []  -- What is that?
 libNixName "dl"                                 = []  -- provided by glibc
 libNixName "fftw3f"                             = return "fftwFloat"
