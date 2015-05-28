@@ -293,7 +293,6 @@ defaultConfiguration = Configuration
 
   , extraPackages = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
     [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
-    , "c2hs < 0.21"                     -- newer versions cannot compile ncurses
     , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
     , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
     , "cabal-install == 1.18.*"         -- required for ghc-mod on 7.8.x
@@ -2636,7 +2635,6 @@ defaultConfiguration = Configuration
     , "narc"
     , "nats-queue"
     , "natural-number"
-    , "ncurses"
     , "neat"
     , "needle"
     , "nemesis-titan"
