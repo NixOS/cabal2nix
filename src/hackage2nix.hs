@@ -641,7 +641,6 @@ defaultConfiguration = Configuration
     , "cabalgraph"
     , "cabal-graphdeps"
     , "cabal-helper"
-    , "Cabal-ide-backend"
     , "cabal-install-bundle"
     , "cabal-install-ghc72"
     , "cabal-install-ghc74"
