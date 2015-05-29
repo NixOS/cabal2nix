@@ -258,6 +258,7 @@ defaultConfiguration = Configuration
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
     , "th-orphans < 0.12.0"             -- https://github.com/bmillwood/haskell-src-meta/issues/43
+    , "hslua < 0.4"                     -- newer versions break pandoc 1.14
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
