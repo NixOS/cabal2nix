@@ -254,9 +254,9 @@ defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
+
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
-    , "pipes-errors < 0.3"              -- depends on errors 2.x
     , "th-orphans < 0.12.0"             -- https://github.com/bmillwood/haskell-src-meta/issues/43
     ]
 
