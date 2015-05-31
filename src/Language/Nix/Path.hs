@@ -2,7 +2,6 @@
 module Language.Nix.Path ( Path, mkPath, path ) where
 
 import Control.Lens
-import Control.Applicative
 import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), punctuate, hcat, char )
 import Language.Nix.Identifier
 
