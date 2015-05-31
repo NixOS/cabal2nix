@@ -27,7 +27,7 @@ in
         aeson base bytestring Cabal containers deepseq deepseq-generics
         directory filepath hackage-db monad-par monad-par-extras mtl pretty
         process QuickCheck regex-posix SHA split transformers
-        utf8-string lens
+        utf8-string lens optparse-applicative
       ];
       testDepends = with haskellPackages; [
         aeson base bytestring Cabal containers deepseq deepseq-generics

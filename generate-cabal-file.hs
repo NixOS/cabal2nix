@@ -60,6 +60,7 @@ commonBuildDepends =
   [ buildDepends
     [ package "base" (lt [5])
     , unconstrained "aeson"
+    , unconstrained "ansi-wl-pprint"
     , unconstrained "bytestring"
     , package "Cabal" (gtEq [1,22,2])
     , unconstrained "containers"
@@ -71,6 +72,7 @@ commonBuildDepends =
     , unconstrained "monad-par"
     , unconstrained "monad-par-extras"
     , unconstrained "mtl"
+    , unconstrained "optparse-applicative"
     , package "pretty" (gtEq [1,1,2])
     , unconstrained "process"
     , unconstrained "regex-posix"
