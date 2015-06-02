@@ -2760,6 +2760,7 @@ defaultConfiguration = Configuration
     , "optimusprime"
     , "orchid"
     , "orchid-demo"
+    , "order-maintenance"
     , "orgmode-parse"
     , "origami"
     , "OSM"
