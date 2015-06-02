@@ -266,7 +266,7 @@ The easiest way to create an ad hoc development environment is to run
 
     nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [mtl pandoc])"
 
-For more sophisticated use-cases, however, it's probably nicer to save the
+For more sophisticated use-cases, however, it's more convenient to save the
 desired configuration in a file called `shell.nix` that looks like this:
 
     { nixpkgs ? import <nixpkgs> {}, compiler ? "ghc7101" }:
@@ -309,54 +309,83 @@ development commands. Note that you need `cabal-install` installed in your
 `$PATH` already to use it here --- the `nix-shell` environment does not provide
 it.
 
-# Adding support for your own packages
+# How to create Nix builds for your own private Haskell packages
 
-## For `nix-shell`
+If your own Haskell packages have build instructions for Cabal, then you can
+convert those automatically into build instructions for Nix using the
+`cabal2nix` utility, which you can install into your profile by running
+`nix-env -i cabal2nix`.
 
-    $ nix-env -f "<nixpkgs>" -iA cabal2nix
+## How to build a stand-alone project
+
+For example, let's assume that you're working on a private project called
+`foo`. To generate a Nix build expression for it, change into the project's
+top-level directory and run the command:
+
+    $ cabal2nix . >foo.nix
+
+Then write the following snippet into a file called `default.nix`:
+
+    { nixpkgs ? import <nixpkgs> {}, compiler ? "ghc7101" }:
+    nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./foo.nix { }
+
+Finally, store the following code in a file called `shell.nix`:
+
+    { nixpkgs ? import <nixpkgs> {}, compiler ? "ghc7101" }:
+    (import ./default.nix { inherit nixpkgs compiler; }).env
+
+At this point, you can run `nix-build` to have Nix compile your project and
+install it into a Nix store path. The local directory will contain a symlink
+called `result` after `nix-build` returns that points into that location. Of
+course, passing the flag `--argstr compiler ghc763` allows switching the build
+to any version of GHC currently supported.
+
+Furthermore, you can call `nix-shell` to enter an interactive development
+environment in which you can use `cabal configure` and `cabal build` to develop
+your code. That environment will automatically contain a proper GHC derivation
+with all the required libraries registered as well as all the system-level
+libraries your package might need.
+
+If your package does not depend on any system-level libraries, then it's
+sufficient to run
+
+    $ nix-shell --command "cabal configure"
+
+once to set up your build. `cabal-install` determines the absolute paths to all
+resources required for the build and writes them into a config file in the
+`dist/` directory. Once that's done, you can run `cabal build` and any other
+command for that project even outside of the `nix-shell` environment. This
+feature is particularly nice for those of us who like to edit their code with
+an IDE, like Emacs' `haskell-mode`, because it's not necessary to start Emacs
+inside of nix-shell just to make it find out the necessary settings for
+building the project; `cabal-install` has already done that for us.
+
+If you want to do some quick-and-dirty hacking and don't want to bother setting
+up a `default.nix` and `shell.nix` file manually, then you can use the
+`--shell` flag offered by `cabal2nix` to have it generate a stand-alone
+`nix-shell` environment for you. With that feature, running
 
     $ cabal2nix --shell . >shell.nix
     $ nix-shell --command "cabal configure"
 
-    $ cabal build
-    [...]
+is usually enough to set up a build environment for any given Haskell package.
+You can even use that generated file to run `nix-build`, too:
 
-    $ cabal2nix --shell .
-    with (import <nixpkgs> {}).pkgs;
-    let pkg = haskellPackages.callPackage
-                ({ mkDerivation, base, stdenv, transformers }:
-                 mkDerivation {
-                   pname = "mtl";
-                   version = "2.2.1";
-                   src = ./.;
-                   buildDepends = [ base transformers ];
-                   homepage = "http://github.com/ekmett/mtl";
-                   license = stdenv.lib.licenses.bsd3;
-                 }) {};
-    in
-      pkg.env
+    $ nix-build shell.nix
 
-      $ cd ~/src/foo
-      $ cabal2nix . > default.nix
+## How to build projects that depend on each other
 
-Now edit `~/.nixpkgs/config.nix`:
+If you have multiple private Haskell packages that depend on each other, then
+you'll have to register those packages in the Nixpkgs set to make them visible
+for the dependency resolution performed by `callPackage`. First of all, change
+into each of your projects top-level directories and generate a `default.nix`
+file with `cabal2nix`:
 
-      {
-        packageOverrides = super: let self = super.pkgs; in
-        {
-          foo = self.haskellPackages.callPackage
-                  ../src/foo {};
-        };
-      }
+    $ cd ~/src/foo && cabal2nix . >default.nix
+    $ cd ~/src/bar && cabal2nix . >default.nix
 
-Build it by running "`nix-env -f "<nixpkgs>" -iA foo`".
-
-## For `nix-build`
-
-# Create builds for your own packages
-
-Use this `~/.nixpkgs/config.nix` file to register the build inside of
-`haskellPackages`, so that other libraries may depend on it:
+Then edit your `~/.nixpkgs/config.nix` file to register those builds in the
+default Haskell package set:
 
       {
         packageOverrides = super: let self = super.pkgs; in
@@ -370,12 +399,43 @@ Use this `~/.nixpkgs/config.nix` file to register the build inside of
         };
       }
 
-## GHC's infamous non-deterministic library ID bug
+Once that's accomplished, `nix-env -f "<nixpkgs>" -qA haskellPackages` will
+show your packages like any other package from Hackage, and you can build them
+
+    $ nix-build "<nixpkgs>" -A haskellPackages.foo
+
+or enter an interactive shell environment suitable for building them:
+
+    $ nix-shell "<nixpkgs>" -A haskellPackages.bar.env
+
+# Miscellaneous Topics
+
+## How to build with profiling enabled
+
+Every Haskell package set takes a function called `overrides` that you can use
+to manipulate the package as much as you please. One useful application of this
+feature is to replace the default `mkDerivation` function with one that enables
+library profiling for all packages. To accomplish that, add configure the
+following snippet in your `~/.nixpkgs/config.nix` file:
+
+    {
+      packageOverrides = super: let self = super.pkgs; in
+      {
+        profiledHaskellPackages = self.haskellPackages.override {
+          overrides = self: super: {
+            mkDerivation = args: super.mkDerivation (args // {
+              enableLibraryProfiling = true;
+            });
+          };
+        };
+      };
+    }
+
+## How to recover from GHC's infamous non-deterministic library ID bug
 
 GHC and distributed build farms don't get along well:
 
     https://ghc.haskell.org/trac/ghc/ticket/4012
-    https://github.com/NixOS/nixpkgs/issues/7792
 
 When you see an error like this one
 
