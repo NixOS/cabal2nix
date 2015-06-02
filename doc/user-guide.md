@@ -316,6 +316,54 @@ convert those automatically into build instructions for Nix using the
 `cabal2nix` utility, which you can install into your profile by running
 `nix-env -i cabal2nix`.
 
+## How to override a cabal package version for a specific compiler version
+
+Say the default version of ghc-events is 0.4.4.0 and does not work with ghc784
+We can override this by 
+
+  $ mkdir .nixpkgs/haskell/ && cd .nixpkgs/haskell/ 
+  $ cabal get ghc-events-0.4.3.0 && cd ghc-events-0.4.3.0 && cabal2nix --no-check ghc-events.cabal > default.nix
+
+in the config.nix we then override the packages 
+
+    #overrides for every compiler versions
+    myHaskellPackages = hp : hp.override {
+      overrides = self: super:  with pkgs.haskell.lib; {
+          ... 
+          };
+      };
+    myHaskellPackages784 = hp : hp.override {
+      overrides = self: super:  with pkgs.haskell.lib; {
+          ... 
+          ghc-events = dontCheck (pkgs.haskell.packages.ghc784.callPackage  ./haskell/ghc-events-0.4.3.0  {});
+          ... 
+          };
+      };
+    haskellngPackages  = myHaskellPackages super.haskellPackages;
+    haskell784Packages = myHaskellPackages784(myHaskellPackages super.haskell.packages.ghc784);
+
+We can then use those packages to build environments which will pick up the desired version
+
+    hs784  = haskell784Packages.ghcWithPackages (p: with p;
+                [
+                  ghc-events
+                  ...
+                ]
+       );
+       
+    hs7101 = haskellngPackages.ghcWithPackages (p: with p;
+                [
+                  ghc-events
+                  ...
+                ]
+
+as can be verified by 
+
+    nix-store -qR $(nix-instantiate '<nixpkgs>'  -A pkgs.hs784 ) | grep ghc-events
+    nix-store -qR $(nix-instantiate '<nixpkgs>'  -A pkgs.hs7101) | grep ghc-events
+    
+    
+    
 ## How to build a stand-alone project
 
 For example, let's assume that you're working on a private project called
