@@ -106,12 +106,10 @@ command displays the complete list of available compilers:
     haskell.compiler.jhc            jhc-0.8.2
     haskell.compiler.uhc            uhc-1.1.9.0
 
-There exists a package set for every GHC version in that list. There are no
-package sets for `jhc`, `uhc`, or any other non-`ghc` Haskell compiler,
-unfortunately, because no-one figured out how to build Cabal packages with them
-yet. It's probably no big deal to accomplish, but someone has to do it. Also,
-the attributes `haskell.compiler.ghcXYC` and `haskell.packages.ghcXYC.ghc` are
-synonymous for the sake of convenience.
+We have no package sets for `jhc` or `uhc` yet, unfortunately, but for every
+version of GHC listed above, there exists a package set based on that compiler.
+Also, the attributes `haskell.compiler.ghcXYC` and
+`haskell.packages.ghcXYC.ghc` are synonymous for the sake of convenience.
 
 # How to create a development environment
 
