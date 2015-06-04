@@ -531,7 +531,7 @@ compiler complains about a missing include file:
     fatal error: 'math.h' file not found
 
 The issue has been discussed at length in [ticket
-#6390](https://github.com/NixOS/nixpkgs/issues/6390), and so far no good
+6390](https://github.com/NixOS/nixpkgs/issues/6390), and so far no good
 solution has been proposed. As a work-around, users who run into this problem
 can configure the environment variables
 
