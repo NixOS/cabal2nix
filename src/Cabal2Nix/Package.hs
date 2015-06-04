@@ -7,7 +7,7 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.List ( isSuffixOf, isPrefixOf )
-import Data.Maybe ( listToMaybe )
+import Data.Maybe
 import Data.Version
 import Distribution.Nixpkgs.Fetch
 import qualified Distribution.Package as Cabal
@@ -50,7 +50,7 @@ fromDB optHackageDB pkg = do
     Just r -> return r
     Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure
  where
-  Just pkgId = simpleParse pkg
+  pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
   Cabal.PackageName name = Cabal.pkgName pkgId
   version = Cabal.pkgVersion pkgId
 
