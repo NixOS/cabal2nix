@@ -431,51 +431,71 @@ following snippet in your `~/.nixpkgs/config.nix` file:
       };
     }
 
-## How to override a cabal package version for a specific compiler version
+## How to override package versions in a compiler-specific package set
 
-Say the default version of ghc-events is 0.4.4.0 and does not work with ghc784
-We can override this by
+Nixpkgs provides the latest version of
+[`ghc-events`](http://hackage.haskell.org/package/ghc-events), which is 0.4.4.0
+at the time of this writing. This is fine for users of GHC 7.10.x, but GHC
+7.8.4 cannot compile that binary. Now, one way to solve that problem is to
+register an older version of `ghc-events` in the 7.8.x-specific package set.
+The first step is to generate Nix build instructions with `cabal2nix`:
 
-    $ mkdir .nixpkgs/haskell/ && cd .nixpkgs/haskell/
-    $ cabal get ghc-events-0.4.3.0 && cd ghc-events-0.4.3.0 && cabal2nix --no-check ghc-events.cabal > default.nix
+    $ cabal2nix cabal://ghc-events-0.4.3.0 >~/.nixpkgs/ghc-events-0.4.3.0.nix
 
-in the config.nix we then override the packages
+Then add the override in `~/.nixpkgs/config.nix`:
 
-    #overrides for every compiler versions
-    myHaskellPackages = hp : hp.override {
-      overrides = self: super:  with pkgs.haskell.lib; {
-          ...
+    {
+      packageOverrides = super: let self = super.pkgs; in
+      {
+        haskell = super.haskell // {
+          packages = super.haskell.packages // {
+            ghc784 = super.haskell.packages.ghc784.override {
+              overrides = self: super: {
+                ghc-events = self.callPackage ./ghc-events-0.4.3.0.nix {};
+              };
+            };
           };
+        };
       };
-    myHaskellPackages784 = hp : hp.override {
-      overrides = self: super:  with pkgs.haskell.lib; {
-          ...
-          ghc-events = dontCheck (pkgs.haskell.packages.ghc784.callPackage  ./haskell/ghc-events-0.4.3.0  {});
-          ...
-          };
+    }
+
+This code is a little crazy, no doubt, but it's necessary because the intuitive
+version
+
+    haskell.packages.ghc784 = super.haskell.packages.ghc784.override {
+      overrides = self: super: {
+        ghc-events = self.callPackage ./ghc-events-0.4.3.0.nix {};
       };
-    haskellngPackages  = myHaskellPackages super.haskellPackages;
-    haskell784Packages = myHaskellPackages784(myHaskellPackages super.haskell.packages.ghc784);
+    };
 
-We can then use those packages to build environments which will pick up the desired version
+doesn't do what we want it to: that code replaces the `haskell` package set in
+Nixpkgs with one that contains only one entry,`packages`, which contains only
+one entry `ghc784`. This override loses the `haskell.compiler` set, and it
+loses the `haskell.packages.ghcXYZ` sets for all compilers but GHC 7.8.4. To
+avoid that problem, we have to perform the convoluted little dance from above,
+iterating over each step in hierarchy.
 
-    hs784  = haskell784Packages.ghcWithPackages (p: with p;
-                [
-                  ghc-events
-                  ...
-                ]
-       );
+Once it's accomplished, however, we can install a variant of `ghc-events`
+that's compiled with GHC 7.8.4:
 
-    hs7101 = haskellngPackages.ghcWithPackages (p: with p;
-                [
-                  ghc-events
-                  ...
-                ]
+    nix-env -f "<nixpkgs>" -iA haskell.packages.ghc784.ghc-events
 
-as can be verified by
+Unfortunately, it turns out that this build fails again while executing the
+test suite! Apparently, the release archive on Hackage is missing some data
+files that the test suite requires, so we cannot run it. We accomplish that by
+re-generating the Nix expression with the `--no-check` flag:
 
-    nix-store -qR $(nix-instantiate '<nixpkgs>'  -A pkgs.hs784 ) | grep ghc-events
-    nix-store -qR $(nix-instantiate '<nixpkgs>'  -A pkgs.hs7101) | grep ghc-events
+    $ cabal2nix --no-check cabal://ghc-events-0.4.3.0 >~/.nixpkgs/ghc-events-0.4.3.0.nix
+
+Now the builds succeeds.
+
+Of course, in the concrete example of `ghc-events` this whole exercise is not
+an ideal solution, because `ghc-events` can analyze the output emitted by any
+version of GHC later than 6.12 regardless of the compiler version that was used
+to build the `ghc-events' executable, so strictly speaking there's no reason to
+prefer one built with GHC 7.8.x in the first place. However, for users who
+cannot use GHC 7.10.x at all for some reason, the approach of downgrading to an
+older version might be useful.
 
 ## How to recover from GHC's infamous non-deterministic library ID bug
 
@@ -502,3 +522,20 @@ command, i.e. by running:
     rm /nix/var/nix/binary-cache-v3.sqlite
     rm /nix/var/nix/manifests/*
     rm /nix/var/nix/channel-cache/*
+
+## Builds on Darwin fail with `math.h` not found
+
+Users of GHC on Darwin have occasionally reported that builds fail, because the
+compiler complains about a missing include file:
+
+    fatal error: 'math.h' file not found
+
+The issue has been discussed at length in [ticket
+#6390](https://github.com/NixOS/nixpkgs/issues/6390), and so far no good
+solution has been proposed. As a work-around, users who run into this problem
+can configure the environment variables
+
+    export NIX_CFLAGS_COMPILE="-idirafter /usr/include"
+    export NIX_CFLAGS_LINK="-L/usr/lib"
+
+in their `~/.bashrc` file to avoid the compiler error.
