@@ -537,3 +537,30 @@ can configure the environment variables
     export NIX_CFLAGS_LINK="-L/usr/lib"
 
 in their `~/.bashrc` file to avoid the compiler error.
+
+# Other resources
+
+- The Youtube video [https://www.youtube.com/watch?v=BsBhi_r-OeE Nix
+  Loves Haskell] provides an introduction into Haskell NG aimed at
+  beginners. The slides are available at
+  http://cryp.to/nixos-meetup-3-slides.pdf and also -- in a form ready
+  for cut & paste -- at
+  https://github.com/NixOS/cabal2nix/blob/master/doc/nixos-meetup-3-slides.md.
+
+- Oliver Charles wrote a very nice [http://wiki.ocharles.org.uk/Nix
+  Tutorial how to develop Haskell packages with Nix].
+
+- The ''Journey into the Haskell NG infrastructure'' series of postings
+  describe the new Haskell infrastructure in great detail:
+
+    - [Part 1](http://lists.science.uu.nl/pipermail/nix-dev/2015-January/015591.html)
+      explains the differences between the old and the new code and gives
+      instructions how to migrate to the new setup.
+
+    - [Part 2](http://lists.science.uu.nl/pipermail/nix-dev/2015-January/015608.html)
+      looks in-depth at how to tweak and configure your setup by means of
+      overrides.
+
+    - [Part 3](http://lists.science.uu.nl/pipermail/nix-dev/2015-April/016912.html)
+      describes the infrastructure that keeps the Haskell package set in Nixpkgs
+      uptodate.
