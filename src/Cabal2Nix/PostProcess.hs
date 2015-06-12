@@ -43,7 +43,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "git-annex"        = deriv { phaseOverrides = gitAnnexOverrides
-                                        , buildTools = Set.fromList ["git","rsync","gnupg1","curl","wget","lsof","openssh","which","bup","perl"] `Set.union` buildTools }
+                                        , buildTools = Set.fromList ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"] `Set.union` buildTools }
   | pname == "github-backup"    = deriv { buildTools = Set.insert "git" buildTools }
   | pname == "gloss-raster"     = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "GLUT"             = deriv { extraLibs = Set.fromList ["glut","libSM","libICE","libXmu","libXi","mesa"] `Set.union` extraLibs }
