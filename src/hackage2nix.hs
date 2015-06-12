@@ -301,10 +301,8 @@ defaultConfiguration = Configuration
     , "conduit < 1.2.4.2"               -- newer versions trigger non-deterministic ID bugs in GHC versions prior to 7.10.x
     , "containers < 0.5"                -- required to build alex with GHC 6.12.3
     , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
-    , "cpphs < 1.19"                    -- required to build Agda
     , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
     , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
-    , "equivalence == 0.2.5"            -- required to build Agda with GHC 7.8.x
     , "gloss < 1.9.3"                   -- new versions don't compile with GHC 7.8.x
     , "haddock-api < 2.16"              -- required on GHC 7.8.x
     , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
