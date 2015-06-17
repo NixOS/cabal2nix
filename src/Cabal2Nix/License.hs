@@ -25,5 +25,6 @@ fromCabalLicense UnspecifiedLicense                     = Known "stdenv.lib.lice
 fromCabalLicense AllRightsReserved                      = Known "stdenv.lib.licenses.unfree"
 fromCabalLicense (Apache Nothing)                       = Known "stdenv.lib.licenses.asl20"
 fromCabalLicense (Apache (Just (Version [2,0] [])))     = Known "stdenv.lib.licenses.asl20"
+fromCabalLicense ISC                                    = Known "stdenv.lib.licenses.isc"
 fromCabalLicense OtherLicense                           = Unknown Nothing
 fromCabalLicense l                                      = error $ "Cabal2Nix.License.fromCabalLicense: unknown license " ++ show l
