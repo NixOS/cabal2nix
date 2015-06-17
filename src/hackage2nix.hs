@@ -3897,7 +3897,6 @@ defaultConfiguration = Configuration
     , "xine"
     , "xing-api"
     , "XInput"
-    , "xkbcommon"
     , "xkcd"
     , "xlsior"
     , "xlsx-templater"
