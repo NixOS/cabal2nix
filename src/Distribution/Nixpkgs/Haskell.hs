@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, DeriveGeneric, StandaloneDeriving #-}
+{-# LANGUAGE RecordWildCards, DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 
 module Distribution.Nixpkgs.Haskell
