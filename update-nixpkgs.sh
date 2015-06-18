@@ -16,6 +16,7 @@ cabal2nix=$(git rev-parse --verify HEAD)
 cd nixpkgs
 git reset -q --hard
 git pull -q
+export NIX_PATH=nixpkgs=$PWD
 cd ..
 
 cd hackage
