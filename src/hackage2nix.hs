@@ -260,6 +260,7 @@ defaultConfiguration = Configuration
     , "hslua < 0.4"                     -- newer versions break pandoc 1.14
     , "scotty < 0.10"                   -- newer versions break virtually all dependencies
     , "th-orphans < 0.12"               -- https://github.com/bmillwood/haskell-src-meta/issues/43
+    , "gnutls < 0.2"                    -- newer versions break network-protocol-xmpp-0.4.7
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
