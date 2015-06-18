@@ -257,7 +257,6 @@ defaultConfiguration = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
-    , "hslua < 0.4"                     -- newer versions break pandoc 1.14
     , "scotty < 0.10"                   -- newer versions break virtually all dependencies
     , "th-orphans < 0.12"               -- https://github.com/bmillwood/haskell-src-meta/issues/43
     , "gnutls < 0.2"                    -- newer versions break network-protocol-xmpp-0.4.7
