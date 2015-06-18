@@ -137,7 +137,7 @@ cabalFromFile failHard file =
       Cabal.ParseFailed e | failHard -> do
         let (line, err) = ParseUtils.locatedErrorMsg e
             msg = maybe "" ((++ ": ") . show) line ++ err
-        putStrLn $ "*** error parsing cabal file: " ++ msg
+        hPutStrLn stderr $ "*** error parsing cabal file: " ++ msg
         exitFailure
       Cabal.ParseFailed _  -> return Nothing
       Cabal.ParseOk     _ a -> return (Just a)
