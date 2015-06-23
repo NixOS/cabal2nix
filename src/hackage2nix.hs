@@ -260,6 +260,7 @@ defaultConfiguration = Configuration
     , "scotty < 0.10"                   -- newer versions break virtually all dependencies
     , "th-orphans < 0.12"               -- https://github.com/bmillwood/haskell-src-meta/issues/43
     , "gnutls < 0.2"                    -- newer versions break network-protocol-xmpp-0.4.7
+    , "cryptonite < 0.5"                -- https://github.com/vincenthz/hs-certificate/issues/54
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
