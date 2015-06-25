@@ -102,6 +102,7 @@ main = do
   hackage <- readHashedHackage
   nixpkgs <- readNixpkgPackageMap
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
+            . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
   runParIO $ generatePackageSet defaultConfiguration (fixup hackage) nixpkgs
