@@ -3411,7 +3411,6 @@ defaultConfiguration = Configuration
     , "ssh"
     , "sssp"
     , "sstable"
-    , "stack"
     , "stackage-curator"
     , "stack-prism"
     , "starrover2"
