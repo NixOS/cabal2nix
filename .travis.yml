@@ -1,10 +1,30 @@
-language: haskell
-ghc: "7.10"
+# .travis.yml
+
 git:
-  depth: 50000
+ depth: 50000
+
+env:
+ - CABALVER=1.22 GHCVER=7.10.1
 
 before_install:
-  - cabal sandbox init
-  - cabal install -j cartel mtl
-  - runhaskell -package-db=.cabal-sandbox/x86_64-linux-ghc-7.8.4-packages.conf.d generate-cabal-file.hs >cabal2nix.cabal
-  - cabal sandbox delete
+ - travis_retry sudo add-apt-repository -y ppa:hvr/ghc
+ - travis_retry sudo apt-get update
+ - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
+ - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+
+install:
+ - cabal --version
+ - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
+ - travis_retry cabal update
+ - cabal sandbox init
+ - cabal install -j cartel mtl
+ - cabal exec runhaskell generate-cabal-file.hs >cabal2nix.cabal
+ - cabal sandbox delete
+ - cabal install -j --only-dependencies --enable-tests
+
+script:
+ - cabal configure --enable-tests -v
+ - cabal build
+ - cabal test
+ - cabal check
+ - cabal sdist
