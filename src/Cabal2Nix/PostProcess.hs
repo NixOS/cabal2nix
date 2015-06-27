@@ -120,6 +120,7 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "SDL2-ttf"         = deriv { buildDepends = Set.delete "SDL2" buildDepends }
   | pname == "jsaddle"          = deriv { buildDepends = Set.delete "ghcjs-base" buildDepends, testDepends = Set.delete "ghcjs-base" testDepends }
   | pname == "hzk"              = deriv { testDepends = Set.delete "zookeeper_mt" testDepends, buildTools = Set.insert "zookeeper_mt" buildTools }
+  | pname == "z3"               = deriv { preBuild = "if stdenv.isDarwin then \"export DYLD_LIBRARY_PATH=${z3}/lib\" else null" }
   | pname == "zip-archive"      = deriv { testDepends = Set.delete "zip" testDepends, buildTools = Set.insert "zip" buildTools }
   | otherwise                   = deriv
 
