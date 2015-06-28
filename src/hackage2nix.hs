@@ -1404,7 +1404,6 @@ defaultConfiguration = Configuration
     , "GeomPredicates-SSE"
     , "getemx"
     , "getflag"
-    , "gf"
     , "ggtsTC"
     , "ghc-dup"
     , "ghc-events-analyze"

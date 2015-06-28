@@ -51,6 +51,8 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = Set.insert "hashtables" buildDepends }
   | pname == "haddock" && version < Version [2,14] []
                                 = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
+  | pname == "gf"               = deriv { phaseOverrides = gfPhaseOverrides
+                                        , doCheck = False }
   | pname == "GlomeVec"         = deriv { buildTools = Set.insert "llvm" buildTools }
   | pname == "haddock"          = deriv { phaseOverrides = haddockPreCheck }
   | pname == "happy"            = deriv { buildTools = Set.insert "perl" buildTools }
@@ -241,4 +243,18 @@ ghcParserPatchPhase = unlines
   [ "patchPhase = ''"
   , "  substituteInPlace build-parser.sh --replace \"/bin/bash\" \"$SHELL\""
   , "'';"
+  ]
+
+gfPhaseOverrides :: String
+gfPhaseOverrides = unlines
+  [ "postPatch = ''"
+  , "  sed -i \"s|\\\"-s\\\"|\\\"\\\"|\" ./Setup.hs"
+    -- Disable silent compilation. Compiling takes long, it is best to see some
+    -- output, otherwise it looks like the build step has stalled.
+  , "  sed -i \"s|numJobs (bf bi)++||\" ./Setup.hs"
+    -- Parallel compilation fails. Disable it.
+  , "'';"
+  , "preBuild = ''export LD_LIBRARY_PATH=`pwd`/dist/build:$LD_LIBRARY_PATH'';"
+    -- The build step itself, after having built the library, needs to be able
+    -- to find the library it just built in order to compile grammar files.
   ]
