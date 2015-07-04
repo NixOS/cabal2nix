@@ -2428,7 +2428,6 @@ defaultConfiguration = Configuration
     , "llvm-ffi"
     , "llvm-general-quote"
     , "llvm-ht"
-    , "lmdb"
     , "local-search"
     , "loch"
     , "lock-file"
