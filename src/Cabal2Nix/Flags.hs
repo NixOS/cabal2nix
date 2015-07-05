@@ -18,7 +18,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "hxt"                = [enable "network-uri"]
  | name == "idris"              = [enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
- | name == "pandoc"             = [enable "https", enable "make-pandoc-man-pages"]
+ | name == "pandoc"             = [enable "https"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
  | name == "xmobar"             = [enable "all_extensions"]
