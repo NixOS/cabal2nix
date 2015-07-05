@@ -259,7 +259,6 @@ defaultConfiguration = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
-    , "scotty < 0.10"                   -- newer versions break virtually all dependencies
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
