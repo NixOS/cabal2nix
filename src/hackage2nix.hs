@@ -3920,7 +3920,6 @@ defaultConfiguration = Configuration
     , "xmonad-bluetilebranch"
     , "xmonad-contrib-bluetilebranch"
     , "xmonad-eval"
-    , "xmonad-screenshot"
     , "xmpipe"
     , "XMPP"
     , "xournal-builder"
