@@ -65,7 +65,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "hmatrix"          = deriv { extraLibs = Set.insert "liblapack" (Set.insert "blas" (Set.filter (/= "lapack") extraLibs)) }
   | pname == "hmatrix-special"  = deriv { extraLibs = Set.insert "gsl" extraLibs }
   | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
-  | pname == "hspec"            = deriv { doCheck = False }
   | pname == "idris"            = deriv { buildTools = Set.insert "happy" buildTools, extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs) }
   | pname == "inline-c-cpp"     = deriv { testDepends = Set.delete "stdc++" testDepends }
   | pname == "language-c-quote" = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
