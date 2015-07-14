@@ -166,4 +166,5 @@ buildToolNixName "cabal"                        = return "cabal-install"
 buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
+buildToolNixName "pkg-config"                   = return "pkgconfig"
 buildToolNixName x                              = return (toNixName x)
