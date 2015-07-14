@@ -4020,6 +4020,17 @@ defaultConfiguration = Configuration
     , "zsh-battery"
     , "ztail"
     , "Zwaluw"
+    , "Updater"
+    , "acme-zero"
+    , "fgl-arbitrary"
+    , "game-of-life"
+    , "htar"
+    , "luautils"
+    , "postgresql-schema"
+    , "processing"
+    , "quiver-csv"
+    , "socket-sctp"
+    , "yampa-glut"
     ]
 
 }
