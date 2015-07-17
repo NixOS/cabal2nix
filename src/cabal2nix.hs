@@ -78,7 +78,7 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   cfg <- execParser pinfo
 
-  pkg <- getPackage (optHackageDb cfg) $ Source (optUrl cfg) (fromMaybe "" (optRevision cfg)) (optSha256 cfg)
+  pkg <- getPackage (optHackageDb cfg) $ Source (optUrl cfg) (fromMaybe "" (optRevision cfg)) (maybe UnknownHash Guess (optSha256 cfg))
 
   let flags = readFlagList (optFlags cfg)
 

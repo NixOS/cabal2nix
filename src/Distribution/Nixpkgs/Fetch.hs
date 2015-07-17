@@ -4,6 +4,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Distribution.Nixpkgs.Fetch
   ( Source(..)
+  , Hash(..)
   , DerivationSource(..), fromDerivationSource
   , fetch
   , fetchWith
@@ -27,10 +28,23 @@ data Source = Source
   { sourceUrl       :: String       -- ^ URL to fetch from.
   , sourceRevision  :: String       -- ^ Revision to use. For protocols where this doesn't make sense (such as HTTP), this
                                     --   should be the empty string.
-  , sourceHash      :: Maybe String -- ^ The expected hash of the source, if available.
+  , sourceHash      :: Hash         -- ^ The expected hash of the source, if available.
   } deriving (Show, Eq, Ord, Generic)
 
 instance NFData Source where rnf = genericRnf
+
+data Hash = Certain String | Guess String | UnknownHash
+  deriving (Show, Eq, Ord, Generic)
+
+instance NFData Hash where rnf = genericRnf
+
+isUnknown :: Hash -> Bool
+isUnknown UnknownHash = True
+isUnknown _           = False
+
+hashToList :: Hash -> [String]
+hashToList (Certain s) = [s]
+hashToList _           = []
 
 -- | A source for a derivation. It always needs a hash and also has a protocol attached to it (url, git, svn, ...).
 -- A @DerivationSource@ also always has it's revision fully resolved (not relative revisions like @master@, @HEAD@, etc).
@@ -45,7 +59,7 @@ data DerivationSource = DerivationSource
 instance NFData DerivationSource where rnf = genericRnf
 
 fromDerivationSource :: DerivationSource -> Source
-fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision $ Just derivHash
+fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision $ Certain derivHash
 
 -- | Fetch a source, trying any of the various nix-prefetch-* scripts.
 fetch :: forall a. (String -> MaybeT IO a)      -- ^ This function is passed the output path name as an argument.
@@ -82,7 +96,7 @@ fetch f = runMaybeT . fetchers where
   localArchive :: FilePath -> MaybeT IO (DerivationSource, a)
   localArchive path = do
     absolutePath <- liftIO $ canonicalizePath path
-    unpacked <- snd <$> fetchWith (False, "zip", []) (Source ("file://" ++ absolutePath) "" Nothing)
+    unpacked <- snd <$> fetchWith (False, "zip", []) (Source ("file://" ++ absolutePath) "" UnknownHash)
     process (DerivationSource "" absolutePath "" "", unpacked)
 
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
@@ -91,7 +105,7 @@ fetch f = runMaybeT . fetchers where
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: (Bool, String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
 fetchWith (supportsRev, kind, addArgs) source = do
-  unless ((sourceRevision source /= "") || isNothing (sourceHash source) || not supportsRev) $
+  unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
   MaybeT $ liftIO $ do
@@ -114,7 +128,7 @@ fetchWith (supportsRev, kind, addArgs) source = do
    script = "nix-prefetch-" ++ kind
 
    args :: [String]
-   args = addArgs ++ sourceUrl source : [ sourceRevision source | supportsRev ] ++ maybeToList (sourceHash source)
+   args = addArgs ++ sourceUrl source : [ sourceRevision source | supportsRev ] ++ hashToList (sourceHash source)
 
    processOutputWithRev :: [String] -> IO (DerivationSource, FilePath)
    processOutputWithRev [rev,hash,path] = return (DerivationSource kind (sourceUrl source) (extractRevision rev) hash, path)
@@ -136,7 +150,7 @@ fetchWith (supportsRev, kind, addArgs) source = do
 
    processOutputSwitch :: [String] -> IO (DerivationSource, FilePath)
    processOutputSwitch
-     | supportsRev && isNothing (sourceHash source) = processOutputWithRev
+     | supportsRev && isUnknown (sourceHash source) = processOutputWithRev
      | otherwise                                   = processOutput
 
 stripPrefix :: Eq a => [a] -> [a] -> [a]

@@ -41,6 +41,7 @@ import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
+import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
@@ -156,7 +157,7 @@ generatePackageSet config hackage nixpkgs = do
               putStrLn ""
   pkgs <- flip parMapM (Map.toAscList db) $ \(name, vs) -> do
     defs <- forM (Set.toAscList vs) $ \pkgversion -> do
-      srcSpec <- liftIO $ sourceFromHackage Nothing (name ++ "-" ++ display pkgversion)
+      srcSpec <- liftIO $ sourceFromHackage UnknownHash (name ++ "-" ++ display pkgversion)
       let Just cabalFileHash = lookup "x-cabal-file-hash" (customFieldsPD (packageDescription descr))
 
           -- TODO: Include list of broken dependencies in the generated output.
