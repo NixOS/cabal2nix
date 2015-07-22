@@ -74,33 +74,43 @@ hashCachePath pid = do
   createDirectoryIfMissing True cacheDir
   return $ cacheDir </> pid <.> "sha256"
 
-sourceFromHackage :: Maybe String -> String -> IO DerivationSource
+sourceFromHackage :: Hash -> String -> IO DerivationSource
 sourceFromHackage optHash pkgId = do
   cacheFile <- hashCachePath pkgId
-  let cachedHash = MaybeT $ maybe (readFileMay cacheFile) (return . Just) optHash
-      url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
+  cachedHash <-
+    case optHash of
+      Certain h -> return . Certain $ h
+      Guess   h -> return . Guess $ h
+      _         -> fmap (maybe UnknownHash Certain) . readFileMay $ cacheFile
+  let url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
 
   -- Use the cached hash (either from cache file or given on cmdline via sha256 opt)
   -- if available, otherwise download from hackage to compute hash.
-  maybeHash <- runMaybeT $ cachedHash <|> derivHash . fst <$> fetchWith (False, "url", []) (Source url "" Nothing)
-  case maybeHash of
-    Just hash ->
+  case cachedHash of
+    Guess hash -> return $ DerivationSource "url" url "" hash
+    Certain hash ->
       -- We need to force the hash here. If we didn't do this, then when reading the
       -- hash from the cache file, the cache file will still be open for reading
       -- (because lazy io) when writeFile opens the file again for writing. By forcing
       -- the hash here, we ensure that the file is closed before opening it again.
       seq (length hash) $
       DerivationSource "url" url "" hash <$ writeFile cacheFile hash
-    Nothing -> do
-      hPutStr stderr $ unlines
-        [ "*** cannot compute hash. (Not a hackage project?)"
-        , " If your project is not on hackage, please supply the path to the root directory of"
-        , " the project, not to the cabal file."
-        , ""
-        , " If your project is on hackage but you still want to specify the hash manually, you"
-        , " can use the --sha256 option."
-        ]
-      exitFailure
+    UnknownHash -> do
+      maybeHash <- runMaybeT (derivHash . fst <$> (fetchWith (False, "url", []) (Source url "" UnknownHash)))
+      case maybeHash of
+        Just hash ->
+          seq (length hash) $
+          DerivationSource "url" url "" hash <$ writeFile cacheFile hash
+        Nothing -> do
+          hPutStr stderr $ unlines
+            [ "*** cannot compute hash. (Not a hackage project?)"
+            , " If your project is not on hackage, please supply the path to the root directory of"
+            , " the project, not to the cabal file."
+            , ""
+            , " If your project is on hackage but you still want to specify the hash manually, you"
+            , " can use the --sha256 option."
+            ]
+          exitFailure
 
 showPackageIdentifier :: Cabal.GenericPackageDescription -> String
 showPackageIdentifier pkgDesc = name ++ "-" ++ showVersion version where
