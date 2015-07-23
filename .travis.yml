@@ -23,8 +23,8 @@ install:
  - cabal install -j --only-dependencies --enable-tests
 
 script:
- - cabal configure --enable-tests -v
- - cabal build
- - cabal test
+ - cabal configure -v --enable-tests --ghc-option=-Wall --ghc-option=-Werror
+ - cabal build -j
+ - cabal test -j
  - cabal check
  - cabal sdist
