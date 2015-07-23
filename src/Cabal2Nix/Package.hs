@@ -1,7 +1,6 @@
 module Cabal2Nix.Package where
 
 import qualified Cabal2Nix.Hackage as DB
-import Control.Applicative
 import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class

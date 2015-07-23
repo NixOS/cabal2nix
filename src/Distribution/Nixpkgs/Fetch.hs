@@ -15,7 +15,6 @@ import Control.DeepSeq.Generics
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
-import Data.Maybe
 import GHC.Generics ( Generic )
 import System.Directory
 import System.Environment
