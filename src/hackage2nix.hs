@@ -260,7 +260,6 @@ defaultConfiguration = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
-    , "tar < 0.4.2.0"                   -- later versions fail the regression test suite
     , "vector < 0.11"                   -- breaks lens 4.12
     ]
 
