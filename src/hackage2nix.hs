@@ -316,6 +316,7 @@ defaultConfiguration = Configuration
     , "seqid < 0.2"                     -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
     , "seqid-streams < 0.2"             -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
     , "split < 0.2"                     -- newer versions don't work with GHC 6.12.3
+    , "tar < 0.4.2"                     -- newer versions don't work with the bytestring in GHC prior to 7.6.x
     , "vector < 0.10.10"                -- newer versions don't work with GHC 6.12.3
     , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
