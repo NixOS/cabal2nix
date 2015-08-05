@@ -256,7 +256,7 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
 defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
   { platform = Platform X86_64 Linux
-  , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,1] [])) NoAbiTag
+  , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "errors < 2"                      -- the update breaks some ~40 important packages
