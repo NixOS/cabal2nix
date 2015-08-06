@@ -18,7 +18,8 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ (`Set.difference` buildDeps
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ show str)) (simpleParse str))
-  [ ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
+  [ ("Agda", set (executableDepends . tool . contains (dep "emacs")) True . set phaseOverrides agdaPostInstall)
+  , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [dep "libXext", dep "libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
@@ -110,12 +111,17 @@ xmonadPostInstall = unlines
   , "'';"
   ]
 
+agdaPostInstall :: String
+agdaPostInstall = unlines
+  [ "postInstall = ''"
+  , "  $out/bin/agda -c --no-main $(find $out/share -name Primitive.agda)"
+  , "  $out/bin/agda-mode compile"
+  , "'';"
+  ]
+
 {-
 postProcess' :: Derivation -> Derivation
 postProcess' deriv@(MkDerivation {..})
-  | pname == "aeson" && version > Version [0,7] []
-                                = deriv { buildDepends = Set.insert "blaze-builder" buildDepends }
-  | pname == "Agda"             = deriv { buildTools = Set.insert "emacs" buildTools, phaseOverrides = agdaPostInstall }
   | pname == "alex" && version < Version [3,1] []
                                 = deriv { buildTools = Set.insert "perl" buildTools }
   | pname == "alex" && version >= Version [3,1] []
@@ -127,14 +133,10 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "Cabal"            = deriv { phaseOverrides = "preCheck = \"unset GHC_PACKAGE_PATH; export HOME=$NIX_BUILD_TOP\";" }
   | pname == "cabal-bounds"     = deriv { buildTools = Set.insert "cabal-install" buildTools }
   | pname == "editline"         = deriv { extraLibs = Set.insert "libedit" extraLibs }
-  | pname == "epic"             = deriv { extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs)
-                                        , buildTools = Set.insert "happy" buildTools
-                                        }
   | pname == "ghc-heap-view"    = deriv { phaseOverrides = ghciPostInstall }
   | pname == "ghc-mod"          = deriv { phaseOverrides = ghcModPostInstall pname version, buildTools = Set.insert "emacs" buildTools }
   | pname == "ghc-parser"       = deriv { buildTools = Set.insert "cpphs" (Set.insert "happy" buildTools)
                                         , phaseOverrides = ghcParserPatchPhase }
-  | pname == "ghc-paths"        = deriv { phaseOverrides = ghcPathsPatches }
   | pname == "ghc-vis"          = deriv { phaseOverrides = ghciPostInstall }
   | pname == "github-backup"    = deriv { buildTools = Set.insert "git" buildTools }
   | pname == "gloss-raster"     = deriv { extraLibs = Set.insert "llvm" extraLibs }
@@ -228,9 +230,6 @@ ghciPostInstall = unlines
   ]
 
 
-ghcPathsPatches :: String
-ghcPathsPatches = "patches = [ ./ghc-paths-nix.patch ];"
-
 lhs2texPostInstall :: String
 lhs2texPostInstall = unlines
   [ "postInstall = ''"
@@ -243,13 +242,6 @@ lhs2texPostInstall = unlines
 ncursesPatchPhase :: String
 ncursesPatchPhase = "patchPhase = \"find . -type f -exec sed -i -e 's|ncursesw/||' {} \\\\;\";"
 
-agdaPostInstall :: String
-agdaPostInstall = unlines
-  [ "postInstall = ''"
-  , "  $out/bin/agda -c --no-main $(find $out/share -name Primitive.agda)"
-  , "  $out/bin/agda-mode compile"
-  , "'';"
-  ]
 
 structuredHaskellModePostInstall :: String
 structuredHaskellModePostInstall = unlines
