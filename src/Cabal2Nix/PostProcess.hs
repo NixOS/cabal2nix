@@ -28,7 +28,8 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (dep "llvm")) True)
-  , ("gtk3", set (libraryDepends . pkgconfig . contains (dep "gtk3")) True)
+  , ("gtk3", set (libraryDepends . pkgconfig . contains (dep "gtk3")) True) -- https://github.com/NixOS/cabal2nix/issues/145
+  , ("imagemagick", set (libraryDepends . pkgconfig . contains (dep "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("jsaddle", set (dependencies . haskell . contains (dep "ghcjs-base")) False)
   , ("mysql", set (libraryDepends . system . contains (dep "mysql")) True)
   , ("pango", set (libraryDepends . haskell . contains (dep "cairo")) True)
