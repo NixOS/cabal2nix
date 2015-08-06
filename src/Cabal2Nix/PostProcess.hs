@@ -27,6 +27,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
+  , ("github-backup", set (executableDepends . tool . contains (dep "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (dep "llvm")) True)
   , ("gtk3", set (libraryDepends . pkgconfig . contains (dep "gtk3")) True) -- https://github.com/NixOS/cabal2nix/issues/145
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (dep "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
