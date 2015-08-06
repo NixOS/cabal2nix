@@ -33,6 +33,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("readline", over (libraryDepends . system) (Set.union (Set.fromList [dep "readline", dep "ncurses"])))
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
+  , ("wxcore", set (libraryDepends . pkgconfig . contains (dep "wxGTK")) True)
   ]
 
 dep :: String -> Dependency

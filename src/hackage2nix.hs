@@ -271,10 +271,10 @@ defaultConfiguration = Configuration
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
-    [ "Cabal-1.22.2.0"
+    [ "Cabal-1.22.4.0"
     , "array-0.5.1.0"
-    , "base-4.8.0.0"
-    , "binary-0.7.3.0"
+    , "base-4.8.1.0"
+    , "binary-0.7.5.0"
     , "bytestring-0.10.6.0"
     , "containers-0.5.6.2"
     , "deepseq-1.4.1.1"
@@ -297,7 +297,7 @@ defaultConfiguration = Configuration
 
   , hardCorePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
     [ "bin-package-db-0.0.0.0"
-    , "ghc-7.8.4"
+    , "ghc-7.10.2"
     , "rts-1.0"
     ]
 
