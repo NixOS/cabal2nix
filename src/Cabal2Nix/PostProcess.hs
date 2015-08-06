@@ -72,14 +72,15 @@ gfPhaseOverrides = unlines
   ]
 
 wxcHook :: Derivation -> Derivation
-wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [dep "wxGTK", dep "mesa", dep "libX11"])
+wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [dep "mesa", dep "libX11"])
+                  & libraryDepends . pkgconfig . contains (dep "wxGTK") .~ True
                   & phaseOverrides .~ wxcPostInstall (packageVersion drv)
+                  & runHaddock .~ False
   where
     wxcPostInstall :: Version -> String
     wxcPostInstall version = unlines
-      [ "postInstall = ''"
-      , "  cp -v dist/build/libwxc.so." ++ display version ++ " $out/lib/libwxc.so"
-      , "'';"
+      [ "postInstall = \"cp -v dist/build/libwxc.so." ++ display version ++ " $out/lib/libwxc.so\";"
+      , "postPatch = \"sed -i -e '/ldconfig inst_lib_dir/d' Setup.hs\";"
       ]
 
 cabalInstallPostInstall :: String
