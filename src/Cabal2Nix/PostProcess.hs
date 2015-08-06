@@ -29,6 +29,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (dep "llvm")) True)
   , ("gtk3", set (libraryDepends . pkgconfig . contains (dep "gtk3")) True)
   , ("jsaddle", set (dependencies . haskell . contains (dep "ghcjs-base")) False)
+  , ("mysql", set (libraryDepends . system . contains (dep "mysql")) True)
   , ("pango", set (libraryDepends . haskell . contains (dep "cairo")) True)
   , ("readline", over (libraryDepends . system) (Set.union (Set.fromList [dep "readline", dep "ncurses"])))
   , ("monad", set phaseOverrides xmonadPostInstall)
@@ -164,7 +165,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "MFlow"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "multiarg"         = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
-  | pname == "mysql"            = deriv { buildTools = Set.insert "mysql" buildTools, extraLibs = Set.insert "zlib" (Set.insert "openssl" extraLibs) }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "Omega"            = deriv { testDepends = Set.delete "stdc++" testDepends }
   | pname == "OpenAL"           = deriv { extraLibs = Set.insert "openal" extraLibs }
