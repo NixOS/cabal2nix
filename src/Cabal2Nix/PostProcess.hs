@@ -174,7 +174,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "purescript"       = deriv { buildTools = Set.insert "nodejs" buildTools }
   | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
   | pname == "repa-examples"    = deriv { extraLibs = Set.insert "llvm" extraLibs }
-  | pname == "saltine"          = deriv { extraLibs = Set.map (\x -> if x == "sodium" then "libsodium" else x) extraLibs }
   | pname == "SDL-image"        = deriv { extraLibs = Set.insert "SDL_image" extraLibs }
   | pname == "SDL-mixer"        = deriv { extraLibs = Set.insert "SDL_mixer" extraLibs }
   | pname == "SDL-ttf"          = deriv { extraLibs = Set.insert "SDL_ttf" extraLibs }

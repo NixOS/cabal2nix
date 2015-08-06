@@ -126,6 +126,7 @@ libNixName "sane-backends"                      = return "saneBackends"
 libNixName "SDL2-2.0"                           = return "SDL2"
 libNixName "sdl2"                               = return "SDL2"
 libNixName "sndfile"                            = return "libsndfile"
+libNixName "sodium"                             = return "libsodium"
 libNixName "sqlite3"                            = return "sqlite"
 libNixName "ssl"                                = return "openssl"
 libNixName "stdc++.dll"                         = [] -- What is that?
