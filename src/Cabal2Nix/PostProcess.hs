@@ -34,6 +34,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("mysql", set (libraryDepends . system . contains (dep "mysql")) True)
   , ("pango", set (libraryDepends . haskell . contains (dep "cairo")) True)
   , ("readline", over (libraryDepends . system) (Set.union (Set.fromList [dep "readline", dep "ncurses"])))
+  , ("terminfo", set (libraryDepends . system . contains (dep "ncurses")) True)
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (dep "wxGTK")) True)
@@ -154,7 +155,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "HList"            = deriv { buildTools = Set.insert "diffutils" buildTools }
   | pname == "hmatrix"          = deriv { extraLibs = Set.insert "liblapack" (Set.insert "blas" (Set.filter (/= "lapack") extraLibs)) }
   | pname == "hmatrix-special"  = deriv { extraLibs = Set.insert "gsl" extraLibs }
-  | pname == "hoogle"           = deriv { testTarget = "--test-option=--no-net" }
   | pname == "idris"            = deriv { buildTools = Set.insert "happy" buildTools, extraLibs = Set.insert "gmp" (Set.insert "boehmgc" extraLibs) }
   | pname == "inline-c-cpp"     = deriv { testDepends = Set.delete "stdc++" testDepends }
   | pname == "language-c-quote" = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
@@ -163,9 +163,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "libffi"           = deriv { extraLibs = Set.delete "ffi" extraLibs }
   | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "z3" (Set.insert "ocaml" buildTools), configureFlags = Set.insert "-fbuild-external" configureFlags }
   | pname == "liquidhaskell"    = deriv { buildTools = Set.insert "z3" buildTools }
-  | pname == "llvm-base"        = deriv { extraLibs = Set.insert "llvm" extraLibs }
-  | pname == "llvm-general"     = deriv { doCheck = False }
-  | pname == "llvm-general-pure"= deriv { doCheck = False }
   | pname == "MFlow"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "multiarg"         = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
@@ -173,7 +170,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "OpenAL"           = deriv { extraLibs = Set.insert "openal" extraLibs }
   | pname == "OpenGL"           = deriv { extraLibs = Set.insert "mesa" (Set.insert "libX11" extraLibs) }
   | pname == "pandoc"           = deriv { buildDepends = Set.insert "alex" (Set.insert "happy" buildDepends) }
-  | pname == "pcap"             = deriv { extraLibs = Set.insert "libpcap" extraLibs }
   | pname == "persistent"       = deriv { extraLibs = Set.insert "sqlite3" extraLibs }
   | pname == "purescript"       = deriv { buildTools = Set.insert "nodejs" buildTools }
   | pname == "repa-algorithms"  = deriv { extraLibs = Set.insert "llvm" extraLibs }
@@ -187,7 +183,6 @@ postProcess' deriv@(MkDerivation {..})
                                                , phaseOverrides = structuredHaskellModePostInstall
                                                }
   | pname == "target"           = deriv { buildTools = Set.insert "z3" buildTools }
-  | pname == "terminfo"         = deriv { extraLibs = Set.insert "ncurses" extraLibs }
   | pname == "threadscope"      = deriv { configureFlags = Set.insert "--ghc-options=-rtsopts" configureFlags }
   | pname == "thyme"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "vacuum"           = deriv { extraLibs = Set.insert "ghc-paths" extraLibs }
