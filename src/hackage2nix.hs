@@ -1796,7 +1796,6 @@ defaultConfiguration = Configuration
     , "hledger-vty"
     , "hlibev"
     , "hlibfam"
-    , "hlibgit2"
     , "HListPP"
     , "hlogger"
     , "HLogger"
