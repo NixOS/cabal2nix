@@ -3409,7 +3409,6 @@ defaultConfiguration = Configuration
     , "thrift"
     , "Thrift"
     , "throttle"
-    , "thyme"
     , "tianbar"
     , "tic-tac-toe"
     , "TicTacToe"

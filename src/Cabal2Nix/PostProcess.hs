@@ -36,6 +36,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("pango", set (libraryDepends . haskell . contains (dep "cairo")) True)
   , ("readline", over (libraryDepends . system) (Set.union (Set.fromList [dep "readline", dep "ncurses"])))
   , ("terminfo", set (libraryDepends . system . contains (dep "ncurses")) True)
+  , ("thyme", set (libraryDepends . tool . contains (dep "cpphs")) True) -- required on Darwin
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (dep "wxGTK")) True)
@@ -184,7 +185,6 @@ postProcess' deriv@(MkDerivation {..})
                                                }
   | pname == "target"           = deriv { buildTools = Set.insert "z3" buildTools }
   | pname == "threadscope"      = deriv { configureFlags = Set.insert "--ghc-options=-rtsopts" configureFlags }
-  | pname == "thyme"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "vacuum"           = deriv { extraLibs = Set.insert "ghc-paths" extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = Set.fromList ["wxGTK","mesa","libX11"] `Set.union` extraLibs }
   | pname == "X11" && version >= Version [1,6] []
