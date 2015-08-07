@@ -2,28 +2,6 @@
 
 module Main ( main ) where
 
-{-
-   I use the following shell script to re-build "hackage-packages.nix":
-
-   | #! /bin/sh
-   |
-   | set -eu -o pipefail
-   |
-   | cd ~/src/cabal2nix
-   | make --quiet cabal2nix.cabal
-   | cabal build -j hackage2nix
-   | time dist/build/hackage2nix/hackage2nix >hackage-packages.nix
-   | mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix
-   | nix-env -qaP -A haskellngPackages | tail -1
-
-   Make sure that "nix-env -qaP" shows the top-level Nixpkgs attributes at the
-   top level, i.e. without any prefix like "nixos.pkgs". Otherwise, the code
-   that resolver in Distribution/Nixpkgs/PackageMap.hs will produce bogus
-   results.
--}
-
--- Run: cabal build -j hackage2nix && time dist/build/hackage2nix/hackage2nix >hackage-packages.nix && mv hackage-packages.nix ~/.nix-defexpr/pkgs/development/haskell-modules/hackage-packages.nix && nix-env -qaP -A haskellngPackages | tail -1
-
 import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
