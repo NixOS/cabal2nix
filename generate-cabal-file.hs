@@ -43,7 +43,7 @@ properties = do
     , homepage = "http://github.com/NixOS/cabal2nix/"
     , bugReports = "http://github.com/NixOS/cabal2nix/issues"
     , extraSourceFiles = ["README.md"]
-    , testedWith = [(ghc, eq [7,10,1])]
+    , testedWith = [(ghc, eq [7,10,2])]
     }
 
 commonBuildOptions :: HasBuildInfo a => [a]
