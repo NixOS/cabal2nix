@@ -102,7 +102,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
       shell :: Doc
       shell = vcat
-              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"ghc7101\" }:"
+              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\" }:"
               , text ""
               , text "let"
               , text ""
@@ -110,7 +110,11 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               , text ""
               , hcat [ text "  f = ", deriv', semi ]
               , text ""
-              , text "  drv = pkgs.haskell.packages.${compiler}.callPackage f {};"
+              , text "  haskellPackages = if compiler == \"default\""
+              , text "                      then pkgs.haskellPackages"
+              , text "                      else pkgs.haskell.packages.${compiler};"
+              , text ""
+              , text "  drv = haskellPackages.callPackage f {};"
               , text ""
               , text "in"
               , text ""
