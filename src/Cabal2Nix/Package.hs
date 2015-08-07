@@ -95,7 +95,7 @@ sourceFromHackage optHash pkgId = do
       seq (length hash) $
       DerivationSource "url" url "" hash <$ writeFile cacheFile hash
     UnknownHash -> do
-      maybeHash <- runMaybeT (derivHash . fst <$> (fetchWith (False, "url", []) (Source url "" UnknownHash)))
+      maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", []) (Source url "" UnknownHash))
       case maybeHash of
         Just hash ->
           seq (length hash) $
