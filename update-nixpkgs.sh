@@ -11,7 +11,7 @@ exit_trap()
 trap exit_trap EXIT
 
 cd "$(dirname "$0")"
-cabal2nix=$(git rev-parse --verify HEAD)
+cabal2nix=$(git describe --dirty)
 
 cd nixpkgs
 git reset -q --hard
