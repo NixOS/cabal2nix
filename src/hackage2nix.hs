@@ -19,6 +19,7 @@ import Data.Maybe
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Language.Nix.Identifier
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
@@ -143,13 +144,13 @@ generatePackageSet config hackage nixpkgs = do
           (missingDeps, _, drv') = cabal2nix resolver descr
 
           haskellDependencies :: Set String
-          haskellDependencies = Set.map unDep $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
+          haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
 
           systemDependencies :: Set String
-          systemDependencies = Set.map unDep $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
+          systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
 
           haskellOrSystemDependencies :: Set String
-          haskellOrSystemDependencies = Set.map unDep $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
+          haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
 
           missing :: Set String
           missing = Set.filter (`Set.notMember` knownAttributesSet) haskellDependencies

@@ -7,13 +7,13 @@ import Data.Function
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Language.Nix.Identifier ( Identifier(..) )
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Util.Regex ( regsubmatch )
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
-import Distribution.Version
 
 normalize :: Derivation -> Derivation
 normalize drv = drv
@@ -24,9 +24,9 @@ normalize drv = drv
   & over cabalFlags normalizeCabalFlags
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
-normalizeBuildInfo pname bi = bi
-  & haskell . contains (Dependency pname anyVersion) .~ False
-  & tool %~ normalizeNixBuildTools . Set.filter (\(Dependency (PackageName n) _) -> n `notElem` coreBuildTools)
+normalizeBuildInfo (PackageName pname) bi = bi
+  & haskell . contains (Identifier pname) .~ False
+  & tool %~ normalizeNixBuildTools . Set.filter (\(Identifier n) -> n `notElem` coreBuildTools)
 
   {-
   {
@@ -63,11 +63,11 @@ normalizeSet = Set.filter (not . null)
 -- normalizeNixLibs :: Set String -> Set String
 -- normalizeNixLibs = normalizeSet . Set.fromList . concatMap libNixName . Set.toList
 
-normalizeNixBuildTools :: Set Dependency -> Set Dependency
+normalizeNixBuildTools :: Set Identifier -> Set Identifier
 normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName' . Set.toList
   where
-    buildToolNixName' :: Dependency -> [Dependency]
-    buildToolNixName' (Dependency (PackageName n) vr) = [ Dependency (PackageName n') vr | n' <- buildToolNixName n ]
+    buildToolNixName' :: Identifier -> [Identifier]
+    buildToolNixName' (Identifier n) = [ Identifier n' | n' <- buildToolNixName n ]
 
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.

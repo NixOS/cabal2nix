@@ -1,13 +1,16 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Language.Nix.Identifier ( Identifier(..), ident, quote, needsQuoting ) where
 
+import Control.DeepSeq.Generics
 import Control.Lens
 import Data.Char
 import Data.Function ( on )
 import Data.String
 import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), text )
 import Text.Regex.Posix
+import GHC.Generics ( Generic )
 
 -- | Identifiers in Nix are essentially strings. Reasonable people restrict
 -- themselves to identifiers of the form @[a-zA-Z\_][a-zA-Z0-9\_\'\-]*@,
@@ -26,9 +29,9 @@ import Text.Regex.Posix
 -- >>> Identifier "abc" == Identifier "ABC"
 -- False
 -- >>> Identifier "abc" < Identifier "ABC"
--- True
--- >>> Identifier "abc" > Identifier "ABC"
 -- False
+-- >>> Identifier "abc" > Identifier "ABC"
+-- True
 -- >>> Identifier "X" > Identifier "a"
 -- True
 -- >>> Identifier "x" > Identifier "A"
@@ -38,7 +41,7 @@ import Text.Regex.Posix
 -- prop> \str -> any (`elem` ['a'..'z']) str ==> Identifier (map toLower str) /= Identifier (map toUpper str)
 
 newtype Identifier = Identifier String
-  deriving (Show, Eq, IsString)
+  deriving (Show, Eq, IsString, Generic)
 
 instance Pretty Identifier where
   pPrint i = text (i ^. ident . to quote)
@@ -48,6 +51,8 @@ instance Ord Identifier where
     case (compare `on` map toLower) a b of
       EQ -> compare a b
       r  -> r
+
+instance NFData Identifier where rnf = genericRnf
 
 -- | Checks whether a given string would need quoting when interpreted as an
 -- intentifier.

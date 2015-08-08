@@ -9,7 +9,6 @@ module Distribution.Nixpkgs.Haskell
   , phaseOverrides, editedCabalFile, metaSection
   , BuildInfo, haskell, pkgconfig, system, tool
   , dependencies, anyDep
-  , dep, unDep
   )
   where
 
@@ -17,9 +16,9 @@ import Control.DeepSeq.Generics
 import Control.Lens
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Data.Function
+import Data.Set.Lens
 import Data.List
-import Distribution.Version
+import Language.Nix.Identifier
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Util.PrettyPrinting
@@ -28,10 +27,10 @@ import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
 
 data BuildInfo = BuildInfo
-  { _haskell :: Set Dependency
-  , _pkgconfig :: Set Dependency
-  , _system :: Set Dependency
-  , _tool :: Set Dependency
+  { _haskell :: Set Identifier
+  , _pkgconfig :: Set Identifier
+  , _system :: Set Identifier
+  , _tool :: Set Identifier
   }
   deriving (Show, Eq, Generic)
 
@@ -110,10 +109,6 @@ instance NFData Derivation where rnf = genericRnf
 
 instance NFData FlagName where rnf = genericRnf
 
-instance NFData VersionRange where rnf = genericRnf
-
-instance NFData Dependency where rnf = genericRnf
-
 instance Pretty Derivation where
   pPrint drv@(MkDerivation {..}) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
@@ -143,7 +138,7 @@ instance Pretty Derivation where
     where
       inputs :: Set String
       inputs = Set.unions [ _extraFunctionArgs
-                          , view (dependencies . anyDep . to (Set.map unDep)) drv
+                          , setOf (dependencies . anyDep . folded . ident) drv
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
                           ]
 
@@ -165,17 +160,8 @@ instance Pretty Derivation where
 
 pPrintBuildInfo :: String -> BuildInfo -> Doc
 pPrintBuildInfo prefix bi = vcat
-  [ setattr (prefix++"HaskellDepends") (Set.map unDep (bi^.haskell))
-  , setattr (prefix++"SystemDepends")  (Set.map unDep (bi^.system))
-  , setattr (prefix++"PkgconfigDepends") (Set.map unDep (bi^.pkgconfig))
-  , setattr (prefix++"ToolDepends") (Set.map unDep (bi^.tool))
+  [ setattr (prefix++"HaskellDepends") (setOf (haskell.folded.ident) bi)
+  , setattr (prefix++"SystemDepends")  (setOf (system.folded.ident) bi)
+  , setattr (prefix++"PkgconfigDepends") (setOf (pkgconfig.folded.ident) bi)
+  , setattr (prefix++"ToolDepends") (setOf (tool.folded.ident) bi)
   ]
-
-dep :: String -> Dependency
-dep s = Dependency (PackageName s) anyVersion
-
-unDep :: Dependency -> String
-unDep (Dependency (PackageName x) _) = x
-
-instance Ord Dependency where
-  compare = compare `on` unDep

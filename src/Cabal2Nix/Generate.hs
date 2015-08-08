@@ -7,8 +7,6 @@ import Cabal2Nix.Name
 import Cabal2Nix.Normalize
 import Cabal2Nix.PostProcess
 import Control.Lens
--- import Data.Set.Lens
--- import Control.Applicative
 import Data.Maybe
 import qualified Data.Set as Set
 import Data.Version
@@ -16,10 +14,10 @@ import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Cabal2Nix.License
+import Language.Nix.Identifier
 import Distribution.Nixpkgs.Fetch
 import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
-import Distribution.Version
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
@@ -79,7 +77,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
 
 convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
 convertBuildInfo Cabal.BuildInfo {..} = mempty
-  & haskell .~ Set.fromList targetBuildDepends
-  & system .~ Set.fromList [ Dependency (PackageName y) anyVersion | x <- extraLibs, y <- libNixName x, not (null y) ]
-  & pkgconfig .~ Set.fromList [ Dependency (PackageName y) anyVersion | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
-  & tool .~ Set.fromList [ Dependency (PackageName y) anyVersion | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]
+  & haskell .~ Set.fromList [ Identifier y | (Dependency (PackageName y) _) <- targetBuildDepends ]
+  & system .~ Set.fromList [ Identifier y | x <- extraLibs, y <- libNixName x, not (null y) ]
+  & pkgconfig .~ Set.fromList [ Identifier y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
+  & tool .~ Set.fromList [ Identifier y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]
