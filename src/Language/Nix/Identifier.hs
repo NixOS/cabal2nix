@@ -20,15 +20,15 @@ import Text.Regex.Posix
 -- >>> let i = Identifier "foo.bar" in (i, pPrint i)
 -- (Identifier "foo.bar","foo.bar")
 --
--- The 'Ord' instance for identifiers is unusual in that it's aware of
--- character's case:
+-- The 'Ord' instance for identifiers is respects character case in less-than
+-- comparisons, etc.
 --
 -- >>> Identifier "abc" == Identifier "ABC"
 -- False
--- >>> Identifier "abc" > Identifier "ABC"
+-- >>> Identifier "abc" < Identifier "ABC"
 -- True
 -- >>> Identifier "abc" > Identifier "ABC"
--- True
+-- False
 -- >>> Identifier "X" > Identifier "a"
 -- True
 -- >>> Identifier "x" > Identifier "A"
