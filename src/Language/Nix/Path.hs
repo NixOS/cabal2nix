@@ -1,4 +1,3 @@
-{-# LANGUAGE PatternGuards #-}
 module Language.Nix.Path ( Path, mkPath, path ) where
 
 import Control.Lens
