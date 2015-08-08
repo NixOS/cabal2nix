@@ -42,9 +42,6 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("wxcore", set (libraryDepends . pkgconfig . contains (dep "wxGTK")) True)
   ]
 
-dep :: String -> Dependency
-dep s = Dependency (PackageName s) anyVersion
-
 gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . system) (Set.union buildInputs)
   where

@@ -8,8 +8,8 @@ module Distribution.Nixpkgs.Haskell
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , phaseOverrides, editedCabalFile, metaSection
   , BuildInfo, haskell, pkgconfig, system, tool
-  , dependencies
-  , unDep
+  , dependencies, anyDep
+  , dep, unDep
   )
   where
 
@@ -36,6 +36,8 @@ data BuildInfo = BuildInfo
   deriving (Show, Eq, Generic)
 
 makeLenses ''BuildInfo
+
+makeLensesFor [("_haskell", "anyDep"), ("_pkgconfig", "anyDep"), ("_system", "anyDep"), ("_tool", "anyDep")] ''BuildInfo
 
 instance Monoid BuildInfo where
   mempty = BuildInfo mempty mempty mempty mempty
@@ -113,7 +115,7 @@ instance NFData VersionRange where rnf = genericRnf
 instance NFData Dependency where rnf = genericRnf
 
 instance Pretty Derivation where
-  pPrint MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+  pPrint drv@(MkDerivation {..}) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ disp (packageName _pkgid)
@@ -141,18 +143,7 @@ instance Pretty Derivation where
     where
       inputs :: Set String
       inputs = Set.unions [ _extraFunctionArgs
-                          , Set.map unDep (_haskell _libraryDepends)
-                          , Set.map unDep (_haskell _executableDepends)
-                          , Set.map unDep (_haskell _testDepends)
-                          , Set.map unDep (_system _libraryDepends)
-                          , Set.map unDep (_system _executableDepends)
-                          , Set.map unDep (_system _testDepends)
-                          , Set.map unDep (_pkgconfig _libraryDepends)
-                          , Set.map unDep (_pkgconfig _executableDepends)
-                          , Set.map unDep (_pkgconfig _testDepends)
-                          , Set.map unDep (_tool _libraryDepends)
-                          , Set.map unDep (_tool _executableDepends)
-                          , Set.map unDep (_tool _testDepends)
+                          , view (dependencies . anyDep . to (Set.map unDep)) drv
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
                           ]
 
@@ -179,6 +170,9 @@ pPrintBuildInfo prefix bi = vcat
   , setattr (prefix++"PkgconfigDepends") (Set.map unDep (bi^.pkgconfig))
   , setattr (prefix++"ToolDepends") (Set.map unDep (bi^.tool))
   ]
+
+dep :: String -> Dependency
+dep s = Dependency (PackageName s) anyVersion
 
 unDep :: Dependency -> String
 unDep (Dependency (PackageName x) _) = x
