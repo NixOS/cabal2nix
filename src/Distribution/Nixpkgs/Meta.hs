@@ -6,7 +6,11 @@
    of the Nixpkgs manual at <http://nixos.org/nixpkgs/docs.html>.
  -}
 
-module Distribution.Nixpkgs.Meta where
+module Distribution.Nixpkgs.Meta
+  ( Meta, nullMeta
+  , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
+  ) where
+
 
 import Control.DeepSeq.Generics
 import Control.Lens
@@ -67,3 +71,14 @@ instance Pretty Meta where
 renderPlatformList :: [String] -> Doc
 renderPlatformList plats =
   nest 2 (fsep $ punctuate (text " ++") $ map text plats) <> semi
+
+nullMeta :: Meta
+nullMeta = Meta
+ { _homepage = error "undefined Nix._homepage"
+ , _description = error "undefined Nix._description"
+ , _license = error "undefined Nix._license"
+ , _platforms = error "undefined Nix._platforms"
+ , _hydraPlatforms = error "undefined Nix._hydraPlatforms"
+ , _maintainers = error "undefined Nix._maintainers"
+ , _broken = error "undefined Nix._broken"
+ }

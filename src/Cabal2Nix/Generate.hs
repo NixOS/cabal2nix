@@ -37,30 +37,6 @@ cabal2nix flags' cabal = normalize $ drv & cabalFlags .~ flags
                             []
                             cabal
 
-nullDerivation :: Derivation
-nullDerivation = MkDerivation
-  { _pkgid = error "undefined _pkgid"
-  , _revision = error "undefined _revision"
-  , _src = error "undefined _src"
-  , _isLibrary = error "undefined _isLibrary"
-  , _isExecutable = error "undefined _isExecutable"
-  , _extraFunctionArgs = error "undefined _extraFunctionArgs"
-  , _libraryDepends = error "undefined _libraryDepends"
-  , _executableDepends = error "undefined _executableDepends"
-  , _testDepends = error "undefined _testDepends"
-  , _configureFlags = error "undefined _configureFlags"
-  , _cabalFlags = error "undefined _cabalFlags"
-  , _runHaddock = error "undefined _runHaddock"
-  , _jailbreak = error "undefined _jailbreak"
-  , _doCheck = error "undefined _doCheck"
-  , _testTarget = error "undefined _testTarget"
-  , _hyperlinkSource = error "undefined _hyperlinkSource"
-  , _enableSplitObjs = error "undefined _enableSplitObjs"
-  , _phaseOverrides = error "undefined _phaseOverrides"
-  , _editedCabalFile = error "undefined _editedCabalFile"
-  , _metaSection = error "undefined _metaSection"
-  }
-
 cabal2nix' :: PackageDescription -> Derivation
 cabal2nix' PackageDescription {..} = normalize $ postProcess $
   let
@@ -91,7 +67,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
   & enableSplitObjs .~ True
   & phaseOverrides .~ mempty
   & editedCabalFile .~ (if xrev > 0 then fromJust (lookup "x-cabal-file-hash" customFieldsPD) else "")
-  & metaSection .~ ( nullMeta
+  & metaSection .~ ( Nix.nullMeta
                    & Nix.homepage .~ homepage
                    & Nix.description .~ synopsis
                    & Nix.license .~ fromCabalLicense license
@@ -101,27 +77,8 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
                    & Nix.broken .~ False
                    )
 
-nullBuildInfo :: Nix.BuildInfo
-nullBuildInfo = Nix.BuildInfo
-  { _haskell = error "undefined _haskell"
-  , _pkgconfig = error "undefined _pkgconfig"
-  , _system = error "undefined _system"
-  , _tool = error "undefined _tool"
-  }
-
-nullMeta :: Nix.Meta
-nullMeta = Nix.Meta
- { Nix._homepage = error "undefined Nix._homepage"
- , Nix._description = error "undefined Nix._description"
- , Nix._license = error "undefined Nix._license"
- , Nix._platforms = error "undefined Nix._platforms"
- , Nix._hydraPlatforms = error "undefined Nix._hydraPlatforms"
- , Nix._maintainers = error "undefined Nix._maintainers"
- , Nix._broken = error "undefined Nix._broken"
- }
-
 convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
-convertBuildInfo Cabal.BuildInfo {..} = nullBuildInfo
+convertBuildInfo Cabal.BuildInfo {..} = mempty
   & haskell .~ Set.fromList targetBuildDepends
   & system .~ Set.fromList [ Dependency (PackageName y) anyVersion | x <- extraLibs, y <- libNixName x, not (null y) ]
   & pkgconfig .~ Set.fromList [ Dependency (PackageName y) anyVersion | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]

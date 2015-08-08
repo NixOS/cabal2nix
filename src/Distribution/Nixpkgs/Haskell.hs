@@ -2,7 +2,16 @@
 {-# LANGUAGE RecordWildCards, DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 
-module Distribution.Nixpkgs.Haskell where
+module Distribution.Nixpkgs.Haskell
+  ( Derivation, nullDerivation, pkgid, revision, src, isLibrary, isExecutable
+  , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
+  , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
+  , phaseOverrides, editedCabalFile, metaSection
+  , BuildInfo, haskell, pkgconfig, system, tool
+  , dependencies
+  , unDep
+  )
+  where
 
 import Control.DeepSeq.Generics
 import Control.Lens
@@ -62,12 +71,36 @@ data Derivation = MkDerivation
   }
   deriving (Show, Eq, Generic)
 
+nullDerivation :: Derivation
+nullDerivation = MkDerivation
+  { _pkgid = error "undefined _pkgid"
+  , _revision = error "undefined _revision"
+  , _src = error "undefined _src"
+  , _isLibrary = error "undefined _isLibrary"
+  , _isExecutable = error "undefined _isExecutable"
+  , _extraFunctionArgs = error "undefined _extraFunctionArgs"
+  , _libraryDepends = error "undefined _libraryDepends"
+  , _executableDepends = error "undefined _executableDepends"
+  , _testDepends = error "undefined _testDepends"
+  , _configureFlags = error "undefined _configureFlags"
+  , _cabalFlags = error "undefined _cabalFlags"
+  , _runHaddock = error "undefined _runHaddock"
+  , _jailbreak = error "undefined _jailbreak"
+  , _doCheck = error "undefined _doCheck"
+  , _testTarget = error "undefined _testTarget"
+  , _hyperlinkSource = error "undefined _hyperlinkSource"
+  , _enableSplitObjs = error "undefined _enableSplitObjs"
+  , _phaseOverrides = error "undefined _phaseOverrides"
+  , _editedCabalFile = error "undefined _editedCabalFile"
+  , _metaSection = error "undefined _metaSection"
+  }
+
 makeLenses ''Derivation
 
 makeLensesFor [("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies")] ''Derivation
 
 instance Package Derivation where
-  packageId = _pkgid
+  packageId = view pkgid
 
 instance NFData BuildInfo where rnf = genericRnf
 
