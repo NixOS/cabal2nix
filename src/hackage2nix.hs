@@ -1,10 +1,8 @@
-{-# LANGUAGE PatternGuards #-}
-
 module Main ( main ) where
 
 import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
-import Cabal2Nix.Hackage ( readHashedHackage, Hackage )
+import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Package
 import Data.List
 import Control.Lens
@@ -81,7 +79,7 @@ data Configuration = Configuration
 
 main :: IO ()
 main = do
-  hackage <- readHashedHackage
+  hackage <- readHackage "hackage"
   nixpkgs <- readNixpkgPackageMap
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
@@ -138,7 +136,6 @@ generatePackageSet config hackage nixpkgs = do
               putStrLn ""
   pkgs <- flip parMapM (Map.toAscList db) $ \(name, vs) -> do
     defs <- forM (Set.toAscList vs) $ \pkgversion -> do
-      srcSpec <- liftIO $ sourceFromHackage UnknownHash (name ++ "-" ++ display pkgversion)
       let -- TODO: Include list of broken dependencies in the generated output.
           descr = hackage Map.! name Map.! pkgversion
           (missingDeps, _, drv') = cabal2nix resolver descr
@@ -178,7 +175,13 @@ generatePackageSet config hackage nixpkgs = do
           attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == pkgversion = name
                | otherwise                                                             = name ++ '_' : [ if c == '.' then '_' else c | c <- display pkgversion ]
 
-          drv = drv' & src .~ srcSpec
+          sha256 :: String
+          sha256 | Just x <- lookup "X-Package-SHA256" (customFieldsPD (packageDescription descr)) = x
+                 | otherwise = error $ display (packageId descr) ++ " has no hash"
+
+      srcSpec <- liftIO $ sourceFromHackage (Certain sha256) (name ++ "-" ++ display pkgversion)
+
+      let drv = drv' & src .~ srcSpec
                      & jailbreak .~ (not (null missingDeps) && (name /= "jailbreak-cabal")) -- Dependency constraints aren't fulfilled
                      & metaSection . broken .~ not (Set.null missing)         -- Missing Haskell dependencies!
                      & metaSection.hydraPlatforms .~ (if PackageName name `Set.member` brokenPackages config

@@ -24,6 +24,6 @@ readHashedHackage = fmap parseUnparsedHackage Unparsed.readHackage
           hash = showDigest (sha256 buf)
       in
        pkg { packageDescription = (packageDescription pkg) {
-                customFieldsPD = ("x-cabal-file-hash", hash) : customFieldsPD (packageDescription pkg)
+                customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg)
                 }
            }

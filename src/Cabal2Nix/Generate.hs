@@ -64,7 +64,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
   & hyperlinkSource .~ True
   & enableSplitObjs .~ True
   & phaseOverrides .~ mempty
-  & editedCabalFile .~ (if xrev > 0 then fromJust (lookup "x-cabal-file-hash" customFieldsPD) else "")
+  & editedCabalFile .~ (if xrev > 0 then fromJust (lookup "X-Cabal-File-Hash" customFieldsPD) else "")
   & metaSection .~ ( Nix.nullMeta
                    & Nix.homepage .~ homepage
                    & Nix.description .~ synopsis

@@ -41,6 +41,6 @@ cd nixpkgs
 git pull -q
 mv ../hackage-packages.nix pkgs/development/haskell-modules/hackage-packages.nix
 if [ -n "$(git status --porcelain)" ]; then
-  git commit -q -m "hackage-packages.nix: update to https://github.com/commercialhaskell/all-cabal-files/commit/$hackage with hackage2nix revision $cabal2nix" -- pkgs/development/haskell-modules/hackage-packages.nix
+  git commit -q -m "hackage-packages.nix: update to https://github.com/commercialhaskell/all-cabal-hashes/commit/$hackage with hackage2nix $cabal2nix" -- pkgs/development/haskell-modules/hackage-packages.nix
   git push -q
 fi
