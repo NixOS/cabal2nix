@@ -6,20 +6,21 @@ import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Package
-import Data.List
+import Cabal2Nix.Version
+import Control.Arrow ( second )
 import Control.Lens
-import Data.Function
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
+import Data.Function
+import Data.List
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Language.Nix.Identifier
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
@@ -32,8 +33,8 @@ import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
+import Language.Nix.Identifier
 import Options.Applicative
-import Cabal2Nix.Version
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
@@ -89,8 +90,8 @@ data Options = Options
 
 options :: Parser Options
 options = Options
-          <$> (strOption $ long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault <> metavar "PATH")
-          <*> (strOption $ long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefault <> metavar "PATH")
+          <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault <> metavar "PATH")
+          <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefault <> metavar "PATH")
 
 pinfo :: ParserInfo Options
 pinfo = info
@@ -264,7 +265,7 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
     cabal' = cabal { condTestSuites = flaggedTests }
 
     flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
-    flaggedTests = map (\(n, t) -> (n, mapTreeData enableTest t)) (condTestSuites cabal)
+    flaggedTests = map (second (mapTreeData enableTest)) (condTestSuites cabal)
 
     enableTest :: TestSuite -> TestSuite
     enableTest t = t { testEnabled = True }

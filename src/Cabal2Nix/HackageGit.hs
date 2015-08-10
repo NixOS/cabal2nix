@@ -2,23 +2,22 @@
 
 module Cabal2Nix.HackageGit ( Hackage, readHackage, module Data.Map )  where
 
+import Control.Monad
+import Data.Aeson
 import Data.ByteString.Char8 ( ByteString )
 import qualified Data.ByteString.Char8 as BS8 ( readFile )
 import Data.ByteString.Lazy.Char8 ( fromStrict )
+import Data.Digest.Pure.SHA ( sha256, showDigest )
 import Data.Map
-import Data.Aeson
 import Data.Maybe ( fromMaybe )
+import Data.String.UTF8 ( toString, fromRep )
 import Data.Version
-import Distribution.Text ( simpleParse )
-import System.FilePath
-import System.Directory
-import Control.Monad
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
-import Distribution.Text ( display )
-import Data.String.UTF8 ( toString, fromRep )
-import Data.Digest.Pure.SHA ( sha256, showDigest )
+import Distribution.Text ( simpleParse, display )
+import System.Directory
+import System.FilePath
 
 -- | A 'Map' representation of the Hackage database. Every package name
 -- maps to a non-empty set of version, and for every version there is a
