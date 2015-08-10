@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Main ( main ) where
 
 import Cabal2Nix.Flags ( configureCabalFlags )
@@ -25,11 +27,13 @@ import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
-import Distribution.PackageDescription hiding ( buildDepends, extraLibs, buildTools )
+import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
 import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
+import Options.Applicative
+import Cabal2Nix.Version
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
@@ -77,9 +81,30 @@ data Configuration = Configuration
   }
   deriving (Read, Show)
 
+data Options = Options
+  { hackageRepository :: FilePath
+  }
+  deriving (Show)
+
+options :: Parser Options
+options = Options
+          <$> (strOption $ long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault)
+
+pinfo :: ParserInfo Options
+pinfo = info
+        (   helper
+        <*> infoOption ("hackage2nix " ++ version) (long "version" <> help "Show version number")
+        <*> options
+        )
+        (  fullDesc
+        <> header "hackage2nix converts a Hackage database into a haskell-packages.nix file."
+        )
+
 main :: IO ()
 main = do
-  hackage <- readHackage "hackage"
+  Options {..} <- execParser pinfo
+
+  hackage <- readHackage hackageRepository
   nixpkgs <- readNixpkgPackageMap
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
@@ -166,7 +191,7 @@ generatePackageSet config hackage nixpkgs = do
           formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
           formatOverride n (Just [])                                            -- Haskell package:
             | n == name              = formatOverride n Nothing                 --     refers to a missing system library
-            | otherwise              = empty                                    --     found by callPackage
+            | otherwise              = mempty                                   --     found by callPackage
           formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
 
           overrides :: Doc
