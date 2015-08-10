@@ -12,9 +12,9 @@ import System.Process
 type Attribute = String
 type Path = [Attribute]
 
-readNixpkgAttributeSet :: IO (Set Attribute)
-readNixpkgAttributeSet = do
-  buf <- readProcess "nix-env" ["-qaP", "--json", "-f<nixpkgs>"] ""
+readNixpkgAttributeSet :: FilePath -> IO (Set Attribute)
+readNixpkgAttributeSet nixpkgs = do
+  buf <- readProcess "nix-env" ["-qaP", "--json", "-f"++nixpkgs] ""
   let pkgmap :: Either String (Map Attribute JSON.Object)
       pkgmap = JSON.eitherDecodeStrict (UTF8.toRep (UTF8.fromString buf))
   either fail (return . Map.keysSet) pkgmap
@@ -34,5 +34,5 @@ attributeSet2PackageMap pkgset = foldr (uncurry insertAttribute) Map.empty pkgli
     insertAttribute :: Attribute -> Path -> PackageMap -> PackageMap
     insertAttribute attr = Map.insertWith Set.union attr . Set.singleton
 
-readNixpkgPackageMap :: IO PackageMap
-readNixpkgPackageMap = fmap attributeSet2PackageMap readNixpkgAttributeSet
+readNixpkgPackageMap :: FilePath -> IO PackageMap
+readNixpkgPackageMap nixpkgs = fmap attributeSet2PackageMap (readNixpkgAttributeSet nixpkgs)

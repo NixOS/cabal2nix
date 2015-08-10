@@ -83,12 +83,14 @@ data Configuration = Configuration
 
 data Options = Options
   { hackageRepository :: FilePath
+  , nixpkgsRepository :: FilePath
   }
   deriving (Show)
 
 options :: Parser Options
 options = Options
-          <$> (strOption $ long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault)
+          <$> (strOption $ long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault <> metavar "PATH")
+          <*> (strOption $ long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefault <> metavar "PATH")
 
 pinfo :: ParserInfo Options
 pinfo = info
@@ -105,7 +107,7 @@ main = do
   Options {..} <- execParser pinfo
 
   hackage <- readHackage hackageRepository
-  nixpkgs <- readNixpkgPackageMap
+  nixpkgs <- readNixpkgPackageMap nixpkgsRepository
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
