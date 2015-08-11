@@ -15,6 +15,7 @@ import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
 import Data.Function
 import Data.List
+import Data.Char
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -35,6 +36,7 @@ import Distribution.Text
 import Distribution.Version
 import Language.Nix.Identifier
 import Options.Applicative
+import qualified Distribution.Compat.ReadP as Parse
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
@@ -3879,3 +3881,22 @@ defaultConfiguration = Configuration
     ]
 
 }
+
+-- instance Text Configuration where
+--   parse = do platform <- token (Parse.string "platform") >> token (Parse.char '=') >> parse
+--              return $ Configuration
+--                       { platform = platform
+--                       }
+
+-- token :: Parse.ReadP r a -> Parse.ReadP r a
+--  -- token p = p >>= \r -> Parse.skipSpaces >> return r
+-- token p = Parse.skipSpaces >> p
+
+-- listOf :: Parse.ReadP r a -> Parse.ReadP r [a]
+-- listOf p = Parse.between (token (Parse.char '[')) (token (Parse.char ']'))
+--              (Parse.sepBy (token p) (token (Parse.char ',')))
+
+-- run :: Parse.ReadP a a -> String -> Maybe a
+-- run p str = case [ r' | (r', s) <- Parse.readP_to_S (Parse.skipSpaces >> p) str, all isSpace s ] of
+--               []    -> Nothing
+--               (r:_) -> Just r
