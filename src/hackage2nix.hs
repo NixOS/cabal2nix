@@ -15,7 +15,7 @@ import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
 import Data.Function
 import Data.List
-import Data.Char
+-- import Data.Char
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -36,7 +36,7 @@ import Distribution.Text
 import Distribution.Version
 import Language.Nix.Identifier
 import Options.Applicative
-import qualified Distribution.Compat.ReadP as Parse
+-- import qualified Distribution.Compat.ReadP as Parse
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
