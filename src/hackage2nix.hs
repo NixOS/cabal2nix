@@ -593,7 +593,6 @@ defaultConfiguration = Configuration
     , "bitspeak"
     , "BitSyntax"
     , "bittorrent"
-    , "bitx-bitcoin"
     , "bkr"
     , "bla"
     , "black-jewel"
