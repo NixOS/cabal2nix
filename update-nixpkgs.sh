@@ -32,10 +32,9 @@ gzip -k "$TAR"
 hackage=$(git rev-parse --verify HEAD)
 cd ..
 
-rm -rf dist
-make --quiet cabal2nix.cabal
-cabal build -v0 -j hackage2nix
-dist/build/hackage2nix/hackage2nix >hackage-packages.nix 2>/dev/null
+rm -f cabal2nix
+make --quiet configure
+cabal run -v0 -j hackage2nix >hackage-packages.nix
 
 cd nixpkgs
 git pull -q
