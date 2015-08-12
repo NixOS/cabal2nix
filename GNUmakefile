@@ -5,7 +5,7 @@
 all::		check
 
 configure::	cabal2nix.cabal
-	@cabal configure --ghc-option=-j --enable-tests
+	@cabal -v0 configure --ghc-option=-j --enable-tests
 
 build::		configure
 	@cabal build -j
