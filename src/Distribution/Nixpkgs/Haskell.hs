@@ -1,6 +1,6 @@
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE RecordWildCards, DeriveGeneric #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}           -- for FlagName below
 
 module Distribution.Nixpkgs.Haskell
   ( Derivation, nullDerivation, pkgid, revision, src, isLibrary, isExecutable
@@ -14,17 +14,18 @@ module Distribution.Nixpkgs.Haskell
 
 import Control.DeepSeq.Generics
 import Control.Lens
+import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Set.Lens
-import Data.List
-import Language.Nix.Identifier
-import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Fetch
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
+import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Util.PrettyPrinting
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
+import Language.Nix.Identifier
 
 data BuildInfo = BuildInfo
   { _haskell :: Set Identifier
@@ -106,8 +107,6 @@ instance Package Derivation where
 instance NFData BuildInfo where rnf = genericRnf
 
 instance NFData Derivation where rnf = genericRnf
-
-instance NFData FlagName where rnf = genericRnf
 
 instance Pretty Derivation where
   pPrint drv@(MkDerivation {..}) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
