@@ -1,7 +1,10 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Cabal2Nix.HackageGit ( Hackage, readHackage, module Data.Map )  where
 
+import Control.DeepSeq.Generics
+import GHC.Generics ( Generic )
 import Control.Monad
 import Data.Aeson
 import Data.ByteString.Char8 ( ByteString )
@@ -18,6 +21,9 @@ import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseRes
 import Distribution.Text ( simpleParse, display )
 import System.Directory
 import System.FilePath
+import Control.Monad.Par.Combinator
+import Control.Monad.Par.IO
+import Control.Monad.Trans ( liftIO )
 
 -- | A 'Map' representation of the Hackage database. Every package name
 -- maps to a non-empty set of version, and for every version there is a
@@ -34,28 +40,36 @@ getSubDirs path = do
 -- 'Hackage' map that provides fast access to its contents.
 
 readHackage :: FilePath -> IO Hackage
-readHackage root = do
-  pkglist <- getSubDirs root
-  x <- mapM (readHackagePackage root) pkglist
-  return (fromList x)
+readHackage root = runParIO $ do
+  pkglist <- liftIO $ getSubDirs root
+  hackage' <- parMapM (readHackagePackage root) $!! pkglist
+  let hackage = [ (pkg, Data.Map.mapWithKey (mkPkgDescr pkg) version2buf) | (pkg, version2buf) <- hackage' ]
 
-readHackagePackage :: FilePath -> FilePath -> IO (FilePath, Map Version GenericPackageDescription)
+      mkPkgDescr :: String -> Version -> (ByteString, Meta) -> GenericPackageDescription
+      mkPkgDescr pkg v (buf,meta) = cabal { packageDescription = pd { customFieldsPD = cf } }
+        where
+          cabal = parsePackage pkg v buf
+          pd = packageDescription cabal
+          cf = customFieldsPD pd ++ ("X-Cabal-File-Hash", mkSHA256 buf)
+                                 :  [ ("X-Package-" ++ k, v') | (k,v') <- toList (hashes meta) ]
+
+      mkSHA256 :: ByteString -> String
+      mkSHA256 = showDigest . sha256 . fromStrict
+
+  return (fromList hackage)
+
+readHackagePackage :: FilePath -> FilePath -> ParIO (FilePath, Map Version (ByteString,Meta))
 readHackagePackage root pkg = do
-  versions <- getSubDirs (root </> pkg)
-  x <- mapM (readHackagePackageVersion root pkg) versions
+  versions <- liftIO $ getSubDirs (root </> pkg)
+  x <- parMapM (readHackagePackageVersion root pkg) $!! versions
   return (pkg, fromList x)
 
-readHackagePackageVersion :: FilePath -> FilePath -> FilePath -> IO (Version, GenericPackageDescription)
+readHackagePackageVersion :: FilePath -> FilePath -> FilePath -> ParIO (Version, (ByteString,Meta))
 readHackagePackageVersion root pkg version = do
   let v = pVersion version
-  buf <- BS8.readFile (root </> pkg </> version </> pkg <.> "cabal")
-  let cabal = parsePackage pkg v buf
-  meta <- parseMeta pkg v <$> BS8.readFile (root </> pkg </> version </> pkg <.> "json")
-  let pd = packageDescription cabal
-      cf = customFieldsPD pd ++ ("X-Cabal-File-Hash", mkSHA256 buf)
-                             :  [ ("X-Package-" ++ k, v') | (k,v') <- toList (hashes meta) ]
-      cabal' = cabal { packageDescription = pd { customFieldsPD = cf } }
-  return (v, cabal')
+  cabal <- liftIO $ BS8.readFile (root </> pkg </> version </> pkg <.> "cabal")
+  meta <- liftIO (BS8.readFile (root </> pkg </> version </> pkg <.> "json"))
+  return (v, (cabal,parseMeta pkg v meta))
 
 pVersion :: String -> Version
 pVersion str = fromMaybe (error $ "hackage-db: cannot parse version " ++ show str) (simpleParse str)
@@ -79,7 +93,9 @@ parsePackage' buf = case parsePackageDescription (decodeUTF8 buf) of
     decodeUTF8 = toString . fromRep
 
 data Meta = Meta { hashes :: Map String String {-, locations :: [String], pkgsize :: Int-} }
-  deriving Show
+  deriving (Show, Generic)
+
+instance NFData Meta where rnf = genericRnf
 
 instance FromJSON Meta where
     parseJSON (Object v) = Meta <$>
@@ -96,6 +112,3 @@ parseMeta pkg version buf =
     Right x -> x
   where
     pkgid = PackageIdentifier (PackageName pkg) version
-
-mkSHA256 :: ByteString -> String
-mkSHA256 = showDigest . sha256 . fromStrict
