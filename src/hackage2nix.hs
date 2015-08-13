@@ -14,8 +14,8 @@ import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
 import Data.Function
+import System.FilePath
 import Data.List
--- import Data.Char
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -36,7 +36,6 @@ import Distribution.Text
 import Distribution.Version
 import Language.Nix.Identifier
 import Options.Applicative
--- import qualified Distribution.Compat.ReadP as Parse
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
@@ -52,6 +51,12 @@ resolveConstraint' :: Constraint -> Hackage -> Maybe Version
 resolveConstraint' (Dependency (PackageName name) vrange) hackage | Set.null vs = Nothing
                                                                   | otherwise   = Just (Set.findMax vs)
   where vs = Set.filter (`withinRange` vrange) (Map.keysSet (hackage Map.! name))
+
+satisfiesConstraint :: PackageIdentifier -> Constraint -> Bool
+satisfiesConstraint (PackageIdentifier pn v) (Dependency cn vr) = (pn /= cn) || (v `withinRange` vr)
+
+satisfiesConstraints :: PackageIdentifier -> [Constraint] -> Bool
+satisfiesConstraints p = all (satisfiesConstraint p)
 
 data Configuration = Configuration
   {
@@ -111,11 +116,18 @@ main = do
 
   hackage <- readHackage hackageRepository
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository
+  preferredVersions <- readPreferredVersions (hackageRepository </> "preferred-versions")
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
+            . Map.filter (/= Map.empty)
+            . Map.mapWithKey (enforcePreferredVersions preferredVersions)
   runParIO $ generatePackageSet defaultConfiguration (fixup hackage) nixpkgs
+
+enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
+                         -> Map Version GenericPackageDescription
+enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
 
 generatePackageSet :: Configuration -> Hackage -> Nixpkgs -> ParIO ()
 generatePackageSet config hackage nixpkgs = do
@@ -271,6 +283,16 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
 
     enableTest :: TestSuite -> TestSuite
     enableTest t = t { testEnabled = True }
+
+readPreferredVersions :: FilePath -> IO [Constraint]
+readPreferredVersions path = mapMaybe parsePreferredVersionsLine . lines <$> readFile path
+
+
+parsePreferredVersionsLine :: String -> Maybe Constraint
+parsePreferredVersionsLine ('-':'-':_) = Nothing
+parsePreferredVersionsLine l = case simpleParse l of
+                                 Just c -> Just c
+                                 Nothing -> error ("invalid preferred-versions line: " ++ show l)
 
 defaultConfiguration :: Configuration
 defaultConfiguration = Configuration
@@ -3880,22 +3902,3 @@ defaultConfiguration = Configuration
     ]
 
 }
-
--- instance Text Configuration where
---   parse = do platform <- token (Parse.string "platform") >> token (Parse.char '=') >> parse
---              return $ Configuration
---                       { platform = platform
---                       }
-
--- token :: Parse.ReadP r a -> Parse.ReadP r a
---  -- token p = p >>= \r -> Parse.skipSpaces >> return r
--- token p = Parse.skipSpaces >> p
-
--- listOf :: Parse.ReadP r a -> Parse.ReadP r [a]
--- listOf p = Parse.between (token (Parse.char '[')) (token (Parse.char ']'))
---              (Parse.sepBy (token p) (token (Parse.char ',')))
-
--- run :: Parse.ReadP a a -> String -> Maybe a
--- run p str = case [ r' | (r', s) <- Parse.readP_to_S (Parse.skipSpaces >> p) str, all isSpace s ] of
---               []    -> Nothing
---               (r:_) -> Just r
