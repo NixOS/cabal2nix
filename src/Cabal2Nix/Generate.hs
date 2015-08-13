@@ -3,6 +3,7 @@
 module Cabal2Nix.Generate ( cabal2nix, cabal2nix' ) where
 
 import Cabal2Nix.Flags
+import Cabal2Nix.License
 import Cabal2Nix.Name
 import Cabal2Nix.Normalize
 import Cabal2Nix.PostProcess
@@ -11,17 +12,17 @@ import Data.Maybe
 import qualified Data.Set as Set
 import Data.Version
 import Distribution.Compiler
+import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
-import Cabal2Nix.License
-import Language.Nix.Identifier
-import Distribution.Nixpkgs.Fetch
 import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
 import Distribution.System
+import Distribution.Text ( display )
+import Language.Nix.Identifier
 
 cabal2nix :: FlagAssignment -> GenericPackageDescription -> Derivation
 cabal2nix flags' cabal = normalize $ drv & cabalFlags .~ flags
@@ -64,7 +65,9 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
   & hyperlinkSource .~ True
   & enableSplitObjs .~ True
   & phaseOverrides .~ mempty
-  & editedCabalFile .~ (if xrev > 0 then fromJust (lookup "X-Cabal-File-Hash" customFieldsPD) else "")
+  & editedCabalFile .~ (if xrev > 0 then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing"))
+                                                   (lookup "X-Cabal-File-Hash" customFieldsPD)
+                                    else "")
   & metaSection .~ ( Nix.nullMeta
                    & Nix.homepage .~ homepage
                    & Nix.description .~ synopsis
