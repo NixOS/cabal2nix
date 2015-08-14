@@ -350,7 +350,6 @@ defaultConfiguration = Configuration
     , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
     , "mtl < 2.2"                       -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
     , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
-    , "optparse-applicative == 0.10.*"  -- required for elm-make 0.1.1 and elm-package 0.4
     , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
     , "primitive == 0.5.1.*"            -- required to build alex with GHC 6.12.3
     , "QuickCheck < 2"                  -- required by test-framework-quickcheck and its users
