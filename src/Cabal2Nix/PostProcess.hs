@@ -48,11 +48,10 @@ gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . system) (Set.union buildInputs)
   where
     gitAnnexOverrides = unlines
-      [ "preConfigure = \"export HOME=$TEMPDIR\";"
-      , "checkPhase = ''"
-      , "  cp dist/build/git-annex/git-annex git-annex"
-      , "  ./git-annex test"
-      , "'';"
+      [ "preConfigure = \"export HOME=$TEMPDIR; patchShebangs .\";"
+      , "postBuild = \"ln -sf dist/build/git-annex/git-annex git-annex\";"
+      , "installPhase = \"make PREFIX=$out CABAL=./Setup install\";"
+      , "checkPhase = \"./git-annex test\";"
       ]
     buildInputs = Set.fromList ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
 
