@@ -300,8 +300,7 @@ defaultConfiguration = Configuration
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [ "errors < 2"                      -- the update breaks some ~40 important packages
-    , "vector < 0.11"                   -- breaks lens 4.12
+    [ "vector < 0.11"                   -- breaks lens 4.12
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
