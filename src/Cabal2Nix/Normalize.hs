@@ -26,6 +26,7 @@ normalize drv = drv
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
   & haskell . contains (Identifier pname) .~ False
+  & tool . contains (Identifier pname) .~ False
   & tool %~ normalizeNixBuildTools . Set.filter (\(Identifier n) -> n `notElem` coreBuildTools)
 
   {-
