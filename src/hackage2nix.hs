@@ -3896,6 +3896,12 @@ defaultConfiguration = Configuration
     , "zsh-battery"
     , "ztail"
     , "Zwaluw"
+    , "yesod-media-simple"
+    , "token-utils"
+    , "ghc-imported-from"
+    , "libhbb"
+    , "hoogle-index"
+    , "reflex-dom"
     ]
 
 }
