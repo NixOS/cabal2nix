@@ -206,9 +206,8 @@ generatePackageSet config hackage nixpkgs = do
 
           formatOverride :: Attribute -> Maybe Path -> Doc
           formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
-          formatOverride n (Just [])                                            -- Haskell package:
-            | n == name              = formatOverride n Nothing                 --     refers to a missing system library
-            | otherwise              = mempty                                   --     found by callPackage
+          formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
+          formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
           formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
 
           overrides :: Doc
@@ -238,7 +237,7 @@ generatePackageSet config hackage nixpkgs = do
 
 resolveHackageThenNixpkgsAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
 resolveHackageThenNixpkgsAttribute nixpkgs hackage name
-  | Just _ <- Map.lookup name hackage                   = Just []
+  | Just _ <- Map.lookup name hackage                   = Just ["self"]
   | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name  = p
   | otherwise                                           = Nothing
 
