@@ -3,19 +3,11 @@
 module Main ( main ) where
 
 import Cabal2Nix.Flags ( configureCabalFlags )
-import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.HackageGit ( readHackage, Hackage )
-import Cabal2Nix.Package
 import Cabal2Nix.Version
-import Control.Arrow ( second )
 import Control.Lens
-import Control.Monad
-import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
-import Control.Monad.Trans ( liftIO )
-import Data.Function
 import System.FilePath
-import Data.List
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -23,71 +15,33 @@ import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
-import Distribution.Nixpkgs.Fetch
+import Distribution.Nixpkgs.Generate
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
-import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
-import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
-import Language.Nix.Identifier
 import Options.Applicative
-
-type Nixpkgs = PackageMap       -- Map String (Set [String])
-type PackageSet = Map String Version
-type PackageMultiSet = Map String (Set Version)
 
 type Constraint = Dependency
 
-resolveConstraint :: Constraint -> Hackage -> Version
+resolveConstraint :: Constraint -> Hackage -> GenericPackageDescription
 resolveConstraint c = fromMaybe (error ("constraint " ++ display c ++ " cannot be resolved in Hackage")) .
                         resolveConstraint' c
 
-resolveConstraint' :: Constraint -> Hackage -> Maybe Version
-resolveConstraint' (Dependency (PackageName name) vrange) hackage | Set.null vs = Nothing
-                                                                  | otherwise   = Just (Set.findMax vs)
-  where vs = Set.filter (`withinRange` vrange) (Map.keysSet (hackage Map.! name))
+resolveConstraint' :: Constraint -> Hackage -> Maybe GenericPackageDescription
+resolveConstraint' (Dependency (PackageName name) vrange) hackage | Map.null vs = Nothing
+                                                                  | otherwise   = Just (snd $ Map.findMax vs)
+  where vs = Map.filterWithKey (\v _ -> v `withinRange` vrange) (hackage Map.! name)
 
 satisfiesConstraint :: PackageIdentifier -> Constraint -> Bool
 satisfiesConstraint (PackageIdentifier pn v) (Dependency cn vr) = (pn /= cn) || (v `withinRange` vr)
 
 satisfiesConstraints :: PackageIdentifier -> [Constraint] -> Bool
 satisfiesConstraints p = all (satisfiesConstraint p)
-
-data Configuration = Configuration
-  {
-  -- |Target architecture. Used by 'finalizePackageDescription' to
-  -- choose appropriate flags and dependencies.
-    platform :: Platform
-
-  -- |Target compiler. Used by 'finalizePackageDescription' to choose
-  -- appropriate flags and dependencies.
-  , compilerInfo :: CompilerInfo
-
-  -- |Core packages found on Hackageg
-  , corePackages :: [PackageIdentifier]
-
-  -- |Core packages not found on Hackage.
-  , hardCorePackages :: [PackageIdentifier]
-
-  -- |These packages replace the latest respective version during
-  -- dependency resolution.
-  , defaultPackageOverrides :: [Constraint]
-
-  -- |These packages are added to the generated set, but the play no
-  -- role during dependency resolution.
-  , extraPackages :: [Constraint]
-
-  -- |These packages have not succeeded a build yet, so we give them an
-  -- empty meta.hydraPlatforms attribute to avoid cluttering our Hydra
-  -- output with lots of broken builds.
-  , brokenPackages :: Set PackageName
-  }
-  deriving (Read, Show)
 
 data Options = Options
   { hackageRepository :: FilePath
@@ -123,169 +77,14 @@ main = do
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
             . Map.filter (/= Map.empty)
             . Map.mapWithKey (enforcePreferredVersions preferredVersions)
-  runParIO $ generatePackageSet defaultConfiguration (fixup hackage) nixpkgs
-
-enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
-                         -> Map Version GenericPackageDescription
-enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
-
-generatePackageSet :: Configuration -> Hackage -> Nixpkgs -> ParIO ()
-generatePackageSet config hackage nixpkgs = do
-  let
-    corePackageSet :: PackageSet
-    corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- corePackages config ++ hardCorePackages config ]
-
-    latestVersionSet :: PackageSet
-    latestVersionSet = Map.map (Set.findMax . Map.keysSet) hackage
-
-    defaultPackageOverridesSet :: PackageSet
-    defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides config ]
-
-    generatedDefaultPackageSet :: PackageSet
-    generatedDefaultPackageSet = (defaultPackageOverridesSet `Map.union` latestVersionSet) `Map.difference` corePackageSet
-
-    latestCorePackageSet :: PackageSet
-    latestCorePackageSet = latestVersionSet `Map.intersection` corePackageSet
-
-    latestOverridePackageSet :: PackageSet
-    latestOverridePackageSet = latestVersionSet `Map.intersection` defaultPackageOverridesSet
-
-    extraPackageSet :: PackageMultiSet
-    extraPackageSet = Map.unionsWith Set.union
-                        [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency (PackageName name) _) <- extraPackages config ]
-
-    db :: PackageMultiSet
-    db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
-                                  , Map.map Set.singleton latestCorePackageSet
-                                  , Map.map Set.singleton latestOverridePackageSet
-                                  , extraPackageSet
-                                  ]
-
-    knownAttributesSet :: Set String
-    knownAttributesSet = Set.union (Map.keysSet hackage) (Map.keysSet corePackageSet)
-
-    resolver :: Dependency -> Bool
-    resolver (Dependency (PackageName name) vrange)
-      | Just v <- Map.lookup name corePackageSet                = v `withinRange` vrange
-      | Just v <- Map.lookup name generatedDefaultPackageSet    = v `withinRange` vrange
-      | otherwise                                               = False
-
-  liftIO $ do putStrLn "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
-              putStrLn ""
-              putStrLn "{ pkgs, stdenv, callPackage }:"
-              putStrLn ""
-              putStrLn "self: {"
-              putStrLn ""
-  pkgs <- flip parMapM (Map.toAscList db) $ \(name, vs) -> do
-    defs <- forM (Set.toAscList vs) $ \pkgversion -> do
-      let -- TODO: Include list of broken dependencies in the generated output.
-          descr = hackage Map.! name Map.! pkgversion
-          (missingDeps, _, drv') = cabal2nix resolver descr
-
-          haskellDependencies :: Set String
-          haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
-
-          systemDependencies :: Set String
-          systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
-
-          haskellOrSystemDependencies :: Set String
-          haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
-
-          missing :: Set String
-          missing = Set.filter (`Set.notMember` knownAttributesSet) haskellDependencies
-
-          buildInputs :: Map Attribute (Maybe Path)
-          buildInputs = Map.unions
-                        [ Map.fromList [ (n, Nothing) | n <- Set.toList missing ]
-                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
-                        , Map.fromList [ (n, resolveHackageThenNixpkgsAttribute nixpkgs hackage n) | n <- Set.toAscList haskellOrSystemDependencies ]
-                        ]
-
-          systemOverrides :: Doc
-          systemOverrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
-
-          formatOverride :: Attribute -> Maybe Path -> Doc
-          formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
-          formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
-          formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
-          formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
-
-          overrides :: Doc
-          overrides = systemOverrides
-
-          attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == pkgversion = name
-               | otherwise                                                             = name ++ '_' : [ if c == '.' then '_' else c | c <- display pkgversion ]
-
-          sha256 :: String
-          sha256 | Just x <- lookup "X-Package-SHA256" (customFieldsPD (packageDescription descr)) = x
-                 | otherwise = error $ display (packageId descr) ++ " has no hash"
-
-      srcSpec <- liftIO $ sourceFromHackage (Certain sha256) (name ++ "-" ++ display pkgversion)
-
-      let drv = drv' & src .~ srcSpec
-                     & jailbreak .~ (not (null missingDeps) && (name /= "jailbreak-cabal")) -- Dependency constraints aren't fulfilled
-                     & metaSection . broken .~ not (Set.null missing)         -- Missing Haskell dependencies!
-                     & metaSection.hydraPlatforms .~ (if PackageName name `Set.member` brokenPackages config
-                                                         then Set.singleton "stdenv.lib.platforms.none"
-                                                         else drv'^.metaSection.hydraPlatforms)
-
-      return $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
-    return (intercalate "\n\n" (map render defs))
-
-  liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
-  liftIO $ putStrLn "}"
-
-resolveHackageThenNixpkgsAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
-resolveHackageThenNixpkgsAttribute nixpkgs hackage name
-  | Just _ <- Map.lookup name hackage                   = Just ["self"]
-  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name  = p
-  | otherwise                                           = Nothing
-
-resolveNixpkgsAttribute :: Nixpkgs -> Attribute -> Maybe Path
-resolveNixpkgsAttribute nixpkgs name
-  | name `elem` ["clang","lldb","llvm"]   = Just ["self","llvmPackages"]
-  | Just paths <- Map.lookup name nixpkgs = getShortestPath (Set.toList (paths `Set.intersection` goodScopes))
-  | otherwise                             = Nothing
-  where
-    goodScopes :: Set Path
-    goodScopes = Set.fromList [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]]
-
-    getShortestPath :: [Path] -> Maybe Path
-    getShortestPath [] = Nothing
-    getShortestPath ps = Just ("pkgs" : minimumBy (on compare length) ps)
-
-cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
-cabal2nix resolver cabal = (missingDeps, flags, drv)
-  where
-    drv = cabal2nix' descr
-
-    Right (descr, flags) = finalize (if null missingDeps then resolver else const True) cabal
-
-    missingDeps :: [Dependency]
-    missingDeps = either id (const [])  (finalize resolver cabal')
-
-    finalize :: (Dependency -> Bool) -> GenericPackageDescription -> Either [Dependency] (PackageDescription, FlagAssignment)
-    finalize resolver' = finalizePackageDescription
-                           (configureCabalFlags (package (packageDescription cabal)))
-                           resolver'
-                           (platform defaultConfiguration)
-                           (compilerInfo defaultConfiguration)
-                           []                                      -- no additional constraints
-
-    -- A variant of the cabal file that has all test suites enabled to ensure
-    -- that their dependencies are recognized by finalizePackageDescription.
-    cabal' :: GenericPackageDescription
-    cabal' = cabal { condTestSuites = flaggedTests }
-
-    flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
-    flaggedTests = map (second (mapTreeData enableTest)) (condTestSuites cabal)
-
-    enableTest :: TestSuite -> TestSuite
-    enableTest t = t { testEnabled = True }
+      resolved = map setHydraPlatforms . resolvePackageSet $ generateConfiguration (fixup hackage)
+      setHydraPlatforms (name, pkg) 
+        | Set.member (PackageName name) brokenPackages = (name, pkg & resolvedDerivation . metaSection . hydraPlatforms .~ Set.singleton "stdenv.lib.platforms.none")
+        | otherwise = (name, pkg)
+  runParIO $ writePackageSet nixpkgs (fixup hackage) resolved 
 
 readPreferredVersions :: FilePath -> IO [Constraint]
 readPreferredVersions path = mapMaybe parsePreferredVersionsLine . lines <$> readFile path
-
 
 parsePreferredVersionsLine :: String -> Maybe Constraint
 parsePreferredVersionsLine ('-':'-':_) = Nothing
@@ -293,73 +92,104 @@ parsePreferredVersionsLine l = case simpleParse l of
                                  Just c -> Just c
                                  Nothing -> error ("invalid preferred-versions line: " ++ show l)
 
-defaultConfiguration :: Configuration
-defaultConfiguration = Configuration
+enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
+                         -> Map Version GenericPackageDescription
+enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
+
+generateConfiguration :: Hackage -> Configuration
+generateConfiguration hackage = Configuration
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag
+  , corePackages = corePackageIds
+  , defaultPackages = def
+  , extraPackages = extra
+  }
+  where (def, extra) = generateHackagePackages hackage
+  
+generateHackagePackages :: Hackage -> (PackageSet, PackageMultiSet)
+generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++) latestOverridePackageSet extraPackageSet)
+  where  
+    configFlags pkg = (configureCabalFlags . package . packageDescription $ pkg, pkg)
 
-  , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [
-    ]
+    latestVersionSet :: PackageSet
+    latestVersionSet = Map.map (configFlags . snd . Map.findMax) hackage
 
-  , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
-    [ "Cabal-1.22.4.0"
-    , "array-0.5.1.0"
-    , "base-4.8.1.0"
-    , "binary-0.7.5.0"
-    , "bytestring-0.10.6.0"
-    , "containers-0.5.6.2"
-    , "deepseq-1.4.1.1"
-    , "directory-1.2.2.0"
-    , "filepath-1.4.0.0"
-    , "ghc-prim-0.4.0.0"
-    , "haskeline-0.7.2.1"
-    , "hoopl-3.10.0.2"
-    , "hpc-0.6.0.2"
-    , "integer-gmp-1.0.0.0"
-    , "pretty-1.1.2.0"
-    , "process-1.2.3.0"
-    , "template-haskell-2.10.0.0"
-    , "terminfo-0.4.0.1"
-    , "time-1.5.0.1"
-    , "transformers-0.4.2.0"
-    , "unix-2.7.1.0"
-    , "xhtml-3000.2.1"
-    ]
+    defaultPackageOverridesSet :: PackageSet
+    defaultPackageOverridesSet = Map.fromList [ (name, configFlags $ resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
 
-  , hardCorePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
-    [ "bin-package-db-0.0.0.0"
-    , "ghc-7.10.2"
-    , "rts-1.0"
-    ]
+    generatedDefaultPackageSet :: PackageSet
+    generatedDefaultPackageSet = defaultPackageOverridesSet `Map.union` latestVersionSet 
 
-  , extraPackages = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
-    [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
-    , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
-    , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
-    , "cabal-install == 1.18.*"         -- required for ghc-mod on 7.8.x
-    , "conduit < 1.2.4.2"               -- newer versions trigger non-deterministic ID bugs in GHC versions prior to 7.10.x
-    , "containers < 0.5"                -- required to build alex with GHC 6.12.3
-    , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
-    , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
-    , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
-    , "gloss < 1.9.3"                   -- new versions don't compile with GHC 7.8.x
-    , "haddock-api < 2.16"              -- required on GHC 7.8.x
-    , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
-    , "mtl < 2.2"                       -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
-    , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
-    , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
-    , "primitive == 0.5.1.*"            -- required to build alex with GHC 6.12.3
-    , "QuickCheck < 2"                  -- required by test-framework-quickcheck and its users
-    , "seqid < 0.2"                     -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
-    , "seqid-streams < 0.2"             -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
-    , "split < 0.2"                     -- newer versions don't work with GHC 6.12.3
-    , "tar < 0.4.2.0"                   -- later versions don't work with GHC < 7.6.x
-    , "vector < 0.10.10"                -- newer versions don't work with GHC 6.12.3
-    , "zlib < 0.6"                      -- newer versions break cabal-install
-    ]
+    latestOverridePackageSet :: PackageMultiSet
+    latestOverridePackageSet = Map.map (:[]) $ latestVersionSet `Map.intersection` defaultPackageOverridesSet
 
-  , brokenPackages = Set.fromList $ map PackageName
+    extraPackageSet :: PackageMultiSet
+    extraPackageSet = Map.unionsWith (++) 
+                        [ Map.singleton name [configFlags $ resolveConstraint c hackage] | c@(Dependency (PackageName name) _) <- extraPackageConstraints ]
+
+corePackageIds :: [PackageIdentifier]
+corePackageIds = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
+  [ "Cabal-1.22.4.0"
+  , "array-0.5.1.0"
+  , "base-4.8.1.0"
+  , "binary-0.7.5.0"
+  , "bytestring-0.10.6.0"
+  , "containers-0.5.6.2"
+  , "deepseq-1.4.1.1"
+  , "directory-1.2.2.0"
+  , "filepath-1.4.0.0"
+  , "ghc-prim-0.4.0.0"
+  , "haskeline-0.7.2.1"
+  , "hoopl-3.10.0.2"
+  , "hpc-0.6.0.2"
+  , "integer-gmp-1.0.0.0"
+  , "pretty-1.1.2.0"
+  , "process-1.2.3.0"
+  , "template-haskell-2.10.0.0"
+  , "terminfo-0.4.0.1"
+  , "time-1.5.0.1"
+  , "transformers-0.4.2.0"
+  , "unix-2.7.1.0"
+  , "xhtml-3000.2.1"
+  , "bin-package-db-0.0.0.0"
+  , "ghc-7.10.2"
+  , "rts-1.0"
+  ]
+
+extraPackageConstraints :: [Constraint]  
+extraPackageConstraints = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
+  [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
+  , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
+  , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
+  , "cabal-install == 1.18.*"         -- required for ghc-mod on 7.8.x
+  , "conduit < 1.2.4.2"               -- newer versions trigger non-deterministic ID bugs in GHC versions prior to 7.10.x
+  , "containers < 0.5"                -- required to build alex with GHC 6.12.3
+  , "control-monad-free < 0.6"        -- newer versions don't compile with anything but GHC 7.8.x
+  , "deepseq == 1.3.0.1"              -- required to build Cabal with GHC 6.12.3
+  , "descriptive < 0.1"               -- required for structured-haskell-mode-1.0.8
+  , "gloss < 1.9.3"                   -- new versions don't compile with GHC 7.8.x
+  , "haddock-api < 2.16"              -- required on GHC 7.8.x
+  , "haskell-src-exts < 1.16"         -- required for structured-haskell-mode-1.0.8
+  , "mtl < 2.2"                       -- newer versions require transformers > 0.4.x, which we cannot provide in GHC 7.8.x
+  , "mtl-prelude < 2"                 -- required for to build postgrest on mtl 2.1.x platforms
+  , "parallel == 3.2.0.3"             -- newer versions don't work with GHC 6.12.3
+  , "primitive == 0.5.1.*"            -- required to build alex with GHC 6.12.3
+  , "QuickCheck < 2"                  -- required by test-framework-quickcheck and its users
+  , "seqid < 0.2"                     -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
+  , "seqid-streams < 0.2"             -- newer versions depend on transformers 0.4.x which we cannot provide in GHC 7.8.x
+  , "split < 0.2"                     -- newer versions don't work with GHC 6.12.3
+  , "tar < 0.4.2.0"                   -- later versions don't work with GHC < 7.6.x
+  , "vector < 0.10.10"                -- newer versions don't work with GHC 6.12.3
+  , "zlib < 0.6"                      -- newer versions break cabal-install
+  ]
+
+defaultPackageOverrides :: [Constraint]
+defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
+  [
+  ]
+
+brokenPackages :: Set PackageName
+brokenPackages = Set.fromList $ map PackageName
     [ "3dmodels"
     , "4Blocks"
     , "abcBridge"
@@ -3950,5 +3780,3 @@ defaultConfiguration = Configuration
     , "BiobaseXNA"
     , "BiobaseTypes"
     ]
-
-}

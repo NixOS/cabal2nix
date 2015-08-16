@@ -70,7 +70,7 @@ commonBuildDepends =
     , unconstrained "hackage-db"
     , unconstrained "lens"
     , unconstrained "monad-par"
-    , unconstrained "monad-par-extras"
+    , unconstrained "abstract-par"
     , unconstrained "mtl"
     , unconstrained "optparse-applicative"
     , package "pretty" (gtEq [1,1,2])
