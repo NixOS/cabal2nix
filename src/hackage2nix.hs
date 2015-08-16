@@ -7,7 +7,7 @@ import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Version
 import Control.Lens
 import Control.Monad.Par.IO
-import System.FilePath
+import System.IO
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -68,36 +68,29 @@ main :: IO ()
 main = do
   Options {..} <- execParser pinfo
 
-  hackage <- readHackage hackageRepository
+  hPutStrLn stderr "Reading hackage..."
+  (preferredVersions, hackage) <- readHackage hackageRepository
+
+  hPutStrLn stderr "Reading package map..."
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository
-  preferredVersions <- readPreferredVersions (hackageRepository </> "preferred-versions")
+
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
             . Map.filter (/= Map.empty)
             . Map.mapWithKey (enforcePreferredVersions preferredVersions)
-      resolved = map setHydraPlatforms . resolvePackageSet $ generateConfiguration (fixup hackage)
-      setHydraPlatforms (name, pkg) 
-        | Set.member (PackageName name) brokenPackages = (name, pkg & resolvedDerivation . metaSection . hydraPlatforms .~ Set.singleton "stdenv.lib.platforms.none")
-        | otherwise = (name, pkg)
-  runParIO $ writePackageSet nixpkgs (fixup hackage) resolved 
-
-readPreferredVersions :: FilePath -> IO [Constraint]
-readPreferredVersions path = mapMaybe parsePreferredVersionsLine . lines <$> readFile path
-
-parsePreferredVersionsLine :: String -> Maybe Constraint
-parsePreferredVersionsLine ('-':'-':_) = Nothing
-parsePreferredVersionsLine l = case simpleParse l of
-                                 Just c -> Just c
-                                 Nothing -> error ("invalid preferred-versions line: " ++ show l)
+      config = generateConfiguration (fixup hackage)
+      resolved = resolvePackageSet config
+  hPutStrLn stderr "Generating package set..."
+  runParIO $ writePackageSet nixpkgs config resolved 
 
 enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
                          -> Map Version GenericPackageDescription
 enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
 
-generateConfiguration :: Hackage -> Configuration
-generateConfiguration hackage = Configuration
+generateConfiguration :: Hackage -> PackageSetConfig
+generateConfiguration hackage = PackageSetConfig
   { platform = Platform X86_64 Linux
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag
   , corePackages = corePackageIds
@@ -109,13 +102,23 @@ generateConfiguration hackage = Configuration
 generateHackagePackages :: Hackage -> (PackageSet, PackageMultiSet)
 generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++) latestOverridePackageSet extraPackageSet)
   where  
-    configFlags pkg = (configureCabalFlags . package . packageDescription $ pkg, pkg)
+    configure pkg = addVersion pkg $ mapResolved setHydraPlatforms $ do
+      let flags = configureCabalFlags . package . packageDescription $ pkg
+      resolveTryJailbreak EnableTests flags [] pkg >>= finishIfComplete
+      resolveTryJailbreak DisableTests flags [] pkg
+
+    addVersion = (,) . pkgVersion . package . packageDescription
+
+    setHydraPlatforms pkg 
+      | Set.member (pkg ^. resolvedDerivation.pkgid.to pkgName) brokenPackages = 
+          pkg & resolvedDerivation . metaSection . hydraPlatforms .~ Set.singleton "stdenv.lib.platforms.none"
+      | otherwise = pkg
 
     latestVersionSet :: PackageSet
-    latestVersionSet = Map.map (configFlags . snd . Map.findMax) hackage
+    latestVersionSet = Map.map (configure . snd . Map.findMax) hackage
 
     defaultPackageOverridesSet :: PackageSet
-    defaultPackageOverridesSet = Map.fromList [ (name, configFlags $ resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
+    defaultPackageOverridesSet = Map.fromList [ (name, configure $ resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
 
     generatedDefaultPackageSet :: PackageSet
     generatedDefaultPackageSet = defaultPackageOverridesSet `Map.union` latestVersionSet 
@@ -125,7 +128,7 @@ generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++
 
     extraPackageSet :: PackageMultiSet
     extraPackageSet = Map.unionsWith (++) 
-                        [ Map.singleton name [configFlags $ resolveConstraint c hackage] | c@(Dependency (PackageName name) _) <- extraPackageConstraints ]
+                        [ Map.singleton name [configure $ resolveConstraint c hackage] | c@(Dependency (PackageName name) _) <- extraPackageConstraints ]
 
 corePackageIds :: [PackageIdentifier]
 corePackageIds = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
