@@ -7,6 +7,7 @@ import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Version
 import Control.Lens
 import Control.Monad.Par.IO
+import Control.Monad.Trans
 import System.IO
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
@@ -28,13 +29,13 @@ import Options.Applicative
 
 type Constraint = Dependency
 
-resolveConstraint :: Constraint -> Hackage -> GenericPackageDescription
+resolveConstraint :: Constraint -> Hackage -> (Version, IO GenericPackageDescription)
 resolveConstraint c = fromMaybe (error ("constraint " ++ display c ++ " cannot be resolved in Hackage")) .
                         resolveConstraint' c
 
-resolveConstraint' :: Constraint -> Hackage -> Maybe GenericPackageDescription
+resolveConstraint' :: Constraint -> Hackage -> Maybe (Version, IO GenericPackageDescription)
 resolveConstraint' (Dependency (PackageName name) vrange) hackage | Map.null vs = Nothing
-                                                                  | otherwise   = Just (snd $ Map.findMax vs)
+                                                                  | otherwise   = Just (Map.findMax vs)
   where vs = Map.filterWithKey (\v _ -> v `withinRange` vrange) (hackage Map.! name)
 
 satisfiesConstraint :: PackageIdentifier -> Constraint -> Bool
@@ -78,15 +79,14 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
-            . Map.filter (/= Map.empty)
+            . Map.filter (not . Map.null)
             . Map.mapWithKey (enforcePreferredVersions preferredVersions)
       config = generateConfiguration (fixup hackage)
       resolved = resolvePackageSet config
   hPutStrLn stderr "Generating package set..."
   runParIO $ writePackageSet nixpkgs config resolved 
 
-enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
-                         -> Map Version GenericPackageDescription
+enforcePreferredVersions :: [Constraint] -> String -> Map Version a -> Map Version a
 enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
 
 generateConfiguration :: Hackage -> PackageSetConfig
@@ -102,12 +102,11 @@ generateConfiguration hackage = PackageSetConfig
 generateHackagePackages :: Hackage -> (PackageSet, PackageMultiSet)
 generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++) latestOverridePackageSet extraPackageSet)
   where  
-    configure pkg = addVersion pkg $ mapResolved setHydraPlatforms $ do
+    configure getPkg = mapResolved setHydraPlatforms $ do
+      pkg <- liftIO getPkg
       let flags = configureCabalFlags . package . packageDescription $ pkg
       resolveTryJailbreak EnableTests flags [] pkg >>= finishIfComplete
       resolveTryJailbreak DisableTests flags [] pkg
-
-    addVersion = (,) . pkgVersion . package . packageDescription
 
     setHydraPlatforms pkg 
       | Set.member (pkg ^. resolvedDerivation.pkgid.to pkgName) brokenPackages = 
@@ -115,10 +114,10 @@ generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++
       | otherwise = pkg
 
     latestVersionSet :: PackageSet
-    latestVersionSet = Map.map (configure . snd . Map.findMax) hackage
+    latestVersionSet = Map.map (fmap configure . Map.findMax) hackage
 
     defaultPackageOverridesSet :: PackageSet
-    defaultPackageOverridesSet = Map.fromList [ (name, configure $ resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
+    defaultPackageOverridesSet = Map.fromList [ (name, fmap configure $ resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
 
     generatedDefaultPackageSet :: PackageSet
     generatedDefaultPackageSet = defaultPackageOverridesSet `Map.union` latestVersionSet 
@@ -128,7 +127,7 @@ generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++
 
     extraPackageSet :: PackageMultiSet
     extraPackageSet = Map.unionsWith (++) 
-                        [ Map.singleton name [configure $ resolveConstraint c hackage] | c@(Dependency (PackageName name) _) <- extraPackageConstraints ]
+                        [ Map.singleton name [fmap configure $ resolveConstraint c hackage] | c@(Dependency (PackageName name) _) <- extraPackageConstraints ]
 
 corePackageIds :: [PackageIdentifier]
 corePackageIds = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))

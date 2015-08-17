@@ -19,9 +19,8 @@ import Distribution.Text ( simpleParse )
 import Distribution.Version ( Version )
 import System.Directory
 import System.FilePath
-import System.IO.Unsafe
 
-type Hackage = Map String (Map Version GenericPackageDescription)
+type Hackage = Map String (Map Version (IO GenericPackageDescription))
 
 readHackage :: FilePath -> IO ([Dependency], Hackage)
 readHackage path = do 
@@ -32,8 +31,8 @@ readHackage path = do
     discoverPackageVersions :: Map String [String] -> String -> IO (Map String [String])
     discoverPackageVersions db pkg = getSubDirs (path </> pkg) >>= \vs -> return (insert pkg vs db)
 
-    makeVersionMap :: String -> Map Version GenericPackageDescription -> String -> Map Version GenericPackageDescription
-    makeVersionMap pkg db v = insert (parseVersion v) (unsafePerformIO (readHackagePackage path pkg v)) db
+    makeVersionMap :: String -> Map Version (IO GenericPackageDescription) -> String -> Map Version (IO GenericPackageDescription)
+    makeVersionMap pkg db v = insert (parseVersion v) (readHackagePackage path pkg v) db
 
 readHackagePackage :: FilePath -> String -> String -> IO GenericPackageDescription
 readHackagePackage path pkg version = do
