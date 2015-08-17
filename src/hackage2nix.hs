@@ -2416,7 +2416,6 @@ defaultConfiguration = Configuration
     , "lye"
     , "maam"
     , "mage"
-    , "magic"
     , "MagicHaskeller"
     , "magma"
     , "mahoro"
