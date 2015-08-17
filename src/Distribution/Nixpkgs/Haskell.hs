@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell
   ( Derivation, nullDerivation, pkgid, revision, src, isLibrary, isExecutable
@@ -8,7 +9,7 @@ module Distribution.Nixpkgs.Haskell
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , phaseOverrides, editedCabalFile, metaSection
   , BuildInfo, haskell, pkgconfig, system, tool
-  , dependencies, anyDep
+  , dependencies
   )
   where
 
@@ -37,7 +38,8 @@ data BuildInfo = BuildInfo
 
 makeLenses ''BuildInfo
 
-makeLensesFor [("_haskell", "anyDep"), ("_pkgconfig", "anyDep"), ("_system", "anyDep"), ("_tool", "anyDep")] ''BuildInfo
+instance Each BuildInfo BuildInfo (Set Identifier) (Set Identifier) where
+  each f (BuildInfo a b c d) = BuildInfo <$> f a <*> f b <*> f c <*> f d
 
 instance Monoid BuildInfo where
   mempty = BuildInfo mempty mempty mempty mempty
@@ -46,9 +48,7 @@ instance Monoid BuildInfo where
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
 -- 'PackageDescription' from Cabal.
---
--- Note that the "Text" instance definition provides pretty-printing,
--- but no parsing as of now!
+
 data Derivation = MkDerivation
   { _pkgid               :: PackageIdentifier
   , _revision            :: Int
@@ -137,7 +137,7 @@ instance Pretty Derivation where
     where
       inputs :: Set String
       inputs = Set.unions [ _extraFunctionArgs
-                          , setOf (dependencies . anyDep . folded . ident) drv
+                          , setOf (dependencies . each . folded . ident) drv
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
                           ]
 
