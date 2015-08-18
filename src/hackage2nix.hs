@@ -3949,6 +3949,18 @@ defaultConfiguration = Configuration
     , "FormalGrammars"
     , "BiobaseXNA"
     , "BiobaseTypes"
+    , "broker-haskell"
+    , "concurrent-machines"
+    , "darcs-fastconvert"
+    , "ivory-backend-c"
+    , "ivory-bitdata"
+    , "ivory-examples"
+    , "ivory-hw"
+    , "laborantin-hs"
+    , "magico"
+    , "resistor-cube"
+    , "taskpool"
+    , "wai-middleware-metrics"
     ]
 
 }
