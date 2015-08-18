@@ -42,6 +42,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains "wxGTK") True)
+  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList ["libXinerama","libXext","libXrender"])))
   ]
 
 gitAnnexHook :: Derivation -> Derivation
@@ -185,14 +186,9 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "threadscope"      = deriv { configureFlags = Set.insert "--ghc-options=-rtsopts" configureFlags }
   | pname == "vacuum"           = deriv { extraLibs = Set.insert "ghc-paths" extraLibs }
   | pname == "wxcore"           = deriv { extraLibs = Set.fromList ["wxGTK","mesa","libX11"] `Set.union` extraLibs }
-  | pname == "X11" && version >= Version [1,6] []
-                                = deriv { extraLibs = Set.fromList ["libXinerama","libXext","libXrender"] `Set.union` extraLibs }
-  | pname == "X11"              = deriv { extraLibs = Set.insert "libXinerama" (Set.insert "libXext" extraLibs) }
   | pname == "X11-xft"          = deriv { extraLibs = Set.fromList ["pkgconfig","freetype","fontconfig"] `Set.union` extraLibs
                                         , configureFlags = Set.insert "--extra-include-dirs=${freetype}/include/freetype2" configureFlags
                                         }
-  | pname == "xmonad"           = deriv { phaseOverrides = xmonadPostInstall }
-
 -- Unbreak packages during hackage2nix generation:
 
   | pname == "hnetcdf"          = deriv { testDepends = Set.delete "netcdf" testDepends }
