@@ -14,7 +14,6 @@ import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
 import Data.Function
-import System.FilePath
 import Data.List
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
@@ -36,6 +35,7 @@ import Distribution.Text
 import Distribution.Version
 import Language.Nix.Identifier
 import Options.Applicative
+import System.FilePath
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
