@@ -6,6 +6,7 @@ import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Version
 import Control.Lens
+import Control.Monad
 import Control.Monad.Par.IO
 import Control.Monad.Trans
 import System.IO
@@ -84,7 +85,7 @@ main = do
       config = generateConfiguration (fixup hackage)
       resolved = resolvePackageSet config
   hPutStrLn stderr "Generating package set..."
-  runParIO $ writePackageSet nixpkgs config resolved 
+  runParIO $ writePackageSet nixpkgs resolved 
 
 enforcePreferredVersions :: [Constraint] -> String -> Map Version a -> Map Version a
 enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
@@ -102,15 +103,16 @@ generateConfiguration hackage = PackageSetConfig
 generateHackagePackages :: Hackage -> (PackageSet, PackageMultiSet)
 generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++) latestOverridePackageSet extraPackageSet)
   where  
-    configure getPkg = mapResolved setHydraPlatforms $ do
+    configure getPkg = mapSuccess setHydraPlatforms $ do
       pkg <- liftIO getPkg
       let flags = configureCabalFlags . package . packageDescription $ pkg
-      resolveTryJailbreak EnableTests flags [] pkg >>= finishIfComplete
-      resolveTryJailbreak DisableTests flags [] pkg
+      void $ resolveTryJailbreak EnableTests flags [] pkg
+      void $ resolveTryJailbreak DisableTests flags [] pkg
+      void $ disableDependencyCheck $ resolve EnableTests flags [] pkg
 
     setHydraPlatforms pkg 
-      | Set.member (pkg ^. resolvedDerivation.pkgid.to pkgName) brokenPackages = 
-          pkg & resolvedDerivation . metaSection . hydraPlatforms .~ Set.singleton "stdenv.lib.platforms.none"
+      | Set.member (pkg ^. pkgid.to pkgName) brokenPackages = 
+          pkg & metaSection . hydraPlatforms .~ Set.singleton "stdenv.lib.platforms.none"
       | otherwise = pkg
 
     latestVersionSet :: PackageSet

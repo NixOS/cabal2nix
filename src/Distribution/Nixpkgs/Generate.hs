@@ -1,10 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Distribution.Nixpkgs.Generate 
-  ( ResolveM(), TestStatus(..), resolve, resolveTryJailbreak, disableVersionCheck, finish, finishIfComplete, mapResolved 
-  , ResolvedPackage, resolvedMissing, resolvedFlags, resolvedDerivation
+  ( ResolveM(), TestStatus(..), resolve, resolveTryJailbreak, disableVersionCheck, disableDependencyCheck, succeed, mapSuccess, captureSuccess
   , Nixpkgs, PackageSet, PackageMultiSet
   , PackageSetConfig(..), resolvePackageSet, writePackageSet
+  , ResolvedPackageSet(..), resolvedPackages, resolvedDefaultVersions
   ) where
 
 import Cabal2Nix.Generate ( cabal2nix' )
@@ -18,8 +18,10 @@ import Control.Monad.Except
 import Data.Ord    
 import Data.Function
 import Data.List
+import Data.List.Split (chunksOf)
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
+import Data.Maybe ( catMaybes ) 
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -35,29 +37,26 @@ import Distribution.System
 import Distribution.Text
 import Distribution.Version
 import Language.Nix.Identifier
-
-import Data.List.Split (chunksOf)
-
-data ResolvedPackage = ResolvedPackage
-  { _resolvedMissing :: [Dependency]
-  , _resolvedFlags :: FlagAssignment
-  , _resolvedDerivation :: Derivation
-  }
-makeLenses ''ResolvedPackage
+import System.IO
 
 newtype ResolveM a = ResolveM
-  { unResolveM :: ReaderT (PackageSetConfig, Dependency -> Bool) (ExceptT ResolvedPackage IO) a
+  { unResolveM :: ReaderT (PackageSetConfig, Dependency -> Bool) (ExceptT Derivation IO) a
   } deriving (Functor, Applicative, Monad, MonadIO)
 
-finish :: ResolvedPackage -> ResolveM a
-finish = ResolveM . throwError
+succeed :: Derivation -> ResolveM a
+succeed = ResolveM . throwError
 
-finishIfComplete :: ResolvedPackage -> ResolveM ()
-finishIfComplete pkg = when (null $ pkg^.resolvedMissing) $ finish pkg
+captureSuccess :: ResolveM a -> ResolveM (Either Derivation a)
+captureSuccess (ResolveM x) = ResolveM $ fmap Right x `catchError` (return . Left)
 
 disableVersionCheck :: ResolveM a -> ResolveM a 
-disableVersionCheck (ResolveM m) = ResolveM $ local (over (_2.argument) ignoreVersion) m
+disableVersionCheck (ResolveM m) = mapSuccess (jailbreak .~ True) $ 
+    ResolveM $ local (over (_2.argument) ignoreVersion) m
   where ignoreVersion (Dependency name _) = Dependency name anyVersion
+
+disableDependencyCheck :: ResolveM a -> ResolveM a
+disableDependencyCheck (ResolveM m) = mapSuccess (metaSection.broken .~ True) $ 
+  ResolveM $ local (_2 .~ const True) m
 
 configureEnableTests :: GenericPackageDescription -> GenericPackageDescription
 configureEnableTests pkg = pkg { condTestSuites = map (over _2 enableAlways) (condTestSuites pkg) }
@@ -65,20 +64,14 @@ configureEnableTests pkg = pkg { condTestSuites = map (over _2 enableAlways) (co
 
 data TestStatus = EnableTests | DisableTests deriving (Show, Read, Eq, Ord)
 
-resolve :: TestStatus -> FlagAssignment -> [Dependency] -> GenericPackageDescription -> ResolveM ResolvedPackage
-resolve test explicitFlags extraConstraints cabal = ResolveM $ reader $ \(config, resolver) -> 
-  case finalize config resolver of
-    Right (descr, flags) -> resolvedWith [] flags descr
-    Left missing -> 
-      let Right (brokenDescr, brokenFlags) = finalize config (const True) 
-      in resolvedWith missing brokenFlags brokenDescr 
+resolve :: TestStatus -> FlagAssignment -> [Dependency] -> GenericPackageDescription -> ResolveM [Dependency] 
+resolve test explicitFlags extraConstraints cabal = join . ResolveM $ reader $ \(config, resolver) -> 
+    either return (succeed . derive . fst) $ finalize config resolver
   where
     configure = if test == EnableTests then configureEnableTests else id
-    postprocess = doCheck .~ (test == EnableTests)  
-    
-    resolvedWith :: [Dependency] -> FlagAssignment -> PackageDescription -> ResolvedPackage
-    resolvedWith missing flags descr = ResolvedPackage missing flags . setFlags . setSource . postprocess $ cabal2nix' descr
+    derive descr = setTests . setFlags . setSource . cabal2nix' $ descr
       where
+        setTests = doCheck .~ (test == EnableTests)
         setFlags = cabalFlags .~ explicitFlags
         setSource drv = drv & src .~ sourceFromHackageHash sha256 (display $ packageId descr)
         sha256 | Just x <- lookup "X-Package-SHA256" (customFieldsPD descr) = x
@@ -91,22 +84,19 @@ resolve test explicitFlags extraConstraints cabal = ResolveM $ reader $ \(config
       extraConstraints                        -- additional constraints
       (configure cabal)                       -- configured (with test status set) package description
 
-resolveTryJailbreak :: TestStatus -> FlagAssignment -> [Dependency] -> GenericPackageDescription -> ResolveM ResolvedPackage
+resolveTryJailbreak :: TestStatus -> FlagAssignment -> [Dependency] -> GenericPackageDescription -> ResolveM [Dependency] 
 resolveTryJailbreak test explicitFlags extraConstraints cabal = do
-  normal <- resolve test explicitFlags extraConstraints cabal
-  if null $ normal^.resolvedMissing 
-    then return normal 
-    else disableVersionCheck $ do
-      jail <- resolve test explicitFlags extraConstraints cabal
-      return $ jail & resolvedDerivation.jailbreak .~ True
+  void $ resolve test explicitFlags extraConstraints cabal
+  disableVersionCheck $ 
+    resolve test explicitFlags extraConstraints cabal
 
-mapResolved :: (ResolvedPackage -> ResolvedPackage) -> ResolveM ResolvedPackage -> ResolveM ResolvedPackage
-mapResolved f (ResolveM (ReaderT m)) = ResolveM . ReaderT $ mapExceptT (over (mapped.both) f) . m
+mapSuccess :: (Derivation -> Derivation) -> ResolveM a -> ResolveM a
+mapSuccess f (ResolveM (ReaderT m)) = ResolveM . ReaderT $ mapExceptT (over (mapped._Left) f) . m
 --------------------------------------------------------------------------------
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
-type PackageSet = Map String (Version, ResolveM ResolvedPackage) 
-type PackageMultiSet = Map String [(Version, ResolveM ResolvedPackage)] 
+type PackageSet = Map String (Version, ResolveM ()) 
+type PackageMultiSet = Map String [(Version, ResolveM ())] 
 
 data PackageSetConfig = PackageSetConfig
   {
@@ -133,8 +123,14 @@ data PackageSetConfig = PackageSetConfig
   , extraPackages :: PackageMultiSet
   }
 
-resolvePackageSet :: PackageSetConfig -> [(String, IO ResolvedPackage)]
-resolvePackageSet config = do
+data ResolvedPackageSet = ResolvedPackageSet
+  { _resolvedDefaultVersions :: Map String Version
+  , _resolvedPackages :: [(String, IO (Maybe Derivation))]
+  }
+makeLenses ''ResolvedPackageSet
+
+resolvePackageSet :: PackageSetConfig -> ResolvedPackageSet
+resolvePackageSet config = ResolvedPackageSet resolverPackageSet $ do
     (name, pkgs) <- Map.toList packages
     (withVersion, pkg) <- sortBy (comparing $ fst . snd) pkgs
     return $ makePackageEntry withVersion name pkg 
@@ -142,9 +138,9 @@ resolvePackageSet config = do
     corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- corePackages config ]
     resolverPackageSet = corePackageSet `Map.union` Map.map fst (defaultPackages config)
     resolver (Dependency (PackageName name) vrange) = maybe False (`withinRange` vrange) $ Map.lookup name resolverPackageSet
-    runResolveM = fmap (either id id) . runExceptT . flip runReaderT (config, resolver) . unResolveM
+    runResolveM = fmap (preview _Left) . runExceptT . flip runReaderT (config, resolver) . unResolveM
 
-    makePackageEntry :: Bool -> String -> (Version, ResolveM ResolvedPackage) -> (String, IO ResolvedPackage)
+    makePackageEntry :: Bool -> String -> (Version, ResolveM ()) -> (String, IO (Maybe Derivation))
     makePackageEntry withVersion name (pkgversion, pkg) = (name ++ suffix, runResolveM pkg)
       where 
         suffix = if withVersion || name `Map.member` corePackageSet then versionSuffix else ""
@@ -155,59 +151,61 @@ resolvePackageSet config = do
       , Map.map (map $ (,) True) $ extraPackages config
       ] 
 
-writePackageSet :: Nixpkgs -> PackageSetConfig -> [(String, IO ResolvedPackage)] -> ParIO ()
-writePackageSet nixpkgs config packageSet = do
+writePackageSet :: Nixpkgs -> ResolvedPackageSet -> ParIO ()
+writePackageSet nixpkgs (ResolvedPackageSet defaultVersions packages)  = do
   liftIO $ do putStrLn "/* This is an auto-generated file -- DO NOT EDIT! */"
               putStrLn ""
               putStrLn "{ pkgs, stdenv, callPackage }:"
               putStrLn ""
               putStrLn "self: {"
               putStrLn ""
-  forM_ (chunksOf 100 packageSet) $ \batch -> do
-    pkgs <- flip parMapM batch $ \(attr, pkg) -> do
-      ResolvedPackage missingDeps _ drv' <- liftIO pkg
-      let 
-        haskellDependencies :: Set String
-        haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
-    
-        systemDependencies :: Set String
-        systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
-    
-        haskellOrSystemDependencies :: Set String
-        haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
-    
-        missingHaskell :: Set String
-        missingHaskell = Set.fromList [ name | Dependency (PackageName name) _ <- missingDeps ] `Set.intersection` haskellDependencies
-    
-        buildInputs :: Map Attribute (Maybe Path)
-        buildInputs = Map.unions
-                      [ Map.fromList [ (n, Nothing) | n <- Set.toList missingHaskell ]
-                      , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
-                      , Map.fromList [ (n, resolveHaskellThenNixpkgsAttribute nixpkgs config n) | n <- Set.toAscList haskellOrSystemDependencies ]
-                      ]
-    
-        overrides :: Doc
-        overrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
-    
-        formatOverride :: Attribute -> Maybe Path -> Doc
-        formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
-        formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
-        formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
-        formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
-    
-        drv = drv' & (if attr == "jailbreak-cabal" then jailbreak .~ False else id)
-                   & metaSection . broken .~ not (Set.null missingHaskell)                -- Missing Haskell dependencies!
-    
-      return $ render $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
+  forM_ (chunksOf 100 packages) $ \batch -> do
+    pkgs <- fmap catMaybes $ flip parMapM batch $ \(attr, resolvePkg) -> do
+      mpkg <- liftIO resolvePkg
+      let resolveFailed = do
+            hPutStrLn stderr $ "* derivation for " ++ attr ++ " failed to resolve. skipped." 
+            return Nothing
+      maybe (liftIO resolveFailed) ?? mpkg $ \drv' -> do
+        let 
+          haskellDependencies :: Set String
+          haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
+       
+          systemDependencies :: Set String
+          systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
+       
+          haskellOrSystemDependencies :: Set String
+          haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
+       
+          missingHaskell :: Set String
+          missingHaskell = Set.filter (`Map.notMember` defaultVersions) haskellDependencies
+       
+          buildInputs :: Map Attribute (Maybe Path)
+          buildInputs = Map.unions
+                        [ Map.fromList [ (n, Nothing) | n <- Set.toList missingHaskell ]
+                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
+                        , Map.fromList [ (n, resolveHaskellThenNixpkgsAttribute nixpkgs defaultVersions n) | n <- Set.toAscList haskellOrSystemDependencies ]
+                        ]
+       
+          overrides :: Doc
+          overrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
+       
+          formatOverride :: Attribute -> Maybe Path -> Doc
+          formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
+          formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
+          formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
+          formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
+       
+          drv = drv' & (if attr == "jailbreak-cabal" then jailbreak .~ False else id)
+       
+        return . Just $ render $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
   liftIO $ putStrLn "}"
 
-resolveHaskellThenNixpkgsAttribute :: Nixpkgs -> PackageSetConfig -> Attribute -> Maybe Path
-resolveHaskellThenNixpkgsAttribute nixpkgs config name
-  | PackageName name `elem` map pkgName (corePackages config) = Just ["self"] 
-  | Just _ <- Map.lookup name (defaultPackages config)        = Just ["self"]
-  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name        = p
-  | otherwise                                                 = Nothing
+resolveHaskellThenNixpkgsAttribute :: Nixpkgs -> Map String Version -> Attribute -> Maybe Path
+resolveHaskellThenNixpkgsAttribute nixpkgs haskellPackages name
+  | name `Map.member` haskellPackages                  = Just ["self"] 
+  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name = p
+  | otherwise                                          = Nothing
 
 resolveNixpkgsAttribute :: Nixpkgs -> Attribute -> Maybe Path
 resolveNixpkgsAttribute nixpkgs name
