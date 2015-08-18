@@ -10,53 +10,69 @@ import Data.ByteString.Lazy.Char8 ( fromStrict )
 import Data.Digest.Pure.SHA ( sha256, showDigest )
 import Data.List ( foldl' )
 import Data.Map
-import Data.Maybe ( fromMaybe )
+import Data.Maybe ( fromMaybe, mapMaybe )
 import Data.String.UTF8 ( toString, fromRep )
+import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text ( simpleParse )
 import Distribution.Version ( Version )
 import System.Directory
 import System.FilePath
-import System.IO.Unsafe
 
-type Hackage = Map String (Map Version GenericPackageDescription)
+type Hackage = Map String (Map Version (IO GenericPackageDescription))
 
-readHackage :: FilePath -> IO Hackage
-readHackage path = do db <- getSubDirs path >>= foldM discoverPackageVersions empty
-                      return $ mapWithKey (\pkg -> Data.List.foldl' (makeVersionMap pkg) empty) db
+readHackage :: FilePath -> IO ([Dependency], Hackage)
+readHackage path = do
+    db <- getSubDirs path >>= foldM discoverPackageVersions empty
+    preferred <- parsePreferredVersions <$> BS.readFile (path </> "preferred-versions")
+    return $ (preferred, mapWithKey (\pkg -> Data.List.foldl' (makeVersionMap pkg) empty) db)
   where
     discoverPackageVersions :: Map String [String] -> String -> IO (Map String [String])
     discoverPackageVersions db pkg = getSubDirs (path </> pkg) >>= \vs -> return (insert pkg vs db)
 
-    makeVersionMap :: String -> Map Version GenericPackageDescription -> String -> Map Version GenericPackageDescription
-    makeVersionMap pkg db v = insert (parseVersion v) (unsafePerformIO (readHackagePackage path pkg v)) db
+    makeVersionMap :: String -> Map Version (IO GenericPackageDescription) -> String -> Map Version (IO GenericPackageDescription)
+    makeVersionMap pkg db v = insert (parseVersion v) (readHackagePackage path pkg v) db
 
 readHackagePackage :: FilePath -> String -> String -> IO GenericPackageDescription
 readHackagePackage path pkg version = do
   let cabalFile = path </> pkg </> version </> pkg <.> "cabal"
       metaFile = path </> pkg </> version </> pkg <.> "json"
-  buf <- BS.readFile cabalFile
-  meta <- parseMeta path version <$> BS.readFile metaFile
-  cabal <- case parsePackageDescription (decodeUTF8 buf) of
-    ParseOk _ a  -> return a
-    ParseFailed err -> fail $ cabalFile ++ ": " ++ show err
-  let cabal' = cabal { packageDescription = pd { customFieldsPD = cf } }
-      pd = packageDescription cabal
-      cf = customFieldsPD pd ++ ("X-Cabal-File-Hash", mkSHA256 buf)
-                             :  [ ("X-Package-" ++ k, v') | (k,v') <- toList (hashes meta) ]
-  return cabal'
+  parseHackagePackage (path </> pkg </> version) <$> BS.readFile cabalFile <*> BS.readFile metaFile
+
+getSubDirs :: FilePath -> IO [FilePath]
+getSubDirs path = do
+  let isDirectory p = doesDirectoryExist (path </> p)
+  getDirectoryContents path >>= filterM isDirectory . Prelude.filter (\x -> head x /= '.')
+
+parsePreferredVersions :: ByteString -> [Dependency]
+parsePreferredVersions = Data.Maybe.mapMaybe parsePreferredVersionsLine . lines . decodeUTF8
+
+parsePreferredVersionsLine :: String -> Maybe Dependency
+parsePreferredVersionsLine ('-':'-':_) = Nothing
+parsePreferredVersionsLine l = case simpleParse l of
+                                 Just c -> Just c
+                                 Nothing -> error ("invalid preferred-versions line: " ++ show l)
+
+addCustomFields :: [(String, String)] -> GenericPackageDescription -> GenericPackageDescription
+addCustomFields fields cabal = cabal { packageDescription = pd { customFieldsPD = cf } }
+  where cf = fields ++ customFieldsPD pd
+        pd = packageDescription cabal
+
+parseHackagePackage :: FilePath -> ByteString -> ByteString -> GenericPackageDescription
+parseHackagePackage path cabalBuf metaBuf = case parsePackageDescription (decodeUTF8 cabalBuf) of
+    ParseOk _ a -> addCustomFields metaFields a
+    ParseFailed err -> error $ path ++ ": " ++ show err
+  where
+    metaFields = ("X-Cabal-File-Hash", mkSHA256 cabalBuf) :
+               [ ("X-Package-" ++ k, v') | (k,v') <- toList (hashes meta) ]
+    meta = parseMeta path metaBuf
 
 parseVersion :: String -> Version
 parseVersion str = fromMaybe (error $ "hackage-db: cannot parse version " ++ show str) (simpleParse str)
 
 decodeUTF8 :: ByteString -> String
 decodeUTF8 = toString . fromRep
-
-getSubDirs :: FilePath -> IO [FilePath]
-getSubDirs path = do
-  let isDirectory p = doesDirectoryExist (path </> p)
-  getDirectoryContents path >>= filterM isDirectory . Prelude.filter (\x -> head x /= '.')
 
 mkSHA256 :: ByteString -> String
 mkSHA256 = showDigest . sha256 . fromStrict
@@ -72,8 +88,8 @@ instance FromJSON Meta where
     -- A non-Object value is of the wrong type, so fail.
     parseJSON _          = mzero
 
-parseMeta :: String -> String -> ByteString -> Meta
-parseMeta pkg version buf =
+parseMeta :: FilePath -> ByteString -> Meta
+parseMeta path buf =
   case eitherDecodeStrict buf of
-    Left msg -> error $ "hackage-db: cannot decode JSON meta data for " ++ pkg ++ "-" ++ version ++ ":" ++ msg
+    Left msg -> error $ "hackage-db: cannot decode JSON meta data for " ++ path ++ ":" ++ msg
     Right x -> x

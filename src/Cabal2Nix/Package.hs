@@ -73,6 +73,10 @@ hashCachePath pid = do
   createDirectoryIfMissing True cacheDir
   return $ cacheDir </> pid <.> "sha256"
 
+sourceFromHackageHash :: String -> String -> DerivationSource
+sourceFromHackageHash hash pkgId = DerivationSource "url" url "" hash
+  where url = "mirror://hackage/" ++ pkgId ++ ".tar.gz"
+
 sourceFromHackage :: Hash -> String -> IO DerivationSource
 sourceFromHackage optHash pkgId = do
   cacheFile <- hashCachePath pkgId
