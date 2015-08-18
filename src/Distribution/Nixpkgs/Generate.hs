@@ -21,7 +21,6 @@ import Data.List
 import Data.List.Split (chunksOf)
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
-import Data.Maybe ( catMaybes ) 
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -37,7 +36,6 @@ import Distribution.System
 import Distribution.Text
 import Distribution.Version
 import Language.Nix.Identifier
-import System.IO
 
 newtype ResolveM a = ResolveM
   { unResolveM :: ReaderT (PackageSetConfig, Dependency -> Bool) (ExceptT Derivation IO) a
@@ -95,8 +93,8 @@ mapSuccess f (ResolveM (ReaderT m)) = ResolveM . ReaderT $ mapExceptT (over (map
 --------------------------------------------------------------------------------
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
-type PackageSet = Map String (Version, ResolveM ()) 
-type PackageMultiSet = Map String [(Version, ResolveM ())] 
+type PackageSet = Map String (Version, ResolveM [Dependency]) 
+type PackageMultiSet = Map String [(Version, ResolveM [Dependency])] 
 
 data PackageSetConfig = PackageSetConfig
   {
@@ -125,7 +123,7 @@ data PackageSetConfig = PackageSetConfig
 
 data ResolvedPackageSet = ResolvedPackageSet
   { _resolvedDefaultVersions :: Map String Version
-  , _resolvedPackages :: [(String, IO (Maybe Derivation))]
+  , _resolvedPackages :: [(String, IO (Either [Dependency] Derivation))]
   }
 makeLenses ''ResolvedPackageSet
 
@@ -138,9 +136,9 @@ resolvePackageSet config = ResolvedPackageSet resolverPackageSet $ do
     corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- corePackages config ]
     resolverPackageSet = corePackageSet `Map.union` Map.map fst (defaultPackages config)
     resolver (Dependency (PackageName name) vrange) = maybe False (`withinRange` vrange) $ Map.lookup name resolverPackageSet
-    runResolveM = fmap (preview _Left) . runExceptT . flip runReaderT (config, resolver) . unResolveM
+    runResolveM = fmap (view swapped) . runExceptT . flip runReaderT (config, resolver) . unResolveM
 
-    makePackageEntry :: Bool -> String -> (Version, ResolveM ()) -> (String, IO (Maybe Derivation))
+    makePackageEntry :: Bool -> String -> (Version, ResolveM [Dependency]) -> (String, IO (Either [Dependency] Derivation))
     makePackageEntry withVersion name (pkgversion, pkg) = (name ++ suffix, runResolveM pkg)
       where 
         suffix = if withVersion || name `Map.member` corePackageSet then versionSuffix else ""
@@ -160,44 +158,43 @@ writePackageSet nixpkgs (ResolvedPackageSet defaultVersions packages)  = do
               putStrLn "self: {"
               putStrLn ""
   forM_ (chunksOf 100 packages) $ \batch -> do
-    pkgs <- fmap catMaybes $ flip parMapM batch $ \(attr, resolvePkg) -> do
-      mpkg <- liftIO resolvePkg
-      let resolveFailed = do
-            hPutStrLn stderr $ "* derivation for " ++ attr ++ " failed to resolve. skipped." 
-            return Nothing
-      maybe (liftIO resolveFailed) ?? mpkg $ \drv' -> do
-        let 
-          haskellDependencies :: Set String
-          haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
-       
-          systemDependencies :: Set String
-          systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
-       
-          haskellOrSystemDependencies :: Set String
-          haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
-       
-          missingHaskell :: Set String
-          missingHaskell = Set.filter (`Map.notMember` defaultVersions) haskellDependencies
-       
-          buildInputs :: Map Attribute (Maybe Path)
-          buildInputs = Map.unions
-                        [ Map.fromList [ (n, Nothing) | n <- Set.toList missingHaskell ]
-                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
-                        , Map.fromList [ (n, resolveHaskellThenNixpkgsAttribute nixpkgs defaultVersions n) | n <- Set.toAscList haskellOrSystemDependencies ]
-                        ]
-       
-          overrides :: Doc
-          overrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
-       
-          formatOverride :: Attribute -> Maybe Path -> Doc
-          formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
-          formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
-          formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
-          formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
-       
-          drv = drv' & (if attr == "jailbreak-cabal" then jailbreak .~ False else id)
-       
-        return . Just $ render $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
+    pkgs <- flip parMapM batch $ \(attr, resolvePkg) -> do
+      let failMissing missing =
+            fail $ "*** derivation " ++ attr ++ " is missing dependencies: " ++ unwords (map display missing)
+      drv' <- liftIO $ either failMissing return =<< resolvePkg
+
+      let 
+        haskellDependencies :: Set String
+        haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
+     
+        systemDependencies :: Set String
+        systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
+     
+        haskellOrSystemDependencies :: Set String
+        haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
+     
+        missingHaskell :: Set String
+        missingHaskell = Set.filter (`Map.notMember` defaultVersions) haskellDependencies
+     
+        buildInputs :: Map Attribute (Maybe Path)
+        buildInputs = Map.unions
+                      [ Map.fromList [ (n, Nothing) | n <- Set.toList missingHaskell ]
+                      , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
+                      , Map.fromList [ (n, resolveHaskellThenNixpkgsAttribute nixpkgs defaultVersions n) | n <- Set.toAscList haskellOrSystemDependencies ]
+                      ]
+     
+        overrides :: Doc
+        overrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
+     
+        formatOverride :: Attribute -> Maybe Path -> Doc
+        formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
+        formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
+        formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
+        formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
+     
+        drv = drv' & (if attr == "jailbreak-cabal" then jailbreak .~ False else id)
+     
+      return $ render $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
   liftIO $ putStrLn "}"
 

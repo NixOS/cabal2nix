@@ -108,7 +108,7 @@ generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++
       let flags = configureCabalFlags . package . packageDescription $ pkg
       void $ resolveTryJailbreak EnableTests flags [] pkg
       void $ resolveTryJailbreak DisableTests flags [] pkg
-      void $ disableDependencyCheck $ resolve EnableTests flags [] pkg
+      disableDependencyCheck $ resolve EnableTests flags [] pkg
 
     setHydraPlatforms pkg 
       | Set.member (pkg ^. pkgid.to pkgName) brokenPackages = 
