@@ -85,7 +85,7 @@ main = do
       config = generateConfiguration (fixup hackage)
       resolved = resolvePackageSet config
   hPutStrLn stderr "Generating package set..."
-  runParIO $ writePackageSet nixpkgs resolved 
+  runParIO $ writePackageSet nixpkgs resolved
 
 enforcePreferredVersions :: [Constraint] -> String -> Map Version a -> Map Version a
 enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
@@ -99,10 +99,10 @@ generateConfiguration hackage = PackageSetConfig
   , extraPackages = extra
   }
   where (def, extra) = generateHackagePackages hackage
-  
+
 generateHackagePackages :: Hackage -> (PackageSet, PackageMultiSet)
 generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++) latestOverridePackageSet extraPackageSet)
-  where  
+  where
     configure getPkg = mapSuccess setHydraPlatforms $ do
       pkg <- liftIO getPkg
       let flags = configureCabalFlags . package . packageDescription $ pkg
@@ -110,8 +110,8 @@ generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++
       void $ resolveTryJailbreak DisableTests flags [] pkg
       disableDependencyCheck $ resolve EnableTests flags [] pkg
 
-    setHydraPlatforms pkg 
-      | Set.member (pkg ^. pkgid.to pkgName) brokenPackages = 
+    setHydraPlatforms pkg
+      | Set.member (pkg ^. pkgid.to pkgName) brokenPackages =
           pkg & metaSection . hydraPlatforms .~ Set.singleton "stdenv.lib.platforms.none"
       | otherwise = pkg
 
@@ -122,13 +122,13 @@ generateHackagePackages hackage = (generatedDefaultPackageSet, Map.unionWith (++
     defaultPackageOverridesSet = Map.fromList [ (name, fmap configure $ resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides ]
 
     generatedDefaultPackageSet :: PackageSet
-    generatedDefaultPackageSet = defaultPackageOverridesSet `Map.union` latestVersionSet 
+    generatedDefaultPackageSet = defaultPackageOverridesSet `Map.union` latestVersionSet
 
     latestOverridePackageSet :: PackageMultiSet
     latestOverridePackageSet = Map.map (:[]) $ latestVersionSet `Map.intersection` defaultPackageOverridesSet
 
     extraPackageSet :: PackageMultiSet
-    extraPackageSet = Map.unionsWith (++) 
+    extraPackageSet = Map.unionsWith (++)
                         [ Map.singleton name [fmap configure $ resolveConstraint c hackage] | c@(Dependency (PackageName name) _) <- extraPackageConstraints ]
 
 corePackageIds :: [PackageIdentifier]
@@ -160,7 +160,7 @@ corePackageIds = map (\s -> fromMaybe (error (show s ++ " is not a valid core pa
   , "rts-1.0"
   ]
 
-extraPackageConstraints :: [Constraint]  
+extraPackageConstraints :: [Constraint]
 extraPackageConstraints = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
   [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
   , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions

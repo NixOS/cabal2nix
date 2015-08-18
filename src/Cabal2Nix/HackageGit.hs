@@ -23,7 +23,7 @@ import System.FilePath
 type Hackage = Map String (Map Version (IO GenericPackageDescription))
 
 readHackage :: FilePath -> IO ([Dependency], Hackage)
-readHackage path = do 
+readHackage path = do
     db <- getSubDirs path >>= foldM discoverPackageVersions empty
     preferred <- parsePreferredVersions <$> BS.readFile (path </> "preferred-versions")
     return $ (preferred, mapWithKey (\pkg -> Data.List.foldl' (makeVersionMap pkg) empty) db)
@@ -63,8 +63,8 @@ parseHackagePackage :: FilePath -> ByteString -> ByteString -> GenericPackageDes
 parseHackagePackage path cabalBuf metaBuf = case parsePackageDescription (decodeUTF8 cabalBuf) of
     ParseOk _ a -> addCustomFields metaFields a
     ParseFailed err -> error $ path ++ ": " ++ show err
-  where 
-    metaFields = ("X-Cabal-File-Hash", mkSHA256 cabalBuf) : 
+  where
+    metaFields = ("X-Cabal-File-Hash", mkSHA256 cabalBuf) :
                [ ("X-Package-" ++ k, v') | (k,v') <- toList (hashes meta) ]
     meta = parseMeta path metaBuf
 
