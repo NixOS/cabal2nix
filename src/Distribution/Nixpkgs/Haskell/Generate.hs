@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-module Distribution.Nixpkgs.Generate
+module Distribution.Nixpkgs.Haskell.Generate
   ( ResolveM(), TestStatus(..), resolve, resolveTryJailbreak, disableVersionCheck, disableDependencyCheck, succeed, mapSuccess, captureSuccess
   , Nixpkgs, PackageSet, PackageMultiSet
   , PackageSetConfig(..), resolvePackageSet, writePackageSet

@@ -17,8 +17,8 @@ import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
-import Distribution.Nixpkgs.Generate
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell.Generate
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Package
