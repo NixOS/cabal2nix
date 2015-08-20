@@ -5,7 +5,7 @@
 /Setup.o
 /cabal2nix.cabal
 /dist/*
-/src/Cabal2Nix/Version.hs
+/src/Internal/Version.hs
 /TAGS
 /test/doctest.hs
 

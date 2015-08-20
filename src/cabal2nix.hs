@@ -5,7 +5,6 @@ module Main ( main ) where
 import Cabal2Nix.Generate ( cabal2nix )
 import Cabal2Nix.Normalize ( normalize )
 import Cabal2Nix.Package
-import Cabal2Nix.Version
 import Control.Exception ( bracket )
 import Control.Lens
 import Data.Maybe ( fromMaybe )
@@ -13,9 +12,10 @@ import qualified Data.Set as Set
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
-import Internal.PrettyPrinting hiding ( (<>) )
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
+import Internal.PrettyPrinting hiding ( (<>) )
+import Internal.Version
 import Options.Applicative
 import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )

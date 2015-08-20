@@ -7,7 +7,6 @@ import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Package
-import Cabal2Nix.Version
 import Control.Arrow ( second )
 import Control.Monad
 import Control.Monad.Par.Combinator
@@ -26,7 +25,6 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
-import Internal.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
 import Distribution.PackageDescription.Configuration
@@ -34,6 +32,8 @@ import Distribution.System
 import Distribution.Text
 import Distribution.Version
 import Internal.Lens
+import Internal.PrettyPrinting hiding ( attr, (<>) )
+import Internal.Version
 import Language.Nix.Identifier
 import Language.Nix.Path
 import Options.Applicative

@@ -104,8 +104,8 @@ main = do
   let releaseMode = "--release" `elem` args
   defaultMainWithHeader (const (return "")) $ do
     liftIO $ do ('v':gv) <- getGitVersion
-                writeFile "src/Cabal2Nix/Version.hs" $
-                  "module Cabal2Nix.Version where\n\
+                writeFile "src/Internal/Version.hs" $
+                  "module Internal.Version where\n\
                   \version :: String\n\
                   \version = " ++ show gv ++ "\n"
     libraryModules <- modules "src"
