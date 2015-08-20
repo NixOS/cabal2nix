@@ -1,11 +1,15 @@
 # GNUmakefile
 
-.PHONY: all configure build check haddock hlint clean
+.PHONY: all configure re-configure build check haddock hlint clean
 
 all::		check
 
 configure::	cabal2nix.cabal
 	@cabal -v0 configure --ghc-option=-j --enable-tests
+
+re-configure::
+	@rm -f cabal2nix.cabal
+	@$(MAKE) configure
 
 build::		configure
 	@cabal build -j
