@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Distribution.Nixpkgs.Haskell.FromCabal.Generate ( cabal2nix, cabal2nix' ) where
+module Distribution.Nixpkgs.Haskell.FromCabal ( cabal2nix, cabal2nix' ) where
 
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import Distribution.Nixpkgs.Haskell.FromCabal.License

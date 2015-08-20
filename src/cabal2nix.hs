@@ -3,7 +3,7 @@
 
 module Main ( main ) where
 
-import Distribution.Nixpkgs.Haskell.FromCabal.Generate ( cabal2nix )
+import Distribution.Nixpkgs.Haskell.FromCabal ( cabal2nix )
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize )
 import Internal.HaskellPackage
 import Control.Exception ( bracket )

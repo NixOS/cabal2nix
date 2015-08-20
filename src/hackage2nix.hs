@@ -4,7 +4,7 @@
 module Main ( main ) where
 
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags )
-import Distribution.Nixpkgs.Haskell.FromCabal.Generate ( cabal2nix' )
+import Distribution.Nixpkgs.Haskell.FromCabal ( cabal2nix' )
 import Distribution.Nixpkgs.Haskell.FromCabal.HackageGit ( readHackage, Hackage )
 import Internal.HaskellPackage
 import Control.Arrow ( second )
