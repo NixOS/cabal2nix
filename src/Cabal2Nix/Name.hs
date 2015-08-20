@@ -123,6 +123,7 @@ libNixName "Qt5Widgets"                         = return "qt5"
 libNixName "rtlsdr"                             = return "rtl-sdr"
 libNixName "rt"                                 = return [] -- in glibc
 libNixName "ruby1.8"                            = return "ruby"
+libNixName "sass"                               = return "libsass"
 libNixName "sane-backends"                      = return "saneBackends"
 libNixName "SDL2-2.0"                           = return "SDL2"
 libNixName "sdl2"                               = return "SDL2"
