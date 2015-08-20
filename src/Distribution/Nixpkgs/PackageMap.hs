@@ -8,34 +8,38 @@ import Data.Map.Strict ( Map )
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import System.Process
+import Internal.Lens
+import Language.Nix.Identifier
+import Language.Nix.Path
+import Data.Maybe
+import Distribution.Nixpkgs.Util.PrettyPrinting
 
-type Attribute = String
-type Path = [Attribute]
+type PackageMap = Map Identifier (Set Path)
 
-readNixpkgAttributeSet :: FilePath -> IO (Set Attribute)
-readNixpkgAttributeSet nixpkgs = do
-  (_, Just h, _, _) <- createProcess (proc "nix-env" ["-qaP", "--json", "-f"++nixpkgs])
-    { std_out = CreatePipe
-    }
+readNixpkgPackageMap :: FilePath -> Maybe Path -> IO PackageMap
+readNixpkgPackageMap nixpkgs attrpath = fmap identifierSet2PackageMap (readNixpkgSet nixpkgs attrpath)
+
+readNixpkgSet :: FilePath -> Maybe Path -> IO (Set String)
+readNixpkgSet nixpkgs attrpath = do
+  let extraArgs = maybe [] (\p -> ["-A", render (pPrint p)]) attrpath
+  (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json", "-f"++nixpkgs] ++ extraArgs))
+                       { std_out = CreatePipe, env = Nothing }  -- TODO: ensure that overrides don't screw up our results
   buf <- LBS.hGetContents h
-  let pkgmap :: Either String (Map Attribute JSON.Object)
+  let pkgmap :: Either String (Map String JSON.Object)
       pkgmap = JSON.eitherDecode buf
   either fail (return . Map.keysSet) pkgmap
 
-parsePackage :: Attribute -> (Attribute, Path)
-parsePackage "" = error "empty string is not a valid package name"
-parsePackage x  = (last xs, init xs) where xs = splitOn "." x
-
-type PackageMap = Map Attribute (Set Path)
-
-attributeSet2PackageMap :: Set Attribute -> PackageMap
-attributeSet2PackageMap pkgset = foldr (uncurry insertAttribute) Map.empty pkglist
+identifierSet2PackageMap :: Set String -> PackageMap
+identifierSet2PackageMap pkgset = foldr (uncurry insertIdentifier) Map.empty pkglist
   where
-    pkglist :: [(Attribute, Path)]
-    pkglist = Set.toList (Set.map parsePackage pkgset)
+    pkglist :: [(Identifier, Path)]
+    pkglist = mapMaybe parsePackage (Set.toList pkgset)
 
-    insertAttribute :: Attribute -> Path -> PackageMap -> PackageMap
-    insertAttribute attr = Map.insertWith Set.union attr . Set.singleton
+    insertIdentifier :: Identifier -> Path -> PackageMap -> PackageMap
+    insertIdentifier i = Map.insertWith Set.union i . Set.singleton
 
-readNixpkgPackageMap :: FilePath -> IO PackageMap
-readNixpkgPackageMap nixpkgs = fmap attributeSet2PackageMap (readNixpkgAttributeSet nixpkgs)
+parsePackage :: String -> Maybe (Identifier, Path)
+parsePackage x | null x                 = error "Distribution.Nixpkgs.PackageMap.parsepackage: empty string is no valid identifier"
+               | xs <- splitOn "." x    = if needsQuoting (head xs)
+                                             then Nothing
+                                             else Just (create ident (last xs), create path (map (create ident) (init xs)))

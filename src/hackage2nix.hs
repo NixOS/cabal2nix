@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Main ( main ) where
@@ -8,7 +9,6 @@ import Cabal2Nix.HackageGit ( readHackage, Hackage )
 import Cabal2Nix.Package
 import Cabal2Nix.Version
 import Control.Arrow ( second )
-import Control.Lens
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
@@ -33,7 +33,9 @@ import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
+import Internal.Lens
 import Language.Nix.Identifier
+import Language.Nix.Path
 import Options.Applicative
 import System.FilePath
 
@@ -115,7 +117,7 @@ main = do
   Options {..} <- execParser pinfo
 
   hackage <- readHackage hackageRepository
-  nixpkgs <- readNixpkgPackageMap nixpkgsRepository
+  nixpkgs <- readNixpkgPackageMap nixpkgsRepository (Just (create path ["pkgs"]))
   preferredVersions <- readPreferredVersions (hackageRepository </> "preferred-versions")
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
@@ -161,8 +163,8 @@ generatePackageSet config hackage nixpkgs = do
                                   , extraPackageSet
                                   ]
 
-    knownAttributesSet :: Set String
-    knownAttributesSet = Set.union (Map.keysSet hackage) (Map.keysSet corePackageSet)
+    knownIdentifierSet :: Set Identifier
+    knownIdentifierSet = Set.map (create ident) (Set.union (Map.keysSet hackage) (Map.keysSet corePackageSet))
 
     resolver :: Dependency -> Bool
     resolver (Dependency (PackageName name) vrange)
@@ -182,33 +184,34 @@ generatePackageSet config hackage nixpkgs = do
           descr = hackage Map.! name Map.! pkgversion
           (missingDeps, _, drv') = cabal2nix resolver descr
 
-          haskellDependencies :: Set String
-          haskellDependencies = Set.map (view ident) $ mconcat [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
+          haskellDependencies :: Set Identifier
+          haskellDependencies = Set.unions [ drv'^.x.haskell | x <- [libraryDepends,executableDepends,testDepends] ]
 
-          systemDependencies :: Set String
-          systemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
+          systemDependencies :: Set Identifier
+          systemDependencies = Set.unions [ drv'^.x.y | x <- [libraryDepends,executableDepends,testDepends], y <- [system,pkgconfig] ]
 
-          haskellOrSystemDependencies :: Set String
-          haskellOrSystemDependencies = Set.map (view ident) $ mconcat [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
+          haskellOrSystemDependencies :: Set Identifier
+          haskellOrSystemDependencies = Set.unions [ drv'^.x.tool | x <- [libraryDepends,executableDepends,testDepends] ]
 
-          missing :: Set String
-          missing = Set.filter (`Set.notMember` knownAttributesSet) haskellDependencies
+          missing :: Set Identifier
+          missing = Set.filter (`Set.notMember` knownIdentifierSet) haskellDependencies
 
-          buildInputs :: Map Attribute (Maybe Path)
+          buildInputs :: Map Identifier (Maybe Path)
           buildInputs = Map.unions
                         [ Map.fromList [ (n, Nothing) | n <- Set.toList missing ]
-                        , Map.fromList [ (n, resolveNixpkgsAttribute nixpkgs n) | n <- Set.toAscList systemDependencies ]
-                        , Map.fromList [ (n, resolveHackageThenNixpkgsAttribute nixpkgs hackage n) | n <- Set.toAscList haskellOrSystemDependencies ]
+                        , Map.fromList [ (n, resolveNixpkgsIdentifier nixpkgs n) | n <- Set.toAscList systemDependencies ]
+                        , Map.fromList [ (n, resolveHackageThenNixpkgsIdentifier nixpkgs hackage n) | n <- Set.toAscList haskellOrSystemDependencies ]
                         ]
 
           systemOverrides :: Doc
           systemOverrides = fsep (map (uncurry formatOverride) (Map.toAscList buildInputs))
 
-          formatOverride :: Attribute -> Maybe Path -> Doc
-          formatOverride n Nothing   = space <> text n <> text " = null;"       -- missing attribute
-          formatOverride n (Just []) = (text " inherit" <+> text n) <> semi
-          formatOverride _ (Just ["self"]) = mempty -- callPackage finds this package already
-          formatOverride n (Just p)  = (text " inherit" <+> parens (text (intercalate "." p)) <+> text n) <> semi
+          formatOverride :: Identifier -> Maybe Path -> Doc
+          formatOverride n Nothing = space <> pPrint n <> text " = null;"       -- missing dependency
+          formatOverride n (Just p) = case view path p of
+                                        []       -> error ("internal error: " ++ show n ++ "resolved to empty path!")
+                                        ["self"] -> mempty                      -- callPackage finds this package automatically
+                                        _        -> (text " inherit" <+> parens (pPrint p) <+> pPrint n) <> semi
 
           overrides :: Doc
           overrides = systemOverrides
@@ -235,24 +238,24 @@ generatePackageSet config hackage nixpkgs = do
   liftIO $ mapM_ (\pkg -> putStrLn pkg >> putStrLn "") pkgs
   liftIO $ putStrLn "}"
 
-resolveHackageThenNixpkgsAttribute :: Nixpkgs -> Hackage -> Attribute -> Maybe Path
-resolveHackageThenNixpkgsAttribute nixpkgs hackage name
-  | Just _ <- Map.lookup name hackage                   = Just ["self"]
-  | p@(Just _) <- resolveNixpkgsAttribute nixpkgs name  = p
+resolveHackageThenNixpkgsIdentifier :: Nixpkgs -> Hackage -> Identifier -> Maybe Path
+resolveHackageThenNixpkgsIdentifier nixpkgs hackage name
+  | Just _ <- Map.lookup (view ident name) hackage      = Just (create path ["self"])
+  | p@(Just _) <- resolveNixpkgsIdentifier nixpkgs name = p
   | otherwise                                           = Nothing
 
-resolveNixpkgsAttribute :: Nixpkgs -> Attribute -> Maybe Path
-resolveNixpkgsAttribute nixpkgs name
-  | name `elem` ["clang","lldb","llvm"]   = Just ["self","llvmPackages"]
+resolveNixpkgsIdentifier :: Nixpkgs -> Identifier -> Maybe Path
+resolveNixpkgsIdentifier nixpkgs name
+  | name `elem` ["clang","lldb","llvm"]   = Just (create path ["self","llvmPackages"])
   | Just paths <- Map.lookup name nixpkgs = getShortestPath (Set.toList (paths `Set.intersection` goodScopes))
   | otherwise                             = Nothing
-  where
-    goodScopes :: Set Path
-    goodScopes = Set.fromList [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]]
 
-    getShortestPath :: [Path] -> Maybe Path
-    getShortestPath [] = Nothing
-    getShortestPath ps = Just ("pkgs" : minimumBy (on compare length) ps)
+goodScopes :: Set Path
+goodScopes = Set.fromList ((map (create path . ("pkgs":))) [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
+
+getShortestPath :: [Path] -> Maybe Path
+getShortestPath [] = Nothing
+getShortestPath ps = Just (minimumBy (on compare (view (path . to length))) ps)
 
 cabal2nix :: (Dependency -> Bool) -> GenericPackageDescription -> ([Dependency], FlagAssignment, Derivation)
 cabal2nix resolver cabal = (missingDeps, flags, drv)
@@ -284,8 +287,7 @@ cabal2nix resolver cabal = (missingDeps, flags, drv)
     enableTest t = t { testEnabled = True }
 
 readPreferredVersions :: FilePath -> IO [Constraint]
-readPreferredVersions path = mapMaybe parsePreferredVersionsLine . lines <$> readFile path
-
+readPreferredVersions p = mapMaybe parsePreferredVersionsLine . lines <$> readFile p
 
 parsePreferredVersionsLine :: String -> Maybe Constraint
 parsePreferredVersionsLine ('-':'-':_) = Nothing

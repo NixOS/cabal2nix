@@ -1,6 +1,6 @@
 module Main ( main ) where
 
-import Control.Lens
+import Internal.Lens
 import Control.DeepSeq
 import Control.Exception
 import Distribution.Nixpkgs.License
@@ -13,12 +13,12 @@ main = do
     describe "DeepSeq instances work properly for" $ do
       it "License" $ mapM_ hitsBottom [Known undefined, Unknown (Just undefined)]
       it "Meta" $ do mapM_ hitsBottom
-                       [ nullMeta & homepage .~ undefined
-                       , nullMeta & description .~ undefined
-                       , nullMeta & license .~ undefined
-                       , nullMeta & platforms .~ undefined
-                       , nullMeta & maintainers .~ undefined
-                       , nullMeta & broken .~ undefined
+                       [ def & homepage .~ undefined
+                       , def & description .~ undefined
+                       , def & license .~ undefined
+                       , def & platforms .~ undefined
+                       , def & maintainers .~ undefined
+                       , def & broken .~ undefined
                        ]
 
 hitsBottom :: NFData a => a -> Expectation
