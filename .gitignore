@@ -6,6 +6,7 @@
 /cabal2nix.cabal
 /dist/*
 /src/Cabal2Nix/Version.hs
+/TAGS
 /test/doctest.hs
 
 # vim tmp files
