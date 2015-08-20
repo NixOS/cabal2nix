@@ -1,12 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Cabal2Nix.Generate ( cabal2nix, cabal2nix' ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Generate ( cabal2nix, cabal2nix' ) where
 
-import Cabal2Nix.Flags
-import Cabal2Nix.License
-import Cabal2Nix.Name
-import Cabal2Nix.Normalize
-import Cabal2Nix.PostProcess
+import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.FromCabal.License
+import Distribution.Nixpkgs.Haskell.FromCabal.Name
+import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
+import Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
 import Internal.Lens
 import Data.Maybe
 import qualified Data.Set as Set

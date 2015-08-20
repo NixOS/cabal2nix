@@ -1,4 +1,4 @@
-module Cabal2Nix.Flags ( configureCabalFlags ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags ) where
 
 import Distribution.Package
 import Distribution.PackageDescription

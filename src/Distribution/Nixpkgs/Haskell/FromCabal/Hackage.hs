@@ -1,4 +1,4 @@
-module Cabal2Nix.Hackage ( readHashedHackage, module Distribution.Hackage.DB ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Hackage ( readHashedHackage, module Distribution.Hackage.DB ) where
 
 import Data.ByteString.Lazy ( ByteString )
 import Data.Digest.Pure.SHA ( sha256, showDigest )

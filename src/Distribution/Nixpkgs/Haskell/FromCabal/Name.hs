@@ -1,4 +1,4 @@
-module Cabal2Nix.Name ( toNixName, toNixName', libNixName, buildToolNixName ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Name ( toNixName, toNixName', libNixName, buildToolNixName ) where
 
 import Data.Char
 

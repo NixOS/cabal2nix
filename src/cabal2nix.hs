@@ -2,8 +2,8 @@
 
 module Main ( main ) where
 
-import Cabal2Nix.Generate ( cabal2nix )
-import Cabal2Nix.Normalize ( normalize )
+import Distribution.Nixpkgs.Haskell.FromCabal.Generate ( cabal2nix )
+import Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize )
 import Internal.HaskellPackage
 import Control.Exception ( bracket )
 import Control.Lens

@@ -1,4 +1,4 @@
-module Cabal2Nix.License ( fromCabalLicense ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.License ( fromCabalLicense ) where
 
 import Distribution.Nixpkgs.License
 import Distribution.License ( License(..) )
@@ -27,4 +27,4 @@ fromCabalLicense (Apache Nothing)                       = Known "stdenv.lib.lice
 fromCabalLicense (Apache (Just (Version [2,0] [])))     = Known "stdenv.lib.licenses.asl20"
 fromCabalLicense ISC                                    = Known "stdenv.lib.licenses.isc"
 fromCabalLicense OtherLicense                           = Unknown Nothing
-fromCabalLicense l                                      = error $ "Cabal2Nix.License.fromCabalLicense: unknown license " ++ show l
+fromCabalLicense l                                      = error $ "Distribution.Nixpkgs.Haskell.FromCabal.License.fromCabalLicense: unknown license " ++ show l

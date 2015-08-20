@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Cabal2Nix.PostProcess ( postProcess ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
 import Control.Lens
 import Data.Maybe

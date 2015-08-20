@@ -1,7 +1,7 @@
-module Cabal2Nix.Normalize ( normalize, normalizeCabalFlags ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCabalFlags ) where
 
-import Cabal2Nix.CorePackages
-import Cabal2Nix.Name
+import Distribution.Nixpkgs.Haskell.FromCabal.CorePackages
+import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Data.Function
 import Data.List
 import Data.Set ( Set )

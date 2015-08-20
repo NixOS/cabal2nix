@@ -3,9 +3,9 @@
 
 module Main ( main ) where
 
-import Cabal2Nix.Flags ( configureCabalFlags )
-import Cabal2Nix.Generate ( cabal2nix' )
-import Cabal2Nix.HackageGit ( readHackage, Hackage )
+import Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags )
+import Distribution.Nixpkgs.Haskell.FromCabal.Generate ( cabal2nix' )
+import Distribution.Nixpkgs.Haskell.FromCabal.HackageGit ( readHackage, Hackage )
 import Internal.HaskellPackage
 import Control.Arrow ( second )
 import Control.Monad
