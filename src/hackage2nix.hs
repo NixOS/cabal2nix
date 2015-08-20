@@ -26,7 +26,7 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
-import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( attr, (<>) )
+import Internal.PrettyPrinting hiding ( attr, (<>) )
 import Distribution.Package
 import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
 import Distribution.PackageDescription.Configuration

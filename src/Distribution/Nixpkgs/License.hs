@@ -9,8 +9,8 @@ module Distribution.Nixpkgs.License ( License(..) ) where
 
 import Control.DeepSeq.Generics
 import Data.Maybe
-import Distribution.Nixpkgs.Util.PrettyPrinting
 import GHC.Generics ( Generic )
+import Internal.PrettyPrinting
 
 -- | The representation for licenses used in Nix derivations. Known
 -- licenses are Nix expressions -- such as @stdenv.lib.licenses.bsd3@

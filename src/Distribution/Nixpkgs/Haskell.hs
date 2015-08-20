@@ -14,7 +14,6 @@ module Distribution.Nixpkgs.Haskell
   where
 
 import Control.DeepSeq.Generics
-import Internal.Lens
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -22,10 +21,11 @@ import Data.Set.Lens
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
-import Distribution.Nixpkgs.Util.PrettyPrinting
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
+import Internal.Lens
+import Internal.PrettyPrinting
 import Language.Nix.Identifier
 
 data BuildInfo = BuildInfo

@@ -15,7 +15,7 @@ module Distribution.Nixpkgs.Meta
 import Control.DeepSeq.Generics
 import Internal.Lens
 import Distribution.Nixpkgs.License
-import Distribution.Nixpkgs.Util.PrettyPrinting
+import Internal.PrettyPrinting
 import GHC.Generics ( Generic )
 import Data.Set ( Set )
 import qualified Data.Set as Set

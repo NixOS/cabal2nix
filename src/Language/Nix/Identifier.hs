@@ -5,7 +5,7 @@ module Language.Nix.Identifier ( Identifier, ident, quote, needsQuoting ) where
 
 import Control.DeepSeq.Generics
 import Data.String
-import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), text )
+import Internal.PrettyPrinting ( Pretty(..), text )
 import GHC.Generics ( Generic )
 import Internal.Lens
 import Text.Regex.Posix

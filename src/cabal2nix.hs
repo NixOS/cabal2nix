@@ -13,7 +13,7 @@ import qualified Data.Set as Set
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
-import Distribution.Nixpkgs.Util.PrettyPrinting hiding ( (<>) )
+import Internal.PrettyPrinting hiding ( (<>) )
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
 import Options.Applicative

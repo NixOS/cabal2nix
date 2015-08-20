@@ -2,18 +2,18 @@ module Cabal2Nix.Normalize ( normalize, normalizeCabalFlags ) where
 
 import Cabal2Nix.CorePackages
 import Cabal2Nix.Name
-import Internal.Lens
 import Data.Function
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Language.Nix.Identifier ( Identifier, ident )
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
-import Distribution.Nixpkgs.Util.Regex ( regsubmatch )
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
+import Internal.Lens
+import Internal.Regex ( regsubmatch )
+import Language.Nix.Identifier ( Identifier, ident )
 
 normalize :: Derivation -> Derivation
 normalize drv = drv

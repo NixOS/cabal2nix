@@ -1,6 +1,6 @@
 -- | Internal pretty-printing helpers for Nix expressions.
 
-module Distribution.Nixpkgs.Util.PrettyPrinting
+module Internal.PrettyPrinting
   ( onlyIf
   , setattr, toAscList
   , listattr

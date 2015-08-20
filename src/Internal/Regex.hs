@@ -1,4 +1,4 @@
-module Distribution.Nixpkgs.Util.Regex
+module Internal.Regex
   ( module Text.Regex.Posix
   , regsubmatch
   )

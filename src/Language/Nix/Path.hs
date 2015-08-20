@@ -1,7 +1,7 @@
 module Language.Nix.Path ( Path, path ) where
 
 import Internal.Lens
-import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty (..), char, hcat, punctuate )
+import Internal.PrettyPrinting ( Pretty (..), char, hcat, punctuate )
 import Language.Nix.Identifier
 
 -- | Paths are non-empty lists of identifiers in Nix.

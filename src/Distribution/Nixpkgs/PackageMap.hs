@@ -12,7 +12,7 @@ import Internal.Lens
 import Language.Nix.Identifier
 import Language.Nix.Path
 import Data.Maybe
-import Distribution.Nixpkgs.Util.PrettyPrinting
+import Internal.PrettyPrinting
 
 type PackageMap = Map Identifier (Set Path)
 
