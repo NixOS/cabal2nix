@@ -22,7 +22,6 @@ import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
 import Distribution.System
 import Distribution.Text ( display )
-import Language.Nix.Identifier
 
 cabal2nix :: FlagAssignment -> GenericPackageDescription -> Derivation
 cabal2nix flags' cabal = normalize $ drv & cabalFlags .~ flags
@@ -80,7 +79,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
 
 convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
 convertBuildInfo Cabal.BuildInfo {..} = mempty
-  & haskell .~ Set.fromList [ create ident y | (Dependency (PackageName y) _) <- targetBuildDepends ]
-  & system .~ Set.fromList [ create ident y | x <- extraLibs, y <- libNixName x, not (null y) ]
-  & pkgconfig .~ Set.fromList [ create ident y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
-  & tool .~ Set.fromList [ create ident y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]
+  & haskell .~ Set.fromList [ toNixName x | (Dependency x _) <- targetBuildDepends ]
+  & system .~ Set.fromList [ y | x <- extraLibs, y <- libNixName x ]
+  & pkgconfig .~ Set.fromList [ y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x ]
+  & tool .~ Set.fromList [ y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x ]

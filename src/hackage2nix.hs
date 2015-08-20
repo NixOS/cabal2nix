@@ -251,7 +251,7 @@ resolveNixpkgsIdentifier nixpkgs name
   | otherwise                             = Nothing
 
 goodScopes :: Set Path
-goodScopes = Set.fromList ((map (create path . ("pkgs":))) [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
+goodScopes = Set.fromList (map (create path . ("pkgs":)) [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
 
 getShortestPath :: [Path] -> Maybe Path
 getShortestPath [] = Nothing

@@ -55,7 +55,7 @@ data Derivation = MkDerivation
   , _src                 :: DerivationSource
   , _isLibrary           :: Bool
   , _isExecutable        :: Bool
-  , _extraFunctionArgs   :: Set String
+  , _extraFunctionArgs   :: Set Identifier
   , _libraryDepends      :: BuildInfo
   , _executableDepends   :: BuildInfo
   , _testDepends         :: BuildInfo
@@ -136,7 +136,7 @@ instance Pretty Derivation where
     ]
     where
       inputs :: Set String
-      inputs = Set.unions [ _extraFunctionArgs
+      inputs = Set.unions [ Set.map (view ident) _extraFunctionArgs
                           , setOf (dependencies . each . folded . ident) drv
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
                           ]

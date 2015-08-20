@@ -1,26 +1,23 @@
-module Distribution.Nixpkgs.Haskell.FromCabal.Name ( toNixName, toNixName', libNixName, buildToolNixName ) where
+{-# LANGUAGE OverloadedStrings #-}
 
-import Data.Char
+module Distribution.Nixpkgs.Haskell.FromCabal.Name ( toNixName, libNixName, buildToolNixName ) where
+
+import Language.Nix.Identifier
+import Distribution.Package
+import Internal.Lens
 
 -- | Map Cabal names to Nix attribute names.
-toNixName :: String -> String
-toNixName = id
-
--- | The old mapping function. This may be useful to generate a compatibility layer.
-toNixName' :: String -> String
-toNixName' []      = error "toNixName: empty string is not a valid argument"
-toNixName' name    = f name
-  where
-    f []                            = []
-    f ('-':c:cs) | c `notElem` "-"  = toUpper c : f cs
-    f ('-':_)                       = error ("unexpected package name " ++ show name)
-    f (c:cs)                        = c : f cs
+toNixName :: PackageName -> Identifier
+toNixName (PackageName "") = error "toNixName: invalid empty package name"
+toNixName (PackageName n)  = create ident n
 
 -- | Map libraries to Nix packages.
--- TODO: This should probably be configurable. We also need to consider the
--- possibility of name clashes with Haskell libraries. I have included
--- identity mappings to incicate that I have verified their correctness.
-libNixName :: String -> [String]
+--
+-- TODO: This list should not be hard-coded here; it belongs into the Nixpkgs
+-- repository.
+
+libNixName :: String -> [Identifier]
+libNixName ""                                   = []
 libNixName "adns"                               = return "adns"
 libNixName "alsa"                               = return "alsaLib"
 libNixName "alut"                               = return "freealut"
@@ -121,7 +118,7 @@ libNixName "Qt5Qml"                             = return "qt5"
 libNixName "Qt5Quick"                           = return "qt5"
 libNixName "Qt5Widgets"                         = return "qt5"
 libNixName "rtlsdr"                             = return "rtl-sdr"
-libNixName "rt"                                 = return [] -- in glibc
+libNixName "rt"                                 = [] -- in glibc
 libNixName "ruby1.8"                            = return "ruby"
 libNixName "sass"                               = return "libsass"
 libNixName "sane-backends"                      = return "saneBackends"
@@ -163,12 +160,13 @@ libNixName "Xtst"                               = return "libXtst"
 libNixName "Xxf86vm"                            = return "libXxf86vm"
 libNixName "zmq"                                = return "zeromq"
 libNixName "z"                                  = return "zlib"
-libNixName x                                    = return x
+libNixName x                                    = return (create ident x)
 
 -- | Map build tool names to Nix attribute names.
-buildToolNixName :: String -> [String]
+buildToolNixName :: String -> [Identifier]
+buildToolNixName ""                             = return (error "buildToolNixName: invalid empty dependency name")
 buildToolNixName "cabal"                        = return "cabal-install"
 buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
-buildToolNixName x                              = return (toNixName x)
+buildToolNixName x                              = return (create ident x)

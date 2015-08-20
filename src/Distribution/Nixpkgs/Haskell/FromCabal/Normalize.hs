@@ -1,7 +1,6 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCabalFlags ) where
 
 import Distribution.Nixpkgs.Haskell.FromCabal.CorePackages
-import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Data.Function
 import Data.List
 import Data.Set ( Set )
@@ -13,7 +12,7 @@ import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
 import Internal.Lens
 import Internal.Regex ( regsubmatch )
-import Language.Nix.Identifier ( Identifier, ident )
+import Language.Nix.Identifier ( ident )
 
 normalize :: Derivation -> Derivation
 normalize drv = drv
@@ -27,7 +26,7 @@ normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
   & haskell . contains (create ident pname) .~ False
   & tool . contains (create ident pname) .~ False
-  & tool %~ normalizeNixBuildTools . Set.filter (\n -> n^.ident `notElem` coreBuildTools)
+  & tool %~ Set.filter (\n -> n^.ident `notElem` coreBuildTools)
 
   {-
   {
@@ -64,11 +63,8 @@ normalizeSet = Set.filter (not . null)
 -- normalizeNixLibs :: Set String -> Set String
 -- normalizeNixLibs = normalizeSet . Set.fromList . concatMap libNixName . Set.toList
 
-normalizeNixBuildTools :: Set Identifier -> Set Identifier
-normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName' . Set.toList
-  where
-    buildToolNixName' :: Identifier -> [Identifier]
-    buildToolNixName' n = [ create ident n' | n' <- buildToolNixName (n^.ident) ]
+-- normalizeNixBuildTools :: Set Identifier -> Set Identifier
+-- normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName . Set.toList
 
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.
