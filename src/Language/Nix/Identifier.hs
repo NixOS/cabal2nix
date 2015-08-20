@@ -4,7 +4,7 @@
 module Language.Nix.Identifier ( Identifier, ident, quote, needsQuoting ) where
 
 import Control.DeepSeq.Generics
-import Control.Lens
+import Internal.Lens
 import Data.Char
 import Data.Function ( on )
 import Data.String
@@ -41,6 +41,8 @@ import GHC.Generics ( Generic )
 
 newtype Identifier = Identifier String
   deriving (Show, Eq, IsString, Generic)
+
+instance Default Identifier where def = Identifier ""
 
 instance Pretty Identifier where
   pPrint i = text (i ^. ident . to quote)

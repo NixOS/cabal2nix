@@ -27,13 +27,13 @@ in
         aeson base bytestring Cabal containers deepseq deepseq-generics
         directory filepath hackage-db monad-par monad-par-extras mtl pretty
         process QuickCheck regex-posix SHA split transformers
-        utf8-string lens optparse-applicative
+        utf8-string lens optparse-applicative data-default
       ];
       testDepends = with haskellPackages; [
         aeson base bytestring Cabal containers deepseq deepseq-generics
         directory doctest filepath hackage-db hspec monad-par
         monad-par-extras mtl pretty process QuickCheck
-        regex-posix SHA split transformers utf8-string
+        regex-posix SHA split transformers utf8-string data-default
       ];
       homepage = "http://github.com/NixOS/cabal2nix";
       description = "Convert Cabal files into Nix build instructions";

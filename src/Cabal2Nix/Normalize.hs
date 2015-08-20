@@ -2,7 +2,7 @@ module Cabal2Nix.Normalize ( normalize, normalizeCabalFlags ) where
 
 import Cabal2Nix.CorePackages
 import Cabal2Nix.Name
-import Control.Lens
+import Internal.Lens
 import Data.Function
 import Data.List
 import Data.Set ( Set )
@@ -25,8 +25,8 @@ normalize drv = drv
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
-  & haskell . contains (set ident pname undefined) .~ False
-  & tool . contains (set ident pname undefined) .~ False
+  & haskell . contains (create ident pname) .~ False
+  & tool . contains (create ident pname) .~ False
   & tool %~ normalizeNixBuildTools . Set.filter (\n -> n^.ident `notElem` coreBuildTools)
 
   {-
@@ -68,7 +68,7 @@ normalizeNixBuildTools :: Set Identifier -> Set Identifier
 normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName' . Set.toList
   where
     buildToolNixName' :: Identifier -> [Identifier]
-    buildToolNixName' n = [ set ident n' undefined | n' <- buildToolNixName (n^.ident) ]
+    buildToolNixName' n = [ create ident n' | n' <- buildToolNixName (n^.ident) ]
 
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.

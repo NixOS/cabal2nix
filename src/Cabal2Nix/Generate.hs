@@ -7,7 +7,7 @@ import Cabal2Nix.License
 import Cabal2Nix.Name
 import Cabal2Nix.Normalize
 import Cabal2Nix.PostProcess
-import Control.Lens
+import Internal.Lens
 import Data.Maybe
 import qualified Data.Set as Set
 import Data.Version
@@ -41,7 +41,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
   let
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
   in
-  nullDerivation
+  def
   & pkgid .~ package
   & revision .~ xrev
   & src .~ DerivationSource
@@ -68,7 +68,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
   & editedCabalFile .~ (if xrev > 0 then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing"))
                                                    (lookup "X-Cabal-File-Hash" customFieldsPD)
                                     else "")
-  & metaSection .~ ( Nix.nullMeta
+  & metaSection .~ ( def
                    & Nix.homepage .~ homepage
                    & Nix.description .~ synopsis
                    & Nix.license .~ fromCabalLicense license
@@ -80,7 +80,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
 
 convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
 convertBuildInfo Cabal.BuildInfo {..} = mempty
-  & haskell .~ Set.fromList [ set ident y undefined | (Dependency (PackageName y) _) <- targetBuildDepends ]
-  & system .~ Set.fromList [ set ident y undefined | x <- extraLibs, y <- libNixName x, not (null y) ]
-  & pkgconfig .~ Set.fromList [ set ident y undefined | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
-  & tool .~ Set.fromList [ set ident y undefined | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]
+  & haskell .~ Set.fromList [ create ident y | (Dependency (PackageName y) _) <- targetBuildDepends ]
+  & system .~ Set.fromList [ create ident y | x <- extraLibs, y <- libNixName x, not (null y) ]
+  & pkgconfig .~ Set.fromList [ create ident y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
+  & tool .~ Set.fromList [ create ident y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]

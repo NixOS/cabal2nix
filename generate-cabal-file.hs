@@ -64,6 +64,7 @@ commonBuildDepends =
     , unconstrained "bytestring"
     , package "Cabal" (gtEq [1,22,2])
     , unconstrained "containers"
+    , unconstrained "data-default"
     , unconstrained "deepseq-generics"
     , unconstrained "directory"
     , unconstrained "filepath"

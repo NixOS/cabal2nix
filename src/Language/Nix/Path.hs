@@ -1,6 +1,6 @@
 module Language.Nix.Path ( Path, path ) where
 
-import Control.Lens
+import Internal.Lens
 import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty (..), char, hcat, punctuate )
 import Language.Nix.Identifier
 
@@ -31,6 +31,8 @@ import Language.Nix.Identifier
 
 newtype Path = Path { _segments :: [Identifier] }
   deriving (Show, Eq, Ord)
+
+instance Default Path where def = Path (error "undefined Nix.Path")
 
 path :: Lens' Path [Identifier]
 path f (Path ids) = mkPath `fmap` f ids

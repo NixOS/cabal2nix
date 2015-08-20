@@ -7,13 +7,13 @@
  -}
 
 module Distribution.Nixpkgs.Meta
-  ( Meta, nullMeta
+  ( Meta
   , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
   ) where
 
 
 import Control.DeepSeq.Generics
-import Control.Lens
+import Internal.Lens
 import Distribution.Nixpkgs.License
 import Distribution.Nixpkgs.Util.PrettyPrinting
 import GHC.Generics ( Generic )
@@ -72,13 +72,13 @@ renderPlatformList :: [String] -> Doc
 renderPlatformList plats =
   nest 2 (fsep $ punctuate (text " ++") $ map text plats) <> semi
 
-nullMeta :: Meta
-nullMeta = Meta
- { _homepage = error "undefined Nix._homepage"
- , _description = error "undefined Nix._description"
- , _license = error "undefined Nix._license"
- , _platforms = error "undefined Nix._platforms"
- , _hydraPlatforms = error "undefined Nix._hydraPlatforms"
- , _maintainers = error "undefined Nix._maintainers"
- , _broken = error "undefined Nix._broken"
- }
+instance Default Meta where
+  def = Meta
+        { _homepage = error "undefined Meta.homepage"
+        , _description = error "undefined Meta.description"
+        , _license = error "undefined Meta.license"
+        , _platforms = error "undefined Meta.platforms"
+        , _hydraPlatforms = error "undefined Meta.hydraPlatforms"
+        , _maintainers = error "undefined Meta.maintainers"
+        , _broken = error "undefined Meta.broken"
+        }

@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell
-  ( Derivation, nullDerivation, pkgid, revision, src, isLibrary, isExecutable
+  ( Derivation, pkgid, revision, src, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , phaseOverrides, editedCabalFile, metaSection
@@ -14,7 +14,7 @@ module Distribution.Nixpkgs.Haskell
   where
 
 import Control.DeepSeq.Generics
-import Control.Lens
+import Internal.Lens
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -73,29 +73,29 @@ data Derivation = MkDerivation
   }
   deriving (Show, Eq, Generic)
 
-nullDerivation :: Derivation
-nullDerivation = MkDerivation
-  { _pkgid = error "undefined _pkgid"
-  , _revision = error "undefined _revision"
-  , _src = error "undefined _src"
-  , _isLibrary = error "undefined _isLibrary"
-  , _isExecutable = error "undefined _isExecutable"
-  , _extraFunctionArgs = error "undefined _extraFunctionArgs"
-  , _libraryDepends = error "undefined _libraryDepends"
-  , _executableDepends = error "undefined _executableDepends"
-  , _testDepends = error "undefined _testDepends"
-  , _configureFlags = error "undefined _configureFlags"
-  , _cabalFlags = error "undefined _cabalFlags"
-  , _runHaddock = error "undefined _runHaddock"
-  , _jailbreak = error "undefined _jailbreak"
-  , _doCheck = error "undefined _doCheck"
-  , _testTarget = error "undefined _testTarget"
-  , _hyperlinkSource = error "undefined _hyperlinkSource"
-  , _enableSplitObjs = error "undefined _enableSplitObjs"
-  , _phaseOverrides = error "undefined _phaseOverrides"
-  , _editedCabalFile = error "undefined _editedCabalFile"
-  , _metaSection = error "undefined _metaSection"
-  }
+instance Default Derivation where
+  def = MkDerivation
+    { _pkgid = error "undefined Derivation.pkgid"
+    , _revision = error "undefined Derivation.revision"
+    , _src = error "undefined Derivation.src"
+    , _isLibrary = error "undefined Derivation.isLibrary"
+    , _isExecutable = error "undefined Derivation.isExecutable"
+    , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
+    , _libraryDepends = error "undefined Derivation.libraryDepends"
+    , _executableDepends = error "undefined Derivation.executableDepends"
+    , _testDepends = error "undefined Derivation.testDepends"
+    , _configureFlags = error "undefined Derivation.configureFlags"
+    , _cabalFlags = error "undefined Derivation.cabalFlags"
+    , _runHaddock = error "undefined Derivation.runHaddock"
+    , _jailbreak = error "undefined Derivation.jailbreak"
+    , _doCheck = error "undefined Derivation.doCheck"
+    , _testTarget = error "undefined Derivation.testTarget"
+    , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
+    , _enableSplitObjs = error "undefined Derivation.enableSplitObjs"
+    , _phaseOverrides = error "undefined Derivation.phaseOverrides"
+    , _editedCabalFile = error "undefined Derivation.editedCabalFile"
+    , _metaSection = error "undefined Derivation.metaSection"
+    }
 
 makeLenses ''Derivation
 
