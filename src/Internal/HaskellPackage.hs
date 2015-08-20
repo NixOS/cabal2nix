@@ -1,4 +1,6 @@
-module Cabal2Nix.Package where
+module Internal.HaskellPackage
+  ( Package(..), getPackage, sourceFromHackage
+  ) where
 
 import qualified Cabal2Nix.Hackage as DB
 import qualified Control.Exception as Exception

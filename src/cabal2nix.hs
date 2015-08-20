@@ -4,7 +4,7 @@ module Main ( main ) where
 
 import Cabal2Nix.Generate ( cabal2nix )
 import Cabal2Nix.Normalize ( normalize )
-import Cabal2Nix.Package
+import Internal.HaskellPackage
 import Control.Exception ( bracket )
 import Control.Lens
 import Data.Maybe ( fromMaybe )

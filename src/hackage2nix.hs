@@ -6,7 +6,7 @@ module Main ( main ) where
 import Cabal2Nix.Flags ( configureCabalFlags )
 import Cabal2Nix.Generate ( cabal2nix' )
 import Cabal2Nix.HackageGit ( readHackage, Hackage )
-import Cabal2Nix.Package
+import Internal.HaskellPackage
 import Control.Arrow ( second )
 import Control.Monad
 import Control.Monad.Par.Combinator
