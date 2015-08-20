@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Language.Nix.Identifier ( Identifier(..), ident, quote, needsQuoting ) where
+module Language.Nix.Identifier ( Identifier, ident, quote, needsQuoting ) where
 
 import Control.DeepSeq.Generics
 import Control.Lens
@@ -23,8 +23,7 @@ import GHC.Generics ( Generic )
 -- >>> let i = Identifier "foo.bar" in (i, pPrint i)
 -- (Identifier "foo.bar","foo.bar")
 --
--- The 'Ord' instance for identifiers is respects character case in less-than
--- comparisons, etc.
+-- The 'Ord' instance for identifiers is aware of character case:
 --
 -- >>> Identifier "abc" == Identifier "ABC"
 -- False
@@ -74,7 +73,7 @@ needsQuoting str = not (str =~ grammar)
 ident :: Lens' Identifier String
 ident f (Identifier str) = Identifier `fmap` f str
 
--- | Help function that quotes a given identifier string (if necessary).
+-- | Helper function to quote a given identifier string if necessary.
 --
 -- >>> putStrLn (quote "abc")
 -- abc

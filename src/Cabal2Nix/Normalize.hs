@@ -7,7 +7,7 @@ import Data.Function
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Language.Nix.Identifier ( Identifier(..) )
+import Language.Nix.Identifier ( Identifier, ident )
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.Util.Regex ( regsubmatch )
@@ -25,9 +25,9 @@ normalize drv = drv
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
-  & haskell . contains (Identifier pname) .~ False
-  & tool . contains (Identifier pname) .~ False
-  & tool %~ normalizeNixBuildTools . Set.filter (\(Identifier n) -> n `notElem` coreBuildTools)
+  & haskell . contains (set ident pname undefined) .~ False
+  & tool . contains (set ident pname undefined) .~ False
+  & tool %~ normalizeNixBuildTools . Set.filter (\n -> n^.ident `notElem` coreBuildTools)
 
   {-
   {
@@ -68,7 +68,7 @@ normalizeNixBuildTools :: Set Identifier -> Set Identifier
 normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName' . Set.toList
   where
     buildToolNixName' :: Identifier -> [Identifier]
-    buildToolNixName' (Identifier n) = [ Identifier n' | n' <- buildToolNixName n ]
+    buildToolNixName' n = [ set ident n' undefined | n' <- buildToolNixName (n^.ident) ]
 
 -- |Strip any kind of path prefix from maintainer names, filter duplicates, and
 -- sort the resulting list alphabetically.

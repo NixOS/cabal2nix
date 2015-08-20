@@ -80,7 +80,7 @@ cabal2nix' PackageDescription {..} = normalize $ postProcess $
 
 convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
 convertBuildInfo Cabal.BuildInfo {..} = mempty
-  & haskell .~ Set.fromList [ Identifier y | (Dependency (PackageName y) _) <- targetBuildDepends ]
-  & system .~ Set.fromList [ Identifier y | x <- extraLibs, y <- libNixName x, not (null y) ]
-  & pkgconfig .~ Set.fromList [ Identifier y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
-  & tool .~ Set.fromList [ Identifier y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]
+  & haskell .~ Set.fromList [ set ident y undefined | (Dependency (PackageName y) _) <- targetBuildDepends ]
+  & system .~ Set.fromList [ set ident y undefined | x <- extraLibs, y <- libNixName x, not (null y) ]
+  & pkgconfig .~ Set.fromList [ set ident y undefined | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x, not (null y) ]
+  & tool .~ Set.fromList [ set ident y undefined | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x, not (null y) ]
