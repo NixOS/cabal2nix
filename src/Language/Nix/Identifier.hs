@@ -4,13 +4,11 @@
 module Language.Nix.Identifier ( Identifier, ident, quote, needsQuoting ) where
 
 import Control.DeepSeq.Generics
-import Internal.Lens
-import Data.Char
-import Data.Function ( on )
 import Data.String
 import Distribution.Nixpkgs.Util.PrettyPrinting ( Pretty(..), text )
-import Text.Regex.Posix
 import GHC.Generics ( Generic )
+import Internal.Lens
+import Text.Regex.Posix
 
 -- | Identifiers in Nix are essentially strings. Reasonable people restrict
 -- themselves to identifiers of the form @[a-zA-Z\_][a-zA-Z0-9\_\'\-]*@,
@@ -22,22 +20,6 @@ import GHC.Generics ( Generic )
 -- (Identifier "test",test)
 -- >>> let i = Identifier "foo.bar" in (i, pPrint i)
 -- (Identifier "foo.bar","foo.bar")
---
--- The 'Ord' instance for identifiers is aware of character case:
---
--- >>> Identifier "abc" == Identifier "ABC"
--- False
--- >>> Identifier "abc" < Identifier "ABC"
--- False
--- >>> Identifier "abc" > Identifier "ABC"
--- True
--- >>> Identifier "X" > Identifier "a"
--- True
--- >>> Identifier "x" > Identifier "A"
--- True
---
--- prop> \str -> Identifier str == Identifier str
--- prop> \str -> any (`elem` ['a'..'z']) str ==> Identifier (map toLower str) /= Identifier (map toUpper str)
 
 newtype Identifier = Identifier String
   deriving (Show, Eq, IsString, Generic)
@@ -48,10 +30,7 @@ instance Pretty Identifier where
   pPrint i = text (i ^. ident . to quote)
 
 instance Ord Identifier where
-  compare (Identifier a) (Identifier b) =
-    case (compare `on` map toLower) a b of
-      EQ -> compare a b
-      r  -> r
+  compare (Identifier a) (Identifier b) = compare a b
 
 instance NFData Identifier where rnf = genericRnf
 
