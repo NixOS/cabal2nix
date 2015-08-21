@@ -8,7 +8,7 @@
 module Language.Nix
   (
     -- * Evaluating the Nix Language
-    run, runEval, eval, builtins,
+    run, runEval, eval, builtins, Error(..),
 
     -- * Running the Parser
     parseNixFile, parseNix, parse, parse', ParseError,
@@ -30,7 +30,6 @@ module Language.Nix
 
 import Prelude hiding ( lookup )
 import Data.Functor.Identity
-import Control.Applicative ( (<$>), (<*>), (<$), (<*), (*>) )
 import Text.Parsec hiding ( parse )
 import qualified Text.Parsec as Parsec
 import qualified Text.Parsec.Language as Parsec
@@ -40,8 +39,7 @@ import Test.QuickCheck
 
 import Text.Show.Functions ( )
 import Control.Monad.Reader
-import qualified Control.Monad.Error as ErrT
-import Control.Monad.Error hiding ( Error )
+import Control.Monad.Trans.Except
 import qualified Data.Map as Map ( )
 import Data.Map hiding ( map, foldr )
 
@@ -376,17 +374,13 @@ data Error = CannotCoerceToString Expr
            | InvalidSyntax ParseError
   deriving (Show)
 
-instance ErrT.Error Error where
-  strMsg = Unstructured
-  noMsg  = Unstructured "no error message available"
-
-type Eval a = ErrorT Error (Reader Env) a
+type Eval a = ExceptT Error (Reader Env) a
 
 getEnv :: VarName -> Eval Expr
-getEnv v = ask >>= maybe (throwError (UndefinedVariable v)) return . lookup v
+getEnv v = ask >>= maybe (throwE (UndefinedVariable v)) return . lookup v
 
 onError :: Eval a -> (Error -> Bool, Eval a) -> Eval a
-onError f (p,g) = catchError f (\e -> if p e then g else throwError e)
+onError f (p,g) = catchE f (\e -> if p e then g else throwE e)
 
 isUndefinedVariable :: Error -> Bool
 isUndefinedVariable (UndefinedVariable _) = True
@@ -409,25 +403,25 @@ evalBool (Or x y)       = (||) <$> evalBool x <*> evalBool y
 evalBool (Not x)        = not <$> evalBool x
 evalBool e@(Equal x y)  = ((==) <$> evalString  x <*> evalString  y)
                             `onError` (isCoerceToString, (==) <$> evalBool x <*> evalBool y)
-                            `onError` (isCoerceToBool, throwError (TypeMismatch e))
-evalBool e              = throwError (CannotCoerceToBool e)
+                            `onError` (isCoerceToBool, throwE (TypeMismatch e))
+evalBool e              = throwE (CannotCoerceToBool e)
 
 evalString :: Expr -> Eval String
 evalString e | trace ("evalString " ++ show e) False = undefined
 evalString (Lit x)      = return x
 evalString (Append x y) = (++) <$> evalString x <*> evalString y
 evalString (Ident v)    = getEnv v >>= evalString
-evalString e            = throwError (CannotCoerceToString e)
+evalString e            = throwE (CannotCoerceToString e)
 
 evalAttribute :: Attr -> Eval [(VarName,Expr)]
 evalAttribute (Assign (SIdent [k]) v)  = (return . (,) k) <$> eval v
 evalAttribute (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs ]
-evalAttribute e                        = throwError (Unsupported (AttrSet False [e]))
+evalAttribute e                        = throwE (Unsupported (AttrSet False [e]))
 
 attrSetToEnv :: Attr -> Eval [(VarName,Expr)]
 attrSetToEnv (Assign (SIdent [k]) v)  = return [(k,v)]
 attrSetToEnv (Inherit (SIdent []) vs) = sequence [ (,) v <$> getEnv v | v <- vs ]
-attrSetToEnv e                        = throwError (Unsupported (AttrSet True [e]))
+attrSetToEnv e                        = throwE (Unsupported (AttrSet True [e]))
 
 eval :: Expr -> Eval Expr
 eval e | trace ("eval " ++ show e) False = undefined
@@ -452,8 +446,8 @@ eval (AttrSet True as)                          = concat <$> mapM attrSetToEnv a
 eval (Deref (Ident v) y)                        = getEnv v >>= \v' -> eval (Deref v' y)
 eval (Deref (AttrSet False as) y@(Ident _))     = concat <$> mapM evalAttribute as >>= \as' -> trace ("add to env: " ++ show as') $ local (\env -> foldr (uncurry insert) env as') (eval y)
 eval (Deref (AttrSet True as) y@(Ident _))      = concat <$> mapM attrSetToEnv as >>= \as' -> trace ("add to env: " ++ show as') $ local (\env -> foldr (uncurry insert) env as') (eval y)
-eval e@(Deref _ _)                              = throwError (TypeMismatch e)
-eval e                                          = throwError (Unsupported e)
+eval e@(Deref _ _)                              = throwE (TypeMismatch e)
+eval e                                          = throwE (Unsupported e)
 
 --
 -- eval (Apply (Lambda v x) y)     = eval y >>= \y' -> trace ("add to env: " ++ show (v,y')) $ local ((v,y'):) (eval x)
@@ -539,7 +533,7 @@ run :: String -> Either Error Expr
 run = either (Left . InvalidSyntax) (\e -> runEval (eval e) builtins) . parseNix
 
 runEval :: Eval a -> Env -> Either Error a
-runEval = runReader . runErrorT
+runEval = runReader . runExceptT
 
 builtins :: Env
 builtins = fromList
