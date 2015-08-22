@@ -301,7 +301,7 @@ defaultConfiguration = Configuration
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
-    [
+    [ "HUnit < 1.3.0.0"         -- newer versions break test-framework-hunit-0.3.0.1
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
