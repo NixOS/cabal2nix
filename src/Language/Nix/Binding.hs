@@ -1,19 +1,28 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Binding ( Binding, binding, localName, reference ) where
 
+import Control.DeepSeq.Generics
+import Data.String
+import GHC.Generics ( Generic )
 import Internal.Lens
+import Internal.PrettyPrinting
 import Language.Nix.Identifier
 import Language.Nix.Path
-import Internal.PrettyPrinting
 
 data Binding = Bind { _localName :: Identifier, _reference :: Path }
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
 
 makeLenses ''Binding
 
 binding :: Lens' Binding (Identifier,Path)
 binding f (Bind l r) = uncurry Bind `fmap` f (l, r)
+
+instance IsString Binding where  -- TODO: This instance feels dangerous!
+  fromString s = Bind i (create path [i]) where i = fromString s
+
+instance NFData Binding where rnf = genericRnf
 
 instance Default Binding where
   def = Bind def def

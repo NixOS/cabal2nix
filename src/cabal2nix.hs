@@ -3,7 +3,7 @@
 
 module Main ( main ) where
 
-import Distribution.Nixpkgs.Haskell.FromCabal ( cabal2nix )
+import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize )
 import Internal.HaskellPackage
 import Control.Exception ( bracket )
@@ -14,6 +14,9 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
+import Distribution.Compiler
+import Distribution.Version
+import Distribution.System
 import Distribution.Simple.Utils ( lowercase )
 import Internal.PrettyPrinting hiding ( (<>) )
 import Internal.Version
@@ -88,7 +91,13 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let flags = readFlagList optFlags
 
       deriv :: Derivation
-      deriv = cabal2nix flags (pkgCabal pkg)
+      deriv = fromGenericPackageDescription (const True)
+                                            undefined
+                                            (Platform X86_64 Linux)
+                                            (unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag)
+                                            flags
+                                            []
+                                            (pkgCabal pkg)
               & src .~ pkgSource pkg
               & runHaddock .~ optHaddock
               & jailbreak .~ optJailbreak

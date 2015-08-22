@@ -1,18 +1,22 @@
-module Distribution.Nixpkgs.PackageMap where
+module Distribution.Nixpkgs.PackageMap
+  ( PackageMap, readNixpkgPackageMap
+  , resolve
+  ) where
 
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LBS
+import Data.Function
+import Data.List as List
 import Data.List.Split
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Data.Map.Strict ( Map )
+import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import System.Process
 import Internal.Lens
-import Language.Nix.Identifier
-import Language.Nix.Path
-import Data.Maybe
 import Internal.PrettyPrinting
+import Language.Nix
+import System.Process
 
 type PackageMap = Map Identifier (Set Path)
 
@@ -42,4 +46,14 @@ parsePackage :: String -> Maybe (Identifier, Path)
 parsePackage x | null x                 = error "Distribution.Nixpkgs.PackageMap.parsepackage: empty string is no valid identifier"
                | xs <- splitOn "." x    = if needsQuoting (head xs)
                                              then Nothing
-                                             else Just (create ident (last xs), create path (map (create ident) (init xs)))
+                                             else Just (create ident (last xs), create path (map (create ident) xs))
+
+resolve :: PackageMap -> Identifier -> Maybe Binding
+resolve nixpkgs i = case Map.lookup i nixpkgs of
+                      Nothing -> Nothing
+                      Just ps -> let p = chooseShortestPath (Set.toList ps)
+                                 in Just $ create binding (i,p)
+
+chooseShortestPath :: [Path] -> Path
+chooseShortestPath [] = error "chooseShortestPath: called with empty list argument"
+chooseShortestPath ps = minimumBy (on compare (view (path . to length))) ps

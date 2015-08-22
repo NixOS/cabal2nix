@@ -2,14 +2,14 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Name ( toNixName, libNixName, buildToolNixName ) where
 
-import Language.Nix.Identifier
+import Data.String
 import Distribution.Package
-import Internal.Lens
+import Language.Nix
 
 -- | Map Cabal names to Nix attribute names.
 toNixName :: PackageName -> Identifier
 toNixName (PackageName "") = error "toNixName: invalid empty package name"
-toNixName (PackageName n)  = create ident n
+toNixName (PackageName n)  = fromString n
 
 -- | Map libraries to Nix packages.
 --
@@ -160,7 +160,7 @@ libNixName "Xtst"                               = return "libXtst"
 libNixName "Xxf86vm"                            = return "libXxf86vm"
 libNixName "zmq"                                = return "zeromq"
 libNixName "z"                                  = return "zlib"
-libNixName x                                    = return (create ident x)
+libNixName x                                    = return (fromString x)
 
 -- | Map build tool names to Nix attribute names.
 buildToolNixName :: String -> [Identifier]
@@ -169,4 +169,4 @@ buildToolNixName "cabal"                        = return "cabal-install"
 buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
-buildToolNixName x                              = return (create ident x)
+buildToolNixName x                              = return (fromString x)

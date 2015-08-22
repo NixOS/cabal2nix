@@ -1,18 +1,19 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCabalFlags ) where
 
-import Distribution.Nixpkgs.Haskell.FromCabal.CorePackages
 import Data.Function
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Data.String
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell.FromCabal.CorePackages
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
 import Internal.Lens
 import Internal.Regex ( regsubmatch )
-import Language.Nix.Identifier ( ident )
+import Language.Nix hiding ( quote )
 
 normalize :: Derivation -> Derivation
 normalize drv = drv
@@ -24,9 +25,9 @@ normalize drv = drv
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
-  & haskell . contains (create ident pname) .~ False
-  & tool . contains (create ident pname) .~ False
-  & tool %~ Set.filter (\n -> n^.ident `notElem` coreBuildTools)
+  & haskell %~ (Set.filter (\b -> view localName b /= fromString pname))
+  & tool %~ (Set.filter (\b -> view localName b /= fromString pname))
+  & tool %~ Set.filter (\n -> n^.localName.ident `notElem` coreBuildTools)
 
   {-
   {

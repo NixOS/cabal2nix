@@ -9,6 +9,7 @@ import Distribution.Nixpkgs.Haskell
 import Distribution.Package
 import Distribution.Text
 import Distribution.Version
+import Language.Nix ( )  -- IsString instance for Binding
 
 postProcess :: Derivation -> Derivation
 postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]

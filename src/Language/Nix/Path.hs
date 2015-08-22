@@ -1,8 +1,12 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Language.Nix.Path ( Path, path ) where
 
 import Internal.Lens
 import Internal.PrettyPrinting ( Pretty (..), char, hcat, punctuate )
 import Language.Nix.Identifier
+import Control.DeepSeq.Generics
+import GHC.Generics ( Generic )
 
 -- | Paths are non-empty lists of identifiers in Nix.
 --
@@ -30,7 +34,9 @@ import Language.Nix.Identifier
 -- *** Exception: invalid Nix path: [Identifier "5ident",Identifier "foo",Identifier "bar"]
 
 newtype Path = Path { _segments :: [Identifier] }
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
+
+instance NFData Path where rnf = genericRnf
 
 instance Default Path where def = Path (error "undefined Nix.Path")
 
