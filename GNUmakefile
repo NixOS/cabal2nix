@@ -15,7 +15,7 @@ build::		configure
 	@cabal build -j
 
 haddock::	build
-	@cabal haddock
+	@cabal haddock --hyperlink-source
 
 check::		haddock
 	@cabal test -j
