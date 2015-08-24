@@ -24,7 +24,7 @@ hlint::
 	hlint src
 
 clean::
-	@rm -rf cabal2nix.cabal dist src/Internal/Version.hs test/doctest.hs
+	@rm -rf cabal2nix.cabal dist src/Internal/Version.hs test/doctest.hs TAGS
 
 cabal2nix.cabal:	generate-cabal-file.hs
 	runhaskell "$<" >"$@"
