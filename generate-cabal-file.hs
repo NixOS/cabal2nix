@@ -93,10 +93,10 @@ commonTestOptions = buildDepends
   ] : commonBuildOptions
 
 mkExecutable :: NonEmptyString -> [ExecutableField] -> Section
-mkExecutable exe opt = executable exe $ mainIs (exe++".hs") : buildDepends [unconstrained "cabal2nix"] : opt ++ commonBuildOptions
+mkExecutable exe opt = executable exe $ mainIs (exe++".hs") : opt ++ commonBuildOptions
 
 mkTest :: NonEmptyString -> [TestSuiteField] -> Section
-mkTest test opt = testSuite test $ exitcodeFields (test++".hs") ++ buildDepends [unconstrained "cabal2nix"] : opt ++ hsSourceDirs ["test"] : commonTestOptions
+mkTest test opt = testSuite test $ exitcodeFields (test++".hs") ++ opt ++ hsSourceDirs ["test"] : commonTestOptions
 
 main :: IO ()
 main = do
