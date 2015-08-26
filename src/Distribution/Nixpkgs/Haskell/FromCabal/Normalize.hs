@@ -26,8 +26,8 @@ normalize drv = drv
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
-  & haskell %~ (Set.filter (\b -> view localName b /= fromString pname))
-  & tool %~ (Set.filter (\b -> view localName b /= fromString pname))
+  & haskell %~ Set.filter (\b -> view localName b /= fromString pname)
+  & tool %~ Set.filter (\b -> view localName b /= fromString pname)
   & tool %~ Set.filter (\n -> n^.localName.ident `notElem` coreBuildTools)
 
   {-
