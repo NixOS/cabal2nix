@@ -172,7 +172,6 @@ generatePackageSet config hackage nixpkgs = do
           overrides = fcat $ punctuate space
                         [ pPrint b | b <- Set.toList (view (dependencies . each) drv), not (isFromHackage b) ]
 
-
       return $ nest 2 $ hang (string attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     return (intercalate "\n\n" (map render defs))
 
