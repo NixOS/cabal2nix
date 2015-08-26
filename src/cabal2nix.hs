@@ -3,23 +3,23 @@
 
 module Main ( main ) where
 
-import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
-import Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize )
-import Internal.HaskellPackage
 import Control.Exception ( bracket )
-import Control.Lens
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
+import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
-import Distribution.Compiler
-import Distribution.Version
-import Distribution.System
 import Distribution.Simple.Utils ( lowercase )
+import Distribution.System
+import Distribution.Version
+import Internal.HaskellPackage
+import Internal.Lens
 import Internal.PrettyPrinting hiding ( (<>) )
 import Internal.Version
+import Language.Nix
 import Options.Applicative
 import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
@@ -92,7 +92,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
       deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
-                                            undefined
+                                            (\i -> Just (create binding (i, create path [i])))
                                             (Platform X86_64 Linux)
                                             (unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag)
                                             flags
@@ -108,7 +108,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & extraFunctionArgs . contains "stdenv" .~ True
 
       deriv' :: Doc
-      deriv' = pPrint (normalize deriv)
+      deriv' = pPrint deriv
 
       shell :: Doc
       shell = vcat
