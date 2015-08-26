@@ -22,6 +22,7 @@ normalize drv = drv
   & over testDepends (normalizeBuildInfo (packageName drv))
   & over metaSection normalizeMeta
   & over cabalFlags normalizeCabalFlags
+  & jailbreak %~ (&& (packageName drv /= PackageName "jailbreak-cabal"))
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi

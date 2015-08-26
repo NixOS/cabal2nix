@@ -157,7 +157,6 @@ generatePackageSet config hackage nixpkgs = do
       srcSpec <- liftIO $ sourceFromHackage (Certain sha256) (name ++ "-" ++ display pkgversion)
 
       let drv = drv' & src .~ srcSpec
-                     -- TODO: & jailbreak .~ (not (null missingDeps) && (name /= "jailbreak-cabal"))
                      & metaSection.hydraPlatforms .~ (if PackageName name `Set.member` brokenPackages config
                                                          then Set.singleton "stdenv.lib.platforms.none"
                                                          else drv'^.metaSection.hydraPlatforms)
