@@ -87,7 +87,9 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
                        | otherwise = create binding (i, create path ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
     resolveInNixpkgs :: Identifier -> Binding
-    resolveInNixpkgs i = fromMaybe (bindNull i) (nixpkgsResolver i)
+    resolveInNixpkgs i
+      | i `elem` ["clang","lldb","llvm"] = create binding (i,create path ["self","llvmPackages",i])     -- TODO: evil!
+      | otherwise                        = fromMaybe (bindNull i) (nixpkgsResolver i)
 
     resolveInHackageThenNixpkgs :: Identifier -> Binding
     resolveInHackageThenNixpkgs i | haskellResolver (Dependency (PackageName (i^.ident)) anyVersion) = resolveInHackage i
