@@ -44,7 +44,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
-  , ("gtk3", set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True) -- https://github.com/NixOS/cabal2nix/issues/145
+  , ("gtk3", gtk3Hook)
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("jsaddle", set (dependencies . haskell . contains (pkg "ghcjs-base")) False)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
@@ -69,6 +69,11 @@ bind s = create binding (i, create path is)
   where
     is = map (create ident) (splitOn "." s)
     i = last is
+
+-- TODO: I need to figure out how to conveniently replace a binding in a set.
+gtk3Hook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
+gtk3Hook = set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
+         . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
 
 gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . system) (Set.union buildInputs)
