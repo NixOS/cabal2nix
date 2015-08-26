@@ -3,6 +3,7 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
 import Internal.Lens
+import Data.Set.Lens
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -17,9 +18,18 @@ postProcess :: Derivation -> Derivation
 postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
 
 fixGtkBuilds :: Derivation -> Derivation
-fixGtkBuilds drv = drv & dependencies . pkgconfig %~ (`Set.difference` buildDeps)
+fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesWithHaskellName)
+                       & dependencies . system %~ Set.filter (not . collidesWithHaskellName)
+                       & dependencies . tool %~ Set.filter (not . collidesWithHaskellName)
   where
-    buildDeps = drv ^. dependencies . haskell
+    collidesWithHaskellName :: Binding -> Bool
+    collidesWithHaskellName b = view localName b `Set.member` buildDeps
+
+    myName :: Identifier
+    myName = create ident n where PackageName n = packageName drv
+
+    buildDeps :: Set Identifier
+    buildDeps = Set.delete myName (setOf (dependencies . haskell . folded . localName) drv)
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ show str)) (simpleParse str))
