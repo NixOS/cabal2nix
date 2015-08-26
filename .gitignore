@@ -6,7 +6,6 @@
 /cabal2nix.cabal
 /dist/*
 /src/Internal/Version.hs
-/TAGS
 /test/doctest.hs
 
 # vim tmp files
@@ -18,3 +17,7 @@
 
 /hackage/*
 /nixpkgs/*
+
+# haskell-mode generates files, too
+
+TAGS
