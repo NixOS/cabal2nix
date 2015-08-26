@@ -27,12 +27,12 @@ in
         aeson base bytestring Cabal containers deepseq deepseq-generics
         directory filepath hackage-db monad-par monad-par-extras mtl pretty
         process QuickCheck regex-posix SHA split transformers
-        utf8-string lens optparse-applicative data-default
+        utf8-string lens optparse-applicative data-default pretty-show
       ];
       testDepends = with haskellPackages; [
         aeson base bytestring Cabal containers deepseq deepseq-generics
         directory doctest filepath hackage-db hspec monad-par
-        monad-par-extras mtl pretty process QuickCheck
+        monad-par-extras mtl pretty process QuickCheck pretty-show
         regex-posix SHA split transformers utf8-string data-default
       ];
       homepage = "http://github.com/NixOS/cabal2nix";
