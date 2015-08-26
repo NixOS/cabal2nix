@@ -6,23 +6,22 @@ module Main ( main ) where
 import Control.Exception ( bracket )
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
-import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
-import Distribution.System
-import Distribution.Version
 import Internal.HaskellPackage
 import Internal.Lens
-import Internal.PrettyPrinting hiding ( (<>) )
 import Internal.Version
+import Internal.PrettyPrinting hiding ( (<>) )
 import Language.Nix
 import Options.Applicative
 import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
+-- import Text.Show.Pretty
 
 data Options = Options
   { optSha256 :: Maybe String
@@ -93,8 +92,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
       deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
                                             (\i -> Just (create binding (i, create path [i])))
-                                            (Platform X86_64 Linux)
-                                            (unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag)
+                                            (platform ghc7102)
+                                            (compilerInfo ghc7102)
                                             flags
                                             []
                                             (pkgCabal pkg)
@@ -107,9 +106,6 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & doCheck &&~ optDoCheck
               & extraFunctionArgs . contains "stdenv" .~ True
 
-      deriv' :: Doc
-      deriv' = pPrint deriv
-
       shell :: Doc
       shell = vcat
               [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\" }:"
@@ -118,7 +114,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               , text ""
               , text "  inherit (nixpkgs) pkgs;"
               , text ""
-              , hcat [ text "  f = ", deriv', semi ]
+              , hcat [ text "  f = ", pPrint deriv, semi ]
               , text ""
               , text "  haskellPackages = if compiler == \"default\""
               , text "                      then pkgs.haskellPackages"
@@ -131,7 +127,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               , text "  if pkgs.lib.inNixShell then drv.env else drv"
               ]
 
-  print (if optNixShellOutput then shell else deriv')
+  -- putStrLn $ ppShow deriv
+  print (if optNixShellOutput then shell else pPrint deriv)
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = map tagWithValue

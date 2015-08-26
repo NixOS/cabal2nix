@@ -76,6 +76,7 @@ commonBuildDepends =
     , unconstrained "optparse-applicative"
     , package "pretty" (gtEq [1,1,2])
     , unconstrained "process"
+    , unconstrained "pretty-show"
     , unconstrained "regex-posix"
     , unconstrained "SHA"
     , unconstrained "split"
