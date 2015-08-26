@@ -46,9 +46,8 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("gtk3", gtk3Hook)
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
-  , ("jsaddle", set (dependencies . haskell . contains (pkg "ghcjs-base")) False)
+  , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
-  , ("pango", set (libraryDepends . haskell . contains (pkg "cairo")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (pkg "cpphs")) True) -- required on Darwin
