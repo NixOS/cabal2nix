@@ -99,10 +99,14 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     resolveInHackage i | (i^.ident) `elem` [ n | (Dependency (PackageName n) _) <- missingDeps ] = bindNull i
                        | otherwise = create binding (i, create path ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
+    goodScopes :: Set [Identifier]
+    goodScopes = Set.fromList (map ("pkgs":) [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
+
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
       | i `elem` ["clang","lldb","llvm"] = create binding (i,create path ["self","llvmPackages",i])     -- TODO: evil!
-      | otherwise                        = fromMaybe (bindNull i) (nixpkgsResolver i)
+      | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
+      | otherwise                        = bindNull i
 
     resolveInHackageThenNixpkgs :: Identifier -> Binding
     resolveInHackageThenNixpkgs i | haskellResolver (Dependency (PackageName (i^.ident)) anyVersion) = resolveInHackage i
