@@ -83,6 +83,8 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & testTarget .~ mempty
     & hyperlinkSource .~ True
     & enableSplitObjs .~ True
+    & enableLibraryProfiling .~ False
+    & enableExecutableProfiling .~ False
     & phaseOverrides .~ mempty
     & editedCabalFile .~ (if xrev > 0
                              then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)

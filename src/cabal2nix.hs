@@ -32,6 +32,9 @@ data Options = Options
   , optJailbreak :: Bool
   , optRevision :: Maybe String
   , optHyperlinkSource :: Bool
+  , optEnableLibraryProfiling :: Bool
+  , optEnableExecutableProfiling :: Bool
+  , optEnableProfiling :: Maybe Bool
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
   , optFlags :: [String]
@@ -49,6 +52,9 @@ options = Options
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
           <*> optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
           <*> flag True False (long "no-hyperlink-source" <> help "don't generate pretty-printed source code for the documentation")
+          <*> switch (long "enable-library-profiling" <> help "enable library profiling in the generated build")
+          <*> switch (long "enable-executable-profiling" <> help "enable executable profiling in the generated build")
+          <*> optional (switch (long "enable-profiling" <> help "enable both library and executable profiling in the generated build"))
           <*> optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
           <*> switch (long "shell" <> help "generate output suitable for nix-shell")
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
@@ -87,20 +93,20 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256)
 
-  let flags = readFlagList optFlags
-
-      deriv :: Derivation
+  let deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
                                             (\i -> Just (create binding (i, create path [i])))
                                             (platform ghc7102)
                                             (compilerInfo ghc7102)
-                                            flags
+                                            (readFlagList optFlags)
                                             []
                                             (pkgCabal pkg)
               & src .~ pkgSource pkg
               & runHaddock .~ optHaddock
               & jailbreak .~ optJailbreak
               & hyperlinkSource .~ optHyperlinkSource
+              & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
+              & enableExecutableProfiling .~ (fromMaybe False optEnableProfiling || optEnableExecutableProfiling)
               & metaSection.maintainers .~ Set.fromList optMaintainer
               & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
@@ -117,8 +123,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               , hcat [ text "  f = ", pPrint deriv, semi ]
               , text ""
               , text "  haskellPackages = if compiler == \"default\""
-              , text "                      then pkgs.haskellPackages"
-              , text "                      else pkgs.haskell.packages.${compiler};"
+              , text "                       then pkgs.haskellPackages"
+              , text "                       else pkgs.haskell.packages.${compiler};"
               , text ""
               , text "  drv = haskellPackages.callPackage f {};"
               , text ""

@@ -7,7 +7,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   ( Derivation, pkgid, revision, src, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
-  , phaseOverrides, editedCabalFile, metaSection
+  , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies
   )
   where
@@ -33,26 +33,28 @@ import Language.Nix
 -- 'PackageDescription' from Cabal.
 
 data Derivation = MkDerivation
-  { _pkgid               :: PackageIdentifier
-  , _revision            :: Int
-  , _src                 :: DerivationSource
-  , _isLibrary           :: Bool
-  , _isExecutable        :: Bool
-  , _extraFunctionArgs   :: Set Identifier
-  , _libraryDepends      :: BuildInfo
-  , _executableDepends   :: BuildInfo
-  , _testDepends         :: BuildInfo
-  , _configureFlags      :: Set String
-  , _cabalFlags          :: FlagAssignment
-  , _runHaddock          :: Bool
-  , _jailbreak           :: Bool
-  , _doCheck             :: Bool
-  , _testTarget          :: String
-  , _hyperlinkSource     :: Bool
-  , _enableSplitObjs     :: Bool
-  , _phaseOverrides      :: String
-  , _editedCabalFile     :: String
-  , _metaSection         :: Meta
+  { _pkgid                      :: PackageIdentifier
+  , _revision                   :: Int
+  , _src                        :: DerivationSource
+  , _isLibrary                  :: Bool
+  , _isExecutable               :: Bool
+  , _extraFunctionArgs          :: Set Identifier
+  , _libraryDepends             :: BuildInfo
+  , _executableDepends          :: BuildInfo
+  , _testDepends                :: BuildInfo
+  , _configureFlags             :: Set String
+  , _cabalFlags                 :: FlagAssignment
+  , _runHaddock                 :: Bool
+  , _jailbreak                  :: Bool
+  , _doCheck                    :: Bool
+  , _testTarget                 :: String
+  , _hyperlinkSource            :: Bool
+  , _enableLibraryProfiling     :: Bool
+  , _enableExecutableProfiling  :: Bool
+  , _enableSplitObjs            :: Bool
+  , _phaseOverrides             :: String
+  , _editedCabalFile            :: String
+  , _metaSection                :: Meta
   }
   deriving (Show, Eq, Generic)
 
@@ -74,6 +76,8 @@ instance Default Derivation where
     , _doCheck = error "undefined Derivation.doCheck"
     , _testTarget = error "undefined Derivation.testTarget"
     , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
+    , _enableLibraryProfiling = error "undefined Derivation.enableLibraryProfiling"
+    , _enableExecutableProfiling = error "undefined Derivation.enableExecutableProfiling"
     , _enableSplitObjs = error "undefined Derivation.enableSplitObjs"
     , _phaseOverrides = error "undefined Derivation.phaseOverrides"
     , _editedCabalFile = error "undefined Derivation.editedCabalFile"
@@ -104,6 +108,8 @@ instance Pretty Derivation where
       , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
       , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
       , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends
+      , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
+      , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
       , boolattr "enableSplitObjs"  (not _enableSplitObjs) _enableSplitObjs
       , boolattr "doHaddock" (not _runHaddock) _runHaddock
       , boolattr "jailbreak" _jailbreak _jailbreak
