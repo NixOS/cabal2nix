@@ -1,7 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription, fromPackageDescription ) where
+module Distribution.Nixpkgs.Haskell.FromCabal
+  ( HaskellResolver, NixpkgsResolver
+  , fromGenericPackageDescription , fromPackageDescription
+  )
+  where
 
 import Control.Arrow ( second )
 import Data.Maybe
