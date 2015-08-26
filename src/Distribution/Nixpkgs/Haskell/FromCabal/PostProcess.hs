@@ -25,7 +25,7 @@ hooks :: [(Dependency, Derivation -> Derivation)]
 hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ show str)) (simpleParse str))
   [ ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
-  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [pkg "libXext", pkg "libXfixes"])))
+  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xlibs.libXext", bind "pkgs.xlibs.libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
   , ("git-annex", gitAnnexHook)
@@ -45,7 +45,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
-  , ("X11", over (libraryDepends . system) (Set.union (pkgs ["libXinerama","libXext","libXrender"])))
+  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xlibs.libXinerama","pkgs.xlibs.libXext","pkgs.xlibs.libXrender"])))
   ]
 
 pkg :: Identifier -> Binding
