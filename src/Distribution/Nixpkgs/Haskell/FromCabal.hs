@@ -61,7 +61,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & configureFlags .~ mempty
     & cabalFlags .~ flags
     & runHaddock .~ True
-    & jailbreak .~ not (null mismatchedDeps)
+    & jailbreak .~ (not (null mismatchedDeps && null missingDeps))
     & doCheck .~ True
     & testTarget .~ mempty
     & hyperlinkSource .~ True
