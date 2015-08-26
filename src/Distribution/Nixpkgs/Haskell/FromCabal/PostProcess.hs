@@ -50,7 +50,7 @@ hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ sh
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
-  , ("thyme", set (libraryDepends . tool . contains (pkg "cpphs")) True) -- required on Darwin
+  , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
