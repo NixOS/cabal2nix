@@ -3,32 +3,34 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription, fromPackageDescription ) where
 
+import Control.Arrow ( second )
+import Data.Maybe
+import qualified Data.Set as Set
+import Data.Set ( Set )
+import Distribution.Compiler
+import Distribution.Nixpkgs.Haskell
+import qualified Distribution.Nixpkgs.Haskell as Nix
+import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal.License
 import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
 import Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
-import Internal.Lens
-import Data.Maybe
-import qualified Data.Set as Set
-import Distribution.Version
-import Distribution.Compiler
-import qualified Distribution.PackageDescription as Cabal
-import Distribution.Nixpkgs.Haskell
-import qualified Distribution.Nixpkgs.Haskell as Nix
 import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
+import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration
 import Distribution.System
-import Language.Nix
-import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Text ( display )
+import Distribution.Version
+import Internal.Lens
+import Language.Nix
 
 type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
 fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo ->  FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
-fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints descr' =
+fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints descr'' =
   case finalize haskellResolver of
     Left mismatch -> case finalize jailbrokenResolver of
                        Left missing -> case finalize (const True) of
@@ -46,6 +48,17 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
 
     jailbrokenResolver :: HaskellResolver
     jailbrokenResolver (Dependency pkg _) = haskellResolver (Dependency pkg anyVersion)
+
+    -- A variant of the cabal file that has all test suites enabled to ensure
+    -- that their dependencies are recognized by finalizePackageDescription.
+    descr' :: GenericPackageDescription
+    descr' = descr'' { condTestSuites = flaggedTests }
+
+    flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
+    flaggedTests = map (second (mapTreeData enableTest)) (condTestSuites descr'')
+
+    enableTest :: TestSuite -> TestSuite
+    enableTest t = t { testEnabled = True }
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
 fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ def
