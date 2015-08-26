@@ -4,7 +4,6 @@
 module Language.Nix.Binding ( Binding, binding, localName, reference ) where
 
 import Control.DeepSeq.Generics
-import Data.String
 import GHC.Generics ( Generic )
 import Internal.Lens
 import Internal.PrettyPrinting
@@ -18,9 +17,6 @@ makeLenses ''Binding
 
 binding :: Lens' Binding (Identifier,Path)
 binding f (Bind l r) = uncurry Bind `fmap` f (l, r)
-
-instance IsString Binding where  -- TODO: This instance feels dangerous!
-  fromString s = Bind i (create path [i]) where i = fromString s
 
 instance NFData Binding where rnf = genericRnf
 

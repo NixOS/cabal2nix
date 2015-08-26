@@ -2,14 +2,16 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
-import Control.Lens
+import Internal.Lens
 import Data.Maybe
+import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell
 import Distribution.Package
 import Distribution.Text
 import Distribution.Version
-import Language.Nix ( )  -- IsString instance for Binding
+import Language.Nix
+import Data.List.Split
 
 postProcess :: Derivation -> Derivation
 postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
@@ -21,30 +23,42 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ (`Set.difference` buildDeps
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ show str)) (simpleParse str))
-  [ ("Agda", set (executableDepends . tool . contains "emacs") True . set phaseOverrides agdaPostInstall)
+  [ ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
-  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList ["libXext", "libXfixes"])))
+  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [pkg "libXext", pkg "libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
   , ("git-annex", gitAnnexHook)
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
-  , ("github-backup", set (executableDepends . tool . contains "git") True)
-  , ("GlomeVec", set (libraryDepends . pkgconfig . contains "llvm") True)
-  , ("gtk3", set (libraryDepends . pkgconfig . contains "gtk3") True) -- https://github.com/NixOS/cabal2nix/issues/145
-  , ("imagemagick", set (libraryDepends . pkgconfig . contains "imagemagick") True) -- https://github.com/NixOS/cabal2nix/issues/136
-  , ("jsaddle", set (dependencies . haskell . contains "ghcjs-base") False)
-  , ("mysql", set (libraryDepends . system . contains "mysql") True)
-  , ("pango", set (libraryDepends . haskell . contains "cairo") True)
-  , ("readline", over (libraryDepends . system) (Set.union (Set.fromList ["readline", "ncurses"])))
-  , ("terminfo", set (libraryDepends . system . contains "ncurses") True)
-  , ("thyme", set (libraryDepends . tool . contains "cpphs") True) -- required on Darwin
+  , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
+  , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
+  , ("gtk3", set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True) -- https://github.com/NixOS/cabal2nix/issues/145
+  , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
+  , ("jsaddle", set (dependencies . haskell . contains (pkg "ghcjs-base")) False)
+  , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
+  , ("pango", set (libraryDepends . haskell . contains (pkg "cairo")) True)
+  , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
+  , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
+  , ("thyme", set (libraryDepends . tool . contains (pkg "cpphs")) True) -- required on Darwin
   , ("monad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
-  , ("wxcore", set (libraryDepends . pkgconfig . contains "wxGTK") True)
-  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList ["libXinerama","libXext","libXrender"])))
+  , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
+  , ("X11", over (libraryDepends . system) (Set.union (pkgs ["libXinerama","libXext","libXrender"])))
   ]
+
+pkg :: Identifier -> Binding
+pkg i = create binding (i, create path ["pkgs",i])
+
+pkgs :: [Identifier] -> Set Binding
+pkgs = Set.fromList . map pkg
+
+bind :: String -> Binding
+bind s = create binding (i, create path is)
+  where
+    is = map (create ident) (splitOn "." s)
+    i = last is
 
 gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . system) (Set.union buildInputs)
@@ -55,7 +69,7 @@ gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . 
       , "installPhase = \"make PREFIX=$out CABAL=./Setup install\";"
       , "checkPhase = \"./git-annex test\";"
       ]
-    buildInputs = Set.fromList ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
+    buildInputs = pkgs ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
 
 hfusePreConfigure :: String
 hfusePreConfigure = unlines
@@ -79,8 +93,8 @@ gfPhaseOverrides = unlines
   ]
 
 wxcHook :: Derivation -> Derivation
-wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList ["mesa", "libX11"])
-                  & libraryDepends . pkgconfig . contains "wxGTK" .~ True
+wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "mesa", pkg "libX11"])
+                  & libraryDepends . pkgconfig . contains (pkg "wxGTK") .~ True
                   & phaseOverrides .~ wxcPostInstall (packageVersion drv)
                   & runHaddock .~ False
   where
