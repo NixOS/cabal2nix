@@ -166,7 +166,9 @@ generatePackageSet config hackage nixpkgs = do
                                                          else drv'^.metaSection.hydraPlatforms)
 
           isFromHackage :: Binding -> Bool
-          isFromHackage b = ["self"] `isPrefixOf` view (reference . path) b
+          isFromHackage b = case view (reference . path) b of
+                              ["self",_] -> True
+                              _ -> False
 
           overrides :: Doc
           overrides = fcat $ punctuate space
