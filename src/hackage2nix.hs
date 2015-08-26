@@ -4,6 +4,7 @@
 module Main ( main ) where
 
 import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
+import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import Distribution.Nixpkgs.Haskell.FromCabal.HackageGit ( readHackage, Hackage )
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
@@ -143,8 +144,11 @@ generatePackageSet config hackage nixpkgs = do
       let -- TODO: Include list of broken dependencies in the generated output.
           descr = hackage Map.! name Map.! pkgversion
 
+          flagAssignment :: FlagAssignment
+          flagAssignment = configureCabalFlags (packageId descr)
+
           drv' :: Derivation
-          drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver (platform ghc7102) (compilerInfo ghc7102) [] [] descr
+          drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver (platform ghc7102) (compilerInfo ghc7102) flagAssignment [] descr
 
           attr :: String
           attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == pkgversion = name
