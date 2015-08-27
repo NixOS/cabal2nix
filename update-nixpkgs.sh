@@ -20,8 +20,12 @@ export NIX_PATH=nixpkgs=$PWD
 cd ..
 
 cd hackage
-# git reset -q --hard
 git pull -q
+rm -f preferred-versions
+for n in */preferred-versions; do
+  cat >>preferred-versions "$n"
+  echo >>preferred-versions
+done
 DIR=$HOME/.cabal/packages/hackage.haskell.org
 TAR=$DIR/00-index.tar
 TARGZ=$TAR.gz
