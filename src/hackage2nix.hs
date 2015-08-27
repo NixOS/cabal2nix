@@ -186,6 +186,7 @@ readPreferredVersions :: FilePath -> IO [Constraint]
 readPreferredVersions p = mapMaybe parsePreferredVersionsLine . lines <$> readFile p
 
 parsePreferredVersionsLine :: String -> Maybe Constraint
+parsePreferredVersionsLine [] = Nothing
 parsePreferredVersionsLine ('-':'-':_) = Nothing
 parsePreferredVersionsLine l = case simpleParse l of
                                  Just c -> Just c
