@@ -54,6 +54,7 @@ resolveConstraint' (Dependency (PackageName name) vrange) hackage | Set.null vs 
 
 data Options = Options
   { hackageRepository :: FilePath
+  , preferredVersionsFile :: Maybe FilePath
   , nixpkgsRepository :: FilePath
   }
   deriving (Show)
@@ -61,6 +62,7 @@ data Options = Options
 options :: Parser Options
 options = Options
           <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault <> metavar "PATH")
+          <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
           <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefault <> metavar "PATH")
 
 pinfo :: ParserInfo Options
@@ -79,7 +81,7 @@ main = do
 
   hackage <- readHackage hackageRepository
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository Nothing
-  preferredVersions <- readPreferredVersions (hackageRepository </> "preferred-versions")
+  preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
