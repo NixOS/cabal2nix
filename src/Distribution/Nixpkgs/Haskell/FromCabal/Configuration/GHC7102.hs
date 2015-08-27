@@ -13,7 +13,6 @@ ghc7102 = Configuration
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "HUnit < 1.3.0.0"         -- newer versions break test-framework-hunit-0.3.0.1
-    , "cabal-helper < 0.5.2.0 || > 0.5.2.0" -- 0.5.2.0 is deprecated, but https://github.com/commercialhaskell/all-cabal-files/blob/hackage/preferred-versions doesn't know it yet
     ]
 
   , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
