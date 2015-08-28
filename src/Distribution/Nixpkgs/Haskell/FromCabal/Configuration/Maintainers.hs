@@ -11,9 +11,9 @@ globalPackageMaintainers = Map.unionsWith Set.union [ Map.singleton p (Set.singl
 maintainedPackages :: [(Identifier, [PackageName])]
 maintainedPackages =
   [ "simons" |->
-       [ "archlinux", "cabal2arch", "cabal2nix", "funcmp", "hackage-db", "halipeto"
-       , "hledger-interest", "hopenssl", "hsdns", "hsemail", "hsyslog", "jailbreak-cabal"
-       , "language-nix", "streamproc"
+       [ "cabal2nix", "funcmp", "hackage-db", "hledger-interest", "hopenssl"
+       , "hsdns", "hsemail", "hsyslog", "jailbreak-cabal", "language-nix"
+       , "streamproc"
        ]
   , "gebner" |-> [ "hledger-diff" ]
   ]
