@@ -6,7 +6,6 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Haskell
-import Distribution.Nixpkgs.Haskell.FromCabal.CorePackages
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
@@ -27,7 +26,6 @@ normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo (PackageName pname) bi = bi
   & haskell %~ Set.filter (\b -> view localName b /= fromString pname)
   & tool %~ Set.filter (\b -> view localName b /= fromString pname)
-  & tool %~ Set.filter (\n -> n^.localName.ident `notElem` coreBuildTools)
 
   {-
   {

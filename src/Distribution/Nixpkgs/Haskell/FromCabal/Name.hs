@@ -166,7 +166,9 @@ libNixName x                                    = return (fromString x)
 buildToolNixName :: String -> [Identifier]
 buildToolNixName ""                             = return (error "buildToolNixName: invalid empty dependency name")
 buildToolNixName "cabal"                        = return "cabal-install"
+buildToolNixName "ghc"                          = []
 buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
+buildToolNixName "hsc2hs"                       = []
 buildToolNixName x                              = return (fromString x)
