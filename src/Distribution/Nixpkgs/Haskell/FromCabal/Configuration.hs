@@ -38,9 +38,9 @@ data Configuration = Configuration
   -- role during dependency resolution.
   , extraPackages :: [Constraint]
 
-  -- |These packages have not succeeded a build yet, so we give them an
-  -- empty meta.hydraPlatforms attribute to avoid cluttering our Hydra
-  -- output with lots of broken builds.
-  , brokenPackages :: Set PackageName
+  -- |We know that these packages won't build, so we give them an empty
+  -- meta.hydraPlatforms attribute to avoid cluttering our Hydra output with
+  -- lots of failure messages.
+  , dontDistributePackages :: Set PackageName
   }
   deriving (Show)

@@ -72,7 +72,7 @@ ghc7102 = Configuration
     , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
-  , brokenPackages = Set.fromList $ map PackageName
+  , dontDistributePackages = Set.fromList $ map PackageName
     [ "3dmodels"
     , "4Blocks"
     , "abcBridge"
