@@ -5,6 +5,7 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
   , module Distribution.Compiler
   , module Distribution.Nixpkgs.Haskell.Constraint
   , module Distribution.Version
+  , module Language.Nix.Identifier
   ) where
 
 import Data.Set
@@ -13,6 +14,8 @@ import Distribution.System
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Version
+import Data.Map
+import Language.Nix.Identifier
 
 data Configuration = Configuration
   {
@@ -42,5 +45,9 @@ data Configuration = Configuration
   -- meta.hydraPlatforms attribute to avoid cluttering our Hydra output with
   -- lots of failure messages.
   , dontDistributePackages :: Set PackageName
+
+  -- |This information is used by the @hackage2nix@ utility to determine the
+  -- 'maintainers' for a given Haskell package.
+  , packageMaintainers :: Map PackageName (Set Identifier)
   }
   deriving (Show)

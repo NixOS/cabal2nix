@@ -38,8 +38,8 @@ instance NFData BuildInfo where rnf = genericRnf
 
 pPrintBuildInfo :: String -> BuildInfo -> Doc
 pPrintBuildInfo prefix bi = vcat
-  [ setattr (prefix++"HaskellDepends") (setOf (haskell.folded.localName.ident) bi)
-  , setattr (prefix++"SystemDepends")  (setOf (system.folded.localName.ident) bi)
-  , setattr (prefix++"PkgconfigDepends") (setOf (pkgconfig.folded.localName.ident) bi)
-  , setattr (prefix++"ToolDepends") (setOf (tool.folded.localName.ident) bi)
+  [ setattr (prefix++"HaskellDepends") empty (setOf (haskell.folded.localName.ident) bi)
+  , setattr (prefix++"SystemDepends")  empty (setOf (system.folded.localName.ident) bi)
+  , setattr (prefix++"PkgconfigDepends") empty (setOf (pkgconfig.folded.localName.ident) bi)
+  , setattr (prefix++"ToolDepends") empty (setOf (tool.folded.localName.ident) bi)
   ]

@@ -12,7 +12,6 @@ import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
 import Internal.Lens
-import Internal.Regex ( regsubmatch )
 import Language.Nix hiding ( quote )
 
 normalize :: Derivation -> Derivation
@@ -41,7 +40,6 @@ normalizeBuildInfo (PackageName pname) bi = bi
 
 normalizeMeta :: Meta -> Meta
 normalizeMeta = over description normalizeSynopsis
-              . over maintainers normalizeMaintainers
               . over platforms normalizePlatforms
 
 normalizeSynopsis :: String -> String
@@ -67,19 +65,6 @@ normalizeSet = Set.filter (not . null)
 
 -- normalizeNixBuildTools :: Set Identifier -> Set Identifier
 -- normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName . Set.toList
-
--- |Strip any kind of path prefix from maintainer names, filter duplicates, and
--- sort the resulting list alphabetically.
---
--- >>> normalizeMaintainers $ Set.fromList ["self.stdenv.lib.maintainers.foobar", "foobar"]
--- fromList ["foobar"]
---
--- >>> normalizeMaintainers $ Set.fromList ["any.prefix.is.recognized.yo", "abc.def"]
--- fromList ["def","yo"]
-
-normalizeMaintainers :: Set String -> Set String
-normalizeMaintainers = normalizeSet . Set.map
-  (\m -> (m `regsubmatch` "^([^.].*\\.)?([^.]+)$") !! 1)
 
 normalizePlatforms :: Set String -> Set String
 normalizePlatforms = normalizeSet . Set.map

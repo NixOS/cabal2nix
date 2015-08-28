@@ -38,8 +38,8 @@ listattr n prefix vs = onlyIf (not (null vs)) $
                       rbrack <> semi
                     ]
 
-setattr :: String -> Set String -> Doc
-setattr name set = listattr name empty (toAscList set)
+setattr :: String -> Doc -> Set String -> Doc
+setattr name prefix set = listattr name prefix (toAscList set)
 
 toAscList :: Set String -> [String]
 toAscList = sortBy (compare `on` map toLower) . Set.toList

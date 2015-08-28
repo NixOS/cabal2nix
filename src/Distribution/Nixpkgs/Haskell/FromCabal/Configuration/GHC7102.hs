@@ -1,8 +1,11 @@
-module Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102 ( Configuration(..), ghc7102 ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
+  ( Configuration(..), ghc7102
+  ) where
 
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
 import Distribution.Text ( simpleParse )
 
 ghc7102 :: Configuration
@@ -10,6 +13,8 @@ ghc7102 = Configuration
   { platform = Platform X86_64 Linux
 
   , compilerInfo = unknownCompilerInfo (CompilerId GHC (Version [7,10,2] [])) NoAbiTag
+
+  , packageMaintainers = globalPackageMaintainers
 
   , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
     [ "HUnit < 1.3.0.0"         -- newer versions break test-framework-hunit-0.3.0.1
@@ -3676,4 +3681,4 @@ ghc7102 = Configuration
     , "wai-middleware-metrics"
     ]
 
-}
+  }

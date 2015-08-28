@@ -13,12 +13,13 @@ module Distribution.Nixpkgs.Meta
 
 
 import Control.DeepSeq.Generics
-import Internal.Lens
-import Distribution.Nixpkgs.License
-import Internal.PrettyPrinting
-import GHC.Generics ( Generic )
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Distribution.Nixpkgs.License
+import GHC.Generics ( Generic )
+import Internal.Lens
+import Internal.PrettyPrinting
+import Language.Nix.Identifier
 
 -- | A representation of the @meta@ section used in Nix expressions.
 --
@@ -41,13 +42,13 @@ import qualified Data.Set as Set
 -- but no parsing as of now!
 
 data Meta = Meta
-  { _homepage       :: String      -- ^ URL of the package homepage
-  , _description    :: String      -- ^ short description of the package
-  , _license        :: License     -- ^ licensing terms
-  , _platforms      :: Set String  -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
-  , _hydraPlatforms :: Set String  -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
-  , _maintainers    :: Set String  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
-  , _broken         :: Bool        -- ^ set to @true@ if the build is known to fail
+  { _homepage       :: String           -- ^ URL of the package homepage
+  , _description    :: String           -- ^ short description of the package
+  , _license        :: License          -- ^ licensing terms
+  , _platforms      :: Set String       -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
+  , _hydraPlatforms :: Set String       -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
+  , _maintainers    :: Set Identifier   -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
+  , _broken         :: Bool             -- ^ set to @true@ if the build is known to fail
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -64,7 +65,7 @@ instance Pretty Meta where
       [ text "platforms" <+> equals, renderPlatformList (Set.toAscList _platforms) ]
     , onlyIf (not (Set.null _hydraPlatforms)) $ sep
       [ text "hydraPlatforms" <+> equals, renderPlatformList (Set.toAscList _hydraPlatforms) ]
-    , listattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.toAscList _maintainers)
+    , setattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.map (view ident) _maintainers)
     , boolattr "broken" _broken _broken
     ]
 

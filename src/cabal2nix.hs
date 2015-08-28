@@ -107,7 +107,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & hyperlinkSource .~ optHyperlinkSource
               & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
               & enableExecutableProfiling .~ (fromMaybe False optEnableProfiling || optEnableExecutableProfiling)
-              & metaSection.maintainers .~ Set.fromList optMaintainer
+              & metaSection.maintainers .~ Set.fromList (map (create ident) optMaintainer)
               & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
               & extraFunctionArgs . contains "stdenv" .~ True
