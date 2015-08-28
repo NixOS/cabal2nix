@@ -15,6 +15,7 @@ maintainedPackages =
        , "hledger-interest", "hopenssl", "hsdns", "hsemail", "hsyslog", "jailbreak-cabal"
        , "language-nix", "streamproc"
        ]
+  , "gebner" |-> [ "hledger-diff" ]
   ]
 
 (|->) :: String -> [String] -> (Identifier,[PackageName])
