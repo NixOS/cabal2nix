@@ -7,3 +7,5 @@ module Language.Nix
 import Language.Nix.Identifier
 import Language.Nix.Path
 import Language.Nix.Binding
+
+{-# ANN module "HLint: ignore Use import/export shortcut" #-}

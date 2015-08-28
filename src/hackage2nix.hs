@@ -44,13 +44,12 @@ type PackageSet = Map String Version
 type PackageMultiSet = Map String (Set Version)
 
 resolveConstraint :: Constraint -> Hackage -> Version
-resolveConstraint c = fromMaybe (error ("constraint " ++ display c ++ " cannot be resolved in Hackage")) .
-                        resolveConstraint' c
+resolveConstraint c = fromMaybe (error msg) . resolveConstraint' c
+  where msg = "constraint " ++ display c ++ " cannot be resolved in Hackage"
 
 resolveConstraint' :: Constraint -> Hackage -> Maybe Version
-resolveConstraint' (Dependency (PackageName name) vrange) hackage | Set.null vs = Nothing
-                                                                  | otherwise   = Just (Set.findMax vs)
-  where vs = Set.filter (`withinRange` vrange) (Map.keysSet (hackage Map.! name))
+resolveConstraint' (Dependency (PackageName name) vrange) hackage =
+  Set.findMax . Set.filter (`withinRange` vrange) . Map.keysSet <$> Map.lookup name hackage
 
 data Options = Options
   { hackageRepository :: FilePath
@@ -191,6 +190,4 @@ readPreferredVersions p = mapMaybe parsePreferredVersionsLine . lines <$> readFi
 parsePreferredVersionsLine :: String -> Maybe Constraint
 parsePreferredVersionsLine [] = Nothing
 parsePreferredVersionsLine ('-':'-':_) = Nothing
-parsePreferredVersionsLine l = case simpleParse l of
-                                 Just c -> Just c
-                                 Nothing -> error ("invalid preferred-versions line: " ++ show l)
+parsePreferredVersionsLine l = simpleParse l `mplus` error ("invalid preferred-versions line: " ++ show l)

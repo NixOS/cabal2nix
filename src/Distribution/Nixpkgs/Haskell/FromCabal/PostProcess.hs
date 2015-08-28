@@ -4,7 +4,6 @@ module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
 import Internal.Lens
 import Data.Set.Lens
-import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell

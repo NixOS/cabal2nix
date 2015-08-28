@@ -51,3 +51,5 @@ data Configuration = Configuration
   , packageMaintainers :: Map PackageName (Set Identifier)
   }
   deriving (Show)
+
+{-# ANN module "HLint: ignore Use import/export shortcut" #-}
