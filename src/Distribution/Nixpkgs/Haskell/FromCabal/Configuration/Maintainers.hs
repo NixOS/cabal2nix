@@ -16,6 +16,7 @@ maintainedPackages =
        , "streamproc"
        ]
   , "gebner" |-> [ "hledger-diff" ]
+  , "jb55" |-> [ "pipes-csv", "pipes-mongodb", "cased" ]
   , "psibi" |-> [ "shakespeare", "path-pieces", "persistent", "persistent-mysql"
                 , "persistent-postgresql", "persistent-sqlite", "persistent-redis"
                 , "persistent-mongoDB", "persistent-template", "persistent-zookeeper"]
