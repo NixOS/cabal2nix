@@ -2,7 +2,7 @@ module Internal.HaskellPackage
   ( Package(..), getPackage, sourceFromHackage
   ) where
 
-import qualified Distribution.Nixpkgs.Haskell.FromCabal.Hackage as DB
+import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class

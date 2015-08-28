@@ -5,7 +5,7 @@ module Main ( main ) where
 
 import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
-import Distribution.Nixpkgs.Haskell.FromCabal.HackageGit ( readHackage, Hackage )
+import Distribution.Nixpkgs.Haskell.HackageGit ( readHackage, Hackage )
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
 import Internal.HaskellPackage
