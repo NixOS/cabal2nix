@@ -16,6 +16,9 @@ maintainedPackages =
        , "streamproc"
        ]
   , "gebner" |-> [ "hledger-diff" ]
+  , "psibi" |-> [ "shakespeare", "path-pieces", "persistent", "persistent-mysql"
+                , "persistent-postgresql", "persistent-sqlite", "persistent-redis"
+                , "persistent-mongoDB", "persistent-template", "persistent-zookeeper"]
   ]
 
 (|->) :: String -> [String] -> (Identifier,[PackageName])
