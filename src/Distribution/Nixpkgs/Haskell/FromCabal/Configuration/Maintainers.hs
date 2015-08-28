@@ -16,6 +16,7 @@ maintainedPackages =
        , "streamproc"
        ]
   , "gebner" |-> [ "hledger-diff" ]
+  , "jb55" |-> [ "pipes-csv", "pipes-mongodb", "cased" ]
   ]
 
 (|->) :: String -> [String] -> (Identifier,[PackageName])
