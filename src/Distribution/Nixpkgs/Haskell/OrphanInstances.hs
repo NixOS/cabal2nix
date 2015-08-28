@@ -1,16 +1,19 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
 
 import Control.DeepSeq.Generics
+import Data.Maybe
+import Data.String
 import Distribution.Compiler
 import Distribution.License
 import Distribution.ModuleName hiding ( main )
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.System
+import Distribution.Text
 import Distribution.Version
 import GHC.Generics ( Generic )
 import Language.Haskell.Extension
@@ -53,3 +56,15 @@ instance NFData TestSuiteInterface where rnf = genericRnf
 instance NFData TestType where rnf = genericRnf
 instance NFData VersionRange where rnf = genericRnf
 instance NFData a => NFData (Condition a) where rnf = genericRnf
+
+instance IsString PackageName where
+  fromString = text2isString "PackageName"
+
+instance IsString PackageIdentifier where
+  fromString = text2isString "PackageIdentifier"
+
+instance IsString Dependency where
+  fromString = text2isString "Dependency"
+
+text2isString :: Text a => String -> String -> a
+text2isString t s = fromMaybe (error ("fromString: " ++ show s ++ " is not a valid " ++ t)) (simpleParse s)

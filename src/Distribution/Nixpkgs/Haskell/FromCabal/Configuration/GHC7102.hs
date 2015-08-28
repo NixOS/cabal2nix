@@ -1,12 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
   ( Configuration(..), ghc7102
   ) where
 
-import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
-import Distribution.Text ( simpleParse )
 
 ghc7102 :: Configuration
 ghc7102 = Configuration
@@ -16,11 +16,11 @@ ghc7102 = Configuration
 
   , packageMaintainers = globalPackageMaintainers
 
-  , defaultPackageOverrides = map (\s -> fromMaybe (error (show s ++ " is not a valid override selector")) (simpleParse s))
+  , defaultPackageOverrides =
     [ "HUnit < 1.3.0.0"         -- newer versions break test-framework-hunit-0.3.0.1
     ]
 
-  , corePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
+  , corePackages =
     [ "Cabal-1.22.4.0"
     , "array-0.5.1.0"
     , "base-4.8.1.0"
@@ -45,13 +45,13 @@ ghc7102 = Configuration
     , "xhtml-3000.2.1"
     ]
 
-  , hardCorePackages = map (\s -> fromMaybe (error (show s ++ " is not a valid core package")) (simpleParse s))
+  , hardCorePackages =
     [ "bin-package-db-0.0.0.0"
     , "ghc-7.10.2"
     , "rts-1.0"
     ]
 
-  , extraPackages = map (\s -> fromMaybe (error (show s ++ " is not a valid extra package selector")) (simpleParse s))
+  , extraPackages =
     [ "aeson < 0.8"                     -- newer versions don't work with GHC 6.12.3
     , "Cabal == 1.18.*"                 -- required for cabal-install et al on old GHC versions
     , "Cabal == 1.20.*"                 -- required for cabal-install et al on old GHC versions
@@ -77,7 +77,7 @@ ghc7102 = Configuration
     , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
-  , dontDistributePackages = Set.fromList $ map PackageName
+  , dontDistributePackages = Set.fromList
     [ "3dmodels"
     , "4Blocks"
     , "abcBridge"

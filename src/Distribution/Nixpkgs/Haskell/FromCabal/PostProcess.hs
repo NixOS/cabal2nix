@@ -32,7 +32,7 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
     buildDeps = Set.delete myName (setOf (dependencies . haskell . folded . localName) drv)
 
 hooks :: [(Dependency, Derivation -> Derivation)]
-hooks = over (mapped._1) (\str -> fromMaybe (error ("invalid constraint: " ++ show str)) (simpleParse str))
+hooks =
   [ ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xlibs.libXext", bind "pkgs.xlibs.libXfixes"])))

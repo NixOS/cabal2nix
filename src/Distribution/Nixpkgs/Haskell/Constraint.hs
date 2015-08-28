@@ -4,6 +4,7 @@ module Distribution.Nixpkgs.Haskell.Constraint
 
 import Distribution.Package
 import Distribution.Version
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 
 type Constraint = Dependency
 
