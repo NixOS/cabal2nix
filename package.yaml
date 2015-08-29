@@ -1,0 +1,91 @@
+name:                   cabal2nix
+version:                2015.8.29
+synopsis:               Convert Cabal files into Nix build instructions.
+description:            Convert Cabal files into Nix build instructions.
+maintainer:             Peter Simons <simons@cryp.to>
+license:                BSD3
+github:                 nixos/cabal2nix
+category:               Distribution
+
+ghc-options:            -Wall
+
+dependencies:
+ - base < 5
+ - Cabal >= 1.22.2
+ - SHA
+ - aeson
+ - ansi-wl-pprint
+ - base < 5
+ - bytestring
+ - containers
+ - data-default
+ - deepseq
+ - deepseq-generics
+ - directory
+ - doctest
+ - filepath
+ - hackage-db
+ - hspec
+ - lens
+ - monad-par
+ - monad-par-extras
+ - mtl
+ - optparse-applicative
+ - pretty >= 1.1.2
+ - process
+ - regex-posix
+ - split
+ - transformers
+ - utf8-string
+
+library:
+  source-dirs:       src
+  exposed-modules:
+    - Distribution.Nixpkgs.Fetch
+    - Distribution.Nixpkgs.Haskell
+    - Distribution.Nixpkgs.Haskell.BuildInfo
+    - Distribution.Nixpkgs.Haskell.Constraint
+    - Distribution.Nixpkgs.Haskell.Derivation
+    - Distribution.Nixpkgs.Haskell.FromCabal
+    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration
+    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
+    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
+    - Distribution.Nixpkgs.Haskell.FromCabal.Flags
+    - Distribution.Nixpkgs.Haskell.FromCabal.License
+    - Distribution.Nixpkgs.Haskell.FromCabal.Name
+    - Distribution.Nixpkgs.Haskell.FromCabal.Normalize
+    - Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
+    - Distribution.Nixpkgs.Haskell.Hackage
+    - Distribution.Nixpkgs.Haskell.HackageGit
+    - Distribution.Nixpkgs.Haskell.OrphanInstances
+    - Distribution.Nixpkgs.License
+    - Distribution.Nixpkgs.Meta
+    - Distribution.Nixpkgs.PackageMap
+    - Internal.HaskellPackage
+    - Internal.Lens
+    - Internal.PrettyPrinting
+    - Language.Nix
+    - Language.Nix.Binding
+    - Language.Nix.Identifier
+    - Language.Nix.Path
+
+executables:
+  cabal2nix:
+    main:               Main.hs
+    source-dirs:        cabal2nix
+    dependencies:       cabal2nix
+
+  hackage2nix:
+    main:               Main.hs
+    source-dirs:        hackage2nix
+    dependencies:       cabal2nix
+    ghc-options:
+     - -threaded
+     - -rtsopts
+     - -with-rtsopts=-N
+
+tests:
+  spec:
+    main:               Main.hs
+    source-dirs:        test
+    dependencies:       cabal2nix

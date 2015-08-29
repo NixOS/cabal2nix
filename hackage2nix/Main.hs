@@ -31,7 +31,7 @@ import Distribution.Package
 import Distribution.Version
 import Internal.Lens
 import Internal.PrettyPrinting hiding ( attr, (<>) )
-import Internal.Version
+import Paths_cabal2nix
 import Language.Nix
 import Options.Applicative
 import System.FilePath
@@ -67,7 +67,7 @@ options = Options
 pinfo :: ParserInfo Options
 pinfo = info
         (   helper
-        <*> infoOption ("hackage2nix " ++ version) (long "version" <> help "Show version number")
+        <*> infoOption ("hackage2nix " ++ display version) (long "version" <> help "Show version number")
         <*> options
         )
         (  fullDesc

@@ -36,7 +36,6 @@ gzip -k "$TAR"
 hackage=$(git rev-parse --verify HEAD)
 cd ..
 
-rm -f cabal2nix
 make --quiet configure
 cabal run -v0 -j hackage2nix >hackage-packages.nix
 

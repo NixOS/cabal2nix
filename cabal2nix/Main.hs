@@ -13,9 +13,10 @@ import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
+import Distribution.Text ( display )
 import Internal.HaskellPackage
 import Internal.Lens
-import Internal.Version
+import Paths_cabal2nix
 import Internal.PrettyPrinting hiding ( (<>) )
 import Language.Nix
 import Options.Applicative
@@ -63,7 +64,7 @@ options = Options
 pinfo :: ParserInfo Options
 pinfo = info
         (   helper
-        <*> infoOption ("cabal2nix " ++ version) (long "version" <> help "Show version number")
+        <*> infoOption ("cabal2nix " ++ display version) (long "version" <> help "Show version number")
         <*> options
         )
         (  fullDesc

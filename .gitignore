@@ -3,10 +3,7 @@
 /Setup
 /Setup.hi
 /Setup.o
-/cabal2nix.cabal
 /dist/*
-/src/Internal/Version.hs
-/test/doctest.hs
 
 # vim tmp files
 

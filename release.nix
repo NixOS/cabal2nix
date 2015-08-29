@@ -13,29 +13,33 @@ in
   cabal2nix = genAttrs supportedCompilers (ghcVer: genAttrs supportedPlatforms (system:
     let
       pkgs = import <nixpkgs> { inherit system; };
-      haskellPackages = pkgs.lib.getAttrFromPath ["haskell-ng" "packages" ghcVer] pkgs;
+      haskellPackages = pkgs.lib.getAttrFromPath ["haskell" "packages" ghcVer] pkgs;
     in
     haskellPackages.mkDerivation {
       pname = "cabal2nix";
       version = cabal2nixSrc.gitTag;
       src = cabal2nixSrc;
-      isLibrary = false;
+      isLibrary = true;
       isExecutable = true;
-      preConfigure = "runhaskell $setupCompileFlags generate-cabal-file.hs >cabal2nix.cabal";
-      buildTools = with haskellPackages; [ cartel pkgs.git ];
-      buildDepends = with haskellPackages; [
-        aeson base bytestring Cabal containers deepseq deepseq-generics
-        directory filepath hackage-db monad-par monad-par-extras mtl pretty
-        process QuickCheck regex-posix SHA split transformers
-        utf8-string lens optparse-applicative data-default pretty-show
+      libraryHaskellDepends = with haskellPackages; [
+        aeson ansi-wl-pprint base bytestring Cabal containers data-default
+        deepseq deepseq-generics directory doctest filepath hackage-db
+        hspec lens monad-par monad-par-extras mtl optparse-applicative
+        pretty process regex-posix SHA split transformers utf8-string
       ];
-      testDepends = with haskellPackages; [
-        aeson base bytestring Cabal containers deepseq deepseq-generics
-        directory doctest filepath hackage-db hspec monad-par
-        monad-par-extras mtl pretty process QuickCheck pretty-show
-        regex-posix SHA split transformers utf8-string data-default
+      executableHaskellDepends = with haskellPackages; [
+        aeson ansi-wl-pprint base bytestring Cabal containers data-default
+        deepseq deepseq-generics directory doctest filepath hackage-db
+        hspec lens monad-par monad-par-extras mtl optparse-applicative
+        pretty process regex-posix SHA split transformers utf8-string
       ];
-      homepage = "http://github.com/NixOS/cabal2nix";
+      testHaskellDepends = with haskellPackages; [
+        aeson ansi-wl-pprint base bytestring Cabal containers data-default
+        deepseq deepseq-generics directory doctest filepath hackage-db
+        hspec lens monad-par monad-par-extras mtl optparse-applicative
+        pretty process regex-posix SHA split transformers utf8-string
+      ];
+      homepage = "https://github.com/nixos/cabal2nix#readme";
       description = "Convert Cabal files into Nix build instructions";
       license = pkgs.stdenv.lib.licenses.bsd3;
       maintainers = [ pkgs.stdenv.lib.maintainers.simons ];

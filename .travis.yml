@@ -1,8 +1,5 @@
 # .travis.yml
 
-git:
- depth: 50000
-
 env:
  - CABALVER=1.22 GHCVER=7.10.2
 
@@ -16,15 +13,14 @@ install:
  - cabal --version
  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
  - travis_retry cabal update
- - cabal sandbox init
- - cabal install -j cartel mtl
- - cabal exec runhaskell generate-cabal-file.hs >cabal2nix.cabal
- - cabal sandbox delete
  - cabal install -j --only-dependencies --enable-tests
 
 script:
- - cabal configure -v --enable-tests --ghc-option=-Wall --ghc-option=-Werror
+ - cabal check
+ - cabal configure
+ - cabal sdist
+ - tar xf dist/cabal2nix-*.tar.gz
+ - cd cabal2nix-*
+ - cabal configure -v --enable-tests --ghc-option=-Wall --ghc-option=-Werror --ghc-option=-j
  - cabal build -j
  - cabal test -j
- - cabal check
- - cabal sdist
