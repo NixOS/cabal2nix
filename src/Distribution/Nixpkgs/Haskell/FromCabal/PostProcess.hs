@@ -50,7 +50,7 @@ hooks =
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
-  , ("monad", set phaseOverrides xmonadPostInstall)
+  , ("xmonad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xlibs.libXinerama","pkgs.xlibs.libXext","pkgs.xlibs.libXrender"])))
