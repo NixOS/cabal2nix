@@ -1,20 +1,10 @@
 # GNUmakefile
 
-srcdir := $(PWD)
+srcdir := $(CURDIR)
 
 .PHONY: all check clean release hlint
 
-all::		lens-construction-helper/lens-construction-helper.cabal \
-		language-nix/language-nix.cabal \
-		distribution-nixpkgs/distribution-nixpkgs.cabal \
-		cabal2nix/cabal2nix.cabal \
-		hackage2nix/hackage2nix.cabal \
-		lens-construction-helper/cabal.sandbox.config \
-		language-nix/cabal.sandbox.config \
-		distribution-nixpkgs/cabal.sandbox.config \
-		cabal2nix/cabal.sandbox.config \
-		hackage2nix/cabal.sandbox.config \
-		lens-construction-helper/dist/setup-config \
+all::		lens-construction-helper/dist/setup-config \
 		language-nix/dist/setup-config \
 		distribution-nixpkgs/dist/setup-config \
 		cabal2nix/dist/setup-config \
@@ -56,7 +46,11 @@ lens-construction-helper/lens-construction-helper.cabal : lens-construction-help
 	cd $(dir $@) && hpack && cabal check
 	touch $@
 
-.sandbox/cabal.sandbox.config:
+.sandbox/cabal.sandbox.config:	lens-construction-helper/lens-construction-helper.cabal \
+				language-nix/language-nix.cabal \
+				distribution-nixpkgs/distribution-nixpkgs.cabal \
+				cabal2nix/cabal2nix.cabal \
+				hackage2nix/hackage2nix.cabal
 	mkdir $(dir $@) && cd $(dir $@) && cabal sandbox init && cabal sandbox add-source $(srcdir)/lens-construction-helper $(srcdir)/language-nix $(srcdir)/distribution-nixpkgs $(srcdir)/cabal2nix $(srcdir)/hackage2nix
 
 lens-construction-helper/cabal.sandbox.config : .sandbox/cabal.sandbox.config
