@@ -7,20 +7,14 @@ before_install:
  - travis_retry sudo add-apt-repository -y ppa:hvr/ghc
  - travis_retry sudo apt-get update
  - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER happy alex
- - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+ - export PATH=$HOME/.cabal/bin:/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
 
 install:
  - cabal --version
  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
  - travis_retry cabal update
- - cabal install -j --only-dependencies --enable-tests
+ - cabal install hpack
 
 script:
- - cabal check
- - cabal configure
- - cabal sdist
- - tar xf dist/cabal2nix-*.tar.gz
- - cd cabal2nix-*
- - cabal configure -v --enable-tests --ghc-option=-Wall --ghc-option=-Werror --ghc-option=-j
- - cabal build -j
- - cabal test -j
+ - make
+ - make check

@@ -2,47 +2,47 @@
 
 { cabal2nixSrc ? { outPath = ./.; revCount = 0; gitTag = "dirty"; }
 , releaseBuild ? false
-, supportedPlatforms ? ["x86_64-linux"] ++ (if releaseBuild then ["i686-linux" "x86_64-darwin"] else [])
-, supportedCompilers ? ["ghc7102"]
+, supportedSystems ? ["x86_64-linux"] ++ (if releaseBuild then ["i686-linux" "x86_64-darwin"] else [])
 }:
 
+with import <nixpkgs/pkgs/top-level/release-lib.nix> { inherit supportedSystems; };
+
 let
-  genAttrs = (import <nixpkgs> { }).lib.genAttrs;
+
+  overrides = self: super: {
+
+    mkDerivationFor = subdir: args: self.mkDerivation (args // {
+      src = cabal2nixSrc; version = cabal2nixSrc.gitTag;
+      postUnpack = "sourceRoot+=/${subdir}";
+    });
+
+    mkJob = path: subdir: pkgs.haskell.lib.buildStrictly (self.callPackage path { mkDerivation = self.mkDerivationFor subdir; });
+
+    lens-construction-helper = self.mkJob ./release-lens-construction-helper.nix "lens-construction-helper";
+
+    language-nix = self.mkJob ./release-language-nix.nix "language-nix";
+
+    distribution-nixpkgs = self.mkJob ./release-distribution-nixpkgs.nix "distribution-nixpkgs";
+
+    cabal2nix = self.mkJob ./release-cabal2nix.nix "cabal2nix";
+
+    hackage2nix = self.mkJob ./release-hackage2nix.nix "hackage2nix";
+
+  };
+
+  mkJob = attr: testOn supportedSystems (pkgs: ((pkgs.haskellPackages.override { inherit overrides; })).${attr});
+
 in
 {
-  cabal2nix = genAttrs supportedCompilers (ghcVer: genAttrs supportedPlatforms (system:
-    let
-      pkgs = import <nixpkgs> { inherit system; };
-      haskellPackages = pkgs.lib.getAttrFromPath ["haskell" "packages" ghcVer] pkgs;
-    in
-    haskellPackages.mkDerivation {
-      pname = "cabal2nix";
-      version = cabal2nixSrc.gitTag;
-      src = cabal2nixSrc;
-      isLibrary = true;
-      isExecutable = true;
-      libraryHaskellDepends = with haskellPackages; [
-        aeson ansi-wl-pprint base bytestring Cabal containers data-default
-        deepseq deepseq-generics directory doctest filepath hackage-db
-        hspec lens monad-par monad-par-extras mtl optparse-applicative
-        pretty process regex-posix SHA split transformers utf8-string
-      ];
-      executableHaskellDepends = with haskellPackages; [
-        aeson ansi-wl-pprint base bytestring Cabal containers data-default
-        deepseq deepseq-generics directory doctest filepath hackage-db
-        hspec lens monad-par monad-par-extras mtl optparse-applicative
-        pretty process regex-posix SHA split transformers utf8-string
-      ];
-      testHaskellDepends = with haskellPackages; [
-        aeson ansi-wl-pprint base bytestring Cabal containers data-default
-        deepseq deepseq-generics directory doctest filepath hackage-db
-        hspec lens monad-par monad-par-extras mtl optparse-applicative
-        pretty process regex-posix SHA split transformers utf8-string
-      ];
-      homepage = "https://github.com/nixos/cabal2nix#readme";
-      description = "Convert Cabal files into Nix build instructions";
-      license = pkgs.stdenv.lib.licenses.bsd3;
-      maintainers = [ pkgs.stdenv.lib.maintainers.simons ];
-    }
-  ));
+
+  lens-construction-helper = mkJob "lens-construction-helper";
+
+  language-nix = mkJob "language-nix";
+
+  distribution-nixpkgs = mkJob "distribution-nixpkgs";
+
+  cabal2nix = mkJob "cabal2nix";
+
+  hackage2nix = mkJob "hackage2nix";
+
 }

@@ -1,0 +1,67 @@
+name:                   distribution-nixpkgs
+version:                "20150830"
+synopsis:               Convert Cabal files into Nix build instructions.
+description:            Convert Cabal files into Nix build instructions.
+maintainer:             Peter Simons <simons@cryp.to>
+license:                BSD3
+github:                 nixos/cabal2nix
+category:               Distribution
+
+ghc-options:            -Wall
+
+dependencies:
+  - base < 5
+  - Cabal >= 1.22.2
+  - SHA
+  - aeson
+  - base < 5
+  - bytestring
+  - containers
+  - deepseq-generics
+  - directory
+  - filepath
+  - hackage-db
+  - lens
+  - pretty >= 1.1.2
+  - process
+  - split
+  - transformers
+  - utf8-string
+  - lens-construction-helper
+  - language-nix
+  - deepseq
+  - doctest
+  - hspec
+
+library:
+  source-dirs:       src
+  exposed-modules:
+    - Distribution.Nixpkgs.Fetch
+    - Distribution.Nixpkgs.Haskell
+    - Distribution.Nixpkgs.Haskell.BuildInfo
+    - Distribution.Nixpkgs.Haskell.Constraint
+    - Distribution.Nixpkgs.Haskell.Derivation
+    - Distribution.Nixpkgs.Haskell.FromCabal
+    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration
+    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
+    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
+    - Distribution.Nixpkgs.Haskell.FromCabal.Flags
+    - Distribution.Nixpkgs.Haskell.FromCabal.License
+    - Distribution.Nixpkgs.Haskell.FromCabal.Name
+    - Distribution.Nixpkgs.Haskell.FromCabal.Normalize
+    - Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
+    - Distribution.Nixpkgs.Haskell.Hackage
+    - Distribution.Nixpkgs.Haskell.HackageGit
+    - Distribution.Nixpkgs.Haskell.OrphanInstances
+    - Distribution.Nixpkgs.License
+    - Distribution.Nixpkgs.Meta
+    - Distribution.Nixpkgs.PackageMap
+    - Distribution.Nixpkgs.Haskell.PackageSourceSpec
+
+tests:
+  spec:
+    main: Main.hs
+    source-dirs:
+      - test
+    dependencies:
+      - distribution-nixpkgs

@@ -1,19 +1,17 @@
 # ignore build Cabal build files
 
-/Setup
-/Setup.hi
-/Setup.o
-/dist/*
+.cabal-sandbox
+Setup
+Setup.hi
+Setup.o
+add-source-timestamps
+cabal.sandbox.config
+dist
 
 # vim tmp files
 
 *.swo
 *.swp
-
-# hackage2nix ususally needs those two repositories around
-
-/hackage/*
-/nixpkgs/*
 
 # haskell-mode generates files, too
 

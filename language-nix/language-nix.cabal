@@ -1,0 +1,39 @@
+-- This file has been generated from package.yaml by hpack version 0.5.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           language-nix
+version:        20150830
+synopsis:       Data types and useful functions to represent and manipulate the Nix language.
+description:    Data types and useful functions to represent and manipulate the Nix language.
+category:       Distribution, Language
+homepage:       https://github.com/nixos/cabal2nix#readme
+bug-reports:    https://github.com/nixos/cabal2nix/issues
+maintainer:     Peter Simons <simons@cryp.to>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/nixos/cabal2nix
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base < 5
+    , deepseq-generics
+    , lens
+    , pretty >= 1.1.2
+    , regex-posix
+    , lens-construction-helper
+    , data-default-class
+  exposed-modules:
+      Language.Nix
+      Language.Nix.Binding
+      Language.Nix.Identifier
+      Language.Nix.Path
+  default-language: Haskell2010
