@@ -1,0 +1,28 @@
+name:                   language-nix
+version:                "2"
+synopsis:               Data types and useful functions to represent and manipulate the Nix language.
+description:            Data types and useful functions to represent and manipulate the Nix language.
+author:                 Peter Simons
+maintainer:             simons@cryp.to
+license:                BSD3
+github:                 nixos/cabal2nix
+category:               Distribution, Language
+
+ghc-options:            -Wall
+
+dependencies:
+  - base < 5
+  - data-default-class
+  - deepseq-generics
+  - lens
+  - lens-construction-helper
+  - pretty >= 1.1.2
+  - regex-posix
+
+library:
+  source-dirs:       src
+  exposed-modules:
+    - Language.Nix
+    - Language.Nix.Binding
+    - Language.Nix.Identifier
+    - Language.Nix.Path
