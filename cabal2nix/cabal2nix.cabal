@@ -36,4 +36,6 @@ executable cabal2nix
     , language-nix
     , distribution-nixpkgs
     , lens-construction-helper
+  other-modules:
+      Paths_cabal2nix
   default-language: Haskell2010

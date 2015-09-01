@@ -26,3 +26,5 @@ executables:
   cabal2nix:
     main:               Main.hs
     source-dirs:        src
+    other-modules:
+      - Paths_cabal2nix
