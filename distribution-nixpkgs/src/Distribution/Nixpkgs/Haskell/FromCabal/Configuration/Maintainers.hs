@@ -13,7 +13,7 @@ maintainedPackages =
   [ "simons" |->
        [ "cabal2nix", "funcmp", "hackage-db", "hledger-interest", "hopenssl"
        , "hsdns", "hsemail", "hsyslog", "jailbreak-cabal", "language-nix"
-       , "streamproc"
+       , "streamproc", "git-annex"
        ]
   , "gebner" |-> [ "hledger-diff" ]
   , "jb55" |-> [ "pipes-csv", "pipes-mongodb", "cased" ]
