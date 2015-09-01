@@ -52,6 +52,7 @@ hooks =
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
+  , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("xmonad", set phaseOverrides xmonadPostInstall)
