@@ -2,17 +2,19 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
+import Control.Lens
 import Control.Lens.Create
-import Data.Set.Lens
+import Data.List.Split
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Data.Set.Lens
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Meta
 import Distribution.Package
+import Distribution.System
 import Distribution.Text
 import Distribution.Version
 import Language.Nix
-import Data.List.Split
-import Control.Lens
 
 postProcess :: Derivation -> Derivation
 postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
@@ -38,6 +40,7 @@ hooks =
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xlibs.libXext", bind "pkgs.xlibs.libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
+  , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
   , ("git-annex", gitAnnexHook)
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
   , ("HFuse", set phaseOverrides hfusePreConfigure)
