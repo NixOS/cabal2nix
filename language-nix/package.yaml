@@ -11,12 +11,12 @@ ghc-options:            -Wall
 
 dependencies:
   - base < 5
+  - data-default-class
   - deepseq-generics
   - lens
+  - lens-construction-helper
   - pretty >= 1.1.2
   - regex-posix
-  - lens-construction-helper
-  - data-default-class
 
 library:
   source-dirs:       src

@@ -28,15 +28,15 @@ executable hackage2nix
       base < 5
     , Cabal >= 1.22.2
     , containers
+    , distribution-nixpkgs
     , filepath
+    , language-nix
     , lens
     , monad-par
     , monad-par-extras
     , mtl
     , optparse-applicative
     , pretty >= 1.1.2
-    , language-nix
-    , distribution-nixpkgs
   other-modules:
       Paths_hackage2nix
   default-language: Haskell2010

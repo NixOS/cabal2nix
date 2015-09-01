@@ -1,6 +1,7 @@
 { mkDerivation, ansi-wl-pprint, base, Cabal, containers
 , distribution-nixpkgs, language-nix, lens
-, lens-construction-helper, optparse-applicative, pretty, stdenv
+, lens-construction-helper, optparse-applicative, pretty
+, pretty-show, stdenv
 }:
 mkDerivation {
   pname = "cabal2nix";
@@ -11,7 +12,7 @@ mkDerivation {
   executableHaskellDepends = [
     ansi-wl-pprint base Cabal containers distribution-nixpkgs
     language-nix lens lens-construction-helper optparse-applicative
-    pretty
+    pretty pretty-show
   ];
   homepage = "https://github.com/nixos/cabal2nix#readme";
   description = "Convert Cabal files into Nix build instructions";

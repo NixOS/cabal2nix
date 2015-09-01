@@ -24,28 +24,27 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      base < 5
-    , Cabal >= 1.22.2
-    , SHA
-    , aeson
+      aeson
     , base < 5
     , bytestring
+    , Cabal >= 1.22.2
     , containers
+    , deepseq
     , deepseq-generics
     , directory
+    , doctest
     , filepath
     , hackage-db
+    , hspec
+    , language-nix
     , lens
+    , lens-construction-helper
     , pretty >= 1.1.2
     , process
+    , SHA
     , split
     , transformers
     , utf8-string
-    , lens-construction-helper
-    , language-nix
-    , deepseq
-    , doctest
-    , hspec
   exposed-modules:
       Distribution.Nixpkgs.Fetch
       Distribution.Nixpkgs.Haskell
@@ -60,14 +59,15 @@ library
       Distribution.Nixpkgs.Haskell.FromCabal.License
       Distribution.Nixpkgs.Haskell.FromCabal.Name
       Distribution.Nixpkgs.Haskell.FromCabal.Normalize
+      Distribution.Nixpkgs.Haskell.FromCabal.Platform
       Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
       Distribution.Nixpkgs.Haskell.Hackage
       Distribution.Nixpkgs.Haskell.HackageGit
       Distribution.Nixpkgs.Haskell.OrphanInstances
+      Distribution.Nixpkgs.Haskell.PackageSourceSpec
       Distribution.Nixpkgs.License
       Distribution.Nixpkgs.Meta
       Distribution.Nixpkgs.PackageMap
-      Distribution.Nixpkgs.Haskell.PackageSourceSpec
   other-modules:
       Internal.PrettyPrinting
   default-language: Haskell2010
@@ -79,27 +79,26 @@ test-suite spec
       test
   ghc-options: -Wall
   build-depends:
-      base < 5
-    , Cabal >= 1.22.2
-    , SHA
-    , aeson
+      aeson
     , base < 5
     , bytestring
+    , Cabal >= 1.22.2
     , containers
+    , deepseq
     , deepseq-generics
     , directory
+    , doctest
     , filepath
     , hackage-db
+    , hspec
+    , language-nix
     , lens
+    , lens-construction-helper
     , pretty >= 1.1.2
     , process
+    , SHA
     , split
     , transformers
     , utf8-string
-    , lens-construction-helper
-    , language-nix
-    , deepseq
-    , doctest
-    , hspec
     , distribution-nixpkgs
   default-language: Haskell2010
