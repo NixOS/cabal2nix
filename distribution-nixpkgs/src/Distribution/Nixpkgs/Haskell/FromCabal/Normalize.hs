@@ -1,16 +1,17 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCabalFlags ) where
 
+import Control.Lens
 import Data.Function
 import Data.List
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import Distribution.Simple.Utils ( lowercase )
 import Language.Nix hiding ( quote )
-import Control.Lens
 
 normalize :: Derivation -> Derivation
 normalize drv = drv
@@ -36,7 +37,10 @@ normalizeBuildInfo (PackageName pname) bi = bi
 -}
 
 normalizeMeta :: Meta -> Meta
-normalizeMeta = over description normalizeSynopsis
+normalizeMeta meta = meta
+  & description %~ normalizeSynopsis
+  & platforms %~ Set.intersection allPlatforms
+  & hydraPlatforms %~ Set.intersection (meta^.platforms)
 
 normalizeSynopsis :: String -> String
 normalizeSynopsis desc
