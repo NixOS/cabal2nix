@@ -1,20 +1,20 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
-  ( Configuration(..)
-  , module Distribution.Package
-  , module Distribution.System
+  ( Configuration(..), allPlatforms, linux, darwin, arch32, arch64
   , module Distribution.Compiler
   , module Distribution.Nixpkgs.Haskell.Constraint
+  , module Distribution.Package
+  , module Distribution.System
   , module Distribution.Version
   , module Language.Nix.Identifier
   ) where
 
-import Data.Set
-import Distribution.Package
-import Distribution.System
+import Data.Map as Map
+import Data.Set as Set
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.Constraint
+import Distribution.Package
+import Distribution.System
 import Distribution.Version
-import Data.Map
 import Language.Nix.Identifier
 
 data Configuration = Configuration
@@ -44,12 +44,25 @@ data Configuration = Configuration
   -- |We know that these packages won't build, so we give them an empty
   -- meta.hydraPlatforms attribute to avoid cluttering our Hydra output with
   -- lots of failure messages.
-  , dontDistributePackages :: Set PackageName
+  , dontDistributePackages :: Map PackageName (Set Platform)
 
   -- |This information is used by the @hackage2nix@ utility to determine the
   -- 'maintainers' for a given Haskell package.
   , packageMaintainers :: Map PackageName (Set Identifier)
   }
   deriving (Show)
+
+allPlatforms :: Set Platform
+allPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
+                            , Platform X86_64 (OtherOS "darwin")
+                            ]
+
+linux, darwin :: Set Platform
+linux = Set.filter (\(Platform _ os) -> os == Linux) allPlatforms
+darwin = Set.filter (\(Platform _ os) -> os == OtherOS "darwin") allPlatforms
+
+arch32, arch64 :: Set Platform
+arch32 = Set.filter (\(Platform arch _) -> arch == I386) allPlatforms
+arch64 = Set.filter (\(Platform arch _) -> arch == X86_64) allPlatforms
 
 {-# ANN module "HLint: ignore Use import/export shortcut" #-}

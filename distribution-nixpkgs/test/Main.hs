@@ -52,7 +52,7 @@ main = do
 
     describe "Configuration records are consistent" $
       it "No maintained package is marked as \"dont-distribute\"" $
-        Map.keysSet (packageMaintainers ghc7102) `Set.intersection` dontDistributePackages ghc7102 `shouldSatisfy` Set.null
+        Map.keysSet (packageMaintainers ghc7102) `Set.intersection` Map.keysSet (dontDistributePackages ghc7102) `shouldSatisfy` Set.null
 
 hitsBottom :: NFData a => a -> Expectation
 hitsBottom x = evaluate (rnf x) `shouldThrow` anyErrorCall

@@ -28,7 +28,7 @@ import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 data Options = Options
   { optSha256 :: Maybe String
   , optMaintainer :: [String]
-  , optPlatform :: [String]
+--, optPlatform :: [String]                                         -- TODO: fix command line handling of platforms
   , optHaddock :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
@@ -48,7 +48,7 @@ options :: Parser Options
 options = Options
           <$> optional (strOption $ long "sha256" <> metavar "HASH" <> help "sha256 hash of source tarball")
           <*> many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
-          <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
+--        <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
           <*> flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
           <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
@@ -110,7 +110,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
               & enableExecutableProfiling .~ (fromMaybe False optEnableProfiling || optEnableExecutableProfiling)
               & metaSection.maintainers .~ Set.fromList (map (create ident) optMaintainer)
-              & metaSection.platforms .~ Set.fromList optPlatform
+--            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
               & extraFunctionArgs . contains "stdenv" .~ True
 

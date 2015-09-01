@@ -162,12 +162,8 @@ generatePackageSet config hackage nixpkgs = do
       srcSpec <- liftIO $ sourceFromHackage (Certain sha256) (name ++ "-" ++ display pkgversion)
 
       let drv = drv' & src .~ srcSpec
-                     & metaSection.hydraPlatforms .~ (if PackageName name `Set.member` dontDistributePackages config
-                                                         then Set.singleton "stdenv.lib.platforms.none"
-                                                         else drv'^.metaSection.hydraPlatforms)
+                     & metaSection.hydraPlatforms %~ (`Set.difference` fromMaybe Set.empty (Map.lookup (PackageName name) (dontDistributePackages ghc7102)))
                      & metaSection.maintainers .~ fromMaybe Set.empty (Map.lookup (PackageName name) (packageMaintainers config))
-
-
 
           isFromHackage :: Binding -> Bool
           isFromHackage b = case view (reference . path) b of

@@ -2,7 +2,6 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCa
 
 import Data.Function
 import Data.List
-import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Haskell
@@ -38,7 +37,6 @@ normalizeBuildInfo (PackageName pname) bi = bi
 
 normalizeMeta :: Meta -> Meta
 normalizeMeta = over description normalizeSynopsis
-              . over platforms normalizePlatforms
 
 normalizeSynopsis :: String -> String
 normalizeSynopsis desc
@@ -52,8 +50,8 @@ quote ('"':cs)    = '\\' : '"' : quote cs
 quote (c:cs)      = c : quote cs
 quote []          = []
 
-normalizeSet :: Set String -> Set String
-normalizeSet = Set.filter (not . null)
+-- normalizeSet :: Set String -> Set String
+-- normalizeSet = Set.filter (not . null)
 
 -- normalizeNixNames :: Set String -> Set String
 -- normalizeNixNames = normalizeSet . Set.map toNixName
@@ -64,9 +62,9 @@ normalizeSet = Set.filter (not . null)
 -- normalizeNixBuildTools :: Set Identifier -> Set Identifier
 -- normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName . Set.toList
 
-normalizePlatforms :: Set String -> Set String
-normalizePlatforms = normalizeSet . Set.map
-  (\p -> if '.' `elem` p then p else "stdenv.lib.platforms." ++ p)
+-- normalizePlatforms :: Set String -> Set String
+-- normalizePlatforms = normalizeSet . Set.map
+--   (\p -> if '.' `elem` p then p else "stdenv.lib.platforms." ++ p)
 
 
 -- |When a flag is specified multiple times, the first occurrence

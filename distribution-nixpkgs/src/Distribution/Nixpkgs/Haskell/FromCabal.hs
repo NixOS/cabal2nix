@@ -8,13 +8,16 @@ module Distribution.Nixpkgs.Haskell.FromCabal
   where
 
 import Control.Arrow ( second )
+import Control.Lens
+import Control.Lens.Create
 import Data.Maybe
-import qualified Data.Set as Set
 import Data.Set ( Set )
+import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Distribution.Nixpkgs.Haskell.Constraint
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
 import Distribution.Nixpkgs.Haskell.FromCabal.License
 import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
@@ -28,8 +31,6 @@ import Distribution.System
 import Distribution.Text ( display )
 import Distribution.Version
 import Language.Nix
-import Control.Lens.Create
-import Control.Lens
 
 type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
@@ -94,8 +95,8 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
                      & Nix.homepage .~ homepage
                      & Nix.description .~ synopsis
                      & Nix.license .~ fromCabalLicense license
-                     & Nix.platforms .~ mempty
-                     & Nix.hydraPlatforms .~ mempty
+                     & Nix.platforms .~ allPlatforms
+                     & Nix.hydraPlatforms .~ allPlatforms
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
                      )

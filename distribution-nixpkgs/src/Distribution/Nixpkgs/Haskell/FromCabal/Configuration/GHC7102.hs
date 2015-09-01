@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
-  ( Configuration(..), ghc7102
+  ( Configuration(..), allPlatforms, ghc7102
   ) where
 
-import qualified Data.Set as Set
+import Data.Map as Map
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
 
@@ -77,3514 +77,3514 @@ ghc7102 = Configuration
     , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
-  , dontDistributePackages = Set.fromList
-    [ "3dmodels"
-    , "4Blocks"
-    , "abcBridge"
-    , "abstract-par-accelerate"
-    , "abt"                              -- depends on broken package singletons-1.1.2.1
-    , "AC-BuildPlatform"
-    , "accelerate-arithmetic"
-    , "accelerate-fftw"
-    , "accelerate-fourier"
-    , "accelerate-io"
-    , "accelerate-utility"
-    , "accentuateus"
-    , "access-time"
-    , "AC-EasyRaster-GTK"
-    , "AC-HalfInteger"
-    , "acid-state-dist"
-    , "ACME"
-    , "acme-hq9plus"
-    , "acme-inator"
-    , "acme-numbersystem"
-    , "acme-schoenfinkel"
-    , "acme-zero"
-    , "AC-MiniTest"
-    , "AC-Terminal"
-    , "ActionKid"
-    , "activehs"
-    , "actor"
-    , "AC-VanillaArray"
-    , "Adaptive"
-    , "Adaptive-Blaisorblade"
-    , "adaptive-containers"
-    , "adaptive-tuple"
-    , "adblock2privoxy"
-    , "adhoc-network"
-    , "adict"
-    , "adobe-swatch-exchange"
-    , "ADPfusion"
-    , "adp-multi"
-    , "adp-multi-monadiccp"
-    , "Advgame"
-    , "AERN-Basics"
-    , "AERN-Net"
-    , "AERN-Real"
-    , "AERN-Real-Double"
-    , "AERN-Real-Interval"
-    , "AERN-RnToRm"
-    , "AERN-RnToRm-Plot"
-    , "aeson-bson"
-    , "AesonBson"
-    , "aeson-native"
-    , "aeson-smart"
-    , "afv"
-    , "Agata"
-    , "agda-server"
-    , "AGI"
-    , "AhoCorasick"
-    , "airbrake"
-    , "aivika-transformers"
-    , "ajhc"
-    , "alea"
-    , "algebraic"
-    , "AlignmentAlgorithms"
-    , "alms"
-    , "alpha"
-    , "alpino-tools"
-    , "alsa"
-    , "alsa-midi"
-    , "alsa-pcm-tests"
-    , "alsa-seq-tests"
-    , "altfloat"
-    , "alure"
-    , "amazon-emailer"
-    , "amazon-products"
-    , "AMI"
-    , "ampersand"
-    , "anansi-pandoc"
-    , "anatomy"
-    , "android-lint-summary"
-    , "AndroidViewHierarchyImporter"
-    , "angel"
-    , "Animas"
-    , "antfarm"
-    , "anticiv"
-    , "antigate"
-    , "antimirov"
-    , "antlrc"
-    , "anydbm"
-    , "aosd"
-    , "apelsin"
-    , "apiary-helics"
-    , "apiary-purescript"
-    , "apis"
-    , "api-tools"
-    , "apotiki"
-    , "appc"
-    , "app-lens"
-    , "ApplePush"
-    , "AppleScript"
-    , "approx-rand-test"
-    , "arbb-vm"
-    , "arb-fft"
-    , "archiver"
-    , "archlinux"
-    , "archlinux-web"
-    , "arff"
-    , "argparser"
-    , "arguedit"
-    , "ariadne"
-    , "arion"
-    , "armada"
-    , "array-forth"
-    , "ArrayRef"
-    , "arrowapply-utils"
-    , "arrow-improve"
-    , "arrowp"
-    , "ArrowVHDL"
-    , "arx"
-    , "ascii85-conduit"
-    , "asic"
-    , "asil"
-    , "asn1-data"
-    , "AspectAG"
-    , "assimp"
-    , "astrds"
-    , "astview"
-    , "async-extras"
-    , "aterm-utils"
-    , "atlassian-connect-core"
-    , "atlassian-connect-descriptor"
-    , "atom-basic"
-    , "atomic-primops-vector"
-    , "atom-msp430"
-    , "atomo"
-    , "attoparsec-csv"
-    , "attoparsec-iteratee"
-    , "attoparsec-text"
-    , "attoparsec-text-enumerator"
-    , "Attrac"
-    , "atuin"
-    , "augeas"
-    , "augur"
-    , "Aurochs"
-    , "authoring"
-    , "AutoForms"
-    , "autoproc"
-    , "avahi"
-    , "avers"
-    , "AvlTree"
-    , "awesomium"
-    , "awesomium-glut"
-    , "awesomium-raw"
-    , "AWin32Console"                    -- depends on broken package Win32-2.3.1.0
-    , "aws-cloudfront-signer"
-    , "aws-configuration-tools"
-    , "aws-dynamodb-streams"
-    , "aws-ec2"
-    , "aws-elastic-transcoder"
-    , "aws-general"
-    , "aws-kinesis"
-    , "aws-kinesis-client"
-    , "aws-kinesis-reshard"
-    , "aws-lambda"
-    , "aws-performance-tests"
-    , "aws-sdk"
-    , "aws-sdk-text-converter"
-    , "aws-sdk-xml-unordered"
-    , "aws-sign4"
-    , "aws-sns"
-    , "azure-service-api"
-    , "azurify"
-    , "backdropper"
-    , "bag"
-    , "Baggins"
-    , "bamboo"
-    , "bamboo-launcher"
-    , "bamboo-plugin-highlight"
-    , "bamboo-plugin-photo"
-    , "bamboo-theme-blueprint"
-    , "bamboo-theme-mini-html5"
-    , "bamse"
-    , "barley"
-    , "Barracuda"
-    , "barrie"
-    , "barrier-monad"
-    , "baskell"
-    , "battleships"
-    , "bayes-stack"
-    , "BCMtools"
-    , "beamable"
-    , "beautifHOL"
-    , "bed-and-breakfast"
-    , "Befunge93"
-    , "bein"
-    , "berkeleydb"
-    , "BerkeleyDBXML"
-    , "berp"
-    , "bff"
-    , "bgzf"
-    , "bidirectionalization-combined"
-    , "bidispec"
-    , "billboard-parser"
-    , "billeksah-forms"
-    , "billeksah-main"
-    , "billeksah-pane"
-    , "billeksah-services"
-    , "binary-derive"
-    , "binary-file"
-    , "binary-indexed-tree"
-    , "binary-protocol-zmq"
-    , "binary-streams"
-    , "binary-strict"
-    , "binding-gtk"
-    , "bindings-apr"
-    , "bindings-apr-util"
-    , "bindings-bfd"
-    , "bindings-cctools"
-    , "bindings-codec2"
-    , "bindings-common"
-    , "bindings-dc1394"
-    , "bindings-eskit"
-    , "bindings-EsounD"
-    , "bindings-fann"
-    , "bindings-friso"
-    , "bindings-gts"
-    , "bindings-hdf5"
-    , "bindings-K8055"
-    , "bindings-libftdi"
-    , "bindings-librrd"
-    , "bindings-libstemmer"
-    , "bindings-libv4l2"
-    , "bindings-linux-videodev2"
-    , "bindings-mpdecimal"
-    , "bindings-sc3"
-    , "bindings-sipc"
-    , "bind-marshal"
-    , "bio"
-    , "Biobase"
-    , "BiobaseBlast"
-    , "BiobaseDotP"
-    , "BiobaseFasta"
-    , "BiobaseFR3D"
-    , "BiobaseInfernal"
-    , "BiobaseMAF"
-    , "BiobaseTrainingData"
-    , "BiobaseTurner"
-    , "BiobaseTypes"
-    , "BiobaseVienna"
-    , "BiobaseXNA"
-    , "biophd"
-    , "biosff"
-    , "biostockholm"
-    , "bird"
-    , "BirdPP"
-    , "bit-array"
-    , "bitcoin-rpc"
-    , "Bitly"
-    , "bitly-cli"
-    , "bits-conduit"
-    , "bitset"
-    , "bitspeak"
-    , "bitstream"
-    , "BitSyntax"
-    , "bittorrent"
-    , "bitvec"
-    , "bkr"
-    , "bla"
-    , "black-jewel"
-    , "blakesum"
-    , "blakesum-demo"
-    , "blank-canvas"
-    , "blas"
-    , "blas-hs"
-    , "blaze"
-    , "blaze-html-contrib"
-    , "blaze-html-hexpat"
-    , "blazeMarker"
-    , "blaze-textual-native"
-    , "Blobs"
-    , "blogination"
-    , "Blueprint"
-    , "bluetile"
-    , "board-games"
-    , "bogre-banana"
-    , "boolean-normal-forms"
-    , "bools"
-    , "boolsimplifier"
-    , "boomslang"
-    , "borel"
-    , "bot"
-    , "brainfuck-monad"
-    , "Bravo"
-    , "breakout"
-    , "brians-brain"
-    , "brillig"
-    , "broker-haskell"
-    , "bsd-sysctl"
-    , "bson-generics"
-    , "bson-mapping"
-    , "btree-concurrent"
-    , "buildbox-tools"
-    , "buildwrapper"
-    , "bullet"
-    , "buster"
-    , "Buster"
-    , "buster-gtk"
-    , "buster-network"
-    , "bytable"
-    , "bytestring-class"
-    , "bytestring-csv"
-    , "bytestringparser"
-    , "bytestring-plain"
-    , "bytestringreadp"
-    , "bytestring-rematch"
-    , "bytestring-short"
-    , "cabal2arch"
-    , "cabal2doap"
-    , "cabal2spec"
-    , "cabal-constraints"
-    , "cabal-debian"
-    , "cabal-dev"
-    , "cabal-ghci"
-    , "cabalgraph"
-    , "cabal-graphdeps"
-    , "cabal-install-bundle"
-    , "cabal-install-ghc72"
-    , "cabal-install-ghc74"
-    , "cabalmdvrpm"
-    , "cabal-query"
-    , "cabalrpmdeps"
-    , "cabal-scripts"
-    , "cabal-setup"
-    , "cabal-test"
-    , "cabal-upload"
-    , "cabocha"
-    , "cake3"
-    , "cakyrespa"
-    , "cal3d"
-    , "cal3d-examples"
-    , "cal3d-opengl"
-    , "calc"
-    , "caldims"
-    , "caledon"
-    , "call-haskell-from-anything"
-    , "campfire"
-    , "cantor"
-    , "cao"
-    , "cap"
-    , "Capabilities"
-    , "capri"
-    , "carboncopy"
-    , "carettah"
-    , "casadi-bindings"
-    , "casadi-bindings-control"
-    , "casadi-bindings-core"
-    , "casadi-bindings-internal"
-    , "casadi-bindings-ipopt-interface"
-    , "casadi-bindings-snopt-interface"
-    , "Cascade"
-    , "cascading"
-    , "cash"
-    , "cassandra-thrift"
-    , "cassava-streams"
-    , "cassy"
-    , "casui"
-    , "Catana"
-    , "catch-fd"
-    , "categorical-algebra"
-    , "category-extras"
-    , "CBOR"
-    , "CC-delcont"
-    , "CC-delcont-alt"
-    , "CC-delcont-cxe"
-    , "CC-delcont-exc"
-    , "CC-delcont-ref"
-    , "CC-delcont-ref-tf"
-    , "cci"
-    , "cctools-workqueue"
-    , "cedict"
-    , "ceilometer-common"
-    , "cereal-enumerator"
-    , "cereal-ieee754"
-    , "cereal-plus"
-    , "certificate"
-    , "cf"
-    , "cfipu"
-    , "cflp"
-    , "cfopu"
-    , "cgen"
-    , "cgi-utils"
-    , "chalkboard"
-    , "chalkboard-viewer"
-    , "charade"
-    , "chatter"
-    , "checked"
-    , "check-pvp"
-    , "chevalier-common"
-    , "Chitra"
-    , "chp"
-    , "chp-mtl"
-    , "chp-plus"
-    , "chp-spec"
-    , "chp-transformers"
-    , "ChristmasTree"
-    , "chuchu"
-    , "chunks"
-    , "church-list"
-    , "cil"
-    , "cinvoke"
-    , "c-io"
-    , "cio"
-    , "citation-resolve"
-    , "citeproc-hs"
-    , "citeproc-hs-pandoc-filter"
-    , "cjk"
-    , "clac"
-    , "clafer"
-    , "claferIG"
-    , "claferwiki"
-    , "CLASE"
-    , "clash"
-    , "clash-ghc"                        -- depends on broken package singletons-1.1.2.1
-    , "clash-prelude"                    -- depends on broken package singletons-1.1.2.1
-    , "clash-prelude-quickcheck"        -- depends on broken package singletons-1.1.2.1
-    , "clash-systemverilog"              -- depends on broken package singletons-1.1.2.1
-    , "clash-vhdl"                       -- depends on broken package singletons-1.1.2.1
-    , "ClassLaws"
-    , "ClassyPrelude"
-    , "clckwrks"
-    , "clckwrks-cli"
-    , "clckwrks-dot-com"
-    , "clckwrks-plugin-bugs"
-    , "clckwrks-plugin-ircbot"
-    , "clckwrks-plugin-media"
-    , "clckwrks-plugin-page"
-    , "clckwrks-theme-bootstrap"
-    , "clckwrks-theme-clckwrks"
-    , "clckwrks-theme-geo-bootstrap"
-    , "Clean"
-    , "clevercss"
-    , "clifford"
-    , "clipper"
-    , "clippings"
-    , "clocked"
-    , "clogparse"
-    , "clone-all"
-    , "cloudfront-signer"
-    , "cloud-haskell"
-    , "cloudyfs"
-    , "clua"
-    , "cluss"
-    , "clustering"
-    , "clustertools"
-    , "clutterhs"
-    , "cmaes"
-    , "cmath"
-    , "cmathml3"
-    , "CMCompare"
-    , "cmdargs-browser"
-    , "cmdtheline"
-    , "cmonad"
-    , "cnc-spec-compiler"
-    , "cndict"
-    , "Coadjute"
-    , "Codec-Image-DevIL"
-    , "codec-libevent"
-    , "codecov-haskell"
-    , "codemonitor"
-    , "codepad"
-    , "cognimeta-utils"
-    , "coinbase-exchange"
-    , "colada"
-    , "collada-output"
-    , "collada-types"
-    , "collections"
-    , "collections-api"
-    , "collections-base-instances"
-    , "coltrane"
-    , "com"
-    , "combinat"
-    , "combinat-diagrams"
-    , "combinatorial-problems"
-    , "combinator-interactive"
-    , "Combinatorrent"
-    , "Commando"
-    , "commodities"
-    , "commsec"
-    , "commsec-keyexchange"
-    , "comonad-extras"
-    , "comonad-random"
-    , "compact-map"
-    , "compact-string"
-    , "compensated"
-    , "compilation"
-    , "complexity"
-    , "compose-trans"
-    , "compression"
-    , "compstrat"
-    , "comptrans"
-    , "computational-algebra"           -- depends on broken package singletons-1.1.2.1
-    , "concraft"
-    , "concraft-hr"
-    , "concraft-pl"
-    , "concrete-typerep"
-    , "concurrent-state"
-    , "ConcurrentUtils"
-    , "condor"
-    , "Condor"
-    , "condorcet"
-    , "conductive-clock"
-    , "conductive-hsc3"
-    , "conduit-audio-lame"
-    , "conduit-audio-samplerate"
-    , "conduit-iconv"
-    , "conduit-network-stream"
-    , "conduit-resumablesink"
-    , "Configger"                        -- depends on broken package MaybeT-0.1.2
-    , "config-select"
-    , "conjure"
-    , "consistent"
-    , "const-math-ghc-plugin"
-    , "constructive-algebra"
-    , "consul-haskell"
-    , "Consumer"
-    , "context-stack"
-    , "continue"
-    , "continuum"
-    , "continuum-client"
-    , "Contract"
-    , "control-event"
-    , "control-monad-attempt"
-    , "control-monad-exception-mtl"
-    , "control-monad-failure"
-    , "control-monad-failure-mtl"
-    , "Control-Monad-MultiPass"
-    , "Control-Monad-ST2"
-    , "contstuff-monads-tf"
-    , "contstuff-transformers"
-    , "convertible-ascii"
-    , "convertible-text"
-    , "copilot"
-    , "copilot-c99"
-    , "copilot-cbmc"
-    , "copilot-core"
-    , "copilot-language"
-    , "copilot-libraries"
-    , "copilot-sbv"
-    , "COrdering"
-    , "core"
-    , "corebot-bliki"
-    , "CoreErlang"
-    , "CoreFoundation"
-    , "core-haskell"
-    , "Coroutine"
-    , "coroutine-iteratee"
-    , "CouchDB"
-    , "couchdb-conduit"
-    , "couchdb-enumerator"
-    , "couch-hs"
-    , "court"
-    , "coverage"
-    , "CPBrainfuck"
-    , "cpio-conduit"
-    , "CPL"
-    , "cplusplus-th"
-    , "cpuperf"
-    , "cpython"
-    , "cqrs"
-    , "cqrs-example"
-    , "cqrs-postgresql"
-    , "cqrs-sqlite3"
-    , "cqrs-test"
-    , "cqrs-types"
-    , "cr"
-    , "crack"
-    , "Craft3e"
-    , "craftwerk"
-    , "craftwerk-cairo"
-    , "craftwerk-gtk"
-    , "crc16"
-    , "crf-chain1"
-    , "crf-chain1-constrained"
-    , "crf-chain2-generic"
-    , "crf-chain2-tiers"
-    , "criterion-plus"
-    , "crocodile"
-    , "crunghc"
-    , "crypto-cipher-benchmarks"
-    , "cryptsy-api"
-    , "crystalfontz"                     -- depends on broken package MaybeT-0.1.2
-    , "cse-ghc-plugin"
-    , "csound-catalog"
-    , "csound-expression"
-    , "csound-expression-opcodes"
-    , "csound-expression-typed"
-    , "csound-sampler"
-    , "csp"
-    , "cspmchecker"
-    , "CSPM-cspm"
-    , "CSPM-FiringRules"
-    , "CSPM-Frontend"
-    , "CSPM-Interpreter"
-    , "CSPM-ToProlog"
-    , "css"
-    , "ctemplate"
-    , "ctkl"
-    , "ctpl"
-    , "cudd"
-    , "curry-base"
-    , "CurryDB"
-    , "curry-frontend"
-    , "cursedcsv"       -- depends on broken package hscurses-1.4.2.0
-    , "curves"
-    , "CV"
-    , "cypher"
-    , "dag"     -- depends on broken package singletons-1.1.2.1
-    , "DAG-Tournament"
-    , "Dangerous"       -- depends on broken package MaybeT-0.1.2
-    , "dao"
-    , "Dao"
-    , "dapi"
-    , "darcs2dot"
-    , "darcs-benchmark"
-    , "darcs-beta"
-    , "darcs-buildpackage"
-    , "darcs-cabalized"
-    , "darcsden"
-    , "darcs-fastconvert"
-    , "darcs-graph"
-    , "DarcsHelpers"
-    , "darcs-monitor"
-    , "darcs-scripts"
-    , "darcswatch"
-    , "darkplaces-demo"
-    , "data-cycle"
-    , "data-dispersal"
-    , "data-easy"
-    , "data-extra"
-    , "data-ivar"
-    , "data-lens-ixset"
-    , "datalog"
-    , "data-named"
-    , "data-nat"
-    , "data-object-json"
-    , "data-object-yaml"
-    , "data-quotientref"
-    , "data-rope"
-    , "Data-Rope"
-    , "data-store"
-    , "DataTreeView"
-    , "data-type"
-    , "dbjava"
-    , "DBus"
-    , "dbus-client"
-    , "dbus-core"
-    , "d-bus"           -- depends on broken package singletons-1.1.2.1
-    , "dclabel"
-    , "ddc-build"
-    , "ddc-core"
-    , "ddc-core-eval"
-    , "ddc-core-flow"
-    , "ddc-core-llvm"
-    , "ddc-core-salt"
-    , "ddc-core-simpl"
-    , "ddc-core-tetra"
-    , "ddc-driver"
-    , "ddci-core"
-    , "ddc-source-tetra"
-    , "ddc-tools"
-    , "Deadpan-DDP"
-    , "dead-simple-json"
-    , "decepticons"
-    , "DecisionTree"
-    , "decoder-conduit"
-    , "dedukti"
-    , "deeplearning-hs"
-    , "deepseq-bounded"
-    , "deepseq-th"
-    , "deepzoom"
-    , "defargs"
-    , "DefendTheKing"           -- depends on broken package MaybeT-0.1.2
-    , "definitive-base"
-    , "definitive-filesystem"
-    , "definitive-graphics"
-    , "definitive-parser"
-    , "definitive-reactive"
-    , "definitive-sound"
-    , "dejafu"
-    , "deka"
-    , "deka-tests"
-    , "delicious"
-    , "delta-h"
-    , "demarcate"
-    , "denominate"
-    , "depends"
-    , "dephd"
-    , "dequeue"
-    , "derangement"
-    , "derivation-trees"
-    , "derive-gadt"
-    , "derive-IG"
-    , "derive-topdown"
-    , "derive-trie"
-    , "derp-lib"
-    , "dewdrop"
-    , "Dflow"
-    , "dfsbuild"
-    , "dgim"
-    , "dgs"
-    , "diagrams-canvas"
-    , "diagrams-pdf"
-    , "diagrams-pgf"
-    , "diagrams-qrcode"
-    , "diagrams-tikz"
-    , "dice-entropy-conduit"
-    , "dicom"
-    , "dictparser"
-    , "diffcabal"
-    , "DifferenceLogic"
-    , "DifferentialEvolution"
-    , "digestive-functors-hsp"
-    , "DimensionalHash"
-    , "dingo-core"
-    , "dingo-example"
-    , "dingo-widgets"
-    , "diophantine"
-    , "diplomacy-server"
-    , "direct-binary-files"
-    , "directed-cubical"
-    , "direct-fastcgi"
-    , "direct-http"
-    , "direct-plugins"
-    , "DirectSound"     -- depends on broken package Win32-2.3.1.0
-    , "dirfiles"
-    , "discount"
-    , "disjoint-set"
-    , "DisTract"
-    , "distributed-process-async"
-    , "distributed-process-azure"
-    , "distributed-process-client-server"
-    , "distributed-process-execution"
-    , "distributed-process-extras"
-    , "distributed-process-platform"
-    , "distributed-process-registry"
-    , "distributed-process-supervisor"
-    , "distributed-process-task"
-    , "distributed-process-tests"
-    , "distributed-process-zookeeper"
-    , "distribution"
-    , "distribution-plot"
-    , "dist-upload"
-    , "djinn-th"
-    , "DnaProteinAlignment"
-    , "dnscache"
-    , "dnssd"
-    , "doccheck"
-    , "docidx"
-    , "docker"
-    , "dockercook"
-    , "doc-review"
-    , "DocTest"
-    , "doctest-discover"
-    , "doctest-discover-configurator"
-    , "DOM"
-    , "download"
-    , "download-media-content"
-    , "DP"
-    , "dph-examples"
-    , "dph-lifted-base"
-    , "dph-lifted-copy"
-    , "dph-lifted-vseg"
-    , "dph-par"
-    , "dph-prim-par"
-    , "dph-prim-seq"
-    , "dph-seq"
-    , "DPM"
-    , "drClickOn"
-    , "DrHylo"
-    , "DrIFT"
-    , "DrIFT-cabalized"
-    , "drifter-postgresql"
-    , "dropbox-sdk"
-    , "dropsolve"
-    , "ds-kanren"
-    , "dsmc"
-    , "dsmc-tools"
-    , "dsp"
-    , "DSTM"
-    , "dstring"
-    , "DTC"
-    , "dtd"
-    , "dtd-text"
-    , "dtd-types"
-    , "duplo"
-    , "Dust"
-    , "Dust-crypto"
-    , "Dust-tools"
-    , "Dust-tools-pcap"
-    , "dvda"
-    , "dvdread"
-    , "dx9base"         -- depends on broken package Win32-2.3.1.0
-    , "dx9d3d"          -- depends on broken package Win32-2.3.1.0
-    , "dx9d3dx"         -- depends on broken package Win32-2.3.1.0
-    , "dynamic-object"
-    , "dynamic-plot"
-    , "dynamic-pp"
-    , "DynamicTimeWarp"
-    , "dynobud"
-    , "DysFRP-Cairo"
-    , "DysFRP-Craftwerk"
-    , "easy-api"
-    , "easyjson"
-    , "easyplot"
-    , "easyrender"
-    , "ecdsa"
-    , "ecu"
-    , "edenmodules"
-    , "edenskel"
-    , "edentv"
-    , "edge"
-    , "EdisonCore"
-    , "edit-lenses"
-    , "editline"
-    , "EditTimeReport"
-    , "EEConfig"
-    , "effective-aspects"
-    , "effective-aspects-mzv"
-    , "effect-monad"
-    , "egison-quote"
-    , "ehaskell"
-    , "ehs"
-    , "eibd-client-simple"
-    , "eithers"
-    , "EitherT"
-    , "email"
-    , "email-header"
-    , "email-postmark"
-    , "embeddock"
-    , "embeddock-example"
-    , "embroidery"
-    , "emgm"
-    , "Emping"
-    , "empty"
-    , "Encode"
-    , "enumfun"
-    , "EnumMap"
-    , "enummapmap"
-    , "env-parser"
-    , "epoll"
-    , "epubname"
-    , "Eq"
-    , "equational-reasoning"            -- depends on broken package singletons-1.1.2.1
-    , "erlang"
-    , "eros-client"
-    , "error-message"
-    , "ersatz"
-    , "ersatz-toysat"
-    , "esotericbot"
-    , "EsounD"
-    , "estimators"
-    , "estreps"
-    , "Etage"
-    , "Etage-Graph"
-    , "EtaMOO"
-    , "eternal"
-    , "Eternal10Seconds"
-    , "Etherbunny"
-    , "ethereum-client-haskell"
-    , "ethereum-merkle-patricia-db"
-    , "euphoria"
-    , "eurofxref"
-    , "Euterpea"
-    , "event-driven"
-    , "event-monad"
-    , "EventSocket"
-    , "every-bit-counts"
-    , "ewe"
-    , "exif"
-    , "exists"
-    , "expand"
-    , "expat-enumerator"
-    , "explain"
-    , "explicit-sharing"
-    , "explore"
-    , "exposed-containers"
-    , "exp-pairs"
-    , "extcore"
-    , "extemp"          -- depends on broken package MaybeT-0.1.2
-    , "extended-categories"
-    , "external-sort"
-    , "ez-couch"
-    , "faceted"
-    , "factual-api"
-    , "FailureT"
-    , "fallingblocks"
-    , "falling-turnip"
-    , "fastirc"
-    , "fast-tags"
-    , "fault-tree"
-    , "fay-hsx"
-    , "fcd"
-    , "fckeditor"
-    , "FComp"
-    , "fdo-trash"
-    , "feed2lj"
-    , "feed2twitter"
-    , "feed-cli"
-    , "feldspar-compiler"
-    , "feldspar-language"
-    , "fences"
-    , "fenfire"
-    , "FermatsLastMargin"
-    , "FerryCore"
-    , "ffeed"
-    , "ffmpeg-tutorials"
-    , "fibon"
-    , "fields"
-    , "FieldTrip"
-    , "fieldwise"
-    , "FileManip"
-    , "FileManipCompat"
-    , "FileSystem"
-    , "filesystem-conduit"
-    , "filesystem-enumerator"
-    , "Finance-Quote-Yahoo"
-    , "Finance-Treasury"
-    , "find-conduit"
-    , "FiniteMap"
-    , "firstify"
-    , "FirstOrderTheory"
-    , "fit"
-    , "fitsio"
-    , "fixed-point"
-    , "fixed-point-vector"
-    , "fixed-point-vector-space"
-    , "fixed-precision"
-    , "fixed-storable-array"
-    , "fix-parser-simple"
-    , "fixplate"
-    , "fix-symbols-gitit"
-    , "flexiwrap"
-    , "flexiwrap-smallcheck"
-    , "flickr"
-    , "Flippi"
-    , "flite"
-    , "flo"
-    , "floating-bits"
-    , "flow2dot"
-    , "flowdock-api"
-    , "flower"
-    , "flowlocks-framework"
-    , "flowsim"
-    , "FModExRaw"
-    , "FM-SBLEX"
-    , "foldl-incremental"
-    , "foldl-transduce"
-    , "folds"
-    , "folds-common"
-    , "follower"
-    , "Folly"
-    , "foma"
-    , "font-opengl-basic4x6"
-    , "foo"
-    , "forbidden-fruit"
-    , "fordo"
-    , "for-free"
-    , "formal"
-    , "FormalGrammars"
-    , "format"
-    , "format-status"
-    , "forml"
-    , "formlets"
-    , "formlets-hsp"
-    , "ForSyDe"
-    , "forth-hll"
-    , "Foster"
-    , "fpco-api"
-    , "fpnla-examples"
-    , "FPretty"
-    , "frag"
-    , "franchise"
-    , "Frank"
-    , "free-game"
-    , "freekick2"
-    , "free-operational"
-    , "freesect"
-    , "freesound"
-    , "free-theorems"
-    , "free-theorems-counterexamples"
-    , "free-theorems-seq"
-    , "free-theorems-seq-webui"
-    , "free-theorems-webui"
-    , "FreeTypeGL"
-    , "frp-arduino"
-    , "fs-events"
-    , "fsmActions"
-    , "ftdi"
-    , "ftp-conduit"
-    , "ftshell"
-    , "full-sessions"
-    , "fullstop"
-    , "full-text-search"
-    , "functional-arrow"
-    , "function-combine"
-    , "functor-apply"
-    , "functorm"
-    , "funion"
-    , "funsat"
-    , "future"
-    , "fuzzytime"
-    , "gact"
-    , "gameclock"
-    , "game-of-life"            -- depends on broken package hscurses-1.4.2.0
-    , "Ganymede"
-    , "gc-monitoring-wai"
-    , "gdiff-ig"
-    , "gdiff-th"
-    , "GeBoP"
-    , "geek"
-    , "geek-server"
-    , "gemstone"
-    , "gencheck"
-    , "gender"
-    , "genders"
-    , "general-prelude"
-    , "GeneralTicTacToe"
-    , "generators"
-    , "generic-church"
-    , "genericserialize"
-    , "generic-storable"
-    , "generic-xml"
-    , "genetics"
-    , "GenI"
-    , "geniconvert"
-    , "geni-gui"
-    , "geniserver"
-    , "geni-util"
-    , "GenSmsPdu"
-    , "GenussFold"
-    , "geodetics"
-    , "GeoIp"
-    , "GeomPredicates-SSE"
-    , "getemx"
-    , "getflag"
-    , "ggtsTC"
-    , "ghc-dup"
-    , "ghc-events-analyze"
-    , "ghc-events-parallel"
-    , "ghci-haskeline"
-    , "ghc-imported-from"
-    , "ghci-ng"
-    , "ghclive"
-    , "ghc-parmake"
-    , "ghc-pkg-autofix"
-    , "ghc-pkg-lib"
-    , "ghc-server"
-    , "ghc-syb"
-    , "GHood"
-    , "ght"
-    , "ginsu"
-    , "gist"
-    , "git-all"
-    , "git-checklist"
-    , "git-date"
-    , "gitdo"
-    , "git-gpush"
-    , "github-webhook-handler"
-    , "github-webhook-handler-snap"
-    , "gitlib-cross"
-    , "gitlib-s3"
-    , "gitlib-utils"
-    , "git-repair"
-    , "gitson"
-    , "glade"
-    , "gladexml-accessor"
-    , "GLFW-OGL"
-    , "glider-nlp"
-    , "global"
-    , "glome-hs"
-    , "GlomeTrace"
-    , "GlomeView"
-    , "gloss-devil"
-    , "gmap"
-    , "gmndl"
-    , "gnome-desktop"
-    , "gnome-keyring"
-    , "gnomevfs"
-    , "g-npm"
-    , "goa"
-    , "goatee"
-    , "goatee-gtk"
-    , "gofer-prelude"
-    , "google-html5-slide"
-    , "google-mail-filters"
-    , "googleplus"
-    , "GoogleSB"
-    , "google-search"
-    , "gopherbot"
-    , "gpah"
-    , "GPipe"
-    , "GPipe-Collada"
-    , "GPipe-Examples"
-    , "GPipe-TextureLoad"
-    , "gps"
-    , "gps2htmlReport"
-    , "GPX"
-    , "gpx-conduit"
-    , "GrammarProducts"
-    , "grapefruit-examples"
-    , "grapefruit-frp"
-    , "grapefruit-records"
-    , "grapefruit-ui"
-    , "grapefruit-ui-gtk"
-    , "Graph500"
-    , "graphbuilder"
-    , "GraphHammer"
-    , "GraphHammer-examples"
-    , "graphicsFormats"
-    , "graphics-formats-collada"
-    , "graphicstools"
-    , "graph-rewriting"
-    , "graph-rewriting-cl"
-    , "graph-rewriting-gl"
-    , "graph-rewriting-lambdascope"
-    , "graph-rewriting-layout"
-    , "graph-rewriting-ski"
-    , "graph-rewriting-strategies"
-    , "graph-rewriting-trs"
-    , "graph-rewriting-ww"
-    , "graphtype"
-    , "graph-utils"
-    , "greencard"
-    , "greencard-lib"
-    , "greg-client"
-    , "Grempa"
-    , "grm"
-    , "Grow"
-    , "GrowlNotify"
-    , "gruff"
-    , "gruff-examples"
-    , "gsl-random"
-    , "gsl-random-fu"
-    , "gsmenu"
-    , "gstreamer"
-    , "GTALib"
-    , "gtfs"
-    , "gtk2hs-cast-glade"
-    , "gtk2hs-cast-gnomevfs"
-    , "gtk2hs-cast-gtk"
-    , "gtk2hs-cast-gtkglext"
-    , "Gtk2hsGenerics"
-    , "gtk2hs-rpn"
-    , "gtk3-mac-integration"
-    , "gtkglext"
-    , "GtkGLTV"
-    , "gtkimageview"
-    , "gtk-mac-integration"
-    , "gtkrsync"
-    , "gtk-serialized-event"
-    , "gtk-toy"
-    , "guess-combinator"
-    , "GuiHaskell"
-    , "GuiTV"
-    , "haar"
-    , "Hach"
-    , "hack2-handler-happstack-server"
-    , "hack2-handler-mongrel2-http"
-    , "hack2-handler-warp"
-    , "hack2-interface-wai"
-    , "hackage2hwn"
-    , "hackage2twitter"
-    , "hackage-proxy"
-    , "hackage-server"
-    , "hackage-sparks"
-    , "hack-contrib"
-    , "hack-contrib-press"
-    , "hackernews"
-    , "hack-frontend-happstack"
-    , "hack-handler-epoll"
-    , "hack-handler-evhttp"
-    , "hack-handler-fastcgi"
-    , "hack-handler-happstack"
-    , "hack-handler-hyena"
-    , "hack-handler-kibro"
-    , "hack-handler-simpleserver"
-    , "HackMail"
-    , "hack-middleware-cleanpath"
-    , "hack-middleware-clientsession"
-    , "hack-middleware-jsonp"
-    , "hackport"
-    , "hactor"
-    , "haddock-leksah"
-    , "haddocset"
-    , "haggis"
-    , "Haggressive"
-    , "hairy"
-    , "hakaru"
-    , "hakismet"
-    , "hakyll-blaze-templates"
-    , "hakyll-contrib"
-    , "hakyll-contrib-links"
-    , "hakyll-convert"
-    , "hakyll-elm"      -- depends on broken package Elm-0.13
-    , "hakyll-R"
-    , "halberd"
-    , "HaLeX"
-    , "halfs"
-    , "halipeto"
-    , "hampp"
-    , "hamtmap"
-    , "hamusic"
-    , "handle-like"
-    , "happindicator"
-    , "happindicator3"
-    , "happraise"
-    , "HAppS-Data"
-    , "HAppSHelpers"
-    , "happs-hsp"
-    , "happs-hsp-template"
-    , "HAppS-IxSet"
-    , "HAppS-Server"
-    , "HAppS-State"
-    , "happstack-auth"
-    , "happstack-authenticate"
-    , "happstack-contrib"
-    , "happstack-data"
-    , "happstack-dlg"
-    , "happstack-facebook"
-    , "happstack-fay"
-    , "happstack-heist"
-    , "happstack-helpers"
-    , "happstack-ixset"
-    , "happstack-monad-peel"
-    , "happstack-plugins"
-    , "happstack-state"
-    , "happstack-util"
-    , "happstack-yui"
-    , "happs-tutorial"
-    , "HAppS-Util"
-    , "happybara"
-    , "happybara-webkit"
-    , "happybara-webkit-server"
-    , "harchive"
-    , "HaRe"
-    , "hark"
-    , "HARM"
-    , "HarmTrace"
-    , "HarmTrace-Base"
-    , "has"
-    , "hascal"
-    , "hascat"
-    , "hascat-lib"
-    , "hascat-setup"
-    , "hascat-system"
-    , "Haschoo"
-    , "HasGP"
-    , "hash"
-    , "hashable-generics"
-    , "hashed-storage"
-    , "Hashell"
-    , "hasim"
-    , "hask"
-    , "haskarrow"
-    , "haskeem"
-    , "haskeline-class"
-    , "haskell2010"
-    , "haskell98"
-    , "haskell-aliyun"
-    , "haskell-awk"
-    , "haskell-bcrypt"
-    , "haskell-brainfuck"
-    , "haskell-cnc"
-    , "haskell-course-preludes"
-    , "haskelldb-connect-hdbc"
-    , "haskelldb-connect-hdbc-catchio-mtl"
-    , "haskelldb-connect-hdbc-catchio-tf"
-    , "haskelldb-connect-hdbc-catchio-transformers"
-    , "haskelldb-connect-hdbc-lifted"
-    , "haskelldb-dynamic"
-    , "haskelldb-hdbc-mysql"
-    , "haskelldb-hsql"
-    , "haskelldb-hsql-mysql"
-    , "haskelldb-hsql-odbc"
-    , "haskelldb-hsql-postgresql"
-    , "haskelldb-hsql-sqlite3"
-    , "haskelldb-wx"
-    , "haskell-docs"
-    , "haskell-formatter"
-    , "haskell-ftp"
-    , "haskell-in-space"
-    , "haskell-neo4j-client"
-    , "HaskellNN"
-    , "Haskelloids"
-    , "haskell-openflow"
-    , "haskell-pdf-presenter"
-    , "haskell-platform-test"
-    , "haskell-plot"
-    , "haskell-reflect"
-    , "haskell-rules"
-    , "haskellscrabble"
-    , "haskell-src-meta-mwotton"
-    , "haskell-token-utils"
-    , "HaskellTorrent"
-    , "haskell-type-exts"
-    , "haskell-tyrant"
-    , "haskell-xmpp"
-    , "haskelm"         -- depends on broken package Elm-0.13
-    , "haskgame"
-    , "haskheap"
-    , "haskhol-core"
-    , "hask-home"
-    , "haskoin"
-    , "haskoin-crypto"
-    , "haskoin-protocol"
-    , "haskoin-script"
-    , "haskoin-util"
-    , "haskoin-wallet"
-    , "haskoon"         -- depends on broken package MaybeT-0.1.2
-    , "haskoon-httpspec"        -- depends on broken package MaybeT-0.1.2
-    , "haskoon-salvia"          -- depends on broken package MaybeT-0.1.2
-    , "haskore"
-    , "haskore-realtime"
-    , "haskore-supercollider"
-    , "haskore-synthesizer"
-    , "haskore-vintage"
-    , "haslo"
-    , "hasloGUI"
-    , "hasparql-client"
-    , "hastache-aeson"
-    , "haste-compiler"
-    , "haste-perch"
-    , "has-th"
-    , "hatex-guide"
-    , "HaTeX-meta"
-    , "haverer"
-    , "HaVSA"           -- depends on broken package QuickCheck-1.2.0.1
-    , "hawitter"
-    , "Hawk"
-    , "haxparse"
-    , "hayland"
-    , "Hayoo"
-    , "hayoo-cli"
-    , "hback"
-    , "hbayes"
-    , "hbb"
-    , "hBDD-CMUBDD"
-    , "hBDD-CUDD"
-    , "hbeat"
-    , "hblas"
-    , "hblock"
-    , "h-booru"         -- depends on broken package singletons-1.1.2.1
-    , "hburg"
-    , "HCard"
-    , "hcheat"
-    , "hchesslib"
-    , "HCL"
-    , "hcron"
-    , "hCsound"
-    , "hcube"
-    , "hdaemonize-buildfix"
-    , "HDBC-mysql"
-    , "hdbi"
-    , "hdbi-conduit"
-    , "hdbi-postgresql"
-    , "hdbi-sqlite"
-    , "hdbi-tests"
-    , "hDFA"
-    , "hdigest"
-    , "hdirect"
-    , "hdis86"
-    , "hdiscount"
-    , "hdm"
-    , "hdph"
-    , "hdph-closure"
-    , "HDRUtils"
-    , "hecc"
-    , "Hedi"
-    , "hedn"
-    , "heist-aeson"
-    , "helics"
-    , "helics-wai"
-    , "helium"
-    , "hell"
-    , "hellage"
-    , "hellnet"
-    , "helm"
-    , "hemkay"
-    , "hen"
-    , "henet"
-    , "hepevt"
-    , "HERA"
-    , "herbalizer"
-    , "her-lexer"
-    , "her-lexer-parsec"
-    , "Hermes"
-    , "hermit"
-    , "hermit-syb"
-    , "herringbone"
-    , "herringbone-embed"
-    , "herringbone-wai"
-    , "hesql"
-    , "hetris"          -- depends on broken package hscurses-1.4.2.0
-    , "heukarya"
-    , "hevolisa"
-    , "hevolisa-dph"
-    , "hexpat-iteratee"
-    , "hexpat-pickle-generic"
-    , "hexquote"
-    , "hF2"
-    , "hfann"
-    , "hfd"
-    , "hfiar"
-    , "hfractal"
-    , "HFrequencyQueue"
-    , "hfsevents"
-    , "hfusion"
-    , "hgalib"
-    , "HGamer3D-API"            -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-Audio"          -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-CAudio-Binding"         -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-CEGUI-Binding"          -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D"        -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-Enet-Binding"           -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-Graphics3D"     -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-GUI"            -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-InputSystem"            -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-Network"        -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-Ogre-Binding"           -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-OIS-Binding"            -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-SDL2-Binding"           -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-SFML-Binding"           -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-WinEvent"       -- depends on broken package HGamer3D-Data-0.5.0
-    , "HGamer3D-Wire"           -- depends on broken package HGamer3D-Data-0.5.0
-    , "hg-buildpackage"
-    , "hgen"
-    , "hgeometric"
-    , "hgithub"
-    , "HGL"
-    , "hgom"
-    , "h-gpgme"
-    , "HGraphStorage"
-    , "hharp"
-    , "HHDL"
-    , "hiccup"
-    , "hichi"
-    , "hieraclus"
-    , "hierarchical-clustering-diagrams"
-    , "hiernotify"
-    , "Hieroglyph"
-    , "HiggsSet"
-    , "higherorder"
-    , "highWaterMark"
-    , "himg"
-    , "himpy"
-    , "hinduce-classifier"
-    , "hinduce-classifier-decisiontree"
-    , "hinduce-examples"
-    , "hinvaders"
-    , "hinze-streams"
-    , "hipbot"
-    , "hircules"
-    , "hirt"
-    , "hissmetrics"
-    , "historian"
-    , "hist-pl"
-    , "hist-pl-fusion"
-    , "hist-pl-lmf"
-    , "hjs"
-    , "HJVM"
-    , "hlatex"
-    , "hlbfgsb"
-    , "hlcm"
-    , "HLearn-algebra"          -- depends on broken package ConstraintKinds-1.3.0
-    , "HLearn-datastructures"           -- depends on broken package ConstraintKinds-1.3.0
-    , "hledger-chart"
-    , "hledger-vty"
-    , "hlibev"
-    , "hlibfam"
-    , "HListPP"
-    , "hlogger"
-    , "HLogger"
-    , "hly"
-    , "hmark"
-    , "hmarkup"
-    , "hmatrix-banded"
-    , "hmatrix-gsl-stats"
-    , "hmatrix-quadprogpp"
-    , "hmatrix-static"
-    , "hmatrix-syntax"
-    , "hmatrix-tests"
-    , "hmeap"
-    , "hmeap-utils"
-    , "hmenu"
-    , "hmk"
-    , "HMM"
-    , "hmm-hmatrix"
-    , "hMollom"
-    , "hmp3"
-    , "Hmpf"
-    , "hmpfr"
-    , "hmumps"
-    , "HNM"
-    , "hnn"
-    , "hoauth"
-    , "hob"
-    , "hobbes"
-    , "hobbits"
-    , "HODE"
-    , "hofix-mtl"
-    , "hog"
-    , "hogg"
-    , "hogre"
-    , "hogre-examples"
-    , "hois"
-    , "hole"
-    , "holey-format"
-    , "Holumbus-Distribution"
-    , "Holumbus-MapReduce"
-    , "Holumbus-Searchengine"
-    , "Holumbus-Storage"
-    , "homeomorphic"
-    , "hommage"
-    , "hommage-ds"      -- depends on broken package Win32-2.3.1.0
-    , "HongoDB"
-    , "honi"
-    , "hoodie"
-    , "hoodle"
-    , "hoodle-builder"
-    , "hoodle-core"
-    , "hoodle-extra"
-    , "hoodle-parser"
-    , "hoodle-publish"
-    , "hoodle-render"
-    , "hoodle-types"
-    , "hood-off"
-    , "hoovie"
-    , "hopencc"
-    , "hopencl"
-    , "hOpenPGP"
-    , "hopfield"
-    , "hoq"
-    , "hosts-server"
-    , "hotswap"
-    , "hp2any-core"
-    , "hp2any-graph"
-    , "hp2any-manager"
-    , "hpage"
-    , "hpapi"
-    , "hpaste"
-    , "hpasteit"
-    , "HPath"
-    , "hpc-coveralls"
-    , "hpc-tracer"
-    , "hPDB-examples"
-    , "hplayground"
-    , "hplaylist"
-    , "HPlot"
-    , "hpodder"
-    , "HPong"
-    , "hprotoc-fork"
-    , "hps-cairo"
-    , "hpygments"
-    , "hpylos"
-    , "hR"
-    , "hranker"
-    , "HRay"
-    , "Hricket"
-    , "HROOT"
-    , "HROOT-core"
-    , "HROOT-graf"
-    , "HROOT-hist"
-    , "HROOT-io"
-    , "HROOT-math"
-    , "hs2bf"
-    , "hs2dot"
-    , "Hs2lib"
-    , "hsbackup"
-    , "hsc2hs"
-    , "hsc3-cairo"
-    , "hsc3-data"
-    , "hsc3-forth"
-    , "hsc3-graphs"
-    , "hsc3-lang"
-    , "hsc3-lisp"
-    , "hsc3-plot"
-    , "hsc3-rec"
-    , "hsc3-server"
-    , "hsc3-unsafe"
-    , "hscamwire"
-    , "hs-carbon-examples"
-    , "hscassandra"
-    , "hs-cdb"
-    , "hsclock"
-    , "hscurses-fish-ex"        -- depends on broken package hscurses-1.4.2.0
-    , "hsdip"
-    , "hsdns-cache"
-    , "hs-dotnet"
-    , "Hsed"
-    , "hsfacter"
-    , "HSFFIG"
-    , "hs-ffmpeg"
-    , "hs-fltk"
-    , "hs-gchart"
-    , "hs-GeoIP"
-    , "HSGEP"
-    , "hsgnutls"
-    , "hsgnutls-yj"
-    , "hsgsom"
-    , "HsHaruPDF"
-    , "HSHHelpers"
-    , "HsHyperEstraier"
-    , "hsignal"
-    , "hSimpleDB"
-    , "hs-java"
-    , "hs-json-rpc"
-    , "HsJudy"
-    , "hskeleton"
-    , "hslackbuilder"
-    , "hslibsvm"
-    , "hslogger4j"
-    , "hs-logo"
-    , "hslogstash"
-    , "hsmagick"
-    , "HSmarty"
-    , "hs-mesos"
-    , "Hsmtlib"
-    , "hsmtpclient"
-    , "hsndfile-storablevector"
-    , "hsnock"
-    , "hs-nombre-generator"
-    , "hsns"
-    , "hsntp"
-    , "hsoptions"
-    , "HSoundFile"
-    , "hsparql"
-    , "hsp-cgi"
-    , "hspear"
-    , "hspec-experimental"
-    , "hspec-shouldbe"
-    , "hspec-snap"
-    , "HsPerl5"
-    , "hs-pgms"
-    , "hs-pkpass"
-    , "hspread"
-    , "hspresent"
-    , "hsprocess"
-    , "hsql-mysql"
-    , "hsqml-datamodel"
-    , "hsqml-demo-morris"
-    , "hsqml-demo-samples"
-    , "hsqml-morris"
-    , "hsSqlite3"
-    , "HsSVN"
-    , "hstatistics"
-    , "hstats"
-    , "hstest"
-    , "hstidy"
-    , "hstorchat"
-    , "hstradeking"
-    , "HStringTemplateHelpers"
-    , "hs-twitter"
-    , "hs-twitterarchiver"
-    , "hstyle"
-    , "hstzaar"
-    , "hsubconvert"
-    , "hs-vcard"
-    , "HSvm"
-    , "hswip"
-    , "hsx"
-    , "hsXenCtrl"
-    , "hsx-xhtml"
-    , "hsyscall"
-    , "hszephyr"
-    , "HTab"
-    , "hTalos"
-    , "hTensor"
-    , "HTicTacToe"
-    , "html-entities"
-    , "htoml"
-    , "htsn-import"
-    , "http-client-request-modifiers"
-    , "http-conduit-browser"
-    , "http-conduit-downloader"
-    , "http-enumerator"
-    , "http-monad"
-    , "http-proxy"
-    , "https-everywhere-rules"
-    , "http-shed"
-    , "HTTP-Simple"
-    , "httpspec"
-    , "http-test"
-    , "htune"
-    , "hubris"
-    , "hugs2yc"
-    , "hulk"
-    , "hums"
-    , "HUnit-Diff"
-    , "hunit-gui"
-    , "HUnit-Plus"
-    , "hunit-rematch"
-    , "hunt-searchengine"
-    , "hurdle"
-    , "husk-scheme"
-    , "husk-scheme-libs"
-    , "husky"
-    , "hutton"
-    , "huzzy"
-    , "hVOIDP"
-    , "hws"
-    , "HXMPP"
-    , "hxmppc"
-    , "hxournal"
-    , "HXQ"
-    , "hxt-binary"
-    , "hxt-filter"
-    , "hxthelper"
-    , "hxweb"
-    , "hybrid"
-    , "hybrid-vectors"
-    , "hydra-hs"
-    , "hydrogen-cli-args"
-    , "hydrogen-data"
-    , "hydrogen-parsing"
-    , "hydrogen-prelude"
-    , "hydrogen-prelude-parsec"
-    , "hydrogen-util"
-    , "hyena"
-    , "hylolib"
-    , "hylotab"
-    , "hyloutils"
-    , "hyperdrive"
-    , "hyperloglog"
-    , "hyperpublic"
-    , "hypher"
-    , "i18n"
-    , "iban"
-    , "ideas"
-    , "ideas-math"
-    , "idiii"
-    , "idna2008"
-    , "IDynamic"
-    , "ieee-utils"
-    , "iException"
-    , "IFS"
-    , "ige-mac-integration"
-    , "igraph"
-    , "ihttp"
-    , "illuminate"
-    , "imagepaste"
-    , "imbib"
-    , "imgurder"
-    , "imm"
-    , "imparse"
-    , "ImperativeHaskell"
-    , "implicit"
-    , "improve"
-    , "INblobs"
-    , "inch"
-    , "include-file"
-    , "incremental-computing"
-    , "incremental-sat-solver"
-    , "increments"
-    , "index-core"
-    , "indices"
-    , "indieweb-algorithms"
-    , "infer-upstream"
-    , "infinity"
-    , "infix"
-    , "InfixApplicative"
-    , "inflist"
-    , "informative"
-    , "inilist"
-    , "instant-zipper"
-    , "integer-pure"
-    , "intel-aes"
-    , "interleavableGen"
-    , "interleavableIO"
-    , "internetmarke"
-    , "interpolatedstring-qq"
-    , "interpolatedstring-qq-mwotton"
-    , "intricacy"       -- depends on broken package hscurses-1.4.2.0
-    , "intset"
-    , "IOR"
-    , "io-reactive"
-    , "IORefCAS"
-    , "iotransaction"
-    , "ipatch"
-    , "ipc"
-    , "ipopt-hs"
-    , "iptables-helpers"
-    , "iptadmin"
-    , "Irc"
-    , "ircbouncer"
-    , "ireal"
-    , "IrrHaskell"
-    , "isevaluated"
-    , "ismtp"
-    , "iteratee"
-    , "iteratee-compress"
-    , "iteratee-parsec"
-    , "iteratee-stm"
-    , "iterIO"
-    , "iterio-server"
-    , "iter-stats"
-    , "ivor"
-    , "ivory"
-    , "ivory-backend-c"
-    , "ivory-bitdata"
-    , "ivory-examples"
-    , "ivory-hw"
-    , "ivory-opts"
-    , "ivory-quickcheck"
-    , "ivory-stdlib"
-    , "ivy-web"
-    , "ixdopp"
-    , "ixset-typed"
-    , "iyql"
-    , "j2hs"
-    , "jack-bindings"
-    , "jackminimix"
-    , "JackMiniMix"
-    , "jacobi-roots"
-    , "jalla"
-    , "jarfind"
-    , "java-bridge"
-    , "java-bridge-extras"
-    , "java-reflect"
-    , "javasf"
-    , "Javasf"
-    , "javav"
-    , "Javav"
-    , "jespresso"
-    , "jobqueue"
-    , "join"
-    , "joinlist"
-    , "jonathanscard"
-    , "jort"
-    , "jsc"
-    , "JsContracts"
-    , "js-good-parts"
-    , "jsmw"
-    , "json2"
-    , "json2-hdbc"
-    , "json-b"
-    , "JSONb"
-    , "JSON-Combinator"
-    , "JSON-Combinator-Examples"
-    , "json-enumerator"
-    , "JsonGrammar"
-    , "json-qq"
-    , "jsonresume"
-    , "json-rpc"
-    , "json-tools"
-    , "jspath"
-    , "judy"
-    , "JuicyPixels-repa"
-    , "JunkDB-driver-gdbm"
-    , "JYU-Utils"
-    , "kangaroo"
-    , "kansas-comet"
-    , "kansas-lava-cores"       -- depends on broken package singletons-1.1.2.1
-    , "kansas-lava"     -- depends on broken package singletons-1.1.2.1
-    , "kansas-lava-papilio"     -- depends on broken package singletons-1.1.2.1
-    , "kansas-lava-shake"       -- depends on broken package singletons-1.1.2.1
-    , "katt"
-    , "keera-hails-mvc-model-lightmodel"
-    , "keera-hails-reactive-fs"
-    , "keera-posture"
-    , "keiretsu"
-    , "Ketchup"
-    , "kevin"
-    , "keyring"
-    , "keystore"
-    , "kibro"
-    , "kicad-data"
-    , "kickass-torrents-dump-parser"
-    , "KiCS"
-    , "KiCS-debugger"
-    , "KiCS-prophecy"
-    , "kif-parser"
-    , "kit"
-    , "kmeans-par"
-    , "koellner-phonetic"
-    , "Konf"
-    , "korfu"
-    , "kqueue"
-    , "kure-your-boilerplate"
-    , "KyotoCabinet"
-    , "labeled-graph"
-    , "laborantin-hs"
-    , "labyrinth"
-    , "labyrinth-server"
-    , "laika"
-    , "lambda2js"
-    , "lambdaBase"
-    , "lambdabot"
-    , "lambdabot-core"
-    , "lambdabot-haskell-plugins"
-    , "lambdabot-irc-plugins"
-    , "lambdabot-misc-plugins"
-    , "lambdabot-novelty-plugins"
-    , "lambdabot-reference-plugins"
-    , "lambdabot-social-plugins"
-    , "lambdabot-utils"
-    , "lambda-bridge"
-    , "LambdaCalculator"
-    , "lambdacat"
-    , "lambdacube"
-    , "lambdacube-bullet"
-    , "lambdacube-engine"
-    , "lambdacube-examples"
-    , "lambdacube-samples"
-    , "lambda-devs"
-    , "lambdaFeed"
-    , "LambdaINet"
-    , "lambdaLit"
-    , "LambdaPrettyQuote"
-    , "LambdaShell"
-    , "lambda-toolbox"
-    , "lambdatwit"
-    , "lambdiff"
-    , "lame-tester"
-    , "language-bash"
-    , "language-boogie"
-    , "language-c-comments"
-    , "language-c-inline"
-    , "language-eiffel"
-    , "language-go"
-    , "language-java-classfile"
-    , "language-mixal"
-    , "language-objc"
-    , "language-puppet"
-    , "language-python-colour"
-    , "language-sh"
-    , "language-spelling"
-    , "language-sqlite"
-    , "language-thrift"
-    , "Lastik"
-    , "lat"
-    , "latest-npm-version"
-    , "layers"
-    , "layout"
-    , "layout-bootstrap"
-    , "lazyarray"
-    , "lazysplines"
-    , "l-bfgs-b"
-    , "lcs"
-    , "ldap-client"
-    , "ldif"
-    , "leaf"
-    , "leaky"
-    , "learn-physics"
-    , "learn-physics-examples"
-    , "leveldb-haskell-fork"
-    , "levmar-chart"
-    , "lgtk"
-    , "lha"
-    , "lhae"
-    , "lhe"
-    , "LibClang"
-    , "libcspm"
-    , "libexpect"
-    , "libGenI"
-    , "libhbb"
-    , "libjenkins"
-    , "libltdl"
-    , "liboleg"
-    , "libpafe"
-    , "libpq"
-    , "libssh2-conduit"
-    , "libsystemd-daemon"
-    , "libvirt-hs"
-    , "libxml"
-    , "libxslt"
-    , "lifter"
-    , "lighttpd-conf"
-    , "lighttpd-conf-qq"
-    , "lilypond"
-    , "Limit"
-    , "limp-cbc"
-    , "lin-alg"
-    , "linear-algebra-cblas"
-    , "linear-maps"
-    , "linearscan"
-    , "linearscan-hoopl"
-    , "LinearSplit"
-    , "LinkChecker"
-    , "linkchk"
-    , "linkcore"
-    , "linux-blkid"
-    , "linux-kmod"
-    , "linux-perf"
-    , "linux-ptrace"
-    , "lio-eci11"
-    , "lio-simple"
-    , "liquid-fixpoint"
-    , "liquidhaskell"
-    , "listlike-instances"
-    , "list-t-html-parser"
-    , "literals"
-    , "live-sequencer"
-    , "ll-picosat"
-    , "llsd"
-    , "llvm-ffi"
-    , "llvm-general-quote"
-    , "llvm-ht"
-    , "local-search"
-    , "loch"
-    , "log2json"
-    , "log-effect"
-    , "logic-classes"
-    , "LogicGrowsOnTrees"
-    , "LogicGrowsOnTrees-MPI"
-    , "LogicGrowsOnTrees-network"
-    , "LogicGrowsOnTrees-processes"
-    , "lojban"
-    , "lojbanParser"
-    , "lojbanXiragan"
-    , "lojysamban"
-    , "loli"
-    , "loop-effin"
-    , "loopy"
-    , "lord"
-    , "loris"
-    , "lostcities"
-    , "lscabal"
-    , "L-seed"
-    , "LslPlus"
-    , "ls-usb"
-    , "lsystem"
-    , "luachunk"
-    , "luautils"
-    , "lucienne"
-    , "Lucu"
-    , "lui"     -- depends on broken package MaybeT-0.1.2
-    , "luka"
-    , "luthor"
-    , "lvish"
-    , "lvmlib"
-    , "lye"
-    , "maam"
-    , "mage"
-    , "MagicHaskeller"
-    , "magma"
-    , "mahoro"
-    , "majordomo"
-    , "majority"
-    , "manatee"
-    , "manatee-anything"
-    , "manatee-browser"
-    , "manatee-core"
-    , "manatee-curl"
-    , "manatee-editor"
-    , "manatee-filemanager"
-    , "manatee-imageviewer"
-    , "manatee-mplayer"
-    , "manatee-pdfviewer"
-    , "manatee-processmanager"
-    , "manatee-reader"
-    , "manatee-template"
-    , "manatee-terminal"
-    , "manatee-welcome"
-    , "mandulia"
-    , "mangopay"
-    , "marionetta"
-    , "markdown2svg"
-    , "markdown-kate"
-    , "markdown-pap"
-    , "markov-processes"
-    , "markup-preview"
-    , "marmalade-upload"
-    , "marquise"
-    , "marxup"
-    , "masakazu-bot"
-    , "matchers"
-    , "mathblog"
-    , "mathgenealogy"
-    , "mathlink"
-    , "matlab"
-    , "matsuri"
-    , "maude"
-    , "maxent"
-    , "maxsharing"
-    , "maybench"
-    , "MaybeT-monads-tf"
-    , "MaybeT-transformers"
-    , "MazesOfMonad"
-    , "mbox-tools"
-    , "MC-Fold-DP"
-    , "mcmc-samplers"
-    , "mdcat"
-    , "Measure"
-    , "mecab"
-    , "mediawiki"
-    , "mediawiki2latex"
-    , "mega-sdist"
-    , "melody"
-    , "memo-sqlite"
-    , "meta-par-accelerate"
-    , "metaplug"
-    , "metric"
-    , "Metrics"
-    , "metronome"
-    , "MFlow"
-    , "Mhailist"
-    , "MHask"
-    , "mida"
-    , "midisurface"
-    , "mighttpd"
-    , "mime-directory"
-    , "mime-string"
-    , "minesweeper"
-    , "MiniAgda"
-    , "miniball"
-    , "miniforth"
-    , "minimung"
-    , "minioperational"
-    , "miniplex"
-    , "minirotate"
-    , "ministg"
-    , "mirror-tweet"
-    , "MissingPy"
-    , "missing-py2"
-    , "mix-arrows"
-    , "mkbndl"
-    , "mlist"
-    , "ml-w"
-    , "mmtl"
-    , "mmtl-base"
-    , "moan"
-    , "modelicaparser"
-    , "modsplit"
-    , "modular-prelude"
-    , "modular-prelude-classy"
-    , "module-management"
-    , "mohws"
-    , "monad-abort-fd"
-    , "monadacme"
-    , "monad-atom"
-    , "monad-atom-simple"
-    , "monad-bool"
-    , "MonadCatchIO-mtl-foreign"
-    , "MonadCatchIO-transformers-foreign"
-    , "monad-exception"
-    , "monadiccp"
-    , "monadiccp-gecode"
-    , "monad-interleave"
-    , "MonadLab"
-    , "monad-levels"
-    , "monad-lrs"
-    , "monad-memo"
-    , "monad-mersenne-random"
-    , "monad-ran"
-    , "MonadRandomLazy"
-    , "monad-stlike-io"
-    , "monad-stlike-stm"
-    , "monad-tx"
-    , "monad-unify"
-    , "monarch"
-    , "Monaris"
-    , "Monatron"
-    , "Monatron-IO"
-    , "mongodb-queue"
-    , "mongrel2-handler"
-    , "Monocle"
-    , "mono-foldable"
-    , "monoid-owns"
-    , "monoidplus"
-    , "monoids"
-    , "monte-carlo"
-    , "moo"
-    , "morfette"
-    , "morfeusz"
-    , "mosaico-lib"
-    , "mount"
-    , "mp3decoder"
-    , "mpdmate"
-    , "mpppc"
-    , "mpretty"
-    , "mprover"
-    , "mps"
-    , "mpvguihs"
-    , "mqtt-hs"         -- depends on broken package singletons-1.1.2.1
-    , "msgpack-idl"
-    , "mtgoxapi"
-    , "mtl-tf"
-    , "mtlx"
-    , "mtp"
-    , "mudbath"
-    , "multifocal"
-    , "multipass"
-    , "multiplate-simplified"
-    , "multirec-alt-deriver"
-    , "multirec-binary"
-    , "multisetrewrite"
-    , "murder"
-    , "murmurhash3"
-    , "musicbrainz-email"
-    , "music-graphics"
-    , "music-parts"
-    , "music-preludes"
-    , "music-score"
-    , "music-sibelius"
-    , "music-suite"
-    , "music-util"
-    , "musicxml"
-    , "mustache2hs"
-    , "mutable-iter"
-    , "mvclient"
-    , "mvc-updates"
-    , "myo"
-    , "mysnapsession"
-    , "mysnapsession-example"
-    , "mysql-simple-quasi"
-    , "mysql-simple-typed"
-    , "myTestlll"
-    , "mzv"
-    , "nagios-plugin-ekg"
-    , "named-lock"
-    , "nanoAgda"
-    , "nano-cryptr"
-    , "nanocurses"
-    , "nano-hmac"
-    , "nano-md5"
-    , "nanomsg-haskell"
-    , "narc"
-    , "nats-queue"
-    , "natural-number"
-    , "neat"
-    , "needle"
-    , "nerf"
-    , "nero"
-    , "nero-wai"
-    , "nero-warp"
-    , "netcore"
-    , "netlines"
-    , "NetSNMP"
-    , "netspec"
-    , "nettle"
-    , "nettle-frp"
-    , "nettle-netkit"
-    , "nettle-openflow"
-    , "network-address"
-    , "network-anonymous-i2p"
-    , "network-builder"
-    , "network-bytestring"
-    , "network-connection"
-    , "network-house"
-    , "network-minihttp"
-    , "network-rpca"
-    , "network-server"
-    , "network-simple-tls"
-    , "network-topic-models"
-    , "network-transport-amqp"
-    , "network-websocket"
-    , "newports"
-    , "newsynth"
-    , "newt"
-    , "newtype-th"
-    , "NGrams"
-    , "nibblestring"
-    , "nikepub"
-    , "Ninjas"
-    , "nitro"
-    , "nixos-types"
-    , "nkjp"
-    , "nm"
-    , "nme"
-    , "nntp"
-    , "noise"
-    , "Nomyx"
-    , "Nomyx-Core"
-    , "Nomyx-Language"
-    , "Nomyx-Rules"
-    , "Nomyx-Web"
-    , "nondeterminism"
-    , "NonEmptyList"
-    , "noodle"
-    , "NoSlow"
-    , "not-gloss-examples"
-    , "notmuch-haskell"
-    , "notmuch-web"
-    , "np-linear"
-    , "nptools"
-    , "nthable"
-    , "null-canvas"
-    , "NumberSieves"
-    , "numerals"
-    , "numerals-base"
-    , "numeric-qq"
-    , "nums"
-    , "Nussinov78"
-    , "nvim-hs"
-    , "NXT"
-    , "NXTDSL"
-    , "nymphaea"
-    , "oberon0"
-    , "obj"
-    , "Object"
-    , "ObjectIO"
-    , "octopus"
-    , "oculus"
-    , "ofx"
-    , "OGL"
-    , "ohloh-hs"
-    , "oi"
-    , "ois-input-manager"
-    , "omaketex"
-    , "omega"
-    , "Omega"
-    , "omnicodec"
-    , "on-a-horse"
-    , "one-liner"
-    , "oneormore"
-    , "onu-course"
-    , "OpenAFP"
-    , "OpenAFP-Utils"
-    , "OpenCL"
-    , "OpenCLRaw"
-    , "opencv-raw"
-    , "openexchangerates"
-    , "openflow"
-    , "OpenGLCheck"
-    , "opengles"
-    , "openid"
-    , "open-pandoc"
-    , "openpgp-Crypto"
-    , "openpgp-crypto-api"
-    , "OpenSCAD"        -- depends on broken package testpack-2.1.3.0
-    , "openssh-github-keys"
-    , "opentheory-char"
-    , "open-union"
-    , "OpenVG"
-    , "OpenVGRaw"
-    , "open-witness"
-    , "Operads"
-    , "optimusprime"
-    , "OrchestrateDB"
-    , "orchid"
-    , "orchid-demo"
-    , "OrderedBits"
-    , "order-maintenance"
-    , "orgmode-parse"
-    , "origami"
-    , "OSM"
-    , "osm-download"
-    , "ot"
-    , "package-vt"
-    , "packedstring"
-    , "PageIO"
-    , "panda"
-    , "PandocAgda"
-    , "pandoc-unlit"
-    , "papillon"
-    , "pappy"
-    , "paragon"
-    , "Paraiso"
-    , "parallel-tasks"
-    , "parameterized-data"
-    , "parco"
-    , "parco-attoparsec"
-    , "parconc-examples"
-    , "parco-parsec"
-    , "Parry"
-    , "parsec2"
-    , "parse-help"
-    , "parsely"
-    , "parser-helper"
-    , "parsestar"
-    , "partial-lens"
-    , "partly"
-    , "passage"
-    , "pastis"
-    , "pasty"
-    , "Pathfinder"
-    , "pathfindingcore"
-    , "patterns"
-    , "paypal-api"
-    , "pb"
-    , "PCLT"
-    , "PCLT-DB"
-    , "pdynload"
-    , "peakachu"
-    , "pec"
-    , "peg"
-    , "penny"
-    , "penny-bin"
-    , "penny-lib"
-    , "peparser"
-    , "perdure"
-    , "PerfectHash"
-    , "perm"
-    , "permute"
-    , "PermuteEffects"
-    , "persistent-hssqlppp"
-    , "persistent-map"
-    , "persistent-protobuf"
-    , "pesca"
-    , "peyotls"
-    , "pez"
-    , "pg-harness"
-    , "pg-harness-server"
-    , "pgsql-simple"
-    , "pgstream"
-    , "phasechange"
-    , "phash"
-    , "phone-push"
-    , "phooey"
-    , "photoname"
-    , "phraskell"
-    , "Phsu"
-    , "phybin"
-    , "pianola"
-    , "pi-calculus"
-    , "picologic"
-    , "piet"
-    , "piki"
-    , "Pipe"
-    , "pipes-cereal-plus"
-    , "pipes-conduit"
-    , "pipes-courier"
-    , "pipes-network-tls"
-    , "pipes-p2p-examples"
-    , "pisigma"
-    , "pit"
-    , "pkggraph"
-    , "planar-graph"
-    , "plat"
-    , "plivo"
-    , "PlslTools"
-    , "plugins"
-    , "plugins-auto"
-    , "plugins-multistage"
-    , "plumbers"
-    , "ply-loader"
-    , "png-file"
-    , "pngload"
-    , "pngload-fixed"
-    , "pocket-dns"
-    , "pointless-haskell"
-    , "pointless-lenses"
-    , "pointless-rewrite"
-    , "polh-lexicon"
-    , "polyseq"
-    , "polytypeable"
-    , "polytypeable-utils"
-    , "pontarius-mediaserver"
-    , "pontarius-xmpp"
-    , "pontarius-xpmn"
-    , "pool"
-    , "pool-conduit"
-    , "popenhs"
-    , "poppler"
-    , "porte"
-    , "porter"
-    , "ports"
-    , "posix-acl"
-    , "posix-waitpid"
-    , "PostgreSQL"
-    , "postgresql-orm"
-    , "postgresql-schema"
-    , "postgresql-simple-typed"
-    , "postgresql-typed"
-    , "postgrest"
-    , "postie"
-    , "postmaster"
-    , "powermate"
-    , "powerpc"
-    , "pqc"
-    , "pqueue-mtl"      -- depends on broken package MaybeT-0.1.2
-    , "practice-room"
-    , "precis"
-    , "prefork"
-    , "pregame"
-    , "prelude-generalize"
-    , "prelude-plus"
-    , "preprocess-haskell"
-    , "press"
-    , "PrimitiveArray"
-    , "primula-board"
-    , "primula-bot"
-    , "printf-mauke"
-    , "Printf-TH"
-    , "PriorityChansConverger"
-    , "priority-queue"
-    , "ProbabilityMonads"       -- depends on broken package MaybeT-0.1.2
-    , "proc"
-    , "processing"
-    , "process-iterio"
-    , "process-leksah"
-    , "process-listlike"
-    , "process-progress"
-    , "process-qq"
-    , "procrastinating-structure"
-    , "procrastinating-variable"
-    , "procstat"
-    , "prof2dot"
-    , "profunctor-extras"
-    , "progress"
-    , "progressbar"
-    , "progression"
-    , "progressive"
-    , "proj4-hs-bindings"
-    , "prolog"
-    , "prolog-graph"
-    , "prolog-graph-lib"
-    , "propane"
-    , "Proper"
-    , "proplang"
-    , "protobuf-native"
-    , "protocol-buffers-descriptor-fork"
-    , "protocol-buffers-fork"
-    , "prove-everywhere-server"
-    , "proxy-kindness"
-    , "pub"
-    , "publicsuffixlistcreate"
-    , "pubnub"
-    , "pubsub"
-    , "puffytools"
-    , "Pugs"
-    , "pugs-hsregex"
-    , "pugs-HsSyck"
-    , "punkt"
-    , "Pup-Events"
-    , "Pup-Events-Demo"
-    , "puppetresources"
-    , "pushme"
-    , "push-notify"
-    , "push-notify-ccs"
-    , "push-notify-general"
-    , "putlenses"
-    , "puzzle-draw"
-    , "puzzle-draw-cmdline"
-    , "pvd"
-    , "python-pickle"
-    , "qd"
-    , "qd-vec"
-    , "qhull-simple"
-    , "QIO"
-    , "QuadEdge"
-    , "quantum-arrow"
-    , "qudb"
-    , "quenya-verb"
-    , "querystring-pickle"
-    , "queuelike"       -- depends on broken package MaybeT-0.1.2
-    , "QuickAnnotate"
-    , "QuickCheck-GenT"
-    , "quickcheck-poly"
-    , "quickcheck-regex"
-    , "quickcheck-relaxng"
-    , "quickcheck-rematch"
-    , "quickpull"
-    , "quickset"
-    , "Quickson"
-    , "quicktest"
-    , "quoridor-hs"
-    , "rabocsv2qif"
-    , "rad"
-    , "radium"
-    , "radium-formula-parser"
-    , "rados-haskell"
-    , "rail-compiler-editor"            -- depends on broken package llvm-general-3.4.5.4
-    , "rainbow-tests"
-    , "rakhana"
-    , "ralist"
-    , "rallod"
-    , "random-access-list"
-    , "RandomDotOrg"
-    , "random-eff"
-    , "random-effin"
-    , "random-hypergeometric"
-    , "random-stream"
-    , "rand-vars"
-    , "rangemin"
-    , "Ranka"
-    , "raven-haskell"
-    , "raven-haskell-scotty"
-    , "rbr"
-    , "rdf4h"
-    , "rdioh"
-    , "reaction-logic"
-    , "reactive"
-    , "reactive-bacon"
-    , "reactive-balsa"
-    , "reactive-banana-sdl"
-    , "reactive-banana-threepenny"
-    , "reactive-fieldtrip"
-    , "reactive-glut"
-    , "reactive-thread"
-    , "reactor"
-    , "really-simple-xml-parser"
-    , "reasonable-lens"
-    , "record-aeson"
-    , "record-gl"
-    , "record-preprocessor"
-    , "records"
-    , "records-th"
-    , "redHandlers"     -- depends on broken package MaybeT-0.1.2
-    , "ref"
-    , "Ref"
-    , "Referees"
-    , "refh"
-    , "reflection-extras"
-    , "reflex"
-    , "reflex-dom"
-    , "reflex-gloss"
-    , "regex-deriv"
-    , "regex-dfa"
-    , "regex-genex"
-    , "regex-parsec"
-    , "regex-pderiv"
-    , "regexp-tries"
-    , "regexqq"
-    , "regex-tdfa-utf8"
-    , "regex-tre"
-    , "regex-xmlschema"
-    , "regional-pointers"
-    , "regions"
-    , "regions-monadsfd"
-    , "regions-monadstf"
-    , "regions-mtl"
-    , "regular-extras"
-    , "regular-web"
-    , "reheat"
-    , "rei"
-    , "reified-records"
-    , "reify"
-    , "remote"
-    , "remotion"
-    , "reorderable"
-    , "repa-array"
-    , "repa-bytestring"
-    , "repa-flow"
-    , "repa-plugin"
-    , "repa-series"
-    , "repa-stream"
-    , "repa-v4l2"
-    , "repl"
-    , "RepLib"
-    , "repo-based-blog"
-    , "repr"
-    , "representable-functors"
-    , "representable-profunctors"
-    , "representable-tries"
-    , "resource-embed"
-    , "resource-simple"
-    , "respond"
-    , "restful-snap"
-    , "RESTng"          -- depends on broken package MaybeT-0.1.2
-    , "restricted-workers"
-    , "restyle"
-    , "resumable-exceptions"
-    , "rethinkdb-client-driver"
-    , "rethinkdb-model"
-    , "ReviewBoard"
-    , "rewrite"
-    , "rewriting"
-    , "rezoom"
-    , "rfc3339"
-    , "riak"
-    , "riak-protobuf"
-    , "riemann"
-    , "riot"
-    , "ripple"
-    , "ripple-federation"
-    , "risc386"
-    , "rivers"
-    , "RJson"
-    , "rmonad"
-    , "RMP"
-    , "RNAdesign"
-    , "RNAdraw"
-    , "RNAFold"
-    , "RNAFoldProgs"
-    , "RNAwolf"
-    , "roguestar"
-    , "roguestar-engine"        -- depends on broken package MaybeT-0.1.2
-    , "roguestar-gl"
-    , "roguestar-glut"
-    , "RollingDirectory"
-    , "rope"
-    , "rosa"
-    , "roshask"         -- depends on broken package testpack-2.1.3.0
-    , "rosso"
-    , "rotating-log"
-    , "rounding"
-    , "roundtrip"
-    , "roundtrip-aeson"
-    , "roundtrip-string"
-    , "roundtrip-xml"
-    , "route-generator"
-    , "route-planning"
-    , "rowrecord"
-    , "rpc"
-    , "rpc-framework"
-    , "rpm"
-    , "rsagl"
-    , "rsagl-frp"
-    , "rsagl-math"
-    , "rss2irc"
-    , "ruff"
-    , "ruler-core"
-    , "rungekutta"
-    , "RxHaskell"
-    , "safe-freeze"
-    , "safe-globals"
-    , "safeint"
-    , "safe-lazy-io"
-    , "safe-plugins"
-    , "safer-file-handles"
-    , "safer-file-handles-bytestring"
-    , "safer-file-handles-text"
-    , "sai-shape-syb"
-    , "Salsa"
-    , "salvia"
-    , "salvia-demo"
-    , "salvia-extras"
-    , "salvia-protocol"
-    , "salvia-sessions"
-    , "salvia-websocket"
-    , "samtools-iteratee"
-    , "sasl"
-    , "sat"
-    , "satchmo-backends"
-    , "satchmo-examples"
-    , "satchmo-funsat"
-    , "satchmo-minisat"
-    , "sat-micro-hs"
-    , "SBench"
-    , "scaleimage"
-    , "scan-vector-machine"
-    , "scat"
-    , "scenegraph"
-    , "schedevr"
-    , "scholdoc"
-    , "scholdoc-citeproc"
-    , "scion"
-    , "scion-browser"
-    , "scope"
-    , "scope-cairo"
-    , "scottish"
-    , "scotty-blaze"
-    , "scotty-fay"
-    , "scotty-hastache"
-    , "scotty-session"
-    , "scrabble-bot"
-    , "ScratchFs"
-    , "scrobble"
-    , "scroll"
-    , "scrz"
-    , "Scurry"
-    , "sdr"
-    , "seacat"
-    , "search"
-    , "secdh"
-    , "second-transfer"
-    , "secret-santa"
-    , "secret-sharing"
-    , "secrm"
-    , "sednaDBXML"
-    , "selectors"
-    , "selenium"
-    , "selenium-server"
-    , "selinux"
-    , "Semantique"
-    , "semigroups-actions"
-    , "semi-iso"
-    , "semiring"
-    , "sensenet"
-    , "sentry"
-    , "senza"
-    , "seqaid"
-    , "SeqAlign"
-    , "seqloc-datafiles"
-    , "sequent-core"
-    , "sequor"
-    , "servant-pool"
-    , "servant-postgresql"
-    , "servant-scotty"
-    , "serversession-backend-acid-state"
-    , "servius"
-    , "ses-html-snaplet"
-    , "SessionLogger"
-    , "sessions"
-    , "set-with"
-    , "sexp"
-    , "sexpr"
-    , "sext"
-    , "SFML"
-    , "SFML-control"
-    , "SFont"
-    , "SG"
-    , "SGdemo"
-    , "sgrep"
-    , "shadower"
-    , "shady-gen"
-    , "shady-graphics"
-    , "shake-extras"
-    , "shaker"
-    , "shakespeare-css"
-    , "shakespeare-i18n"
-    , "shapely-data"
-    , "shared-buffer"
-    , "she"
-    , "Shellac"
-    , "Shellac-compatline"
-    , "Shellac-editline"
-    , "Shellac-haskeline"
-    , "Shellac-readline"
-    , "shellish"
-    , "shell-pipe"
-    , "shivers-cfg"
-    , "showdown"
-    , "shpider"
-    , "sifflet"
-    , "sifflet-lib"
-    , "signals"
-    , "simd"
-    , "simgi"
-    , "simple"
-    , "simple-bluetooth"
-    , "simple-css"
-    , "simple-c-value"
-    , "simple-firewire"
-    , "simple-form"
-    , "SimpleGL"
-    , "SimpleH"
-    , "simpleirc"
-    , "simpleirc-lens"
-    , "SimpleLog"
-    , "simple-log-syslog"
-    , "simplenote"
-    , "simple-pascal"
-    , "simple-postgresql-orm"
-    , "simpleprelude"
-    , "simple-session"
-    , "simplessh"
-    , "simple-templates"
-    , "simple-vec3"
-    , "simseq"
-    , "sindre"
-    , "sirkel"
-    , "sized"           -- depends on broken package singletons-1.1.2.1
-    , "sized-types"     -- depends on broken package singletons-1.1.2.1
-    , "sized-vector"            -- depends on broken package singletons-1.1.2.1
-    , "skeleton"
-    , "skype4hs"
-    , "slack"
-    , "slidemews"
-    , "sloth"
-    , "smallarray"
-    , "smallpt-hs"
-    , "smallstring"
-    , "smartcheck"
-    , "smartGroup"
-    , "smartword"
-    , "sme"
-    , "Smooth"
-    , "smt-lib"
-    , "smtlib2"
-    , "smtp2mta"
-    , "smtp-mail-ng"
-    , "smtps-gmail"
-    , "snake-game"
-    , "snap-accept"
-    , "snap-app"
-    , "snap-elm"        -- depends on broken package Elm-0.13
-    , "snap-extras"
-    , "snaplet-actionlog"
-    , "snaplet-css-min"
-    , "snaplet-environments"
-    , "snaplet-haxl"
-    , "snaplet-hdbc"
-    , "snaplet-i18n"
-    , "snaplet-mongoDB"
-    , "snaplet-mongodb-minimalistic"
-    , "snaplet-mysql-simple"
-    , "snaplet-oauth"
-    , "snaplet-redson"
-    , "snaplet-rest"
-    , "snaplet-riak"
-    , "snaplet-sedna"
-    , "snaplet-tasks"
-    , "snaplet-typed-sessions"
-    , "snaplet-wordpress"
-    , "snap-predicates"
-    , "snappy-iteratee"
-    , "snap-testing"
-    , "snap-utils"
-    , "sndfile-enumerators"
-    , "sneathlane-haste"
-    , "SNet"
-    , "snm"
-    , "snow-white"
-    , "Snusmumrik"
-    , "SoccerFun"
-    , "SoccerFunGL"
-    , "sock2stream"
-    , "socketio"
-    , "socket-sctp"
-    , "sonic-visualiser"
-    , "SoOSiM"
-    , "sorted"
-    , "sound-collage"
-    , "source-code-server"
-    , "sousit"
-    , "soxlib"
-    , "soyuz"
-    , "SpaceInvaders"
-    , "SpacePrivateers"
-    , "spanout"
-    , "sparse"
-    , "sparsebit"
-    , "sparsecheck"
-    , "spata"
-    , "special-functors"
-    , "specialize-th"
-    , "speculation-transformers"
-    , "sphero"
-    , "sphinx-cli"
-    , "spice"
-    , "spike"
-    , "splaytree"
-    , "splines"
-    , "split-record"
-    , "splot"
-    , "Spock-auth"
-    , "spoonutil"
-    , "spoty"
-    , "Sprig"
-    , "spy"
-    , "sqlite-simple-typed"
-    , "sql-simple"
-    , "sql-simple-mysql"
-    , "sql-simple-pool"
-    , "sql-simple-postgresql"
-    , "sql-simple-sqlite"
-    , "srcinst"
-    , "sscgi"
-    , "ssh"
-    , "sssp"
-    , "sstable"
-    , "stackage-curator"        -- depends on broken package amazonka-s3-1.2.0
-    , "stack-prism"
-    , "starrover2"
-    , "stateful-mtl"            -- depends on broken package MaybeT-0.1.2
-    , "statgrab"
-    , "statistics-dirichlet"
-    , "statistics-fusion"
-    , "stb-truetype"
-    , "step-function"
-    , "stepwise"
-    , "stm-chunked-queues"
-    , "stmcontrol"
-    , "stm-firehose"
-    , "Stomp"
-    , "storable-static-array"
-    , "storablevector"
-    , "storablevector-carray"
-    , "storablevector-streamfusion"
-    , "Strafunski-Sdf2Haskell"
-    , "streamed"
-    , "stream-fusion"
-    , "StrictBench"
-    , "strict-concurrency"
-    , "string"
-    , "stringlike"
-    , "structured-mongoDB"
-    , "structures"
-    , "stunts"
-    , "subhask"
-    , "suitable"
-    , "sunlight"
-    , "sunroof-compiler"
-    , "sunroof-examples"
-    , "sunroof-server"
-    , "supercollider-midi"
-    , "superdoc"
-    , "supero"
-    , "supervisor"
-    , "svg2q"
-    , "SVG2Q"
-    , "svm-simple"
-    , "svndump"
-    , "swapper"
-    , "swearjure"
-    , "swf"
-    , "swift-lda"
-    , "sws"
-    , "syb-extras"
-    , "sylvia"
-    , "sym-plot"
-    , "sync"
-    , "sync-mht"
-    , "syntax"
-    , "syntax-attoparsec"
-    , "syntax-example"
-    , "syntax-example-json"
-    , "SyntaxMacros"
-    , "syntax-pretty"
-    , "syntax-printer"
-    , "syntax-trees"
-    , "syntax-trees-fork-bairyn"
-    , "synthesizer"
-    , "synthesizer-alsa"
-    , "synthesizer-core"
-    , "synthesizer-dimensional"
-    , "synthesizer-midi"
-    , "Sysmon"
-    , "system-canonicalpath"
-    , "system-lifted"
-    , "system-random-effect"
-    , "ta"
-    , "Tables"
-    , "tablestorage"
-    , "tabloid"
-    , "tagged-list"
-    , "tagged-th"
-    , "tagsoup-ht"
-    , "tagsoup-parsec"
-    , "Takusen"
-    , "takusen-oracle"
-    , "tamarin-prover"
-    , "tamarin-prover-term"
-    , "tamarin-prover-theory"
-    , "tamarin-prover-utils"
-    , "tamper"
-    , "target"
-    , "task"
-    , "tasty-integrate"
-    , "TBC"
-    , "tbox"
-    , "tccli"
-    , "tcp"
-    , "tdd-util"
-    , "TeaHS"
-    , "teams"
-    , "telegram"
-    , "template-default"
-    , "template-haskell-util"
-    , "template-hsml"
-    , "templatepg"
-    , "tempodb"
-    , "temporal-csound"         -- depends on broken package temporal-music-notation-0.4.1
-    , "tempus"
-    , "tensor"
-    , "termbox-bindings"
-    , "term-rewriting"
-    , "terrahs"
-    , "tersmu"
-    , "test-framework-doctest"
-    , "test-framework-quickcheck"       -- depends on broken package QuickCheck-1.2.0.1
-    , "testloop"
-    , "testpattern"
-    , "testPkg"
-    , "testrunner"
-    , "tetris"
-    , "tex2txt"
-    , "texrunner"
-    , "text-json-qq"
-    , "textmatetags"
-    , "text-normal"
-    , "textPlot"
-    , "text-register-machine"
-    , "texts"
-    , "text-xml-generic"
-    , "text-xml-qq"
-    , "tfp-th"
-    , "Theora"
-    , "theoremquest-client"
-    , "thih"
-    , "thimk"
-    , "Thingie"
-    , "th-instances"
-    , "th-kinds"
-    , "thrift"
-    , "Thrift"
-    , "throttle"
-    , "tic-tac-toe"
-    , "TicTacToe"
-    , "tiger"
-    , "tighttp"
-    , "timberc"
-    , "timecalc"
-    , "time-extras"
-    , "time-http"
-    , "timeout"
-    , "timeout-control"
-    , "timeparsers"
-    , "TimePiece"
-    , "timeplot"
-    , "time-recurrence"
-    , "time-series"
-    , "timestamp-subprocess-lines"
-    , "time-w3c"
-    , "TinyLaunchbury"
-    , "TinyURL"
-    , "Titim"
-    , "tkhs"
-    , "tkyprof"
-    , "tls-extra"
-    , "todos"
-    , "to-haskell"
-    , "toilet"
-    , "toktok"
-    , "tokyocabinet-haskell"
-    , "toml"
-    , "Top"
-    , "topkata"
-    , "torch"
-    , "to-string-class"
-    , "to-string-instances"
-    , "Tournament"
-    , "tracker"
-    , "trajectory"
-    , "transactional-events"
-    , "transformers-convert"
-    , "transformers-runnable"
-    , "translate"
-    , "traypoweroff"
-    , "treemap-html-tools"
-    , "treeviz"
-    , "tremulous-query"
-    , "TrendGraph"
-    , "trhsx"
-    , "triangulation"
-    , "TrieMap"
-    , "trimpolya"
-    , "true-name"
-    , "tsession"
-    , "tsession-happstack"
-    , "tskiplist"
-    , "tsp-viz"
-    , "tuntap"
-    , "tup-functor"
-    , "tuple-gen"
-    , "tupleinstances"
-    , "tuple-morph"
-    , "twentefp-rosetree"
-    , "twhs"
-    , "twidge"
-    , "twilight-stm"
-    , "twilio"
-    , "twill"
-    , "twiml"
-    , "twine"
-    , "twisty"
-    , "twitch"
-    , "twitter"
-    , "twitter-conduit"
-    , "twitter-enumerator"
-    , "twitter-types"
-    , "twitter-types-lens"
-    , "tx"
-    , "TYB"
-    , "typalyze"
-    , "typeable-th"
-    , "type-cereal"
-    , "TypeClass"
-    , "type-digits"
-    , "typedquery"
-    , "type-equality-check"
-    , "typehash"
-    , "TypeIlluminator"
-    , "type-int"
-    , "type-level"
-    , "type-level-bst"
-    , "type-level-sets"
-    , "typelevel-tensor"
-    , "type-list"       -- depends on broken package singletons-1.1.2.1
-    , "type-natural"            -- depends on broken package singletons-1.1.2.1
-    , "type-ord"
-    , "type-ord-spine-cereal"
-    , "typeparams"
-    , "type-prelude"
-    , "typescript-docs"
-    , "type-settheory"
-    , "type-spine"
-    , "type-structure"
-    , "type-sub-th"
-    , "typography-geometry"
-    , "tz"
-    , "uAgda"
-    , "uberlast"
-    , "uconv"
-    , "udbus"
-    , "udbus-model"
-    , "udev"
-    , "ui-command"
-    , "UMM"
-    , "unamb-custom"
-    , "unbound"
-    , "unbounded-delays-units"          -- depends on broken package singletons-1.1.2.1
-    , "unboxed-containers"
-    , "unicode-normalization"
-    , "unicoder"
-    , "uniform-io"
-    , "union-map"
-    , "uniqueid"
-    , "unique-logic-tf"
-    , "units-defs"      -- depends on broken package singletons-1.1.2.1
-    , "units"           -- depends on broken package singletons-1.1.2.1
-    , "unittyped"
-    , "universe-th"
-    , "unix-process-conduit"
-    , "unlit"
-    , "unordered-containers-rematch"
-    , "unpack-funcs"
-    , "unscramble"
-    , "up"
-    , "uploadcare"
-    , "upskirt"
-    , "ureader"
-    , "urembed"
-    , "uri-conduit"
-    , "uri-enumerator"
-    , "uri-enumerator-file"
-    , "urlcheck"
-    , "urldecode"
-    , "UrlDisp"         -- depends on broken package MaybeT-0.1.2
-    , "urldisp-happstack"
-    , "url-generic"
-    , "URLT"
-    , "urxml"
-    , "usb-enumerator"
-    , "usb-iteratee"
-    , "usb-safe"
-    , "uuagc-diagrams"
-    , "uu-tc"
-    , "uvector"
-    , "uvector-algorithms"
-    , "v4l2"
-    , "v4l2-examples"
-    , "vacuum"
-    , "vacuum-cairo"
-    , "vacuum-graphviz"
-    , "vacuum-opengl"
-    , "vacuum-ubigraph"
-    , "validate"
-    , "vampire"
-    , "var"
-    , "vaultaire-common"
-    , "vcard"
-    , "Vec-Boolean"
-    , "Vec-OpenGLRaw"
-    , "vector-bytestring"
-    , "vector-clock"
-    , "vector-conduit"
-    , "vector-functorlazy"
-    , "vector-instances-collections"
-    , "vector-random"
-    , "vector-read-instances"
-    , "vector-space-opengl"
-    , "vector-static"
-    , "Vec-Transform"
-    , "verilog"
-    , "vigilance"
-    , "vintage-basic"
-    , "vinyl"           -- depends on broken package singletons-1.1.2.1
-    , "vinyl-gl"        -- depends on broken package singletons-1.1.2.1
-    , "vinyl-json"      -- depends on broken package singletons-1.1.2.1
-    , "vinyl-utils"     -- depends on broken package singletons-1.1.2.1
-    , "virthualenv"
-    , "vision"
-    , "visual-graphrewrite"
-    , "visual-prof"
-    , "vk-aws-route53"
-    , "VKHS"
-    , "vorbiscomment"
-    , "vowpal-utils"
-    , "voyeur"
-    , "vtegtk3"
-    , "vty-examples"
-    , "vty-menu"
-    , "vty-ui-extras"
-    , "wai-cors"
-    , "wai-eventsource"
-    , "wai-graceful"
-    , "wai-handler-devel"
-    , "wai-handler-snap"
-    , "wai-handler-webkit"
-    , "wai-hastache"
-    , "wai-lite"
-    , "wai-logger-prefork"
-    , "wai-middleware-cache"
-    , "wai-middleware-cache-redis"
-    , "wai-middleware-catch"
-    , "wai-middleware-consul"
-    , "wai-middleware-etag"
-    , "wai-middleware-headers"
-    , "wai-middleware-hmac-client"
-    , "wai-middleware-preprocessor"
-    , "wai-middleware-route"
-    , "wai-middleware-static-caching"
-    , "wai-predicates"          -- depends on broken package singletons-1.1.2.1
-    , "wai-routing"     -- depends on broken package singletons-1.1.2.1
-    , "wai-session-tokyocabinet"
-    , "wai-static-cache"
-    , "wai-throttler"
-    , "waitra"
-    , "warp-dynamic"
-    , "warp-static"
-    , "warp-tls-uid"
-    , "WashNGo"
-    , "watchdog"
-    , "watcher"
-    , "watchit"
-    , "wavesurfer"
-    , "weather-api"
-    , "WebBits-Html"
-    , "WebBits-multiplate"
-    , "web-browser-in-haskell"
-    , "WebCont"
-    , "webcrank-dispatch"
-    , "webcrank-wai"
-    , "webdriver-snoy"
-    , "web-encodings"
-    , "webify"
-    , "webkit-javascriptcore"
-    , "web-mongrel2"
-    , "Webrexp"
-    , "web-routes-quasi"
-    , "web-routes-transformers"
-    , "webserver"
-    , "websnap"
-    , "webwire"
-    , "wedged"
-    , "weighted-regexp"
-    , "welshy"
-    , "Wheb"
-    , "wheb-mongo"
-    , "wheb-redis"
-    , "wheb-strapped"
-    , "whim"
-    , "whitespace"
-    , "WikimediaParser"
-    , "wikipedia4epub"
-    , "Win32-dhcp-server"       -- depends on broken package Win32-2.3.1.0
-    , "Win32-errors"            -- depends on broken package Win32-2.3.1.0
-    , "Win32-extras"            -- depends on broken package Win32-2.3.1.0
-    , "Win32-junction-point"            -- depends on broken package Win32-2.3.1.0
-    , "Win32-notify"            -- depends on broken package Win32-2.3.1.0
-    , "Win32-security"          -- depends on broken package Win32-2.3.1.0
-    , "Win32-services"          -- depends on broken package Win32-2.3.1.0
-    , "Win32-services-wrapper" -- depends on broken package Win32-2.3.1.0
-    , "windowslive"
-    , "winerror"
-    , "winio"
-    , "WL500gPControl"
-    , "wlc-hs"
-    , "wobsurv"
-    , "woffex"
-    , "wolf"                   -- depends on broken package amazonka-s3-1.2.0
-    , "word24"
-    , "wordcloud"
-    , "Wordlint"
-    , "WordNet"
-    , "WordNet-ghc74"
-    , "wordsearch"
-    , "wp-archivebot"
-    , "wraxml"
-    , "wright"
-    , "wtk"
-    , "wtk-gtk"
-    , "wumpus-basic"
-    , "wumpus-core"
-    , "wumpus-drawing"
-    , "wumpus-microprint"
-    , "wumpus-tree"
-    , "WURFL"
-    , "wxAsteroids"
-    , "WXDiffCtrl"
-    , "wxFruit"
-    , "wxhnotepad"
-    , "wxturtle"
-    , "wyvern"
-    , "X11-extras"
-    , "X11-rm"
-    , "X11-xdamage"
-    , "X11-xfixes"
-    , "x11-xinput"
-    , "x509-util"
-    , "xchat-plugin"
-    , "x-dsp"
-    , "Xec"
-    , "xfconf"
-    , "xhaskell-library"
-    , "xhb-ewmh"
-    , "xine"
-    , "xing-api"
-    , "XInput"                 -- depends on broken package Win32-2.3.1.0
-    , "xkcd"
-    , "xlsior"
-    , "xlsx-templater"
-    , "xml2json"
-    , "xml2x"
-    , "xml-catalog"
-    , "xml-enumerator"
-    , "xml-enumerator-combinators"
-    , "XmlHtmlWriter"
-    , "xml-parsec"
-    , "xml-pipe"
-    , "xml-prettify"
-    , "xml-push"
-    , "xmltv"
-    , "XMMS"
-    , "xmms2-client"
-    , "xmms2-client-glib"
-    , "xmonad-bluetilebranch"
-    , "xmonad-contrib-bluetilebranch"
-    , "xmonad-eval"
-    , "xmpipe"
-    , "XMPP"
-    , "xournal-builder"
-    , "xournal-convert"
-    , "xournal-parser"
-    , "xournal-render"
-    , "xournal-types"
-    , "xsact"
-    , "XSaiga"
-    , "xslt"
-    , "y0l0bot"
-    , "Yablog"
-    , "YACPong"
-    , "yahoo-web-search"
-    , "yajl"
-    , "yajl-enumerator"
-    , "yaml2owl"
-    , "YamlReference"
-    , "yaml-rpc"
-    , "yaml-rpc-scotty"
-    , "yaml-rpc-snap"
-    , "yampa-canvas"
-    , "yampa-glfw"
-    , "yampa-glut"
-    , "yaop"
-    , "yarr"
-    , "yarr-image-io"
-    , "yate"
-    , "yavie"
-    , "ycextra"
-    , "yesod-angular-ui"
-    , "yesod-auth-account-fork"
-    , "yesod-auth-kerberos"
-    , "yesod-auth-ldap"
-    , "yesod-auth-pam"
-    , "yesod-auth-smbclient"
-    , "yesod-bootstrap"
-    , "yesod-comments"
-    , "yesod-continuations"
-    , "yesod-datatables"
-    , "yesod-eventsource"
-    , "yesod-examples"
-    , "yesod-goodies"
-    , "yesod-links"
-    , "yesod-mangopay"
-    , "yesod-media-simple"
-    , "yesod-paginate"
-    , "yesod-pagination"
-    , "yesod-paginator"
-    , "yesod-platform"
-    , "yesod-pure"
-    , "yesod-purescript"
-    , "yesod-routes-typescript"
-    , "yesod-rst"
-    , "yesod-s3"
-    , "yesod-session-redis"
-    , "yesod-tableview"
-    , "yesod-test-json"
-    , "yesod-tls"
-    , "yesod-vend"
-    , "yesod-worker"
-    , "YFrob"
-    , "yhccore"
-    , "yi-contrib"
-    , "yi-fuzzy-open"
-    , "yi-gtk"
-    , "yi-vty"
-    , "yjftp"
-    , "Yogurt"
-    , "Yogurt-Standalone"
-    , "yoko"
-    , "york-lava"
-    , "yql"
-    , "yuiGrid"
-    , "yuuko"
-    , "zampolit"
-    , "zasni-gerna"
-    , "zendesk-api"
-    , "zeno"
-    , "zeromq3-conduit"
-    , "zeromq3-haskell"
-    , "zeromq-haskell"
-    , "zeroth"
-    , "ZFS"
-    , "zipedit"
-    , "ZMachine"
-    , "zmcat"
-    , "zmqat"
-    , "zoneinfo"
-    , "zoom"
-    , "zoom-cache"
-    , "zoom-cache-pcm"
-    , "zoom-cache-sndfile"
-    , "zot"
-    , "zsh-battery"
-    , "ztail"
-    , "Zwaluw"
+  , dontDistributePackages = Map.fromList
+    [ ("3dmodels",                                          allPlatforms)
+    , ("4Blocks",                                           allPlatforms)
+    , ("abcBridge",                                         allPlatforms)
+    , ("abstract-par-accelerate",                           allPlatforms)
+    , ("abt",                                               allPlatforms)
+    , ("AC-BuildPlatform",                                  allPlatforms)
+    , ("accelerate-arithmetic",                             allPlatforms)
+    , ("accelerate-fftw",                                   allPlatforms)
+    , ("accelerate-fourier",                                allPlatforms)
+    , ("accelerate-io",                                     allPlatforms)
+    , ("accelerate-utility",                                allPlatforms)
+    , ("accentuateus",                                      allPlatforms)
+    , ("access-time",                                       allPlatforms)
+    , ("AC-EasyRaster-GTK",                                 allPlatforms)
+    , ("AC-HalfInteger",                                    allPlatforms)
+    , ("acid-state-dist",                                   allPlatforms)
+    , ("ACME",                                              allPlatforms)
+    , ("acme-hq9plus",                                      allPlatforms)
+    , ("acme-inator",                                       allPlatforms)
+    , ("acme-numbersystem",                                 allPlatforms)
+    , ("acme-schoenfinkel",                                 allPlatforms)
+    , ("acme-zero",                                         allPlatforms)
+    , ("AC-MiniTest",                                       allPlatforms)
+    , ("AC-Terminal",                                       allPlatforms)
+    , ("ActionKid",                                         allPlatforms)
+    , ("activehs",                                          allPlatforms)
+    , ("actor",                                             allPlatforms)
+    , ("AC-VanillaArray",                                   allPlatforms)
+    , ("Adaptive",                                          allPlatforms)
+    , ("Adaptive-Blaisorblade",                             allPlatforms)
+    , ("adaptive-containers",                               allPlatforms)
+    , ("adaptive-tuple",                                    allPlatforms)
+    , ("adblock2privoxy",                                   allPlatforms)
+    , ("adhoc-network",                                     allPlatforms)
+    , ("adict",                                             allPlatforms)
+    , ("adobe-swatch-exchange",                             allPlatforms)
+    , ("ADPfusion",                                         allPlatforms)
+    , ("adp-multi",                                         allPlatforms)
+    , ("adp-multi-monadiccp",                               allPlatforms)
+    , ("Advgame",                                           allPlatforms)
+    , ("AERN-Basics",                                       allPlatforms)
+    , ("AERN-Net",                                          allPlatforms)
+    , ("AERN-Real",                                         allPlatforms)
+    , ("AERN-Real-Double",                                  allPlatforms)
+    , ("AERN-Real-Interval",                                allPlatforms)
+    , ("AERN-RnToRm",                                       allPlatforms)
+    , ("AERN-RnToRm-Plot",                                  allPlatforms)
+    , ("aeson-bson",                                        allPlatforms)
+    , ("AesonBson",                                         allPlatforms)
+    , ("aeson-native",                                      allPlatforms)
+    , ("aeson-smart",                                       allPlatforms)
+    , ("afv",                                               allPlatforms)
+    , ("Agata",                                             allPlatforms)
+    , ("agda-server",                                       allPlatforms)
+    , ("AGI",                                               allPlatforms)
+    , ("AhoCorasick",                                       allPlatforms)
+    , ("airbrake",                                          allPlatforms)
+    , ("aivika-transformers",                               allPlatforms)
+    , ("ajhc",                                              allPlatforms)
+    , ("alea",                                              allPlatforms)
+    , ("algebraic",                                         allPlatforms)
+    , ("AlignmentAlgorithms",                               allPlatforms)
+    , ("alms",                                              allPlatforms)
+    , ("alpha",                                             allPlatforms)
+    , ("alpino-tools",                                      allPlatforms)
+    , ("alsa",                                              allPlatforms)
+    , ("alsa-midi",                                         allPlatforms)
+    , ("alsa-pcm-tests",                                    allPlatforms)
+    , ("alsa-seq-tests",                                    allPlatforms)
+    , ("altfloat",                                          allPlatforms)
+    , ("alure",                                             allPlatforms)
+    , ("amazon-emailer",                                    allPlatforms)
+    , ("amazon-products",                                   allPlatforms)
+    , ("AMI",                                               allPlatforms)
+    , ("ampersand",                                         allPlatforms)
+    , ("anansi-pandoc",                                     allPlatforms)
+    , ("anatomy",                                           allPlatforms)
+    , ("android-lint-summary",                              allPlatforms)
+    , ("AndroidViewHierarchyImporter",                      allPlatforms)
+    , ("angel",                                             allPlatforms)
+    , ("Animas",                                            allPlatforms)
+    , ("antfarm",                                           allPlatforms)
+    , ("anticiv",                                           allPlatforms)
+    , ("antigate",                                          allPlatforms)
+    , ("antimirov",                                         allPlatforms)
+    , ("antlrc",                                            allPlatforms)
+    , ("anydbm",                                            allPlatforms)
+    , ("aosd",                                              allPlatforms)
+    , ("apelsin",                                           allPlatforms)
+    , ("apiary-helics",                                     allPlatforms)
+    , ("apiary-purescript",                                 allPlatforms)
+    , ("apis",                                              allPlatforms)
+    , ("api-tools",                                         allPlatforms)
+    , ("apotiki",                                           allPlatforms)
+    , ("appc",                                              allPlatforms)
+    , ("app-lens",                                          allPlatforms)
+    , ("ApplePush",                                         allPlatforms)
+    , ("AppleScript",                                       allPlatforms)
+    , ("approx-rand-test",                                  allPlatforms)
+    , ("arbb-vm",                                           allPlatforms)
+    , ("arb-fft",                                           allPlatforms)
+    , ("archiver",                                          allPlatforms)
+    , ("archlinux",                                         allPlatforms)
+    , ("archlinux-web",                                     allPlatforms)
+    , ("arff",                                              allPlatforms)
+    , ("argparser",                                         allPlatforms)
+    , ("arguedit",                                          allPlatforms)
+    , ("ariadne",                                           allPlatforms)
+    , ("arion",                                             allPlatforms)
+    , ("armada",                                            allPlatforms)
+    , ("array-forth",                                       allPlatforms)
+    , ("ArrayRef",                                          allPlatforms)
+    , ("arrowapply-utils",                                  allPlatforms)
+    , ("arrow-improve",                                     allPlatforms)
+    , ("arrowp",                                            allPlatforms)
+    , ("ArrowVHDL",                                         allPlatforms)
+    , ("arx",                                               allPlatforms)
+    , ("ascii85-conduit",                                   allPlatforms)
+    , ("asic",                                              allPlatforms)
+    , ("asil",                                              allPlatforms)
+    , ("asn1-data",                                         allPlatforms)
+    , ("AspectAG",                                          allPlatforms)
+    , ("assimp",                                            allPlatforms)
+    , ("astrds",                                            allPlatforms)
+    , ("astview",                                           allPlatforms)
+    , ("async-extras",                                      allPlatforms)
+    , ("aterm-utils",                                       allPlatforms)
+    , ("atlassian-connect-core",                            allPlatforms)
+    , ("atlassian-connect-descriptor",                      allPlatforms)
+    , ("atom-basic",                                        allPlatforms)
+    , ("atomic-primops-vector",                             allPlatforms)
+    , ("atom-msp430",                                       allPlatforms)
+    , ("atomo",                                             allPlatforms)
+    , ("attoparsec-csv",                                    allPlatforms)
+    , ("attoparsec-iteratee",                               allPlatforms)
+    , ("attoparsec-text",                                   allPlatforms)
+    , ("attoparsec-text-enumerator",                        allPlatforms)
+    , ("Attrac",                                            allPlatforms)
+    , ("atuin",                                             allPlatforms)
+    , ("augeas",                                            allPlatforms)
+    , ("augur",                                             allPlatforms)
+    , ("Aurochs",                                           allPlatforms)
+    , ("authoring",                                         allPlatforms)
+    , ("AutoForms",                                         allPlatforms)
+    , ("autoproc",                                          allPlatforms)
+    , ("avahi",                                             allPlatforms)
+    , ("avers",                                             allPlatforms)
+    , ("AvlTree",                                           allPlatforms)
+    , ("awesomium",                                         allPlatforms)
+    , ("awesomium-glut",                                    allPlatforms)
+    , ("awesomium-raw",                                     allPlatforms)
+    , ("AWin32Console",                                     allPlatforms)
+    , ("aws-cloudfront-signer",                             allPlatforms)
+    , ("aws-configuration-tools",                           allPlatforms)
+    , ("aws-dynamodb-streams",                              allPlatforms)
+    , ("aws-ec2",                                           allPlatforms)
+    , ("aws-elastic-transcoder",                            allPlatforms)
+    , ("aws-general",                                       allPlatforms)
+    , ("aws-kinesis",                                       allPlatforms)
+    , ("aws-kinesis-client",                                allPlatforms)
+    , ("aws-kinesis-reshard",                               allPlatforms)
+    , ("aws-lambda",                                        allPlatforms)
+    , ("aws-performance-tests",                             allPlatforms)
+    , ("aws-sdk",                                           allPlatforms)
+    , ("aws-sdk-text-converter",                            allPlatforms)
+    , ("aws-sdk-xml-unordered",                             allPlatforms)
+    , ("aws-sign4",                                         allPlatforms)
+    , ("aws-sns",                                           allPlatforms)
+    , ("azure-service-api",                                 allPlatforms)
+    , ("azurify",                                           allPlatforms)
+    , ("backdropper",                                       allPlatforms)
+    , ("bag",                                               allPlatforms)
+    , ("Baggins",                                           allPlatforms)
+    , ("bamboo",                                            allPlatforms)
+    , ("bamboo-launcher",                                   allPlatforms)
+    , ("bamboo-plugin-highlight",                           allPlatforms)
+    , ("bamboo-plugin-photo",                               allPlatforms)
+    , ("bamboo-theme-blueprint",                            allPlatforms)
+    , ("bamboo-theme-mini-html5",                           allPlatforms)
+    , ("bamse",                                             allPlatforms)
+    , ("barley",                                            allPlatforms)
+    , ("Barracuda",                                         allPlatforms)
+    , ("barrie",                                            allPlatforms)
+    , ("barrier-monad",                                     allPlatforms)
+    , ("baskell",                                           allPlatforms)
+    , ("battleships",                                       allPlatforms)
+    , ("bayes-stack",                                       allPlatforms)
+    , ("BCMtools",                                          allPlatforms)
+    , ("beamable",                                          allPlatforms)
+    , ("beautifHOL",                                        allPlatforms)
+    , ("bed-and-breakfast",                                 allPlatforms)
+    , ("Befunge93",                                         allPlatforms)
+    , ("bein",                                              allPlatforms)
+    , ("berkeleydb",                                        allPlatforms)
+    , ("BerkeleyDBXML",                                     allPlatforms)
+    , ("berp",                                              allPlatforms)
+    , ("bff",                                               allPlatforms)
+    , ("bgzf",                                              allPlatforms)
+    , ("bidirectionalization-combined",                     allPlatforms)
+    , ("bidispec",                                          allPlatforms)
+    , ("billboard-parser",                                  allPlatforms)
+    , ("billeksah-forms",                                   allPlatforms)
+    , ("billeksah-main",                                    allPlatforms)
+    , ("billeksah-pane",                                    allPlatforms)
+    , ("billeksah-services",                                allPlatforms)
+    , ("binary-derive",                                     allPlatforms)
+    , ("binary-file",                                       allPlatforms)
+    , ("binary-indexed-tree",                               allPlatforms)
+    , ("binary-protocol-zmq",                               allPlatforms)
+    , ("binary-streams",                                    allPlatforms)
+    , ("binary-strict",                                     allPlatforms)
+    , ("binding-gtk",                                       allPlatforms)
+    , ("bindings-apr",                                      allPlatforms)
+    , ("bindings-apr-util",                                 allPlatforms)
+    , ("bindings-bfd",                                      allPlatforms)
+    , ("bindings-cctools",                                  allPlatforms)
+    , ("bindings-codec2",                                   allPlatforms)
+    , ("bindings-common",                                   allPlatforms)
+    , ("bindings-dc1394",                                   allPlatforms)
+    , ("bindings-eskit",                                    allPlatforms)
+    , ("bindings-EsounD",                                   allPlatforms)
+    , ("bindings-fann",                                     allPlatforms)
+    , ("bindings-friso",                                    allPlatforms)
+    , ("bindings-gts",                                      allPlatforms)
+    , ("bindings-hdf5",                                     allPlatforms)
+    , ("bindings-K8055",                                    allPlatforms)
+    , ("bindings-libftdi",                                  allPlatforms)
+    , ("bindings-librrd",                                   allPlatforms)
+    , ("bindings-libstemmer",                               allPlatforms)
+    , ("bindings-libv4l2",                                  allPlatforms)
+    , ("bindings-linux-videodev2",                          allPlatforms)
+    , ("bindings-mpdecimal",                                allPlatforms)
+    , ("bindings-sc3",                                      allPlatforms)
+    , ("bindings-sipc",                                     allPlatforms)
+    , ("bind-marshal",                                      allPlatforms)
+    , ("bio",                                               allPlatforms)
+    , ("Biobase",                                           allPlatforms)
+    , ("BiobaseBlast",                                      allPlatforms)
+    , ("BiobaseDotP",                                       allPlatforms)
+    , ("BiobaseFasta",                                      allPlatforms)
+    , ("BiobaseFR3D",                                       allPlatforms)
+    , ("BiobaseInfernal",                                   allPlatforms)
+    , ("BiobaseMAF",                                        allPlatforms)
+    , ("BiobaseTrainingData",                               allPlatforms)
+    , ("BiobaseTurner",                                     allPlatforms)
+    , ("BiobaseTypes",                                      allPlatforms)
+    , ("BiobaseVienna",                                     allPlatforms)
+    , ("BiobaseXNA",                                        allPlatforms)
+    , ("biophd",                                            allPlatforms)
+    , ("biosff",                                            allPlatforms)
+    , ("biostockholm",                                      allPlatforms)
+    , ("bird",                                              allPlatforms)
+    , ("BirdPP",                                            allPlatforms)
+    , ("bit-array",                                         allPlatforms)
+    , ("bitcoin-rpc",                                       allPlatforms)
+    , ("Bitly",                                             allPlatforms)
+    , ("bitly-cli",                                         allPlatforms)
+    , ("bits-conduit",                                      allPlatforms)
+    , ("bitset",                                            allPlatforms)
+    , ("bitspeak",                                          allPlatforms)
+    , ("bitstream",                                         allPlatforms)
+    , ("BitSyntax",                                         allPlatforms)
+    , ("bittorrent",                                        allPlatforms)
+    , ("bitvec",                                            allPlatforms)
+    , ("bkr",                                               allPlatforms)
+    , ("bla",                                               allPlatforms)
+    , ("black-jewel",                                       allPlatforms)
+    , ("blakesum",                                          allPlatforms)
+    , ("blakesum-demo",                                     allPlatforms)
+    , ("blank-canvas",                                      allPlatforms)
+    , ("blas",                                              allPlatforms)
+    , ("blas-hs",                                           allPlatforms)
+    , ("blaze",                                             allPlatforms)
+    , ("blaze-html-contrib",                                allPlatforms)
+    , ("blaze-html-hexpat",                                 allPlatforms)
+    , ("blazeMarker",                                       allPlatforms)
+    , ("blaze-textual-native",                              allPlatforms)
+    , ("Blobs",                                             allPlatforms)
+    , ("blogination",                                       allPlatforms)
+    , ("Blueprint",                                         allPlatforms)
+    , ("bluetile",                                          allPlatforms)
+    , ("board-games",                                       allPlatforms)
+    , ("bogre-banana",                                      allPlatforms)
+    , ("boolean-normal-forms",                              allPlatforms)
+    , ("bools",                                             allPlatforms)
+    , ("boolsimplifier",                                    allPlatforms)
+    , ("boomslang",                                         allPlatforms)
+    , ("borel",                                             allPlatforms)
+    , ("bot",                                               allPlatforms)
+    , ("brainfuck-monad",                                   allPlatforms)
+    , ("Bravo",                                             allPlatforms)
+    , ("breakout",                                          allPlatforms)
+    , ("brians-brain",                                      allPlatforms)
+    , ("brillig",                                           allPlatforms)
+    , ("broker-haskell",                                    allPlatforms)
+    , ("bsd-sysctl",                                        allPlatforms)
+    , ("bson-generics",                                     allPlatforms)
+    , ("bson-mapping",                                      allPlatforms)
+    , ("btree-concurrent",                                  allPlatforms)
+    , ("buildbox-tools",                                    allPlatforms)
+    , ("buildwrapper",                                      allPlatforms)
+    , ("bullet",                                            allPlatforms)
+    , ("buster",                                            allPlatforms)
+    , ("Buster",                                            allPlatforms)
+    , ("buster-gtk",                                        allPlatforms)
+    , ("buster-network",                                    allPlatforms)
+    , ("bytable",                                           allPlatforms)
+    , ("bytestring-class",                                  allPlatforms)
+    , ("bytestring-csv",                                    allPlatforms)
+    , ("bytestringparser",                                  allPlatforms)
+    , ("bytestring-plain",                                  allPlatforms)
+    , ("bytestringreadp",                                   allPlatforms)
+    , ("bytestring-rematch",                                allPlatforms)
+    , ("bytestring-short",                                  allPlatforms)
+    , ("cabal2arch",                                        allPlatforms)
+    , ("cabal2doap",                                        allPlatforms)
+    , ("cabal2spec",                                        allPlatforms)
+    , ("cabal-constraints",                                 allPlatforms)
+    , ("cabal-debian",                                      allPlatforms)
+    , ("cabal-dev",                                         allPlatforms)
+    , ("cabal-ghci",                                        allPlatforms)
+    , ("cabalgraph",                                        allPlatforms)
+    , ("cabal-graphdeps",                                   allPlatforms)
+    , ("cabal-install-bundle",                              allPlatforms)
+    , ("cabal-install-ghc72",                               allPlatforms)
+    , ("cabal-install-ghc74",                               allPlatforms)
+    , ("cabalmdvrpm",                                       allPlatforms)
+    , ("cabal-query",                                       allPlatforms)
+    , ("cabalrpmdeps",                                      allPlatforms)
+    , ("cabal-scripts",                                     allPlatforms)
+    , ("cabal-setup",                                       allPlatforms)
+    , ("cabal-test",                                        allPlatforms)
+    , ("cabal-upload",                                      allPlatforms)
+    , ("cabocha",                                           allPlatforms)
+    , ("cake3",                                             allPlatforms)
+    , ("cakyrespa",                                         allPlatforms)
+    , ("cal3d",                                             allPlatforms)
+    , ("cal3d-examples",                                    allPlatforms)
+    , ("cal3d-opengl",                                      allPlatforms)
+    , ("calc",                                              allPlatforms)
+    , ("caldims",                                           allPlatforms)
+    , ("caledon",                                           allPlatforms)
+    , ("call-haskell-from-anything",                        allPlatforms)
+    , ("campfire",                                          allPlatforms)
+    , ("cantor",                                            allPlatforms)
+    , ("cao",                                               allPlatforms)
+    , ("cap",                                               allPlatforms)
+    , ("Capabilities",                                      allPlatforms)
+    , ("capri",                                             allPlatforms)
+    , ("carboncopy",                                        allPlatforms)
+    , ("carettah",                                          allPlatforms)
+    , ("casadi-bindings",                                   allPlatforms)
+    , ("casadi-bindings-control",                           allPlatforms)
+    , ("casadi-bindings-core",                              allPlatforms)
+    , ("casadi-bindings-internal",                          allPlatforms)
+    , ("casadi-bindings-ipopt-interface",                   allPlatforms)
+    , ("casadi-bindings-snopt-interface",                   allPlatforms)
+    , ("Cascade",                                           allPlatforms)
+    , ("cascading",                                         allPlatforms)
+    , ("cash",                                              allPlatforms)
+    , ("cassandra-thrift",                                  allPlatforms)
+    , ("cassava-streams",                                   allPlatforms)
+    , ("cassy",                                             allPlatforms)
+    , ("casui",                                             allPlatforms)
+    , ("Catana",                                            allPlatforms)
+    , ("catch-fd",                                          allPlatforms)
+    , ("categorical-algebra",                               allPlatforms)
+    , ("category-extras",                                   allPlatforms)
+    , ("CBOR",                                              allPlatforms)
+    , ("CC-delcont",                                        allPlatforms)
+    , ("CC-delcont-alt",                                    allPlatforms)
+    , ("CC-delcont-cxe",                                    allPlatforms)
+    , ("CC-delcont-exc",                                    allPlatforms)
+    , ("CC-delcont-ref",                                    allPlatforms)
+    , ("CC-delcont-ref-tf",                                 allPlatforms)
+    , ("cci",                                               allPlatforms)
+    , ("cctools-workqueue",                                 allPlatforms)
+    , ("cedict",                                            allPlatforms)
+    , ("ceilometer-common",                                 allPlatforms)
+    , ("cereal-enumerator",                                 allPlatforms)
+    , ("cereal-ieee754",                                    allPlatforms)
+    , ("cereal-plus",                                       allPlatforms)
+    , ("certificate",                                       allPlatforms)
+    , ("cf",                                                allPlatforms)
+    , ("cfipu",                                             allPlatforms)
+    , ("cflp",                                              allPlatforms)
+    , ("cfopu",                                             allPlatforms)
+    , ("cgen",                                              allPlatforms)
+    , ("cgi-utils",                                         allPlatforms)
+    , ("chalkboard",                                        allPlatforms)
+    , ("chalkboard-viewer",                                 allPlatforms)
+    , ("charade",                                           allPlatforms)
+    , ("chatter",                                           allPlatforms)
+    , ("checked",                                           allPlatforms)
+    , ("check-pvp",                                         allPlatforms)
+    , ("chevalier-common",                                  allPlatforms)
+    , ("Chitra",                                            allPlatforms)
+    , ("chp",                                               allPlatforms)
+    , ("chp-mtl",                                           allPlatforms)
+    , ("chp-plus",                                          allPlatforms)
+    , ("chp-spec",                                          allPlatforms)
+    , ("chp-transformers",                                  allPlatforms)
+    , ("ChristmasTree",                                     allPlatforms)
+    , ("chuchu",                                            allPlatforms)
+    , ("chunks",                                            allPlatforms)
+    , ("church-list",                                       allPlatforms)
+    , ("cil",                                               allPlatforms)
+    , ("cinvoke",                                           allPlatforms)
+    , ("c-io",                                              allPlatforms)
+    , ("cio",                                               allPlatforms)
+    , ("citation-resolve",                                  allPlatforms)
+    , ("citeproc-hs",                                       allPlatforms)
+    , ("citeproc-hs-pandoc-filter",                         allPlatforms)
+    , ("cjk",                                               allPlatforms)
+    , ("clac",                                              allPlatforms)
+    , ("clafer",                                            allPlatforms)
+    , ("claferIG",                                          allPlatforms)
+    , ("claferwiki",                                        allPlatforms)
+    , ("CLASE",                                             allPlatforms)
+    , ("clash",                                             allPlatforms)
+    , ("clash-ghc",                                         allPlatforms)
+    , ("clash-prelude",                                     allPlatforms)
+    , ("clash-prelude-quickcheck",                          allPlatforms)
+    , ("clash-systemverilog",                               allPlatforms)
+    , ("clash-vhdl",                                        allPlatforms)
+    , ("ClassLaws",                                         allPlatforms)
+    , ("ClassyPrelude",                                     allPlatforms)
+    , ("clckwrks",                                          allPlatforms)
+    , ("clckwrks-cli",                                      allPlatforms)
+    , ("clckwrks-dot-com",                                  allPlatforms)
+    , ("clckwrks-plugin-bugs",                              allPlatforms)
+    , ("clckwrks-plugin-ircbot",                            allPlatforms)
+    , ("clckwrks-plugin-media",                             allPlatforms)
+    , ("clckwrks-plugin-page",                              allPlatforms)
+    , ("clckwrks-theme-bootstrap",                          allPlatforms)
+    , ("clckwrks-theme-clckwrks",                           allPlatforms)
+    , ("clckwrks-theme-geo-bootstrap",                      allPlatforms)
+    , ("Clean",                                             allPlatforms)
+    , ("clevercss",                                         allPlatforms)
+    , ("clifford",                                          allPlatforms)
+    , ("clipper",                                           allPlatforms)
+    , ("clippings",                                         allPlatforms)
+    , ("clocked",                                           allPlatforms)
+    , ("clogparse",                                         allPlatforms)
+    , ("clone-all",                                         allPlatforms)
+    , ("cloudfront-signer",                                 allPlatforms)
+    , ("cloud-haskell",                                     allPlatforms)
+    , ("cloudyfs",                                          allPlatforms)
+    , ("clua",                                              allPlatforms)
+    , ("cluss",                                             allPlatforms)
+    , ("clustering",                                        allPlatforms)
+    , ("clustertools",                                      allPlatforms)
+    , ("clutterhs",                                         allPlatforms)
+    , ("cmaes",                                             allPlatforms)
+    , ("cmath",                                             allPlatforms)
+    , ("cmathml3",                                          allPlatforms)
+    , ("CMCompare",                                         allPlatforms)
+    , ("cmdargs-browser",                                   allPlatforms)
+    , ("cmdtheline",                                        allPlatforms)
+    , ("cmonad",                                            allPlatforms)
+    , ("cnc-spec-compiler",                                 allPlatforms)
+    , ("cndict",                                            allPlatforms)
+    , ("Coadjute",                                          allPlatforms)
+    , ("Codec-Image-DevIL",                                 allPlatforms)
+    , ("codec-libevent",                                    allPlatforms)
+    , ("codecov-haskell",                                   allPlatforms)
+    , ("codemonitor",                                       allPlatforms)
+    , ("codepad",                                           allPlatforms)
+    , ("cognimeta-utils",                                   allPlatforms)
+    , ("coinbase-exchange",                                 allPlatforms)
+    , ("colada",                                            allPlatforms)
+    , ("collada-output",                                    allPlatforms)
+    , ("collada-types",                                     allPlatforms)
+    , ("collections",                                       allPlatforms)
+    , ("collections-api",                                   allPlatforms)
+    , ("collections-base-instances",                        allPlatforms)
+    , ("coltrane",                                          allPlatforms)
+    , ("com",                                               allPlatforms)
+    , ("combinat",                                          allPlatforms)
+    , ("combinat-diagrams",                                 allPlatforms)
+    , ("combinatorial-problems",                            allPlatforms)
+    , ("combinator-interactive",                            allPlatforms)
+    , ("Combinatorrent",                                    allPlatforms)
+    , ("Commando",                                          allPlatforms)
+    , ("commodities",                                       allPlatforms)
+    , ("commsec",                                           allPlatforms)
+    , ("commsec-keyexchange",                               allPlatforms)
+    , ("comonad-extras",                                    allPlatforms)
+    , ("comonad-random",                                    allPlatforms)
+    , ("compact-map",                                       allPlatforms)
+    , ("compact-string",                                    allPlatforms)
+    , ("compensated",                                       allPlatforms)
+    , ("compilation",                                       allPlatforms)
+    , ("complexity",                                        allPlatforms)
+    , ("compose-trans",                                     allPlatforms)
+    , ("compression",                                       allPlatforms)
+    , ("compstrat",                                         allPlatforms)
+    , ("comptrans",                                         allPlatforms)
+    , ("computational-algebra",                             allPlatforms)
+    , ("concraft",                                          allPlatforms)
+    , ("concraft-hr",                                       allPlatforms)
+    , ("concraft-pl",                                       allPlatforms)
+    , ("concrete-typerep",                                  allPlatforms)
+    , ("concurrent-state",                                  allPlatforms)
+    , ("ConcurrentUtils",                                   allPlatforms)
+    , ("condor",                                            allPlatforms)
+    , ("Condor",                                            allPlatforms)
+    , ("condorcet",                                         allPlatforms)
+    , ("conductive-clock",                                  allPlatforms)
+    , ("conductive-hsc3",                                   allPlatforms)
+    , ("conduit-audio-lame",                                allPlatforms)
+    , ("conduit-audio-samplerate",                          allPlatforms)
+    , ("conduit-iconv",                                     allPlatforms)
+    , ("conduit-network-stream",                            allPlatforms)
+    , ("conduit-resumablesink",                             allPlatforms)
+    , ("Configger",                                         allPlatforms)
+    , ("config-select",                                     allPlatforms)
+    , ("conjure",                                           allPlatforms)
+    , ("consistent",                                        allPlatforms)
+    , ("const-math-ghc-plugin",                             allPlatforms)
+    , ("constructive-algebra",                              allPlatforms)
+    , ("consul-haskell",                                    allPlatforms)
+    , ("Consumer",                                          allPlatforms)
+    , ("context-stack",                                     allPlatforms)
+    , ("continue",                                          allPlatforms)
+    , ("continuum",                                         allPlatforms)
+    , ("continuum-client",                                  allPlatforms)
+    , ("Contract",                                          allPlatforms)
+    , ("control-event",                                     allPlatforms)
+    , ("control-monad-attempt",                             allPlatforms)
+    , ("control-monad-exception-mtl",                       allPlatforms)
+    , ("control-monad-failure",                             allPlatforms)
+    , ("control-monad-failure-mtl",                         allPlatforms)
+    , ("Control-Monad-MultiPass",                           allPlatforms)
+    , ("Control-Monad-ST2",                                 allPlatforms)
+    , ("contstuff-monads-tf",                               allPlatforms)
+    , ("contstuff-transformers",                            allPlatforms)
+    , ("convertible-ascii",                                 allPlatforms)
+    , ("convertible-text",                                  allPlatforms)
+    , ("copilot",                                           allPlatforms)
+    , ("copilot-c99",                                       allPlatforms)
+    , ("copilot-cbmc",                                      allPlatforms)
+    , ("copilot-core",                                      allPlatforms)
+    , ("copilot-language",                                  allPlatforms)
+    , ("copilot-libraries",                                 allPlatforms)
+    , ("copilot-sbv",                                       allPlatforms)
+    , ("COrdering",                                         allPlatforms)
+    , ("core",                                              allPlatforms)
+    , ("corebot-bliki",                                     allPlatforms)
+    , ("CoreErlang",                                        allPlatforms)
+    , ("CoreFoundation",                                    allPlatforms)
+    , ("core-haskell",                                      allPlatforms)
+    , ("Coroutine",                                         allPlatforms)
+    , ("coroutine-iteratee",                                allPlatforms)
+    , ("CouchDB",                                           allPlatforms)
+    , ("couchdb-conduit",                                   allPlatforms)
+    , ("couchdb-enumerator",                                allPlatforms)
+    , ("couch-hs",                                          allPlatforms)
+    , ("court",                                             allPlatforms)
+    , ("coverage",                                          allPlatforms)
+    , ("CPBrainfuck",                                       allPlatforms)
+    , ("cpio-conduit",                                      allPlatforms)
+    , ("CPL",                                               allPlatforms)
+    , ("cplusplus-th",                                      allPlatforms)
+    , ("cpuperf",                                           allPlatforms)
+    , ("cpython",                                           allPlatforms)
+    , ("cqrs",                                              allPlatforms)
+    , ("cqrs-example",                                      allPlatforms)
+    , ("cqrs-postgresql",                                   allPlatforms)
+    , ("cqrs-sqlite3",                                      allPlatforms)
+    , ("cqrs-test",                                         allPlatforms)
+    , ("cqrs-types",                                        allPlatforms)
+    , ("cr",                                                allPlatforms)
+    , ("crack",                                             allPlatforms)
+    , ("Craft3e",                                           allPlatforms)
+    , ("craftwerk",                                         allPlatforms)
+    , ("craftwerk-cairo",                                   allPlatforms)
+    , ("craftwerk-gtk",                                     allPlatforms)
+    , ("crc16",                                             allPlatforms)
+    , ("crf-chain1",                                        allPlatforms)
+    , ("crf-chain1-constrained",                            allPlatforms)
+    , ("crf-chain2-generic",                                allPlatforms)
+    , ("crf-chain2-tiers",                                  allPlatforms)
+    , ("criterion-plus",                                    allPlatforms)
+    , ("crocodile",                                         allPlatforms)
+    , ("crunghc",                                           allPlatforms)
+    , ("crypto-cipher-benchmarks",                          allPlatforms)
+    , ("cryptsy-api",                                       allPlatforms)
+    , ("crystalfontz",                                      allPlatforms)
+    , ("cse-ghc-plugin",                                    allPlatforms)
+    , ("csound-catalog",                                    allPlatforms)
+    , ("csound-expression",                                 allPlatforms)
+    , ("csound-expression-opcodes",                         allPlatforms)
+    , ("csound-expression-typed",                           allPlatforms)
+    , ("csound-sampler",                                    allPlatforms)
+    , ("csp",                                               allPlatforms)
+    , ("cspmchecker",                                       allPlatforms)
+    , ("CSPM-cspm",                                         allPlatforms)
+    , ("CSPM-FiringRules",                                  allPlatforms)
+    , ("CSPM-Frontend",                                     allPlatforms)
+    , ("CSPM-Interpreter",                                  allPlatforms)
+    , ("CSPM-ToProlog",                                     allPlatforms)
+    , ("css",                                               allPlatforms)
+    , ("ctemplate",                                         allPlatforms)
+    , ("ctkl",                                              allPlatforms)
+    , ("ctpl",                                              allPlatforms)
+    , ("cudd",                                              allPlatforms)
+    , ("curry-base",                                        allPlatforms)
+    , ("CurryDB",                                           allPlatforms)
+    , ("curry-frontend",                                    allPlatforms)
+    , ("cursedcsv",                                         allPlatforms)
+    , ("curves",                                            allPlatforms)
+    , ("CV",                                                allPlatforms)
+    , ("cypher",                                            allPlatforms)
+    , ("dag",                                               allPlatforms)
+    , ("DAG-Tournament",                                    allPlatforms)
+    , ("Dangerous",                                         allPlatforms)
+    , ("dao",                                               allPlatforms)
+    , ("Dao",                                               allPlatforms)
+    , ("dapi",                                              allPlatforms)
+    , ("darcs2dot",                                         allPlatforms)
+    , ("darcs-benchmark",                                   allPlatforms)
+    , ("darcs-beta",                                        allPlatforms)
+    , ("darcs-buildpackage",                                allPlatforms)
+    , ("darcs-cabalized",                                   allPlatforms)
+    , ("darcsden",                                          allPlatforms)
+    , ("darcs-fastconvert",                                 allPlatforms)
+    , ("darcs-graph",                                       allPlatforms)
+    , ("DarcsHelpers",                                      allPlatforms)
+    , ("darcs-monitor",                                     allPlatforms)
+    , ("darcs-scripts",                                     allPlatforms)
+    , ("darcswatch",                                        allPlatforms)
+    , ("darkplaces-demo",                                   allPlatforms)
+    , ("data-cycle",                                        allPlatforms)
+    , ("data-dispersal",                                    allPlatforms)
+    , ("data-easy",                                         allPlatforms)
+    , ("data-extra",                                        allPlatforms)
+    , ("data-ivar",                                         allPlatforms)
+    , ("data-lens-ixset",                                   allPlatforms)
+    , ("datalog",                                           allPlatforms)
+    , ("data-named",                                        allPlatforms)
+    , ("data-nat",                                          allPlatforms)
+    , ("data-object-json",                                  allPlatforms)
+    , ("data-object-yaml",                                  allPlatforms)
+    , ("data-quotientref",                                  allPlatforms)
+    , ("data-rope",                                         allPlatforms)
+    , ("Data-Rope",                                         allPlatforms)
+    , ("data-store",                                        allPlatforms)
+    , ("DataTreeView",                                      allPlatforms)
+    , ("data-type",                                         allPlatforms)
+    , ("dbjava",                                            allPlatforms)
+    , ("DBus",                                              allPlatforms)
+    , ("dbus-client",                                       allPlatforms)
+    , ("dbus-core",                                         allPlatforms)
+    , ("d-bus",                                             allPlatforms)
+    , ("dclabel",                                           allPlatforms)
+    , ("ddc-build",                                         allPlatforms)
+    , ("ddc-core",                                          allPlatforms)
+    , ("ddc-core-eval",                                     allPlatforms)
+    , ("ddc-core-flow",                                     allPlatforms)
+    , ("ddc-core-llvm",                                     allPlatforms)
+    , ("ddc-core-salt",                                     allPlatforms)
+    , ("ddc-core-simpl",                                    allPlatforms)
+    , ("ddc-core-tetra",                                    allPlatforms)
+    , ("ddc-driver",                                        allPlatforms)
+    , ("ddci-core",                                         allPlatforms)
+    , ("ddc-source-tetra",                                  allPlatforms)
+    , ("ddc-tools",                                         allPlatforms)
+    , ("Deadpan-DDP",                                       allPlatforms)
+    , ("dead-simple-json",                                  allPlatforms)
+    , ("decepticons",                                       allPlatforms)
+    , ("DecisionTree",                                      allPlatforms)
+    , ("decoder-conduit",                                   allPlatforms)
+    , ("dedukti",                                           allPlatforms)
+    , ("deeplearning-hs",                                   allPlatforms)
+    , ("deepseq-bounded",                                   allPlatforms)
+    , ("deepseq-th",                                        allPlatforms)
+    , ("deepzoom",                                          allPlatforms)
+    , ("defargs",                                           allPlatforms)
+    , ("DefendTheKing",                                     allPlatforms)
+    , ("definitive-base",                                   allPlatforms)
+    , ("definitive-filesystem",                             allPlatforms)
+    , ("definitive-graphics",                               allPlatforms)
+    , ("definitive-parser",                                 allPlatforms)
+    , ("definitive-reactive",                               allPlatforms)
+    , ("definitive-sound",                                  allPlatforms)
+    , ("dejafu",                                            allPlatforms)
+    , ("deka",                                              allPlatforms)
+    , ("deka-tests",                                        allPlatforms)
+    , ("delicious",                                         allPlatforms)
+    , ("delta-h",                                           allPlatforms)
+    , ("demarcate",                                         allPlatforms)
+    , ("denominate",                                        allPlatforms)
+    , ("depends",                                           allPlatforms)
+    , ("dephd",                                             allPlatforms)
+    , ("dequeue",                                           allPlatforms)
+    , ("derangement",                                       allPlatforms)
+    , ("derivation-trees",                                  allPlatforms)
+    , ("derive-gadt",                                       allPlatforms)
+    , ("derive-IG",                                         allPlatforms)
+    , ("derive-topdown",                                    allPlatforms)
+    , ("derive-trie",                                       allPlatforms)
+    , ("derp-lib",                                          allPlatforms)
+    , ("dewdrop",                                           allPlatforms)
+    , ("Dflow",                                             allPlatforms)
+    , ("dfsbuild",                                          allPlatforms)
+    , ("dgim",                                              allPlatforms)
+    , ("dgs",                                               allPlatforms)
+    , ("diagrams-canvas",                                   allPlatforms)
+    , ("diagrams-pdf",                                      allPlatforms)
+    , ("diagrams-pgf",                                      allPlatforms)
+    , ("diagrams-qrcode",                                   allPlatforms)
+    , ("diagrams-tikz",                                     allPlatforms)
+    , ("dice-entropy-conduit",                              allPlatforms)
+    , ("dicom",                                             allPlatforms)
+    , ("dictparser",                                        allPlatforms)
+    , ("diffcabal",                                         allPlatforms)
+    , ("DifferenceLogic",                                   allPlatforms)
+    , ("DifferentialEvolution",                             allPlatforms)
+    , ("digestive-functors-hsp",                            allPlatforms)
+    , ("DimensionalHash",                                   allPlatforms)
+    , ("dingo-core",                                        allPlatforms)
+    , ("dingo-example",                                     allPlatforms)
+    , ("dingo-widgets",                                     allPlatforms)
+    , ("diophantine",                                       allPlatforms)
+    , ("diplomacy-server",                                  allPlatforms)
+    , ("direct-binary-files",                               allPlatforms)
+    , ("directed-cubical",                                  allPlatforms)
+    , ("direct-fastcgi",                                    allPlatforms)
+    , ("direct-http",                                       allPlatforms)
+    , ("direct-plugins",                                    allPlatforms)
+    , ("DirectSound",                                       allPlatforms)
+    , ("dirfiles",                                          allPlatforms)
+    , ("discount",                                          allPlatforms)
+    , ("disjoint-set",                                      allPlatforms)
+    , ("DisTract",                                          allPlatforms)
+    , ("distributed-process-async",                         allPlatforms)
+    , ("distributed-process-azure",                         allPlatforms)
+    , ("distributed-process-client-server",                 allPlatforms)
+    , ("distributed-process-execution",                     allPlatforms)
+    , ("distributed-process-extras",                        allPlatforms)
+    , ("distributed-process-platform",                      allPlatforms)
+    , ("distributed-process-registry",                      allPlatforms)
+    , ("distributed-process-supervisor",                    allPlatforms)
+    , ("distributed-process-task",                          allPlatforms)
+    , ("distributed-process-tests",                         allPlatforms)
+    , ("distributed-process-zookeeper",                     allPlatforms)
+    , ("distribution",                                      allPlatforms)
+    , ("distribution-plot",                                 allPlatforms)
+    , ("dist-upload",                                       allPlatforms)
+    , ("djinn-th",                                          allPlatforms)
+    , ("DnaProteinAlignment",                               allPlatforms)
+    , ("dnscache",                                          allPlatforms)
+    , ("dnssd",                                             allPlatforms)
+    , ("doccheck",                                          allPlatforms)
+    , ("docidx",                                            allPlatforms)
+    , ("docker",                                            allPlatforms)
+    , ("dockercook",                                        allPlatforms)
+    , ("doc-review",                                        allPlatforms)
+    , ("DocTest",                                           allPlatforms)
+    , ("doctest-discover",                                  allPlatforms)
+    , ("doctest-discover-configurator",                     allPlatforms)
+    , ("DOM",                                               allPlatforms)
+    , ("download",                                          allPlatforms)
+    , ("download-media-content",                            allPlatforms)
+    , ("DP",                                                allPlatforms)
+    , ("dph-examples",                                      allPlatforms)
+    , ("dph-lifted-base",                                   allPlatforms)
+    , ("dph-lifted-copy",                                   allPlatforms)
+    , ("dph-lifted-vseg",                                   allPlatforms)
+    , ("dph-par",                                           allPlatforms)
+    , ("dph-prim-par",                                      allPlatforms)
+    , ("dph-prim-seq",                                      allPlatforms)
+    , ("dph-seq",                                           allPlatforms)
+    , ("DPM",                                               allPlatforms)
+    , ("drClickOn",                                         allPlatforms)
+    , ("DrHylo",                                            allPlatforms)
+    , ("DrIFT",                                             allPlatforms)
+    , ("DrIFT-cabalized",                                   allPlatforms)
+    , ("drifter-postgresql",                                allPlatforms)
+    , ("dropbox-sdk",                                       allPlatforms)
+    , ("dropsolve",                                         allPlatforms)
+    , ("ds-kanren",                                         allPlatforms)
+    , ("dsmc",                                              allPlatforms)
+    , ("dsmc-tools",                                        allPlatforms)
+    , ("dsp",                                               allPlatforms)
+    , ("DSTM",                                              allPlatforms)
+    , ("dstring",                                           allPlatforms)
+    , ("DTC",                                               allPlatforms)
+    , ("dtd",                                               allPlatforms)
+    , ("dtd-text",                                          allPlatforms)
+    , ("dtd-types",                                         allPlatforms)
+    , ("duplo",                                             allPlatforms)
+    , ("Dust",                                              allPlatforms)
+    , ("Dust-crypto",                                       allPlatforms)
+    , ("Dust-tools",                                        allPlatforms)
+    , ("Dust-tools-pcap",                                   allPlatforms)
+    , ("dvda",                                              allPlatforms)
+    , ("dvdread",                                           allPlatforms)
+    , ("dx9base",                                           allPlatforms)
+    , ("dx9d3d",                                            allPlatforms)
+    , ("dx9d3dx",                                           allPlatforms)
+    , ("dynamic-object",                                    allPlatforms)
+    , ("dynamic-plot",                                      allPlatforms)
+    , ("dynamic-pp",                                        allPlatforms)
+    , ("DynamicTimeWarp",                                   allPlatforms)
+    , ("dynobud",                                           allPlatforms)
+    , ("DysFRP-Cairo",                                      allPlatforms)
+    , ("DysFRP-Craftwerk",                                  allPlatforms)
+    , ("easy-api",                                          allPlatforms)
+    , ("easyjson",                                          allPlatforms)
+    , ("easyplot",                                          allPlatforms)
+    , ("easyrender",                                        allPlatforms)
+    , ("ecdsa",                                             allPlatforms)
+    , ("ecu",                                               allPlatforms)
+    , ("edenmodules",                                       allPlatforms)
+    , ("edenskel",                                          allPlatforms)
+    , ("edentv",                                            allPlatforms)
+    , ("edge",                                              allPlatforms)
+    , ("EdisonCore",                                        allPlatforms)
+    , ("edit-lenses",                                       allPlatforms)
+    , ("editline",                                          allPlatforms)
+    , ("EditTimeReport",                                    allPlatforms)
+    , ("EEConfig",                                          allPlatforms)
+    , ("effective-aspects",                                 allPlatforms)
+    , ("effective-aspects-mzv",                             allPlatforms)
+    , ("effect-monad",                                      allPlatforms)
+    , ("egison-quote",                                      allPlatforms)
+    , ("ehaskell",                                          allPlatforms)
+    , ("ehs",                                               allPlatforms)
+    , ("eibd-client-simple",                                allPlatforms)
+    , ("eithers",                                           allPlatforms)
+    , ("EitherT",                                           allPlatforms)
+    , ("email",                                             allPlatforms)
+    , ("email-header",                                      allPlatforms)
+    , ("email-postmark",                                    allPlatforms)
+    , ("embeddock",                                         allPlatforms)
+    , ("embeddock-example",                                 allPlatforms)
+    , ("embroidery",                                        allPlatforms)
+    , ("emgm",                                              allPlatforms)
+    , ("Emping",                                            allPlatforms)
+    , ("empty",                                             allPlatforms)
+    , ("Encode",                                            allPlatforms)
+    , ("enumfun",                                           allPlatforms)
+    , ("EnumMap",                                           allPlatforms)
+    , ("enummapmap",                                        allPlatforms)
+    , ("env-parser",                                        allPlatforms)
+    , ("epoll",                                             allPlatforms)
+    , ("epubname",                                          allPlatforms)
+    , ("Eq",                                                allPlatforms)
+    , ("equational-reasoning",                              allPlatforms)
+    , ("erlang",                                            allPlatforms)
+    , ("eros-client",                                       allPlatforms)
+    , ("error-message",                                     allPlatforms)
+    , ("ersatz",                                            allPlatforms)
+    , ("ersatz-toysat",                                     allPlatforms)
+    , ("esotericbot",                                       allPlatforms)
+    , ("EsounD",                                            allPlatforms)
+    , ("estimators",                                        allPlatforms)
+    , ("estreps",                                           allPlatforms)
+    , ("Etage",                                             allPlatforms)
+    , ("Etage-Graph",                                       allPlatforms)
+    , ("EtaMOO",                                            allPlatforms)
+    , ("eternal",                                           allPlatforms)
+    , ("Eternal10Seconds",                                  allPlatforms)
+    , ("Etherbunny",                                        allPlatforms)
+    , ("ethereum-client-haskell",                           allPlatforms)
+    , ("ethereum-merkle-patricia-db",                       allPlatforms)
+    , ("euphoria",                                          allPlatforms)
+    , ("eurofxref",                                         allPlatforms)
+    , ("Euterpea",                                          allPlatforms)
+    , ("event-driven",                                      allPlatforms)
+    , ("event-monad",                                       allPlatforms)
+    , ("EventSocket",                                       allPlatforms)
+    , ("every-bit-counts",                                  allPlatforms)
+    , ("ewe",                                               allPlatforms)
+    , ("exif",                                              allPlatforms)
+    , ("exists",                                            allPlatforms)
+    , ("expand",                                            allPlatforms)
+    , ("expat-enumerator",                                  allPlatforms)
+    , ("explain",                                           allPlatforms)
+    , ("explicit-sharing",                                  allPlatforms)
+    , ("explore",                                           allPlatforms)
+    , ("exposed-containers",                                allPlatforms)
+    , ("exp-pairs",                                         allPlatforms)
+    , ("extcore",                                           allPlatforms)
+    , ("extemp",                                            allPlatforms)
+    , ("extended-categories",                               allPlatforms)
+    , ("external-sort",                                     allPlatforms)
+    , ("ez-couch",                                          allPlatforms)
+    , ("faceted",                                           allPlatforms)
+    , ("factual-api",                                       allPlatforms)
+    , ("FailureT",                                          allPlatforms)
+    , ("fallingblocks",                                     allPlatforms)
+    , ("falling-turnip",                                    allPlatforms)
+    , ("fastirc",                                           allPlatforms)
+    , ("fast-tags",                                         allPlatforms)
+    , ("fault-tree",                                        allPlatforms)
+    , ("fay-hsx",                                           allPlatforms)
+    , ("fcd",                                               allPlatforms)
+    , ("fckeditor",                                         allPlatforms)
+    , ("FComp",                                             allPlatforms)
+    , ("fdo-trash",                                         allPlatforms)
+    , ("feed2lj",                                           allPlatforms)
+    , ("feed2twitter",                                      allPlatforms)
+    , ("feed-cli",                                          allPlatforms)
+    , ("feldspar-compiler",                                 allPlatforms)
+    , ("feldspar-language",                                 allPlatforms)
+    , ("fences",                                            allPlatforms)
+    , ("fenfire",                                           allPlatforms)
+    , ("FermatsLastMargin",                                 allPlatforms)
+    , ("FerryCore",                                         allPlatforms)
+    , ("ffeed",                                             allPlatforms)
+    , ("ffmpeg-tutorials",                                  allPlatforms)
+    , ("fibon",                                             allPlatforms)
+    , ("fields",                                            allPlatforms)
+    , ("FieldTrip",                                         allPlatforms)
+    , ("fieldwise",                                         allPlatforms)
+    , ("FileManip",                                         allPlatforms)
+    , ("FileManipCompat",                                   allPlatforms)
+    , ("FileSystem",                                        allPlatforms)
+    , ("filesystem-conduit",                                allPlatforms)
+    , ("filesystem-enumerator",                             allPlatforms)
+    , ("Finance-Quote-Yahoo",                               allPlatforms)
+    , ("Finance-Treasury",                                  allPlatforms)
+    , ("find-conduit",                                      allPlatforms)
+    , ("FiniteMap",                                         allPlatforms)
+    , ("firstify",                                          allPlatforms)
+    , ("FirstOrderTheory",                                  allPlatforms)
+    , ("fit",                                               allPlatforms)
+    , ("fitsio",                                            allPlatforms)
+    , ("fixed-point",                                       allPlatforms)
+    , ("fixed-point-vector",                                allPlatforms)
+    , ("fixed-point-vector-space",                          allPlatforms)
+    , ("fixed-precision",                                   allPlatforms)
+    , ("fixed-storable-array",                              allPlatforms)
+    , ("fix-parser-simple",                                 allPlatforms)
+    , ("fixplate",                                          allPlatforms)
+    , ("fix-symbols-gitit",                                 allPlatforms)
+    , ("flexiwrap",                                         allPlatforms)
+    , ("flexiwrap-smallcheck",                              allPlatforms)
+    , ("flickr",                                            allPlatforms)
+    , ("Flippi",                                            allPlatforms)
+    , ("flite",                                             allPlatforms)
+    , ("flo",                                               allPlatforms)
+    , ("floating-bits",                                     allPlatforms)
+    , ("flow2dot",                                          allPlatforms)
+    , ("flowdock-api",                                      allPlatforms)
+    , ("flower",                                            allPlatforms)
+    , ("flowlocks-framework",                               allPlatforms)
+    , ("flowsim",                                           allPlatforms)
+    , ("FModExRaw",                                         allPlatforms)
+    , ("FM-SBLEX",                                          allPlatforms)
+    , ("foldl-incremental",                                 allPlatforms)
+    , ("foldl-transduce",                                   allPlatforms)
+    , ("folds",                                             allPlatforms)
+    , ("folds-common",                                      allPlatforms)
+    , ("follower",                                          allPlatforms)
+    , ("Folly",                                             allPlatforms)
+    , ("foma",                                              allPlatforms)
+    , ("font-opengl-basic4x6",                              allPlatforms)
+    , ("foo",                                               allPlatforms)
+    , ("forbidden-fruit",                                   allPlatforms)
+    , ("fordo",                                             allPlatforms)
+    , ("for-free",                                          allPlatforms)
+    , ("formal",                                            allPlatforms)
+    , ("FormalGrammars",                                    allPlatforms)
+    , ("format",                                            allPlatforms)
+    , ("format-status",                                     allPlatforms)
+    , ("forml",                                             allPlatforms)
+    , ("formlets",                                          allPlatforms)
+    , ("formlets-hsp",                                      allPlatforms)
+    , ("ForSyDe",                                           allPlatforms)
+    , ("forth-hll",                                         allPlatforms)
+    , ("Foster",                                            allPlatforms)
+    , ("fpco-api",                                          allPlatforms)
+    , ("fpnla-examples",                                    allPlatforms)
+    , ("FPretty",                                           allPlatforms)
+    , ("frag",                                              allPlatforms)
+    , ("franchise",                                         allPlatforms)
+    , ("Frank",                                             allPlatforms)
+    , ("free-game",                                         allPlatforms)
+    , ("freekick2",                                         allPlatforms)
+    , ("free-operational",                                  allPlatforms)
+    , ("freesect",                                          allPlatforms)
+    , ("freesound",                                         allPlatforms)
+    , ("free-theorems",                                     allPlatforms)
+    , ("free-theorems-counterexamples",                     allPlatforms)
+    , ("free-theorems-seq",                                 allPlatforms)
+    , ("free-theorems-seq-webui",                           allPlatforms)
+    , ("free-theorems-webui",                               allPlatforms)
+    , ("FreeTypeGL",                                        allPlatforms)
+    , ("frp-arduino",                                       allPlatforms)
+    , ("fs-events",                                         allPlatforms)
+    , ("fsmActions",                                        allPlatforms)
+    , ("ftdi",                                              allPlatforms)
+    , ("ftp-conduit",                                       allPlatforms)
+    , ("ftshell",                                           allPlatforms)
+    , ("full-sessions",                                     allPlatforms)
+    , ("fullstop",                                          allPlatforms)
+    , ("full-text-search",                                  allPlatforms)
+    , ("functional-arrow",                                  allPlatforms)
+    , ("function-combine",                                  allPlatforms)
+    , ("functor-apply",                                     allPlatforms)
+    , ("functorm",                                          allPlatforms)
+    , ("funion",                                            allPlatforms)
+    , ("funsat",                                            allPlatforms)
+    , ("future",                                            allPlatforms)
+    , ("fuzzytime",                                         allPlatforms)
+    , ("gact",                                              allPlatforms)
+    , ("gameclock",                                         allPlatforms)
+    , ("game-of-life",                                      allPlatforms)
+    , ("Ganymede",                                          allPlatforms)
+    , ("gc-monitoring-wai",                                 allPlatforms)
+    , ("gdiff-ig",                                          allPlatforms)
+    , ("gdiff-th",                                          allPlatforms)
+    , ("GeBoP",                                             allPlatforms)
+    , ("geek",                                              allPlatforms)
+    , ("geek-server",                                       allPlatforms)
+    , ("gemstone",                                          allPlatforms)
+    , ("gencheck",                                          allPlatforms)
+    , ("gender",                                            allPlatforms)
+    , ("genders",                                           allPlatforms)
+    , ("general-prelude",                                   allPlatforms)
+    , ("GeneralTicTacToe",                                  allPlatforms)
+    , ("generators",                                        allPlatforms)
+    , ("generic-church",                                    allPlatforms)
+    , ("genericserialize",                                  allPlatforms)
+    , ("generic-storable",                                  allPlatforms)
+    , ("generic-xml",                                       allPlatforms)
+    , ("genetics",                                          allPlatforms)
+    , ("GenI",                                              allPlatforms)
+    , ("geniconvert",                                       allPlatforms)
+    , ("geni-gui",                                          allPlatforms)
+    , ("geniserver",                                        allPlatforms)
+    , ("geni-util",                                         allPlatforms)
+    , ("GenSmsPdu",                                         allPlatforms)
+    , ("GenussFold",                                        allPlatforms)
+    , ("geodetics",                                         allPlatforms)
+    , ("GeoIp",                                             allPlatforms)
+    , ("GeomPredicates-SSE",                                allPlatforms)
+    , ("getemx",                                            allPlatforms)
+    , ("getflag",                                           allPlatforms)
+    , ("ggtsTC",                                            allPlatforms)
+    , ("ghc-dup",                                           allPlatforms)
+    , ("ghc-events-analyze",                                allPlatforms)
+    , ("ghc-events-parallel",                               allPlatforms)
+    , ("ghci-haskeline",                                    allPlatforms)
+    , ("ghc-imported-from",                                 allPlatforms)
+    , ("ghci-ng",                                           allPlatforms)
+    , ("ghclive",                                           allPlatforms)
+    , ("ghc-parmake",                                       allPlatforms)
+    , ("ghc-pkg-autofix",                                   allPlatforms)
+    , ("ghc-pkg-lib",                                       allPlatforms)
+    , ("ghc-server",                                        allPlatforms)
+    , ("ghc-syb",                                           allPlatforms)
+    , ("GHood",                                             allPlatforms)
+    , ("ght",                                               allPlatforms)
+    , ("ginsu",                                             allPlatforms)
+    , ("gist",                                              allPlatforms)
+    , ("git-all",                                           allPlatforms)
+    , ("git-checklist",                                     allPlatforms)
+    , ("git-date",                                          allPlatforms)
+    , ("gitdo",                                             allPlatforms)
+    , ("git-gpush",                                         allPlatforms)
+    , ("github-webhook-handler",                            allPlatforms)
+    , ("github-webhook-handler-snap",                       allPlatforms)
+    , ("gitlib-cross",                                      allPlatforms)
+    , ("gitlib-s3",                                         allPlatforms)
+    , ("gitlib-utils",                                      allPlatforms)
+    , ("git-repair",                                        allPlatforms)
+    , ("gitson",                                            allPlatforms)
+    , ("glade",                                             allPlatforms)
+    , ("gladexml-accessor",                                 allPlatforms)
+    , ("GLFW-OGL",                                          allPlatforms)
+    , ("glider-nlp",                                        allPlatforms)
+    , ("global",                                            allPlatforms)
+    , ("glome-hs",                                          allPlatforms)
+    , ("GlomeTrace",                                        allPlatforms)
+    , ("GlomeView",                                         allPlatforms)
+    , ("gloss-devil",                                       allPlatforms)
+    , ("gmap",                                              allPlatforms)
+    , ("gmndl",                                             allPlatforms)
+    , ("gnome-desktop",                                     allPlatforms)
+    , ("gnome-keyring",                                     allPlatforms)
+    , ("gnomevfs",                                          allPlatforms)
+    , ("g-npm",                                             allPlatforms)
+    , ("goa",                                               allPlatforms)
+    , ("goatee",                                            allPlatforms)
+    , ("goatee-gtk",                                        allPlatforms)
+    , ("gofer-prelude",                                     allPlatforms)
+    , ("google-html5-slide",                                allPlatforms)
+    , ("google-mail-filters",                               allPlatforms)
+    , ("googleplus",                                        allPlatforms)
+    , ("GoogleSB",                                          allPlatforms)
+    , ("google-search",                                     allPlatforms)
+    , ("gopherbot",                                         allPlatforms)
+    , ("gpah",                                              allPlatforms)
+    , ("GPipe",                                             allPlatforms)
+    , ("GPipe-Collada",                                     allPlatforms)
+    , ("GPipe-Examples",                                    allPlatforms)
+    , ("GPipe-TextureLoad",                                 allPlatforms)
+    , ("gps",                                               allPlatforms)
+    , ("gps2htmlReport",                                    allPlatforms)
+    , ("GPX",                                               allPlatforms)
+    , ("gpx-conduit",                                       allPlatforms)
+    , ("GrammarProducts",                                   allPlatforms)
+    , ("grapefruit-examples",                               allPlatforms)
+    , ("grapefruit-frp",                                    allPlatforms)
+    , ("grapefruit-records",                                allPlatforms)
+    , ("grapefruit-ui",                                     allPlatforms)
+    , ("grapefruit-ui-gtk",                                 allPlatforms)
+    , ("Graph500",                                          allPlatforms)
+    , ("graphbuilder",                                      allPlatforms)
+    , ("GraphHammer",                                       allPlatforms)
+    , ("GraphHammer-examples",                              allPlatforms)
+    , ("graphicsFormats",                                   allPlatforms)
+    , ("graphics-formats-collada",                          allPlatforms)
+    , ("graphicstools",                                     allPlatforms)
+    , ("graph-rewriting",                                   allPlatforms)
+    , ("graph-rewriting-cl",                                allPlatforms)
+    , ("graph-rewriting-gl",                                allPlatforms)
+    , ("graph-rewriting-lambdascope",                       allPlatforms)
+    , ("graph-rewriting-layout",                            allPlatforms)
+    , ("graph-rewriting-ski",                               allPlatforms)
+    , ("graph-rewriting-strategies",                        allPlatforms)
+    , ("graph-rewriting-trs",                               allPlatforms)
+    , ("graph-rewriting-ww",                                allPlatforms)
+    , ("graphtype",                                         allPlatforms)
+    , ("graph-utils",                                       allPlatforms)
+    , ("greencard",                                         allPlatforms)
+    , ("greencard-lib",                                     allPlatforms)
+    , ("greg-client",                                       allPlatforms)
+    , ("Grempa",                                            allPlatforms)
+    , ("grm",                                               allPlatforms)
+    , ("Grow",                                              allPlatforms)
+    , ("GrowlNotify",                                       allPlatforms)
+    , ("gruff",                                             allPlatforms)
+    , ("gruff-examples",                                    allPlatforms)
+    , ("gsl-random",                                        allPlatforms)
+    , ("gsl-random-fu",                                     allPlatforms)
+    , ("gsmenu",                                            allPlatforms)
+    , ("gstreamer",                                         allPlatforms)
+    , ("GTALib",                                            allPlatforms)
+    , ("gtfs",                                              allPlatforms)
+    , ("gtk2hs-cast-glade",                                 allPlatforms)
+    , ("gtk2hs-cast-gnomevfs",                              allPlatforms)
+    , ("gtk2hs-cast-gtk",                                   allPlatforms)
+    , ("gtk2hs-cast-gtkglext",                              allPlatforms)
+    , ("Gtk2hsGenerics",                                    allPlatforms)
+    , ("gtk2hs-rpn",                                        allPlatforms)
+    , ("gtk3-mac-integration",                              allPlatforms)
+    , ("gtkglext",                                          allPlatforms)
+    , ("GtkGLTV",                                           allPlatforms)
+    , ("gtkimageview",                                      allPlatforms)
+    , ("gtk-mac-integration",                               allPlatforms)
+    , ("gtkrsync",                                          allPlatforms)
+    , ("gtk-serialized-event",                              allPlatforms)
+    , ("gtk-toy",                                           allPlatforms)
+    , ("guess-combinator",                                  allPlatforms)
+    , ("GuiHaskell",                                        allPlatforms)
+    , ("GuiTV",                                             allPlatforms)
+    , ("haar",                                              allPlatforms)
+    , ("Hach",                                              allPlatforms)
+    , ("hack2-handler-happstack-server",                    allPlatforms)
+    , ("hack2-handler-mongrel2-http",                       allPlatforms)
+    , ("hack2-handler-warp",                                allPlatforms)
+    , ("hack2-interface-wai",                               allPlatforms)
+    , ("hackage2hwn",                                       allPlatforms)
+    , ("hackage2twitter",                                   allPlatforms)
+    , ("hackage-proxy",                                     allPlatforms)
+    , ("hackage-server",                                    allPlatforms)
+    , ("hackage-sparks",                                    allPlatforms)
+    , ("hack-contrib",                                      allPlatforms)
+    , ("hack-contrib-press",                                allPlatforms)
+    , ("hackernews",                                        allPlatforms)
+    , ("hack-frontend-happstack",                           allPlatforms)
+    , ("hack-handler-epoll",                                allPlatforms)
+    , ("hack-handler-evhttp",                               allPlatforms)
+    , ("hack-handler-fastcgi",                              allPlatforms)
+    , ("hack-handler-happstack",                            allPlatforms)
+    , ("hack-handler-hyena",                                allPlatforms)
+    , ("hack-handler-kibro",                                allPlatforms)
+    , ("hack-handler-simpleserver",                         allPlatforms)
+    , ("HackMail",                                          allPlatforms)
+    , ("hack-middleware-cleanpath",                         allPlatforms)
+    , ("hack-middleware-clientsession",                     allPlatforms)
+    , ("hack-middleware-jsonp",                             allPlatforms)
+    , ("hackport",                                          allPlatforms)
+    , ("hactor",                                            allPlatforms)
+    , ("haddock-leksah",                                    allPlatforms)
+    , ("haddocset",                                         allPlatforms)
+    , ("haggis",                                            allPlatforms)
+    , ("Haggressive",                                       allPlatforms)
+    , ("hairy",                                             allPlatforms)
+    , ("hakaru",                                            allPlatforms)
+    , ("hakismet",                                          allPlatforms)
+    , ("hakyll-blaze-templates",                            allPlatforms)
+    , ("hakyll-contrib",                                    allPlatforms)
+    , ("hakyll-contrib-links",                              allPlatforms)
+    , ("hakyll-convert",                                    allPlatforms)
+    , ("hakyll-elm",                                        allPlatforms)
+    , ("hakyll-R",                                          allPlatforms)
+    , ("halberd",                                           allPlatforms)
+    , ("HaLeX",                                             allPlatforms)
+    , ("halfs",                                             allPlatforms)
+    , ("halipeto",                                          allPlatforms)
+    , ("hampp",                                             allPlatforms)
+    , ("hamtmap",                                           allPlatforms)
+    , ("hamusic",                                           allPlatforms)
+    , ("handle-like",                                       allPlatforms)
+    , ("happindicator",                                     allPlatforms)
+    , ("happindicator3",                                    allPlatforms)
+    , ("happraise",                                         allPlatforms)
+    , ("HAppS-Data",                                        allPlatforms)
+    , ("HAppSHelpers",                                      allPlatforms)
+    , ("happs-hsp",                                         allPlatforms)
+    , ("happs-hsp-template",                                allPlatforms)
+    , ("HAppS-IxSet",                                       allPlatforms)
+    , ("HAppS-Server",                                      allPlatforms)
+    , ("HAppS-State",                                       allPlatforms)
+    , ("happstack-auth",                                    allPlatforms)
+    , ("happstack-authenticate",                            allPlatforms)
+    , ("happstack-contrib",                                 allPlatforms)
+    , ("happstack-data",                                    allPlatforms)
+    , ("happstack-dlg",                                     allPlatforms)
+    , ("happstack-facebook",                                allPlatforms)
+    , ("happstack-fay",                                     allPlatforms)
+    , ("happstack-heist",                                   allPlatforms)
+    , ("happstack-helpers",                                 allPlatforms)
+    , ("happstack-ixset",                                   allPlatforms)
+    , ("happstack-monad-peel",                              allPlatforms)
+    , ("happstack-plugins",                                 allPlatforms)
+    , ("happstack-state",                                   allPlatforms)
+    , ("happstack-util",                                    allPlatforms)
+    , ("happstack-yui",                                     allPlatforms)
+    , ("happs-tutorial",                                    allPlatforms)
+    , ("HAppS-Util",                                        allPlatforms)
+    , ("happybara",                                         allPlatforms)
+    , ("happybara-webkit",                                  allPlatforms)
+    , ("happybara-webkit-server",                           allPlatforms)
+    , ("harchive",                                          allPlatforms)
+    , ("HaRe",                                              allPlatforms)
+    , ("hark",                                              allPlatforms)
+    , ("HARM",                                              allPlatforms)
+    , ("HarmTrace",                                         allPlatforms)
+    , ("HarmTrace-Base",                                    allPlatforms)
+    , ("has",                                               allPlatforms)
+    , ("hascal",                                            allPlatforms)
+    , ("hascat",                                            allPlatforms)
+    , ("hascat-lib",                                        allPlatforms)
+    , ("hascat-setup",                                      allPlatforms)
+    , ("hascat-system",                                     allPlatforms)
+    , ("Haschoo",                                           allPlatforms)
+    , ("HasGP",                                             allPlatforms)
+    , ("hash",                                              allPlatforms)
+    , ("hashable-generics",                                 allPlatforms)
+    , ("hashed-storage",                                    allPlatforms)
+    , ("Hashell",                                           allPlatforms)
+    , ("hasim",                                             allPlatforms)
+    , ("hask",                                              allPlatforms)
+    , ("haskarrow",                                         allPlatforms)
+    , ("haskeem",                                           allPlatforms)
+    , ("haskeline-class",                                   allPlatforms)
+    , ("haskell2010",                                       allPlatforms)
+    , ("haskell98",                                         allPlatforms)
+    , ("haskell-aliyun",                                    allPlatforms)
+    , ("haskell-awk",                                       allPlatforms)
+    , ("haskell-bcrypt",                                    allPlatforms)
+    , ("haskell-brainfuck",                                 allPlatforms)
+    , ("haskell-cnc",                                       allPlatforms)
+    , ("haskell-course-preludes",                           allPlatforms)
+    , ("haskelldb-connect-hdbc",                            allPlatforms)
+    , ("haskelldb-connect-hdbc-catchio-mtl",                allPlatforms)
+    , ("haskelldb-connect-hdbc-catchio-tf",                 allPlatforms)
+    , ("haskelldb-connect-hdbc-catchio-transformers",       allPlatforms)
+    , ("haskelldb-connect-hdbc-lifted",                     allPlatforms)
+    , ("haskelldb-dynamic",                                 allPlatforms)
+    , ("haskelldb-hdbc-mysql",                              allPlatforms)
+    , ("haskelldb-hsql",                                    allPlatforms)
+    , ("haskelldb-hsql-mysql",                              allPlatforms)
+    , ("haskelldb-hsql-odbc",                               allPlatforms)
+    , ("haskelldb-hsql-postgresql",                         allPlatforms)
+    , ("haskelldb-hsql-sqlite3",                            allPlatforms)
+    , ("haskelldb-wx",                                      allPlatforms)
+    , ("haskell-docs",                                      allPlatforms)
+    , ("haskell-formatter",                                 allPlatforms)
+    , ("haskell-ftp",                                       allPlatforms)
+    , ("haskell-in-space",                                  allPlatforms)
+    , ("haskell-neo4j-client",                              allPlatforms)
+    , ("HaskellNN",                                         allPlatforms)
+    , ("Haskelloids",                                       allPlatforms)
+    , ("haskell-openflow",                                  allPlatforms)
+    , ("haskell-pdf-presenter",                             allPlatforms)
+    , ("haskell-platform-test",                             allPlatforms)
+    , ("haskell-plot",                                      allPlatforms)
+    , ("haskell-reflect",                                   allPlatforms)
+    , ("haskell-rules",                                     allPlatforms)
+    , ("haskellscrabble",                                   allPlatforms)
+    , ("haskell-src-meta-mwotton",                          allPlatforms)
+    , ("haskell-token-utils",                               allPlatforms)
+    , ("HaskellTorrent",                                    allPlatforms)
+    , ("haskell-type-exts",                                 allPlatforms)
+    , ("haskell-tyrant",                                    allPlatforms)
+    , ("haskell-xmpp",                                      allPlatforms)
+    , ("haskelm",                                           allPlatforms)
+    , ("haskgame",                                          allPlatforms)
+    , ("haskheap",                                          allPlatforms)
+    , ("haskhol-core",                                      allPlatforms)
+    , ("hask-home",                                         allPlatforms)
+    , ("haskoin",                                           allPlatforms)
+    , ("haskoin-crypto",                                    allPlatforms)
+    , ("haskoin-protocol",                                  allPlatforms)
+    , ("haskoin-script",                                    allPlatforms)
+    , ("haskoin-util",                                      allPlatforms)
+    , ("haskoin-wallet",                                    allPlatforms)
+    , ("haskoon",                                           allPlatforms)
+    , ("haskoon-httpspec",                                  allPlatforms)
+    , ("haskoon-salvia",                                    allPlatforms)
+    , ("haskore",                                           allPlatforms)
+    , ("haskore-realtime",                                  allPlatforms)
+    , ("haskore-supercollider",                             allPlatforms)
+    , ("haskore-synthesizer",                               allPlatforms)
+    , ("haskore-vintage",                                   allPlatforms)
+    , ("haslo",                                             allPlatforms)
+    , ("hasloGUI",                                          allPlatforms)
+    , ("hasparql-client",                                   allPlatforms)
+    , ("hastache-aeson",                                    allPlatforms)
+    , ("haste-compiler",                                    allPlatforms)
+    , ("haste-perch",                                       allPlatforms)
+    , ("has-th",                                            allPlatforms)
+    , ("hatex-guide",                                       allPlatforms)
+    , ("HaTeX-meta",                                        allPlatforms)
+    , ("haverer",                                           allPlatforms)
+    , ("HaVSA",                                             allPlatforms)
+    , ("hawitter",                                          allPlatforms)
+    , ("Hawk",                                              allPlatforms)
+    , ("haxparse",                                          allPlatforms)
+    , ("hayland",                                           allPlatforms)
+    , ("Hayoo",                                             allPlatforms)
+    , ("hayoo-cli",                                         allPlatforms)
+    , ("hback",                                             allPlatforms)
+    , ("hbayes",                                            allPlatforms)
+    , ("hbb",                                               allPlatforms)
+    , ("hBDD-CMUBDD",                                       allPlatforms)
+    , ("hBDD-CUDD",                                         allPlatforms)
+    , ("hbeat",                                             allPlatforms)
+    , ("hblas",                                             allPlatforms)
+    , ("hblock",                                            allPlatforms)
+    , ("h-booru",                                           allPlatforms)
+    , ("hburg",                                             allPlatforms)
+    , ("HCard",                                             allPlatforms)
+    , ("hcheat",                                            allPlatforms)
+    , ("hchesslib",                                         allPlatforms)
+    , ("HCL",                                               allPlatforms)
+    , ("hcron",                                             allPlatforms)
+    , ("hCsound",                                           allPlatforms)
+    , ("hcube",                                             allPlatforms)
+    , ("hdaemonize-buildfix",                               allPlatforms)
+    , ("HDBC-mysql",                                        allPlatforms)
+    , ("hdbi",                                              allPlatforms)
+    , ("hdbi-conduit",                                      allPlatforms)
+    , ("hdbi-postgresql",                                   allPlatforms)
+    , ("hdbi-sqlite",                                       allPlatforms)
+    , ("hdbi-tests",                                        allPlatforms)
+    , ("hDFA",                                              allPlatforms)
+    , ("hdigest",                                           allPlatforms)
+    , ("hdirect",                                           allPlatforms)
+    , ("hdis86",                                            allPlatforms)
+    , ("hdiscount",                                         allPlatforms)
+    , ("hdm",                                               allPlatforms)
+    , ("hdph",                                              allPlatforms)
+    , ("hdph-closure",                                      allPlatforms)
+    , ("HDRUtils",                                          allPlatforms)
+    , ("hecc",                                              allPlatforms)
+    , ("Hedi",                                              allPlatforms)
+    , ("hedn",                                              allPlatforms)
+    , ("heist-aeson",                                       allPlatforms)
+    , ("helics",                                            allPlatforms)
+    , ("helics-wai",                                        allPlatforms)
+    , ("helium",                                            allPlatforms)
+    , ("hell",                                              allPlatforms)
+    , ("hellage",                                           allPlatforms)
+    , ("hellnet",                                           allPlatforms)
+    , ("helm",                                              allPlatforms)
+    , ("hemkay",                                            allPlatforms)
+    , ("hen",                                               allPlatforms)
+    , ("henet",                                             allPlatforms)
+    , ("hepevt",                                            allPlatforms)
+    , ("HERA",                                              allPlatforms)
+    , ("herbalizer",                                        allPlatforms)
+    , ("her-lexer",                                         allPlatforms)
+    , ("her-lexer-parsec",                                  allPlatforms)
+    , ("Hermes",                                            allPlatforms)
+    , ("hermit",                                            allPlatforms)
+    , ("hermit-syb",                                        allPlatforms)
+    , ("herringbone",                                       allPlatforms)
+    , ("herringbone-embed",                                 allPlatforms)
+    , ("herringbone-wai",                                   allPlatforms)
+    , ("hesql",                                             allPlatforms)
+    , ("hetris",                                            allPlatforms)
+    , ("heukarya",                                          allPlatforms)
+    , ("hevolisa",                                          allPlatforms)
+    , ("hevolisa-dph",                                      allPlatforms)
+    , ("hexpat-iteratee",                                   allPlatforms)
+    , ("hexpat-pickle-generic",                             allPlatforms)
+    , ("hexquote",                                          allPlatforms)
+    , ("hF2",                                               allPlatforms)
+    , ("hfann",                                             allPlatforms)
+    , ("hfd",                                               allPlatforms)
+    , ("hfiar",                                             allPlatforms)
+    , ("hfractal",                                          allPlatforms)
+    , ("HFrequencyQueue",                                   allPlatforms)
+    , ("hfsevents",                                         allPlatforms)
+    , ("hfusion",                                           allPlatforms)
+    , ("hgalib",                                            allPlatforms)
+    , ("HGamer3D-API",                                      allPlatforms)
+    , ("HGamer3D-Audio",                                    allPlatforms)
+    , ("HGamer3D-CAudio-Binding",                           allPlatforms)
+    , ("HGamer3D-CEGUI-Binding",                            allPlatforms)
+    , ("HGamer3D",                                          allPlatforms)
+    , ("HGamer3D-Enet-Binding",                             allPlatforms)
+    , ("HGamer3D-Graphics3D",                               allPlatforms)
+    , ("HGamer3D-GUI",                                      allPlatforms)
+    , ("HGamer3D-InputSystem",                              allPlatforms)
+    , ("HGamer3D-Network",                                  allPlatforms)
+    , ("HGamer3D-Ogre-Binding",                             allPlatforms)
+    , ("HGamer3D-OIS-Binding",                              allPlatforms)
+    , ("HGamer3D-SDL2-Binding",                             allPlatforms)
+    , ("HGamer3D-SFML-Binding",                             allPlatforms)
+    , ("HGamer3D-WinEvent",                                 allPlatforms)
+    , ("HGamer3D-Wire",                                     allPlatforms)
+    , ("hg-buildpackage",                                   allPlatforms)
+    , ("hgen",                                              allPlatforms)
+    , ("hgeometric",                                        allPlatforms)
+    , ("hgithub",                                           allPlatforms)
+    , ("HGL",                                               allPlatforms)
+    , ("hgom",                                              allPlatforms)
+    , ("h-gpgme",                                           allPlatforms)
+    , ("HGraphStorage",                                     allPlatforms)
+    , ("hharp",                                             allPlatforms)
+    , ("HHDL",                                              allPlatforms)
+    , ("hiccup",                                            allPlatforms)
+    , ("hichi",                                             allPlatforms)
+    , ("hieraclus",                                         allPlatforms)
+    , ("hierarchical-clustering-diagrams",                  allPlatforms)
+    , ("hiernotify",                                        allPlatforms)
+    , ("Hieroglyph",                                        allPlatforms)
+    , ("HiggsSet",                                          allPlatforms)
+    , ("higherorder",                                       allPlatforms)
+    , ("highWaterMark",                                     allPlatforms)
+    , ("himg",                                              allPlatforms)
+    , ("himpy",                                             allPlatforms)
+    , ("hinduce-classifier",                                allPlatforms)
+    , ("hinduce-classifier-decisiontree",                   allPlatforms)
+    , ("hinduce-examples",                                  allPlatforms)
+    , ("hinvaders",                                         allPlatforms)
+    , ("hinze-streams",                                     allPlatforms)
+    , ("hipbot",                                            allPlatforms)
+    , ("hircules",                                          allPlatforms)
+    , ("hirt",                                              allPlatforms)
+    , ("hissmetrics",                                       allPlatforms)
+    , ("historian",                                         allPlatforms)
+    , ("hist-pl",                                           allPlatforms)
+    , ("hist-pl-fusion",                                    allPlatforms)
+    , ("hist-pl-lmf",                                       allPlatforms)
+    , ("hjs",                                               allPlatforms)
+    , ("HJVM",                                              allPlatforms)
+    , ("hlatex",                                            allPlatforms)
+    , ("hlbfgsb",                                           allPlatforms)
+    , ("hlcm",                                              allPlatforms)
+    , ("HLearn-algebra",                                    allPlatforms)
+    , ("HLearn-datastructures",                             allPlatforms)
+    , ("hledger-chart",                                     allPlatforms)
+    , ("hledger-vty",                                       allPlatforms)
+    , ("hlibev",                                            allPlatforms)
+    , ("hlibfam",                                           allPlatforms)
+    , ("HListPP",                                           allPlatforms)
+    , ("hlogger",                                           allPlatforms)
+    , ("HLogger",                                           allPlatforms)
+    , ("hly",                                               allPlatforms)
+    , ("hmark",                                             allPlatforms)
+    , ("hmarkup",                                           allPlatforms)
+    , ("hmatrix-banded",                                    allPlatforms)
+    , ("hmatrix-gsl-stats",                                 allPlatforms)
+    , ("hmatrix-quadprogpp",                                allPlatforms)
+    , ("hmatrix-static",                                    allPlatforms)
+    , ("hmatrix-syntax",                                    allPlatforms)
+    , ("hmatrix-tests",                                     allPlatforms)
+    , ("hmeap",                                             allPlatforms)
+    , ("hmeap-utils",                                       allPlatforms)
+    , ("hmenu",                                             allPlatforms)
+    , ("hmk",                                               allPlatforms)
+    , ("HMM",                                               allPlatforms)
+    , ("hmm-hmatrix",                                       allPlatforms)
+    , ("hMollom",                                           allPlatforms)
+    , ("hmp3",                                              allPlatforms)
+    , ("Hmpf",                                              allPlatforms)
+    , ("hmpfr",                                             allPlatforms)
+    , ("hmumps",                                            allPlatforms)
+    , ("HNM",                                               allPlatforms)
+    , ("hnn",                                               allPlatforms)
+    , ("hoauth",                                            allPlatforms)
+    , ("hob",                                               allPlatforms)
+    , ("hobbes",                                            allPlatforms)
+    , ("hobbits",                                           allPlatforms)
+    , ("HODE",                                              allPlatforms)
+    , ("hofix-mtl",                                         allPlatforms)
+    , ("hog",                                               allPlatforms)
+    , ("hogg",                                              allPlatforms)
+    , ("hogre",                                             allPlatforms)
+    , ("hogre-examples",                                    allPlatforms)
+    , ("hois",                                              allPlatforms)
+    , ("hole",                                              allPlatforms)
+    , ("holey-format",                                      allPlatforms)
+    , ("Holumbus-Distribution",                             allPlatforms)
+    , ("Holumbus-MapReduce",                                allPlatforms)
+    , ("Holumbus-Searchengine",                             allPlatforms)
+    , ("Holumbus-Storage",                                  allPlatforms)
+    , ("homeomorphic",                                      allPlatforms)
+    , ("hommage",                                           allPlatforms)
+    , ("hommage-ds",                                        allPlatforms)
+    , ("HongoDB",                                           allPlatforms)
+    , ("honi",                                              allPlatforms)
+    , ("hoodie",                                            allPlatforms)
+    , ("hoodle",                                            allPlatforms)
+    , ("hoodle-builder",                                    allPlatforms)
+    , ("hoodle-core",                                       allPlatforms)
+    , ("hoodle-extra",                                      allPlatforms)
+    , ("hoodle-parser",                                     allPlatforms)
+    , ("hoodle-publish",                                    allPlatforms)
+    , ("hoodle-render",                                     allPlatforms)
+    , ("hoodle-types",                                      allPlatforms)
+    , ("hood-off",                                          allPlatforms)
+    , ("hoovie",                                            allPlatforms)
+    , ("hopencc",                                           allPlatforms)
+    , ("hopencl",                                           allPlatforms)
+    , ("hOpenPGP",                                          allPlatforms)
+    , ("hopfield",                                          allPlatforms)
+    , ("hoq",                                               allPlatforms)
+    , ("hosts-server",                                      allPlatforms)
+    , ("hotswap",                                           allPlatforms)
+    , ("hp2any-core",                                       allPlatforms)
+    , ("hp2any-graph",                                      allPlatforms)
+    , ("hp2any-manager",                                    allPlatforms)
+    , ("hpage",                                             allPlatforms)
+    , ("hpapi",                                             allPlatforms)
+    , ("hpaste",                                            allPlatforms)
+    , ("hpasteit",                                          allPlatforms)
+    , ("HPath",                                             allPlatforms)
+    , ("hpc-coveralls",                                     allPlatforms)
+    , ("hpc-tracer",                                        allPlatforms)
+    , ("hPDB-examples",                                     allPlatforms)
+    , ("hplayground",                                       allPlatforms)
+    , ("hplaylist",                                         allPlatforms)
+    , ("HPlot",                                             allPlatforms)
+    , ("hpodder",                                           allPlatforms)
+    , ("HPong",                                             allPlatforms)
+    , ("hprotoc-fork",                                      allPlatforms)
+    , ("hps-cairo",                                         allPlatforms)
+    , ("hpygments",                                         allPlatforms)
+    , ("hpylos",                                            allPlatforms)
+    , ("hR",                                                allPlatforms)
+    , ("hranker",                                           allPlatforms)
+    , ("HRay",                                              allPlatforms)
+    , ("Hricket",                                           allPlatforms)
+    , ("HROOT",                                             allPlatforms)
+    , ("HROOT-core",                                        allPlatforms)
+    , ("HROOT-graf",                                        allPlatforms)
+    , ("HROOT-hist",                                        allPlatforms)
+    , ("HROOT-io",                                          allPlatforms)
+    , ("HROOT-math",                                        allPlatforms)
+    , ("hs2bf",                                             allPlatforms)
+    , ("hs2dot",                                            allPlatforms)
+    , ("Hs2lib",                                            allPlatforms)
+    , ("hsbackup",                                          allPlatforms)
+    , ("hsc2hs",                                            allPlatforms)
+    , ("hsc3-cairo",                                        allPlatforms)
+    , ("hsc3-data",                                         allPlatforms)
+    , ("hsc3-forth",                                        allPlatforms)
+    , ("hsc3-graphs",                                       allPlatforms)
+    , ("hsc3-lang",                                         allPlatforms)
+    , ("hsc3-lisp",                                         allPlatforms)
+    , ("hsc3-plot",                                         allPlatforms)
+    , ("hsc3-rec",                                          allPlatforms)
+    , ("hsc3-server",                                       allPlatforms)
+    , ("hsc3-unsafe",                                       allPlatforms)
+    , ("hscamwire",                                         allPlatforms)
+    , ("hs-carbon-examples",                                allPlatforms)
+    , ("hscassandra",                                       allPlatforms)
+    , ("hs-cdb",                                            allPlatforms)
+    , ("hsclock",                                           allPlatforms)
+    , ("hscurses-fish-ex",                                  allPlatforms)
+    , ("hsdip",                                             allPlatforms)
+    , ("hsdns-cache",                                       allPlatforms)
+    , ("hs-dotnet",                                         allPlatforms)
+    , ("Hsed",                                              allPlatforms)
+    , ("hsfacter",                                          allPlatforms)
+    , ("HSFFIG",                                            allPlatforms)
+    , ("hs-ffmpeg",                                         allPlatforms)
+    , ("hs-fltk",                                           allPlatforms)
+    , ("hs-gchart",                                         allPlatforms)
+    , ("hs-GeoIP",                                          allPlatforms)
+    , ("HSGEP",                                             allPlatforms)
+    , ("hsgnutls",                                          allPlatforms)
+    , ("hsgnutls-yj",                                       allPlatforms)
+    , ("hsgsom",                                            allPlatforms)
+    , ("HsHaruPDF",                                         allPlatforms)
+    , ("HSHHelpers",                                        allPlatforms)
+    , ("HsHyperEstraier",                                   allPlatforms)
+    , ("hsignal",                                           allPlatforms)
+    , ("hSimpleDB",                                         allPlatforms)
+    , ("hs-java",                                           allPlatforms)
+    , ("hs-json-rpc",                                       allPlatforms)
+    , ("HsJudy",                                            allPlatforms)
+    , ("hskeleton",                                         allPlatforms)
+    , ("hslackbuilder",                                     allPlatforms)
+    , ("hslibsvm",                                          allPlatforms)
+    , ("hslogger4j",                                        allPlatforms)
+    , ("hs-logo",                                           allPlatforms)
+    , ("hslogstash",                                        allPlatforms)
+    , ("hsmagick",                                          allPlatforms)
+    , ("HSmarty",                                           allPlatforms)
+    , ("hs-mesos",                                          allPlatforms)
+    , ("Hsmtlib",                                           allPlatforms)
+    , ("hsmtpclient",                                       allPlatforms)
+    , ("hsndfile-storablevector",                           allPlatforms)
+    , ("hsnock",                                            allPlatforms)
+    , ("hs-nombre-generator",                               allPlatforms)
+    , ("hsns",                                              allPlatforms)
+    , ("hsntp",                                             allPlatforms)
+    , ("hsoptions",                                         allPlatforms)
+    , ("HSoundFile",                                        allPlatforms)
+    , ("hsparql",                                           allPlatforms)
+    , ("hsp-cgi",                                           allPlatforms)
+    , ("hspear",                                            allPlatforms)
+    , ("hspec-experimental",                                allPlatforms)
+    , ("hspec-shouldbe",                                    allPlatforms)
+    , ("hspec-snap",                                        allPlatforms)
+    , ("HsPerl5",                                           allPlatforms)
+    , ("hs-pgms",                                           allPlatforms)
+    , ("hs-pkpass",                                         allPlatforms)
+    , ("hspread",                                           allPlatforms)
+    , ("hspresent",                                         allPlatforms)
+    , ("hsprocess",                                         allPlatforms)
+    , ("hsql-mysql",                                        allPlatforms)
+    , ("hsqml-datamodel",                                   allPlatforms)
+    , ("hsqml-demo-morris",                                 allPlatforms)
+    , ("hsqml-demo-samples",                                allPlatforms)
+    , ("hsqml-morris",                                      allPlatforms)
+    , ("hsSqlite3",                                         allPlatforms)
+    , ("HsSVN",                                             allPlatforms)
+    , ("hstatistics",                                       allPlatforms)
+    , ("hstats",                                            allPlatforms)
+    , ("hstest",                                            allPlatforms)
+    , ("hstidy",                                            allPlatforms)
+    , ("hstorchat",                                         allPlatforms)
+    , ("hstradeking",                                       allPlatforms)
+    , ("HStringTemplateHelpers",                            allPlatforms)
+    , ("hs-twitter",                                        allPlatforms)
+    , ("hs-twitterarchiver",                                allPlatforms)
+    , ("hstyle",                                            allPlatforms)
+    , ("hstzaar",                                           allPlatforms)
+    , ("hsubconvert",                                       allPlatforms)
+    , ("hs-vcard",                                          allPlatforms)
+    , ("HSvm",                                              allPlatforms)
+    , ("hswip",                                             allPlatforms)
+    , ("hsx",                                               allPlatforms)
+    , ("hsXenCtrl",                                         allPlatforms)
+    , ("hsx-xhtml",                                         allPlatforms)
+    , ("hsyscall",                                          allPlatforms)
+    , ("hszephyr",                                          allPlatforms)
+    , ("HTab",                                              allPlatforms)
+    , ("hTalos",                                            allPlatforms)
+    , ("hTensor",                                           allPlatforms)
+    , ("HTicTacToe",                                        allPlatforms)
+    , ("html-entities",                                     allPlatforms)
+    , ("htoml",                                             allPlatforms)
+    , ("htsn-import",                                       allPlatforms)
+    , ("http-client-request-modifiers",                     allPlatforms)
+    , ("http-conduit-browser",                              allPlatforms)
+    , ("http-conduit-downloader",                           allPlatforms)
+    , ("http-enumerator",                                   allPlatforms)
+    , ("http-monad",                                        allPlatforms)
+    , ("http-proxy",                                        allPlatforms)
+    , ("https-everywhere-rules",                            allPlatforms)
+    , ("http-shed",                                         allPlatforms)
+    , ("HTTP-Simple",                                       allPlatforms)
+    , ("httpspec",                                          allPlatforms)
+    , ("http-test",                                         allPlatforms)
+    , ("htune",                                             allPlatforms)
+    , ("hubris",                                            allPlatforms)
+    , ("hugs2yc",                                           allPlatforms)
+    , ("hulk",                                              allPlatforms)
+    , ("hums",                                              allPlatforms)
+    , ("HUnit-Diff",                                        allPlatforms)
+    , ("hunit-gui",                                         allPlatforms)
+    , ("HUnit-Plus",                                        allPlatforms)
+    , ("hunit-rematch",                                     allPlatforms)
+    , ("hunt-searchengine",                                 allPlatforms)
+    , ("hurdle",                                            allPlatforms)
+    , ("husk-scheme",                                       allPlatforms)
+    , ("husk-scheme-libs",                                  allPlatforms)
+    , ("husky",                                             allPlatforms)
+    , ("hutton",                                            allPlatforms)
+    , ("huzzy",                                             allPlatforms)
+    , ("hVOIDP",                                            allPlatforms)
+    , ("hws",                                               allPlatforms)
+    , ("HXMPP",                                             allPlatforms)
+    , ("hxmppc",                                            allPlatforms)
+    , ("hxournal",                                          allPlatforms)
+    , ("HXQ",                                               allPlatforms)
+    , ("hxt-binary",                                        allPlatforms)
+    , ("hxt-filter",                                        allPlatforms)
+    , ("hxthelper",                                         allPlatforms)
+    , ("hxweb",                                             allPlatforms)
+    , ("hybrid",                                            allPlatforms)
+    , ("hybrid-vectors",                                    allPlatforms)
+    , ("hydra-hs",                                          allPlatforms)
+    , ("hydrogen-cli-args",                                 allPlatforms)
+    , ("hydrogen-data",                                     allPlatforms)
+    , ("hydrogen-parsing",                                  allPlatforms)
+    , ("hydrogen-prelude",                                  allPlatforms)
+    , ("hydrogen-prelude-parsec",                           allPlatforms)
+    , ("hydrogen-util",                                     allPlatforms)
+    , ("hyena",                                             allPlatforms)
+    , ("hylolib",                                           allPlatforms)
+    , ("hylotab",                                           allPlatforms)
+    , ("hyloutils",                                         allPlatforms)
+    , ("hyperdrive",                                        allPlatforms)
+    , ("hyperloglog",                                       allPlatforms)
+    , ("hyperpublic",                                       allPlatforms)
+    , ("hypher",                                            allPlatforms)
+    , ("i18n",                                              allPlatforms)
+    , ("iban",                                              allPlatforms)
+    , ("ideas",                                             allPlatforms)
+    , ("ideas-math",                                        allPlatforms)
+    , ("idiii",                                             allPlatforms)
+    , ("idna2008",                                          allPlatforms)
+    , ("IDynamic",                                          allPlatforms)
+    , ("ieee-utils",                                        allPlatforms)
+    , ("iException",                                        allPlatforms)
+    , ("IFS",                                               allPlatforms)
+    , ("ige-mac-integration",                               allPlatforms)
+    , ("igraph",                                            allPlatforms)
+    , ("ihttp",                                             allPlatforms)
+    , ("illuminate",                                        allPlatforms)
+    , ("imagepaste",                                        allPlatforms)
+    , ("imbib",                                             allPlatforms)
+    , ("imgurder",                                          allPlatforms)
+    , ("imm",                                               allPlatforms)
+    , ("imparse",                                           allPlatforms)
+    , ("ImperativeHaskell",                                 allPlatforms)
+    , ("implicit",                                          allPlatforms)
+    , ("improve",                                           allPlatforms)
+    , ("INblobs",                                           allPlatforms)
+    , ("inch",                                              allPlatforms)
+    , ("include-file",                                      allPlatforms)
+    , ("incremental-computing",                             allPlatforms)
+    , ("incremental-sat-solver",                            allPlatforms)
+    , ("increments",                                        allPlatforms)
+    , ("index-core",                                        allPlatforms)
+    , ("indices",                                           allPlatforms)
+    , ("indieweb-algorithms",                               allPlatforms)
+    , ("infer-upstream",                                    allPlatforms)
+    , ("infinity",                                          allPlatforms)
+    , ("infix",                                             allPlatforms)
+    , ("InfixApplicative",                                  allPlatforms)
+    , ("inflist",                                           allPlatforms)
+    , ("informative",                                       allPlatforms)
+    , ("inilist",                                           allPlatforms)
+    , ("instant-zipper",                                    allPlatforms)
+    , ("integer-pure",                                      allPlatforms)
+    , ("intel-aes",                                         allPlatforms)
+    , ("interleavableGen",                                  allPlatforms)
+    , ("interleavableIO",                                   allPlatforms)
+    , ("internetmarke",                                     allPlatforms)
+    , ("interpolatedstring-qq",                             allPlatforms)
+    , ("interpolatedstring-qq-mwotton",                     allPlatforms)
+    , ("intricacy",                                         allPlatforms)
+    , ("intset",                                            allPlatforms)
+    , ("IOR",                                               allPlatforms)
+    , ("io-reactive",                                       allPlatforms)
+    , ("IORefCAS",                                          allPlatforms)
+    , ("iotransaction",                                     allPlatforms)
+    , ("ipatch",                                            allPlatforms)
+    , ("ipc",                                               allPlatforms)
+    , ("ipopt-hs",                                          allPlatforms)
+    , ("iptables-helpers",                                  allPlatforms)
+    , ("iptadmin",                                          allPlatforms)
+    , ("Irc",                                               allPlatforms)
+    , ("ircbouncer",                                        allPlatforms)
+    , ("ireal",                                             allPlatforms)
+    , ("IrrHaskell",                                        allPlatforms)
+    , ("isevaluated",                                       allPlatforms)
+    , ("ismtp",                                             allPlatforms)
+    , ("iteratee",                                          allPlatforms)
+    , ("iteratee-compress",                                 allPlatforms)
+    , ("iteratee-parsec",                                   allPlatforms)
+    , ("iteratee-stm",                                      allPlatforms)
+    , ("iterIO",                                            allPlatforms)
+    , ("iterio-server",                                     allPlatforms)
+    , ("iter-stats",                                        allPlatforms)
+    , ("ivor",                                              allPlatforms)
+    , ("ivory",                                             allPlatforms)
+    , ("ivory-backend-c",                                   allPlatforms)
+    , ("ivory-bitdata",                                     allPlatforms)
+    , ("ivory-examples",                                    allPlatforms)
+    , ("ivory-hw",                                          allPlatforms)
+    , ("ivory-opts",                                        allPlatforms)
+    , ("ivory-quickcheck",                                  allPlatforms)
+    , ("ivory-stdlib",                                      allPlatforms)
+    , ("ivy-web",                                           allPlatforms)
+    , ("ixdopp",                                            allPlatforms)
+    , ("ixset-typed",                                       allPlatforms)
+    , ("iyql",                                              allPlatforms)
+    , ("j2hs",                                              allPlatforms)
+    , ("jack-bindings",                                     allPlatforms)
+    , ("jackminimix",                                       allPlatforms)
+    , ("JackMiniMix",                                       allPlatforms)
+    , ("jacobi-roots",                                      allPlatforms)
+    , ("jalla",                                             allPlatforms)
+    , ("jarfind",                                           allPlatforms)
+    , ("java-bridge",                                       allPlatforms)
+    , ("java-bridge-extras",                                allPlatforms)
+    , ("java-reflect",                                      allPlatforms)
+    , ("javasf",                                            allPlatforms)
+    , ("Javasf",                                            allPlatforms)
+    , ("javav",                                             allPlatforms)
+    , ("Javav",                                             allPlatforms)
+    , ("jespresso",                                         allPlatforms)
+    , ("jobqueue",                                          allPlatforms)
+    , ("join",                                              allPlatforms)
+    , ("joinlist",                                          allPlatforms)
+    , ("jonathanscard",                                     allPlatforms)
+    , ("jort",                                              allPlatforms)
+    , ("jsc",                                               allPlatforms)
+    , ("JsContracts",                                       allPlatforms)
+    , ("js-good-parts",                                     allPlatforms)
+    , ("jsmw",                                              allPlatforms)
+    , ("json2",                                             allPlatforms)
+    , ("json2-hdbc",                                        allPlatforms)
+    , ("json-b",                                            allPlatforms)
+    , ("JSONb",                                             allPlatforms)
+    , ("JSON-Combinator",                                   allPlatforms)
+    , ("JSON-Combinator-Examples",                          allPlatforms)
+    , ("json-enumerator",                                   allPlatforms)
+    , ("JsonGrammar",                                       allPlatforms)
+    , ("json-qq",                                           allPlatforms)
+    , ("jsonresume",                                        allPlatforms)
+    , ("json-rpc",                                          allPlatforms)
+    , ("json-tools",                                        allPlatforms)
+    , ("jspath",                                            allPlatforms)
+    , ("judy",                                              allPlatforms)
+    , ("JuicyPixels-repa",                                  allPlatforms)
+    , ("JunkDB-driver-gdbm",                                allPlatforms)
+    , ("JYU-Utils",                                         allPlatforms)
+    , ("kangaroo",                                          allPlatforms)
+    , ("kansas-comet",                                      allPlatforms)
+    , ("kansas-lava-cores",                                 allPlatforms)
+    , ("kansas-lava",                                       allPlatforms)
+    , ("kansas-lava-papilio",                               allPlatforms)
+    , ("kansas-lava-shake",                                 allPlatforms)
+    , ("katt",                                              allPlatforms)
+    , ("keera-hails-mvc-model-lightmodel",                  allPlatforms)
+    , ("keera-hails-reactive-fs",                           allPlatforms)
+    , ("keera-posture",                                     allPlatforms)
+    , ("keiretsu",                                          allPlatforms)
+    , ("Ketchup",                                           allPlatforms)
+    , ("kevin",                                             allPlatforms)
+    , ("keyring",                                           allPlatforms)
+    , ("keystore",                                          allPlatforms)
+    , ("kibro",                                             allPlatforms)
+    , ("kicad-data",                                        allPlatforms)
+    , ("kickass-torrents-dump-parser",                      allPlatforms)
+    , ("KiCS",                                              allPlatforms)
+    , ("KiCS-debugger",                                     allPlatforms)
+    , ("KiCS-prophecy",                                     allPlatforms)
+    , ("kif-parser",                                        allPlatforms)
+    , ("kit",                                               allPlatforms)
+    , ("kmeans-par",                                        allPlatforms)
+    , ("koellner-phonetic",                                 allPlatforms)
+    , ("Konf",                                              allPlatforms)
+    , ("korfu",                                             allPlatforms)
+    , ("kqueue",                                            allPlatforms)
+    , ("kure-your-boilerplate",                             allPlatforms)
+    , ("KyotoCabinet",                                      allPlatforms)
+    , ("labeled-graph",                                     allPlatforms)
+    , ("laborantin-hs",                                     allPlatforms)
+    , ("labyrinth",                                         allPlatforms)
+    , ("labyrinth-server",                                  allPlatforms)
+    , ("laika",                                             allPlatforms)
+    , ("lambda2js",                                         allPlatforms)
+    , ("lambdaBase",                                        allPlatforms)
+    , ("lambdabot",                                         allPlatforms)
+    , ("lambdabot-core",                                    allPlatforms)
+    , ("lambdabot-haskell-plugins",                         allPlatforms)
+    , ("lambdabot-irc-plugins",                             allPlatforms)
+    , ("lambdabot-misc-plugins",                            allPlatforms)
+    , ("lambdabot-novelty-plugins",                         allPlatforms)
+    , ("lambdabot-reference-plugins",                       allPlatforms)
+    , ("lambdabot-social-plugins",                          allPlatforms)
+    , ("lambdabot-utils",                                   allPlatforms)
+    , ("lambda-bridge",                                     allPlatforms)
+    , ("LambdaCalculator",                                  allPlatforms)
+    , ("lambdacat",                                         allPlatforms)
+    , ("lambdacube",                                        allPlatforms)
+    , ("lambdacube-bullet",                                 allPlatforms)
+    , ("lambdacube-engine",                                 allPlatforms)
+    , ("lambdacube-examples",                               allPlatforms)
+    , ("lambdacube-samples",                                allPlatforms)
+    , ("lambda-devs",                                       allPlatforms)
+    , ("lambdaFeed",                                        allPlatforms)
+    , ("LambdaINet",                                        allPlatforms)
+    , ("lambdaLit",                                         allPlatforms)
+    , ("LambdaPrettyQuote",                                 allPlatforms)
+    , ("LambdaShell",                                       allPlatforms)
+    , ("lambda-toolbox",                                    allPlatforms)
+    , ("lambdatwit",                                        allPlatforms)
+    , ("lambdiff",                                          allPlatforms)
+    , ("lame-tester",                                       allPlatforms)
+    , ("language-bash",                                     allPlatforms)
+    , ("language-boogie",                                   allPlatforms)
+    , ("language-c-comments",                               allPlatforms)
+    , ("language-c-inline",                                 allPlatforms)
+    , ("language-eiffel",                                   allPlatforms)
+    , ("language-go",                                       allPlatforms)
+    , ("language-java-classfile",                           allPlatforms)
+    , ("language-mixal",                                    allPlatforms)
+    , ("language-objc",                                     allPlatforms)
+    , ("language-puppet",                                   allPlatforms)
+    , ("language-python-colour",                            allPlatforms)
+    , ("language-sh",                                       allPlatforms)
+    , ("language-spelling",                                 allPlatforms)
+    , ("language-sqlite",                                   allPlatforms)
+    , ("language-thrift",                                   allPlatforms)
+    , ("Lastik",                                            allPlatforms)
+    , ("lat",                                               allPlatforms)
+    , ("latest-npm-version",                                allPlatforms)
+    , ("layers",                                            allPlatforms)
+    , ("layout",                                            allPlatforms)
+    , ("layout-bootstrap",                                  allPlatforms)
+    , ("lazyarray",                                         allPlatforms)
+    , ("lazysplines",                                       allPlatforms)
+    , ("l-bfgs-b",                                          allPlatforms)
+    , ("lcs",                                               allPlatforms)
+    , ("ldap-client",                                       allPlatforms)
+    , ("ldif",                                              allPlatforms)
+    , ("leaf",                                              allPlatforms)
+    , ("leaky",                                             allPlatforms)
+    , ("learn-physics",                                     allPlatforms)
+    , ("learn-physics-examples",                            allPlatforms)
+    , ("leveldb-haskell-fork",                              allPlatforms)
+    , ("levmar-chart",                                      allPlatforms)
+    , ("lgtk",                                              allPlatforms)
+    , ("lha",                                               allPlatforms)
+    , ("lhae",                                              allPlatforms)
+    , ("lhe",                                               allPlatforms)
+    , ("LibClang",                                          allPlatforms)
+    , ("libcspm",                                           allPlatforms)
+    , ("libexpect",                                         allPlatforms)
+    , ("libGenI",                                           allPlatforms)
+    , ("libhbb",                                            allPlatforms)
+    , ("libjenkins",                                        allPlatforms)
+    , ("libltdl",                                           allPlatforms)
+    , ("liboleg",                                           allPlatforms)
+    , ("libpafe",                                           allPlatforms)
+    , ("libpq",                                             allPlatforms)
+    , ("libssh2-conduit",                                   allPlatforms)
+    , ("libsystemd-daemon",                                 allPlatforms)
+    , ("libvirt-hs",                                        allPlatforms)
+    , ("libxml",                                            allPlatforms)
+    , ("libxslt",                                           allPlatforms)
+    , ("lifter",                                            allPlatforms)
+    , ("lighttpd-conf",                                     allPlatforms)
+    , ("lighttpd-conf-qq",                                  allPlatforms)
+    , ("lilypond",                                          allPlatforms)
+    , ("Limit",                                             allPlatforms)
+    , ("limp-cbc",                                          allPlatforms)
+    , ("lin-alg",                                           allPlatforms)
+    , ("linear-algebra-cblas",                              allPlatforms)
+    , ("linear-maps",                                       allPlatforms)
+    , ("linearscan",                                        allPlatforms)
+    , ("linearscan-hoopl",                                  allPlatforms)
+    , ("LinearSplit",                                       allPlatforms)
+    , ("LinkChecker",                                       allPlatforms)
+    , ("linkchk",                                           allPlatforms)
+    , ("linkcore",                                          allPlatforms)
+    , ("linux-blkid",                                       allPlatforms)
+    , ("linux-kmod",                                        allPlatforms)
+    , ("linux-perf",                                        allPlatforms)
+    , ("linux-ptrace",                                      allPlatforms)
+    , ("lio-eci11",                                         allPlatforms)
+    , ("lio-simple",                                        allPlatforms)
+    , ("liquid-fixpoint",                                   allPlatforms)
+    , ("liquidhaskell",                                     allPlatforms)
+    , ("listlike-instances",                                allPlatforms)
+    , ("list-t-html-parser",                                allPlatforms)
+    , ("literals",                                          allPlatforms)
+    , ("live-sequencer",                                    allPlatforms)
+    , ("ll-picosat",                                        allPlatforms)
+    , ("llsd",                                              allPlatforms)
+    , ("llvm-ffi",                                          allPlatforms)
+    , ("llvm-general-quote",                                allPlatforms)
+    , ("llvm-ht",                                           allPlatforms)
+    , ("local-search",                                      allPlatforms)
+    , ("loch",                                              allPlatforms)
+    , ("log2json",                                          allPlatforms)
+    , ("log-effect",                                        allPlatforms)
+    , ("logic-classes",                                     allPlatforms)
+    , ("LogicGrowsOnTrees",                                 allPlatforms)
+    , ("LogicGrowsOnTrees-MPI",                             allPlatforms)
+    , ("LogicGrowsOnTrees-network",                         allPlatforms)
+    , ("LogicGrowsOnTrees-processes",                       allPlatforms)
+    , ("lojban",                                            allPlatforms)
+    , ("lojbanParser",                                      allPlatforms)
+    , ("lojbanXiragan",                                     allPlatforms)
+    , ("lojysamban",                                        allPlatforms)
+    , ("loli",                                              allPlatforms)
+    , ("loop-effin",                                        allPlatforms)
+    , ("loopy",                                             allPlatforms)
+    , ("lord",                                              allPlatforms)
+    , ("loris",                                             allPlatforms)
+    , ("lostcities",                                        allPlatforms)
+    , ("lscabal",                                           allPlatforms)
+    , ("L-seed",                                            allPlatforms)
+    , ("LslPlus",                                           allPlatforms)
+    , ("ls-usb",                                            allPlatforms)
+    , ("lsystem",                                           allPlatforms)
+    , ("luachunk",                                          allPlatforms)
+    , ("luautils",                                          allPlatforms)
+    , ("lucienne",                                          allPlatforms)
+    , ("Lucu",                                              allPlatforms)
+    , ("lui",                                               allPlatforms)
+    , ("luka",                                              allPlatforms)
+    , ("luthor",                                            allPlatforms)
+    , ("lvish",                                             allPlatforms)
+    , ("lvmlib",                                            allPlatforms)
+    , ("lye",                                               allPlatforms)
+    , ("maam",                                              allPlatforms)
+    , ("mage",                                              allPlatforms)
+    , ("MagicHaskeller",                                    allPlatforms)
+    , ("magma",                                             allPlatforms)
+    , ("mahoro",                                            allPlatforms)
+    , ("majordomo",                                         allPlatforms)
+    , ("majority",                                          allPlatforms)
+    , ("manatee",                                           allPlatforms)
+    , ("manatee-anything",                                  allPlatforms)
+    , ("manatee-browser",                                   allPlatforms)
+    , ("manatee-core",                                      allPlatforms)
+    , ("manatee-curl",                                      allPlatforms)
+    , ("manatee-editor",                                    allPlatforms)
+    , ("manatee-filemanager",                               allPlatforms)
+    , ("manatee-imageviewer",                               allPlatforms)
+    , ("manatee-mplayer",                                   allPlatforms)
+    , ("manatee-pdfviewer",                                 allPlatforms)
+    , ("manatee-processmanager",                            allPlatforms)
+    , ("manatee-reader",                                    allPlatforms)
+    , ("manatee-template",                                  allPlatforms)
+    , ("manatee-terminal",                                  allPlatforms)
+    , ("manatee-welcome",                                   allPlatforms)
+    , ("mandulia",                                          allPlatforms)
+    , ("mangopay",                                          allPlatforms)
+    , ("marionetta",                                        allPlatforms)
+    , ("markdown2svg",                                      allPlatforms)
+    , ("markdown-kate",                                     allPlatforms)
+    , ("markdown-pap",                                      allPlatforms)
+    , ("markov-processes",                                  allPlatforms)
+    , ("markup-preview",                                    allPlatforms)
+    , ("marmalade-upload",                                  allPlatforms)
+    , ("marquise",                                          allPlatforms)
+    , ("marxup",                                            allPlatforms)
+    , ("masakazu-bot",                                      allPlatforms)
+    , ("matchers",                                          allPlatforms)
+    , ("mathblog",                                          allPlatforms)
+    , ("mathgenealogy",                                     allPlatforms)
+    , ("mathlink",                                          allPlatforms)
+    , ("matlab",                                            allPlatforms)
+    , ("matsuri",                                           allPlatforms)
+    , ("maude",                                             allPlatforms)
+    , ("maxent",                                            allPlatforms)
+    , ("maxsharing",                                        allPlatforms)
+    , ("maybench",                                          allPlatforms)
+    , ("MaybeT-monads-tf",                                  allPlatforms)
+    , ("MaybeT-transformers",                               allPlatforms)
+    , ("MazesOfMonad",                                      allPlatforms)
+    , ("mbox-tools",                                        allPlatforms)
+    , ("MC-Fold-DP",                                        allPlatforms)
+    , ("mcmc-samplers",                                     allPlatforms)
+    , ("mdcat",                                             allPlatforms)
+    , ("Measure",                                           allPlatforms)
+    , ("mecab",                                             allPlatforms)
+    , ("mediawiki",                                         allPlatforms)
+    , ("mediawiki2latex",                                   allPlatforms)
+    , ("mega-sdist",                                        allPlatforms)
+    , ("melody",                                            allPlatforms)
+    , ("memo-sqlite",                                       allPlatforms)
+    , ("meta-par-accelerate",                               allPlatforms)
+    , ("metaplug",                                          allPlatforms)
+    , ("metric",                                            allPlatforms)
+    , ("Metrics",                                           allPlatforms)
+    , ("metronome",                                         allPlatforms)
+    , ("MFlow",                                             allPlatforms)
+    , ("Mhailist",                                          allPlatforms)
+    , ("MHask",                                             allPlatforms)
+    , ("mida",                                              allPlatforms)
+    , ("midisurface",                                       allPlatforms)
+    , ("mighttpd",                                          allPlatforms)
+    , ("mime-directory",                                    allPlatforms)
+    , ("mime-string",                                       allPlatforms)
+    , ("minesweeper",                                       allPlatforms)
+    , ("MiniAgda",                                          allPlatforms)
+    , ("miniball",                                          allPlatforms)
+    , ("miniforth",                                         allPlatforms)
+    , ("minimung",                                          allPlatforms)
+    , ("minioperational",                                   allPlatforms)
+    , ("miniplex",                                          allPlatforms)
+    , ("minirotate",                                        allPlatforms)
+    , ("ministg",                                           allPlatforms)
+    , ("mirror-tweet",                                      allPlatforms)
+    , ("MissingPy",                                         allPlatforms)
+    , ("missing-py2",                                       allPlatforms)
+    , ("mix-arrows",                                        allPlatforms)
+    , ("mkbndl",                                            allPlatforms)
+    , ("mlist",                                             allPlatforms)
+    , ("ml-w",                                              allPlatforms)
+    , ("mmtl",                                              allPlatforms)
+    , ("mmtl-base",                                         allPlatforms)
+    , ("moan",                                              allPlatforms)
+    , ("modelicaparser",                                    allPlatforms)
+    , ("modsplit",                                          allPlatforms)
+    , ("modular-prelude",                                   allPlatforms)
+    , ("modular-prelude-classy",                            allPlatforms)
+    , ("module-management",                                 allPlatforms)
+    , ("mohws",                                             allPlatforms)
+    , ("monad-abort-fd",                                    allPlatforms)
+    , ("monadacme",                                         allPlatforms)
+    , ("monad-atom",                                        allPlatforms)
+    , ("monad-atom-simple",                                 allPlatforms)
+    , ("monad-bool",                                        allPlatforms)
+    , ("MonadCatchIO-mtl-foreign",                          allPlatforms)
+    , ("MonadCatchIO-transformers-foreign",                 allPlatforms)
+    , ("monad-exception",                                   allPlatforms)
+    , ("monadiccp",                                         allPlatforms)
+    , ("monadiccp-gecode",                                  allPlatforms)
+    , ("monad-interleave",                                  allPlatforms)
+    , ("MonadLab",                                          allPlatforms)
+    , ("monad-levels",                                      allPlatforms)
+    , ("monad-lrs",                                         allPlatforms)
+    , ("monad-memo",                                        allPlatforms)
+    , ("monad-mersenne-random",                             allPlatforms)
+    , ("monad-ran",                                         allPlatforms)
+    , ("MonadRandomLazy",                                   allPlatforms)
+    , ("monad-stlike-io",                                   allPlatforms)
+    , ("monad-stlike-stm",                                  allPlatforms)
+    , ("monad-tx",                                          allPlatforms)
+    , ("monad-unify",                                       allPlatforms)
+    , ("monarch",                                           allPlatforms)
+    , ("Monaris",                                           allPlatforms)
+    , ("Monatron",                                          allPlatforms)
+    , ("Monatron-IO",                                       allPlatforms)
+    , ("mongodb-queue",                                     allPlatforms)
+    , ("mongrel2-handler",                                  allPlatforms)
+    , ("Monocle",                                           allPlatforms)
+    , ("mono-foldable",                                     allPlatforms)
+    , ("monoid-owns",                                       allPlatforms)
+    , ("monoidplus",                                        allPlatforms)
+    , ("monoids",                                           allPlatforms)
+    , ("monte-carlo",                                       allPlatforms)
+    , ("moo",                                               allPlatforms)
+    , ("morfette",                                          allPlatforms)
+    , ("morfeusz",                                          allPlatforms)
+    , ("mosaico-lib",                                       allPlatforms)
+    , ("mount",                                             allPlatforms)
+    , ("mp3decoder",                                        allPlatforms)
+    , ("mpdmate",                                           allPlatforms)
+    , ("mpppc",                                             allPlatforms)
+    , ("mpretty",                                           allPlatforms)
+    , ("mprover",                                           allPlatforms)
+    , ("mps",                                               allPlatforms)
+    , ("mpvguihs",                                          allPlatforms)
+    , ("mqtt-hs",                                           allPlatforms)
+    , ("msgpack-idl",                                       allPlatforms)
+    , ("mtgoxapi",                                          allPlatforms)
+    , ("mtl-tf",                                            allPlatforms)
+    , ("mtlx",                                              allPlatforms)
+    , ("mtp",                                               allPlatforms)
+    , ("mudbath",                                           allPlatforms)
+    , ("multifocal",                                        allPlatforms)
+    , ("multipass",                                         allPlatforms)
+    , ("multiplate-simplified",                             allPlatforms)
+    , ("multirec-alt-deriver",                              allPlatforms)
+    , ("multirec-binary",                                   allPlatforms)
+    , ("multisetrewrite",                                   allPlatforms)
+    , ("murder",                                            allPlatforms)
+    , ("murmurhash3",                                       allPlatforms)
+    , ("musicbrainz-email",                                 allPlatforms)
+    , ("music-graphics",                                    allPlatforms)
+    , ("music-parts",                                       allPlatforms)
+    , ("music-preludes",                                    allPlatforms)
+    , ("music-score",                                       allPlatforms)
+    , ("music-sibelius",                                    allPlatforms)
+    , ("music-suite",                                       allPlatforms)
+    , ("music-util",                                        allPlatforms)
+    , ("musicxml",                                          allPlatforms)
+    , ("mustache2hs",                                       allPlatforms)
+    , ("mutable-iter",                                      allPlatforms)
+    , ("mvclient",                                          allPlatforms)
+    , ("mvc-updates",                                       allPlatforms)
+    , ("myo",                                               allPlatforms)
+    , ("mysnapsession",                                     allPlatforms)
+    , ("mysnapsession-example",                             allPlatforms)
+    , ("mysql-simple-quasi",                                allPlatforms)
+    , ("mysql-simple-typed",                                allPlatforms)
+    , ("myTestlll",                                         allPlatforms)
+    , ("mzv",                                               allPlatforms)
+    , ("nagios-plugin-ekg",                                 allPlatforms)
+    , ("named-lock",                                        allPlatforms)
+    , ("nanoAgda",                                          allPlatforms)
+    , ("nano-cryptr",                                       allPlatforms)
+    , ("nanocurses",                                        allPlatforms)
+    , ("nano-hmac",                                         allPlatforms)
+    , ("nano-md5",                                          allPlatforms)
+    , ("nanomsg-haskell",                                   allPlatforms)
+    , ("narc",                                              allPlatforms)
+    , ("nats-queue",                                        allPlatforms)
+    , ("natural-number",                                    allPlatforms)
+    , ("neat",                                              allPlatforms)
+    , ("needle",                                            allPlatforms)
+    , ("nerf",                                              allPlatforms)
+    , ("nero",                                              allPlatforms)
+    , ("nero-wai",                                          allPlatforms)
+    , ("nero-warp",                                         allPlatforms)
+    , ("netcore",                                           allPlatforms)
+    , ("netlines",                                          allPlatforms)
+    , ("NetSNMP",                                           allPlatforms)
+    , ("netspec",                                           allPlatforms)
+    , ("nettle",                                            allPlatforms)
+    , ("nettle-frp",                                        allPlatforms)
+    , ("nettle-netkit",                                     allPlatforms)
+    , ("nettle-openflow",                                   allPlatforms)
+    , ("network-address",                                   allPlatforms)
+    , ("network-anonymous-i2p",                             allPlatforms)
+    , ("network-builder",                                   allPlatforms)
+    , ("network-bytestring",                                allPlatforms)
+    , ("network-connection",                                allPlatforms)
+    , ("network-house",                                     allPlatforms)
+    , ("network-minihttp",                                  allPlatforms)
+    , ("network-rpca",                                      allPlatforms)
+    , ("network-server",                                    allPlatforms)
+    , ("network-simple-tls",                                allPlatforms)
+    , ("network-topic-models",                              allPlatforms)
+    , ("network-transport-amqp",                            allPlatforms)
+    , ("network-websocket",                                 allPlatforms)
+    , ("newports",                                          allPlatforms)
+    , ("newsynth",                                          allPlatforms)
+    , ("newt",                                              allPlatforms)
+    , ("newtype-th",                                        allPlatforms)
+    , ("NGrams",                                            allPlatforms)
+    , ("nibblestring",                                      allPlatforms)
+    , ("nikepub",                                           allPlatforms)
+    , ("Ninjas",                                            allPlatforms)
+    , ("nitro",                                             allPlatforms)
+    , ("nixos-types",                                       allPlatforms)
+    , ("nkjp",                                              allPlatforms)
+    , ("nm",                                                allPlatforms)
+    , ("nme",                                               allPlatforms)
+    , ("nntp",                                              allPlatforms)
+    , ("noise",                                             allPlatforms)
+    , ("Nomyx",                                             allPlatforms)
+    , ("Nomyx-Core",                                        allPlatforms)
+    , ("Nomyx-Language",                                    allPlatforms)
+    , ("Nomyx-Rules",                                       allPlatforms)
+    , ("Nomyx-Web",                                         allPlatforms)
+    , ("nondeterminism",                                    allPlatforms)
+    , ("NonEmptyList",                                      allPlatforms)
+    , ("noodle",                                            allPlatforms)
+    , ("NoSlow",                                            allPlatforms)
+    , ("not-gloss-examples",                                allPlatforms)
+    , ("notmuch-haskell",                                   allPlatforms)
+    , ("notmuch-web",                                       allPlatforms)
+    , ("np-linear",                                         allPlatforms)
+    , ("nptools",                                           allPlatforms)
+    , ("nthable",                                           allPlatforms)
+    , ("null-canvas",                                       allPlatforms)
+    , ("NumberSieves",                                      allPlatforms)
+    , ("numerals",                                          allPlatforms)
+    , ("numerals-base",                                     allPlatforms)
+    , ("numeric-qq",                                        allPlatforms)
+    , ("nums",                                              allPlatforms)
+    , ("Nussinov78",                                        allPlatforms)
+    , ("nvim-hs",                                           allPlatforms)
+    , ("NXT",                                               allPlatforms)
+    , ("NXTDSL",                                            allPlatforms)
+    , ("nymphaea",                                          allPlatforms)
+    , ("oberon0",                                           allPlatforms)
+    , ("obj",                                               allPlatforms)
+    , ("Object",                                            allPlatforms)
+    , ("ObjectIO",                                          allPlatforms)
+    , ("octopus",                                           allPlatforms)
+    , ("oculus",                                            allPlatforms)
+    , ("ofx",                                               allPlatforms)
+    , ("OGL",                                               allPlatforms)
+    , ("ohloh-hs",                                          allPlatforms)
+    , ("oi",                                                allPlatforms)
+    , ("ois-input-manager",                                 allPlatforms)
+    , ("omaketex",                                          allPlatforms)
+    , ("omega",                                             allPlatforms)
+    , ("Omega",                                             allPlatforms)
+    , ("omnicodec",                                         allPlatforms)
+    , ("on-a-horse",                                        allPlatforms)
+    , ("one-liner",                                         allPlatforms)
+    , ("oneormore",                                         allPlatforms)
+    , ("onu-course",                                        allPlatforms)
+    , ("OpenAFP",                                           allPlatforms)
+    , ("OpenAFP-Utils",                                     allPlatforms)
+    , ("OpenCL",                                            allPlatforms)
+    , ("OpenCLRaw",                                         allPlatforms)
+    , ("opencv-raw",                                        allPlatforms)
+    , ("openexchangerates",                                 allPlatforms)
+    , ("openflow",                                          allPlatforms)
+    , ("OpenGLCheck",                                       allPlatforms)
+    , ("opengles",                                          allPlatforms)
+    , ("openid",                                            allPlatforms)
+    , ("open-pandoc",                                       allPlatforms)
+    , ("openpgp-Crypto",                                    allPlatforms)
+    , ("openpgp-crypto-api",                                allPlatforms)
+    , ("OpenSCAD",                                          allPlatforms)
+    , ("openssh-github-keys",                               allPlatforms)
+    , ("opentheory-char",                                   allPlatforms)
+    , ("open-union",                                        allPlatforms)
+    , ("OpenVG",                                            allPlatforms)
+    , ("OpenVGRaw",                                         allPlatforms)
+    , ("open-witness",                                      allPlatforms)
+    , ("Operads",                                           allPlatforms)
+    , ("optimusprime",                                      allPlatforms)
+    , ("OrchestrateDB",                                     allPlatforms)
+    , ("orchid",                                            allPlatforms)
+    , ("orchid-demo",                                       allPlatforms)
+    , ("OrderedBits",                                       allPlatforms)
+    , ("order-maintenance",                                 allPlatforms)
+    , ("orgmode-parse",                                     allPlatforms)
+    , ("origami",                                           allPlatforms)
+    , ("OSM",                                               allPlatforms)
+    , ("osm-download",                                      allPlatforms)
+    , ("ot",                                                allPlatforms)
+    , ("package-vt",                                        allPlatforms)
+    , ("packedstring",                                      allPlatforms)
+    , ("PageIO",                                            allPlatforms)
+    , ("panda",                                             allPlatforms)
+    , ("PandocAgda",                                        allPlatforms)
+    , ("pandoc-unlit",                                      allPlatforms)
+    , ("papillon",                                          allPlatforms)
+    , ("pappy",                                             allPlatforms)
+    , ("paragon",                                           allPlatforms)
+    , ("Paraiso",                                           allPlatforms)
+    , ("parallel-tasks",                                    allPlatforms)
+    , ("parameterized-data",                                allPlatforms)
+    , ("parco",                                             allPlatforms)
+    , ("parco-attoparsec",                                  allPlatforms)
+    , ("parconc-examples",                                  allPlatforms)
+    , ("parco-parsec",                                      allPlatforms)
+    , ("Parry",                                             allPlatforms)
+    , ("parsec2",                                           allPlatforms)
+    , ("parse-help",                                        allPlatforms)
+    , ("parsely",                                           allPlatforms)
+    , ("parser-helper",                                     allPlatforms)
+    , ("parsestar",                                         allPlatforms)
+    , ("partial-lens",                                      allPlatforms)
+    , ("partly",                                            allPlatforms)
+    , ("passage",                                           allPlatforms)
+    , ("pastis",                                            allPlatforms)
+    , ("pasty",                                             allPlatforms)
+    , ("Pathfinder",                                        allPlatforms)
+    , ("pathfindingcore",                                   allPlatforms)
+    , ("patterns",                                          allPlatforms)
+    , ("paypal-api",                                        allPlatforms)
+    , ("pb",                                                allPlatforms)
+    , ("PCLT",                                              allPlatforms)
+    , ("PCLT-DB",                                           allPlatforms)
+    , ("pdynload",                                          allPlatforms)
+    , ("peakachu",                                          allPlatforms)
+    , ("pec",                                               allPlatforms)
+    , ("peg",                                               allPlatforms)
+    , ("penny",                                             allPlatforms)
+    , ("penny-bin",                                         allPlatforms)
+    , ("penny-lib",                                         allPlatforms)
+    , ("peparser",                                          allPlatforms)
+    , ("perdure",                                           allPlatforms)
+    , ("PerfectHash",                                       allPlatforms)
+    , ("perm",                                              allPlatforms)
+    , ("permute",                                           allPlatforms)
+    , ("PermuteEffects",                                    allPlatforms)
+    , ("persistent-hssqlppp",                               allPlatforms)
+    , ("persistent-map",                                    allPlatforms)
+    , ("persistent-protobuf",                               allPlatforms)
+    , ("pesca",                                             allPlatforms)
+    , ("peyotls",                                           allPlatforms)
+    , ("pez",                                               allPlatforms)
+    , ("pg-harness",                                        allPlatforms)
+    , ("pg-harness-server",                                 allPlatforms)
+    , ("pgsql-simple",                                      allPlatforms)
+    , ("pgstream",                                          allPlatforms)
+    , ("phasechange",                                       allPlatforms)
+    , ("phash",                                             allPlatforms)
+    , ("phone-push",                                        allPlatforms)
+    , ("phooey",                                            allPlatforms)
+    , ("photoname",                                         allPlatforms)
+    , ("phraskell",                                         allPlatforms)
+    , ("Phsu",                                              allPlatforms)
+    , ("phybin",                                            allPlatforms)
+    , ("pianola",                                           allPlatforms)
+    , ("pi-calculus",                                       allPlatforms)
+    , ("picologic",                                         allPlatforms)
+    , ("piet",                                              allPlatforms)
+    , ("piki",                                              allPlatforms)
+    , ("Pipe",                                              allPlatforms)
+    , ("pipes-cereal-plus",                                 allPlatforms)
+    , ("pipes-conduit",                                     allPlatforms)
+    , ("pipes-courier",                                     allPlatforms)
+    , ("pipes-network-tls",                                 allPlatforms)
+    , ("pipes-p2p-examples",                                allPlatforms)
+    , ("pisigma",                                           allPlatforms)
+    , ("pit",                                               allPlatforms)
+    , ("pkggraph",                                          allPlatforms)
+    , ("planar-graph",                                      allPlatforms)
+    , ("plat",                                              allPlatforms)
+    , ("plivo",                                             allPlatforms)
+    , ("PlslTools",                                         allPlatforms)
+    , ("plugins",                                           allPlatforms)
+    , ("plugins-auto",                                      allPlatforms)
+    , ("plugins-multistage",                                allPlatforms)
+    , ("plumbers",                                          allPlatforms)
+    , ("ply-loader",                                        allPlatforms)
+    , ("png-file",                                          allPlatforms)
+    , ("pngload",                                           allPlatforms)
+    , ("pngload-fixed",                                     allPlatforms)
+    , ("pocket-dns",                                        allPlatforms)
+    , ("pointless-haskell",                                 allPlatforms)
+    , ("pointless-lenses",                                  allPlatforms)
+    , ("pointless-rewrite",                                 allPlatforms)
+    , ("polh-lexicon",                                      allPlatforms)
+    , ("polyseq",                                           allPlatforms)
+    , ("polytypeable",                                      allPlatforms)
+    , ("polytypeable-utils",                                allPlatforms)
+    , ("pontarius-mediaserver",                             allPlatforms)
+    , ("pontarius-xmpp",                                    allPlatforms)
+    , ("pontarius-xpmn",                                    allPlatforms)
+    , ("pool",                                              allPlatforms)
+    , ("pool-conduit",                                      allPlatforms)
+    , ("popenhs",                                           allPlatforms)
+    , ("poppler",                                           allPlatforms)
+    , ("porte",                                             allPlatforms)
+    , ("porter",                                            allPlatforms)
+    , ("ports",                                             allPlatforms)
+    , ("posix-acl",                                         allPlatforms)
+    , ("posix-waitpid",                                     allPlatforms)
+    , ("PostgreSQL",                                        allPlatforms)
+    , ("postgresql-orm",                                    allPlatforms)
+    , ("postgresql-schema",                                 allPlatforms)
+    , ("postgresql-simple-typed",                           allPlatforms)
+    , ("postgresql-typed",                                  allPlatforms)
+    , ("postgrest",                                         allPlatforms)
+    , ("postie",                                            allPlatforms)
+    , ("postmaster",                                        allPlatforms)
+    , ("powermate",                                         allPlatforms)
+    , ("powerpc",                                           allPlatforms)
+    , ("pqc",                                               allPlatforms)
+    , ("pqueue-mtl",                                        allPlatforms)
+    , ("practice-room",                                     allPlatforms)
+    , ("precis",                                            allPlatforms)
+    , ("prefork",                                           allPlatforms)
+    , ("pregame",                                           allPlatforms)
+    , ("prelude-generalize",                                allPlatforms)
+    , ("prelude-plus",                                      allPlatforms)
+    , ("preprocess-haskell",                                allPlatforms)
+    , ("press",                                             allPlatforms)
+    , ("PrimitiveArray",                                    allPlatforms)
+    , ("primula-board",                                     allPlatforms)
+    , ("primula-bot",                                       allPlatforms)
+    , ("printf-mauke",                                      allPlatforms)
+    , ("Printf-TH",                                         allPlatforms)
+    , ("PriorityChansConverger",                            allPlatforms)
+    , ("priority-queue",                                    allPlatforms)
+    , ("ProbabilityMonads",                                 allPlatforms)
+    , ("proc",                                              allPlatforms)
+    , ("processing",                                        allPlatforms)
+    , ("process-iterio",                                    allPlatforms)
+    , ("process-leksah",                                    allPlatforms)
+    , ("process-listlike",                                  allPlatforms)
+    , ("process-progress",                                  allPlatforms)
+    , ("process-qq",                                        allPlatforms)
+    , ("procrastinating-structure",                         allPlatforms)
+    , ("procrastinating-variable",                          allPlatforms)
+    , ("procstat",                                          allPlatforms)
+    , ("prof2dot",                                          allPlatforms)
+    , ("profunctor-extras",                                 allPlatforms)
+    , ("progress",                                          allPlatforms)
+    , ("progressbar",                                       allPlatforms)
+    , ("progression",                                       allPlatforms)
+    , ("progressive",                                       allPlatforms)
+    , ("proj4-hs-bindings",                                 allPlatforms)
+    , ("prolog",                                            allPlatforms)
+    , ("prolog-graph",                                      allPlatforms)
+    , ("prolog-graph-lib",                                  allPlatforms)
+    , ("propane",                                           allPlatforms)
+    , ("Proper",                                            allPlatforms)
+    , ("proplang",                                          allPlatforms)
+    , ("protobuf-native",                                   allPlatforms)
+    , ("protocol-buffers-descriptor-fork",                  allPlatforms)
+    , ("protocol-buffers-fork",                             allPlatforms)
+    , ("prove-everywhere-server",                           allPlatforms)
+    , ("proxy-kindness",                                    allPlatforms)
+    , ("pub",                                               allPlatforms)
+    , ("publicsuffixlistcreate",                            allPlatforms)
+    , ("pubnub",                                            allPlatforms)
+    , ("pubsub",                                            allPlatforms)
+    , ("puffytools",                                        allPlatforms)
+    , ("Pugs",                                              allPlatforms)
+    , ("pugs-hsregex",                                      allPlatforms)
+    , ("pugs-HsSyck",                                       allPlatforms)
+    , ("punkt",                                             allPlatforms)
+    , ("Pup-Events",                                        allPlatforms)
+    , ("Pup-Events-Demo",                                   allPlatforms)
+    , ("puppetresources",                                   allPlatforms)
+    , ("pushme",                                            allPlatforms)
+    , ("push-notify",                                       allPlatforms)
+    , ("push-notify-ccs",                                   allPlatforms)
+    , ("push-notify-general",                               allPlatforms)
+    , ("putlenses",                                         allPlatforms)
+    , ("puzzle-draw",                                       allPlatforms)
+    , ("puzzle-draw-cmdline",                               allPlatforms)
+    , ("pvd",                                               allPlatforms)
+    , ("python-pickle",                                     allPlatforms)
+    , ("qd",                                                allPlatforms)
+    , ("qd-vec",                                            allPlatforms)
+    , ("qhull-simple",                                      allPlatforms)
+    , ("QIO",                                               allPlatforms)
+    , ("QuadEdge",                                          allPlatforms)
+    , ("quantum-arrow",                                     allPlatforms)
+    , ("qudb",                                              allPlatforms)
+    , ("quenya-verb",                                       allPlatforms)
+    , ("querystring-pickle",                                allPlatforms)
+    , ("queuelike",                                         allPlatforms)
+    , ("QuickAnnotate",                                     allPlatforms)
+    , ("QuickCheck-GenT",                                   allPlatforms)
+    , ("quickcheck-poly",                                   allPlatforms)
+    , ("quickcheck-regex",                                  allPlatforms)
+    , ("quickcheck-relaxng",                                allPlatforms)
+    , ("quickcheck-rematch",                                allPlatforms)
+    , ("quickpull",                                         allPlatforms)
+    , ("quickset",                                          allPlatforms)
+    , ("Quickson",                                          allPlatforms)
+    , ("quicktest",                                         allPlatforms)
+    , ("quoridor-hs",                                       allPlatforms)
+    , ("rabocsv2qif",                                       allPlatforms)
+    , ("rad",                                               allPlatforms)
+    , ("radium",                                            allPlatforms)
+    , ("radium-formula-parser",                             allPlatforms)
+    , ("rados-haskell",                                     allPlatforms)
+    , ("rail-compiler-editor",                              allPlatforms)
+    , ("rainbow-tests",                                     allPlatforms)
+    , ("rakhana",                                           allPlatforms)
+    , ("ralist",                                            allPlatforms)
+    , ("rallod",                                            allPlatforms)
+    , ("random-access-list",                                allPlatforms)
+    , ("RandomDotOrg",                                      allPlatforms)
+    , ("random-eff",                                        allPlatforms)
+    , ("random-effin",                                      allPlatforms)
+    , ("random-hypergeometric",                             allPlatforms)
+    , ("random-stream",                                     allPlatforms)
+    , ("rand-vars",                                         allPlatforms)
+    , ("rangemin",                                          allPlatforms)
+    , ("Ranka",                                             allPlatforms)
+    , ("raven-haskell",                                     allPlatforms)
+    , ("raven-haskell-scotty",                              allPlatforms)
+    , ("rbr",                                               allPlatforms)
+    , ("rdf4h",                                             allPlatforms)
+    , ("rdioh",                                             allPlatforms)
+    , ("reaction-logic",                                    allPlatforms)
+    , ("reactive",                                          allPlatforms)
+    , ("reactive-bacon",                                    allPlatforms)
+    , ("reactive-balsa",                                    allPlatforms)
+    , ("reactive-banana-sdl",                               allPlatforms)
+    , ("reactive-banana-threepenny",                        allPlatforms)
+    , ("reactive-fieldtrip",                                allPlatforms)
+    , ("reactive-glut",                                     allPlatforms)
+    , ("reactive-thread",                                   allPlatforms)
+    , ("reactor",                                           allPlatforms)
+    , ("really-simple-xml-parser",                          allPlatforms)
+    , ("reasonable-lens",                                   allPlatforms)
+    , ("record-aeson",                                      allPlatforms)
+    , ("record-gl",                                         allPlatforms)
+    , ("record-preprocessor",                               allPlatforms)
+    , ("records",                                           allPlatforms)
+    , ("records-th",                                        allPlatforms)
+    , ("redHandlers",                                       allPlatforms)
+    , ("ref",                                               allPlatforms)
+    , ("Ref",                                               allPlatforms)
+    , ("Referees",                                          allPlatforms)
+    , ("refh",                                              allPlatforms)
+    , ("reflection-extras",                                 allPlatforms)
+    , ("reflex",                                            allPlatforms)
+    , ("reflex-dom",                                        allPlatforms)
+    , ("reflex-gloss",                                      allPlatforms)
+    , ("regex-deriv",                                       allPlatforms)
+    , ("regex-dfa",                                         allPlatforms)
+    , ("regex-genex",                                       allPlatforms)
+    , ("regex-parsec",                                      allPlatforms)
+    , ("regex-pderiv",                                      allPlatforms)
+    , ("regexp-tries",                                      allPlatforms)
+    , ("regexqq",                                           allPlatforms)
+    , ("regex-tdfa-utf8",                                   allPlatforms)
+    , ("regex-tre",                                         allPlatforms)
+    , ("regex-xmlschema",                                   allPlatforms)
+    , ("regional-pointers",                                 allPlatforms)
+    , ("regions",                                           allPlatforms)
+    , ("regions-monadsfd",                                  allPlatforms)
+    , ("regions-monadstf",                                  allPlatforms)
+    , ("regions-mtl",                                       allPlatforms)
+    , ("regular-extras",                                    allPlatforms)
+    , ("regular-web",                                       allPlatforms)
+    , ("reheat",                                            allPlatforms)
+    , ("rei",                                               allPlatforms)
+    , ("reified-records",                                   allPlatforms)
+    , ("reify",                                             allPlatforms)
+    , ("remote",                                            allPlatforms)
+    , ("remotion",                                          allPlatforms)
+    , ("reorderable",                                       allPlatforms)
+    , ("repa-array",                                        allPlatforms)
+    , ("repa-bytestring",                                   allPlatforms)
+    , ("repa-flow",                                         allPlatforms)
+    , ("repa-plugin",                                       allPlatforms)
+    , ("repa-series",                                       allPlatforms)
+    , ("repa-stream",                                       allPlatforms)
+    , ("repa-v4l2",                                         allPlatforms)
+    , ("repl",                                              allPlatforms)
+    , ("RepLib",                                            allPlatforms)
+    , ("repo-based-blog",                                   allPlatforms)
+    , ("repr",                                              allPlatforms)
+    , ("representable-functors",                            allPlatforms)
+    , ("representable-profunctors",                         allPlatforms)
+    , ("representable-tries",                               allPlatforms)
+    , ("resource-embed",                                    allPlatforms)
+    , ("resource-simple",                                   allPlatforms)
+    , ("respond",                                           allPlatforms)
+    , ("restful-snap",                                      allPlatforms)
+    , ("RESTng",                                            allPlatforms)
+    , ("restricted-workers",                                allPlatforms)
+    , ("restyle",                                           allPlatforms)
+    , ("resumable-exceptions",                              allPlatforms)
+    , ("rethinkdb-client-driver",                           allPlatforms)
+    , ("rethinkdb-model",                                   allPlatforms)
+    , ("ReviewBoard",                                       allPlatforms)
+    , ("rewrite",                                           allPlatforms)
+    , ("rewriting",                                         allPlatforms)
+    , ("rezoom",                                            allPlatforms)
+    , ("rfc3339",                                           allPlatforms)
+    , ("riak",                                              allPlatforms)
+    , ("riak-protobuf",                                     allPlatforms)
+    , ("riemann",                                           allPlatforms)
+    , ("riot",                                              allPlatforms)
+    , ("ripple",                                            allPlatforms)
+    , ("ripple-federation",                                 allPlatforms)
+    , ("risc386",                                           allPlatforms)
+    , ("rivers",                                            allPlatforms)
+    , ("RJson",                                             allPlatforms)
+    , ("rmonad",                                            allPlatforms)
+    , ("RMP",                                               allPlatforms)
+    , ("RNAdesign",                                         allPlatforms)
+    , ("RNAdraw",                                           allPlatforms)
+    , ("RNAFold",                                           allPlatforms)
+    , ("RNAFoldProgs",                                      allPlatforms)
+    , ("RNAwolf",                                           allPlatforms)
+    , ("roguestar",                                         allPlatforms)
+    , ("roguestar-engine",                                  allPlatforms)
+    , ("roguestar-gl",                                      allPlatforms)
+    , ("roguestar-glut",                                    allPlatforms)
+    , ("RollingDirectory",                                  allPlatforms)
+    , ("rope",                                              allPlatforms)
+    , ("rosa",                                              allPlatforms)
+    , ("roshask",                                           allPlatforms)
+    , ("rosso",                                             allPlatforms)
+    , ("rotating-log",                                      allPlatforms)
+    , ("rounding",                                          allPlatforms)
+    , ("roundtrip",                                         allPlatforms)
+    , ("roundtrip-aeson",                                   allPlatforms)
+    , ("roundtrip-string",                                  allPlatforms)
+    , ("roundtrip-xml",                                     allPlatforms)
+    , ("route-generator",                                   allPlatforms)
+    , ("route-planning",                                    allPlatforms)
+    , ("rowrecord",                                         allPlatforms)
+    , ("rpc",                                               allPlatforms)
+    , ("rpc-framework",                                     allPlatforms)
+    , ("rpm",                                               allPlatforms)
+    , ("rsagl",                                             allPlatforms)
+    , ("rsagl-frp",                                         allPlatforms)
+    , ("rsagl-math",                                        allPlatforms)
+    , ("rss2irc",                                           allPlatforms)
+    , ("ruff",                                              allPlatforms)
+    , ("ruler-core",                                        allPlatforms)
+    , ("rungekutta",                                        allPlatforms)
+    , ("RxHaskell",                                         allPlatforms)
+    , ("safe-freeze",                                       allPlatforms)
+    , ("safe-globals",                                      allPlatforms)
+    , ("safeint",                                           allPlatforms)
+    , ("safe-lazy-io",                                      allPlatforms)
+    , ("safe-plugins",                                      allPlatforms)
+    , ("safer-file-handles",                                allPlatforms)
+    , ("safer-file-handles-bytestring",                     allPlatforms)
+    , ("safer-file-handles-text",                           allPlatforms)
+    , ("sai-shape-syb",                                     allPlatforms)
+    , ("Salsa",                                             allPlatforms)
+    , ("salvia",                                            allPlatforms)
+    , ("salvia-demo",                                       allPlatforms)
+    , ("salvia-extras",                                     allPlatforms)
+    , ("salvia-protocol",                                   allPlatforms)
+    , ("salvia-sessions",                                   allPlatforms)
+    , ("salvia-websocket",                                  allPlatforms)
+    , ("samtools-iteratee",                                 allPlatforms)
+    , ("sasl",                                              allPlatforms)
+    , ("sat",                                               allPlatforms)
+    , ("satchmo-backends",                                  allPlatforms)
+    , ("satchmo-examples",                                  allPlatforms)
+    , ("satchmo-funsat",                                    allPlatforms)
+    , ("satchmo-minisat",                                   allPlatforms)
+    , ("sat-micro-hs",                                      allPlatforms)
+    , ("SBench",                                            allPlatforms)
+    , ("scaleimage",                                        allPlatforms)
+    , ("scan-vector-machine",                               allPlatforms)
+    , ("scat",                                              allPlatforms)
+    , ("scenegraph",                                        allPlatforms)
+    , ("schedevr",                                          allPlatforms)
+    , ("scholdoc",                                          allPlatforms)
+    , ("scholdoc-citeproc",                                 allPlatforms)
+    , ("scion",                                             allPlatforms)
+    , ("scion-browser",                                     allPlatforms)
+    , ("scope",                                             allPlatforms)
+    , ("scope-cairo",                                       allPlatforms)
+    , ("scottish",                                          allPlatforms)
+    , ("scotty-blaze",                                      allPlatforms)
+    , ("scotty-fay",                                        allPlatforms)
+    , ("scotty-hastache",                                   allPlatforms)
+    , ("scotty-session",                                    allPlatforms)
+    , ("scrabble-bot",                                      allPlatforms)
+    , ("ScratchFs",                                         allPlatforms)
+    , ("scrobble",                                          allPlatforms)
+    , ("scroll",                                            allPlatforms)
+    , ("scrz",                                              allPlatforms)
+    , ("Scurry",                                            allPlatforms)
+    , ("sdr",                                               allPlatforms)
+    , ("seacat",                                            allPlatforms)
+    , ("search",                                            allPlatforms)
+    , ("secdh",                                             allPlatforms)
+    , ("second-transfer",                                   allPlatforms)
+    , ("secret-santa",                                      allPlatforms)
+    , ("secret-sharing",                                    allPlatforms)
+    , ("secrm",                                             allPlatforms)
+    , ("sednaDBXML",                                        allPlatforms)
+    , ("selectors",                                         allPlatforms)
+    , ("selenium",                                          allPlatforms)
+    , ("selenium-server",                                   allPlatforms)
+    , ("selinux",                                           allPlatforms)
+    , ("Semantique",                                        allPlatforms)
+    , ("semigroups-actions",                                allPlatforms)
+    , ("semi-iso",                                          allPlatforms)
+    , ("semiring",                                          allPlatforms)
+    , ("sensenet",                                          allPlatforms)
+    , ("sentry",                                            allPlatforms)
+    , ("senza",                                             allPlatforms)
+    , ("seqaid",                                            allPlatforms)
+    , ("SeqAlign",                                          allPlatforms)
+    , ("seqloc-datafiles",                                  allPlatforms)
+    , ("sequent-core",                                      allPlatforms)
+    , ("sequor",                                            allPlatforms)
+    , ("servant-pool",                                      allPlatforms)
+    , ("servant-postgresql",                                allPlatforms)
+    , ("servant-scotty",                                    allPlatforms)
+    , ("serversession-backend-acid-state",                  allPlatforms)
+    , ("servius",                                           allPlatforms)
+    , ("ses-html-snaplet",                                  allPlatforms)
+    , ("SessionLogger",                                     allPlatforms)
+    , ("sessions",                                          allPlatforms)
+    , ("set-with",                                          allPlatforms)
+    , ("sexp",                                              allPlatforms)
+    , ("sexpr",                                             allPlatforms)
+    , ("sext",                                              allPlatforms)
+    , ("SFML",                                              allPlatforms)
+    , ("SFML-control",                                      allPlatforms)
+    , ("SFont",                                             allPlatforms)
+    , ("SG",                                                allPlatforms)
+    , ("SGdemo",                                            allPlatforms)
+    , ("sgrep",                                             allPlatforms)
+    , ("shadower",                                          allPlatforms)
+    , ("shady-gen",                                         allPlatforms)
+    , ("shady-graphics",                                    allPlatforms)
+    , ("shake-extras",                                      allPlatforms)
+    , ("shaker",                                            allPlatforms)
+    , ("shakespeare-css",                                   allPlatforms)
+    , ("shakespeare-i18n",                                  allPlatforms)
+    , ("shapely-data",                                      allPlatforms)
+    , ("shared-buffer",                                     allPlatforms)
+    , ("she",                                               allPlatforms)
+    , ("Shellac",                                           allPlatforms)
+    , ("Shellac-compatline",                                allPlatforms)
+    , ("Shellac-editline",                                  allPlatforms)
+    , ("Shellac-haskeline",                                 allPlatforms)
+    , ("Shellac-readline",                                  allPlatforms)
+    , ("shellish",                                          allPlatforms)
+    , ("shell-pipe",                                        allPlatforms)
+    , ("shivers-cfg",                                       allPlatforms)
+    , ("showdown",                                          allPlatforms)
+    , ("shpider",                                           allPlatforms)
+    , ("sifflet",                                           allPlatforms)
+    , ("sifflet-lib",                                       allPlatforms)
+    , ("signals",                                           allPlatforms)
+    , ("simd",                                              allPlatforms)
+    , ("simgi",                                             allPlatforms)
+    , ("simple",                                            allPlatforms)
+    , ("simple-bluetooth",                                  allPlatforms)
+    , ("simple-css",                                        allPlatforms)
+    , ("simple-c-value",                                    allPlatforms)
+    , ("simple-firewire",                                   allPlatforms)
+    , ("simple-form",                                       allPlatforms)
+    , ("SimpleGL",                                          allPlatforms)
+    , ("SimpleH",                                           allPlatforms)
+    , ("simpleirc",                                         allPlatforms)
+    , ("simpleirc-lens",                                    allPlatforms)
+    , ("SimpleLog",                                         allPlatforms)
+    , ("simple-log-syslog",                                 allPlatforms)
+    , ("simplenote",                                        allPlatforms)
+    , ("simple-pascal",                                     allPlatforms)
+    , ("simple-postgresql-orm",                             allPlatforms)
+    , ("simpleprelude",                                     allPlatforms)
+    , ("simple-session",                                    allPlatforms)
+    , ("simplessh",                                         allPlatforms)
+    , ("simple-templates",                                  allPlatforms)
+    , ("simple-vec3",                                       allPlatforms)
+    , ("simseq",                                            allPlatforms)
+    , ("sindre",                                            allPlatforms)
+    , ("sirkel",                                            allPlatforms)
+    , ("sized",                                             allPlatforms)
+    , ("sized-types",                                       allPlatforms)
+    , ("sized-vector",                                      allPlatforms)
+    , ("skeleton",                                          allPlatforms)
+    , ("skype4hs",                                          allPlatforms)
+    , ("slack",                                             allPlatforms)
+    , ("slidemews",                                         allPlatforms)
+    , ("sloth",                                             allPlatforms)
+    , ("smallarray",                                        allPlatforms)
+    , ("smallpt-hs",                                        allPlatforms)
+    , ("smallstring",                                       allPlatforms)
+    , ("smartcheck",                                        allPlatforms)
+    , ("smartGroup",                                        allPlatforms)
+    , ("smartword",                                         allPlatforms)
+    , ("sme",                                               allPlatforms)
+    , ("Smooth",                                            allPlatforms)
+    , ("smt-lib",                                           allPlatforms)
+    , ("smtlib2",                                           allPlatforms)
+    , ("smtp2mta",                                          allPlatforms)
+    , ("smtp-mail-ng",                                      allPlatforms)
+    , ("smtps-gmail",                                       allPlatforms)
+    , ("snake-game",                                        allPlatforms)
+    , ("snap-accept",                                       allPlatforms)
+    , ("snap-app",                                          allPlatforms)
+    , ("snap-elm",                                          allPlatforms)
+    , ("snap-extras",                                       allPlatforms)
+    , ("snaplet-actionlog",                                 allPlatforms)
+    , ("snaplet-css-min",                                   allPlatforms)
+    , ("snaplet-environments",                              allPlatforms)
+    , ("snaplet-haxl",                                      allPlatforms)
+    , ("snaplet-hdbc",                                      allPlatforms)
+    , ("snaplet-i18n",                                      allPlatforms)
+    , ("snaplet-mongoDB",                                   allPlatforms)
+    , ("snaplet-mongodb-minimalistic",                      allPlatforms)
+    , ("snaplet-mysql-simple",                              allPlatforms)
+    , ("snaplet-oauth",                                     allPlatforms)
+    , ("snaplet-redson",                                    allPlatforms)
+    , ("snaplet-rest",                                      allPlatforms)
+    , ("snaplet-riak",                                      allPlatforms)
+    , ("snaplet-sedna",                                     allPlatforms)
+    , ("snaplet-tasks",                                     allPlatforms)
+    , ("snaplet-typed-sessions",                            allPlatforms)
+    , ("snaplet-wordpress",                                 allPlatforms)
+    , ("snap-predicates",                                   allPlatforms)
+    , ("snappy-iteratee",                                   allPlatforms)
+    , ("snap-testing",                                      allPlatforms)
+    , ("snap-utils",                                        allPlatforms)
+    , ("sndfile-enumerators",                               allPlatforms)
+    , ("sneathlane-haste",                                  allPlatforms)
+    , ("SNet",                                              allPlatforms)
+    , ("snm",                                               allPlatforms)
+    , ("snow-white",                                        allPlatforms)
+    , ("Snusmumrik",                                        allPlatforms)
+    , ("SoccerFun",                                         allPlatforms)
+    , ("SoccerFunGL",                                       allPlatforms)
+    , ("sock2stream",                                       allPlatforms)
+    , ("socketio",                                          allPlatforms)
+    , ("socket-sctp",                                       allPlatforms)
+    , ("sonic-visualiser",                                  allPlatforms)
+    , ("SoOSiM",                                            allPlatforms)
+    , ("sorted",                                            allPlatforms)
+    , ("sound-collage",                                     allPlatforms)
+    , ("source-code-server",                                allPlatforms)
+    , ("sousit",                                            allPlatforms)
+    , ("soxlib",                                            allPlatforms)
+    , ("soyuz",                                             allPlatforms)
+    , ("SpaceInvaders",                                     allPlatforms)
+    , ("SpacePrivateers",                                   allPlatforms)
+    , ("spanout",                                           allPlatforms)
+    , ("sparse",                                            allPlatforms)
+    , ("sparsebit",                                         allPlatforms)
+    , ("sparsecheck",                                       allPlatforms)
+    , ("spata",                                             allPlatforms)
+    , ("special-functors",                                  allPlatforms)
+    , ("specialize-th",                                     allPlatforms)
+    , ("speculation-transformers",                          allPlatforms)
+    , ("sphero",                                            allPlatforms)
+    , ("sphinx-cli",                                        allPlatforms)
+    , ("spice",                                             allPlatforms)
+    , ("spike",                                             allPlatforms)
+    , ("splaytree",                                         allPlatforms)
+    , ("splines",                                           allPlatforms)
+    , ("split-record",                                      allPlatforms)
+    , ("splot",                                             allPlatforms)
+    , ("Spock-auth",                                        allPlatforms)
+    , ("spoonutil",                                         allPlatforms)
+    , ("spoty",                                             allPlatforms)
+    , ("Sprig",                                             allPlatforms)
+    , ("spy",                                               allPlatforms)
+    , ("sqlite-simple-typed",                               allPlatforms)
+    , ("sql-simple",                                        allPlatforms)
+    , ("sql-simple-mysql",                                  allPlatforms)
+    , ("sql-simple-pool",                                   allPlatforms)
+    , ("sql-simple-postgresql",                             allPlatforms)
+    , ("sql-simple-sqlite",                                 allPlatforms)
+    , ("srcinst",                                           allPlatforms)
+    , ("sscgi",                                             allPlatforms)
+    , ("ssh",                                               allPlatforms)
+    , ("sssp",                                              allPlatforms)
+    , ("sstable",                                           allPlatforms)
+    , ("stackage-curator",                                  allPlatforms)
+    , ("stack-prism",                                       allPlatforms)
+    , ("starrover2",                                        allPlatforms)
+    , ("stateful-mtl",                                      allPlatforms)
+    , ("statgrab",                                          allPlatforms)
+    , ("statistics-dirichlet",                              allPlatforms)
+    , ("statistics-fusion",                                 allPlatforms)
+    , ("stb-truetype",                                      allPlatforms)
+    , ("step-function",                                     allPlatforms)
+    , ("stepwise",                                          allPlatforms)
+    , ("stm-chunked-queues",                                allPlatforms)
+    , ("stmcontrol",                                        allPlatforms)
+    , ("stm-firehose",                                      allPlatforms)
+    , ("Stomp",                                             allPlatforms)
+    , ("storable-static-array",                             allPlatforms)
+    , ("storablevector",                                    allPlatforms)
+    , ("storablevector-carray",                             allPlatforms)
+    , ("storablevector-streamfusion",                       allPlatforms)
+    , ("Strafunski-Sdf2Haskell",                            allPlatforms)
+    , ("streamed",                                          allPlatforms)
+    , ("stream-fusion",                                     allPlatforms)
+    , ("StrictBench",                                       allPlatforms)
+    , ("strict-concurrency",                                allPlatforms)
+    , ("string",                                            allPlatforms)
+    , ("stringlike",                                        allPlatforms)
+    , ("structured-mongoDB",                                allPlatforms)
+    , ("structures",                                        allPlatforms)
+    , ("stunts",                                            allPlatforms)
+    , ("subhask",                                           allPlatforms)
+    , ("suitable",                                          allPlatforms)
+    , ("sunlight",                                          allPlatforms)
+    , ("sunroof-compiler",                                  allPlatforms)
+    , ("sunroof-examples",                                  allPlatforms)
+    , ("sunroof-server",                                    allPlatforms)
+    , ("supercollider-midi",                                allPlatforms)
+    , ("superdoc",                                          allPlatforms)
+    , ("supero",                                            allPlatforms)
+    , ("supervisor",                                        allPlatforms)
+    , ("svg2q",                                             allPlatforms)
+    , ("SVG2Q",                                             allPlatforms)
+    , ("svm-simple",                                        allPlatforms)
+    , ("svndump",                                           allPlatforms)
+    , ("swapper",                                           allPlatforms)
+    , ("swearjure",                                         allPlatforms)
+    , ("swf",                                               allPlatforms)
+    , ("swift-lda",                                         allPlatforms)
+    , ("sws",                                               allPlatforms)
+    , ("syb-extras",                                        allPlatforms)
+    , ("sylvia",                                            allPlatforms)
+    , ("sym-plot",                                          allPlatforms)
+    , ("sync",                                              allPlatforms)
+    , ("sync-mht",                                          allPlatforms)
+    , ("syntax",                                            allPlatforms)
+    , ("syntax-attoparsec",                                 allPlatforms)
+    , ("syntax-example",                                    allPlatforms)
+    , ("syntax-example-json",                               allPlatforms)
+    , ("SyntaxMacros",                                      allPlatforms)
+    , ("syntax-pretty",                                     allPlatforms)
+    , ("syntax-printer",                                    allPlatforms)
+    , ("syntax-trees",                                      allPlatforms)
+    , ("syntax-trees-fork-bairyn",                          allPlatforms)
+    , ("synthesizer",                                       allPlatforms)
+    , ("synthesizer-alsa",                                  allPlatforms)
+    , ("synthesizer-core",                                  allPlatforms)
+    , ("synthesizer-dimensional",                           allPlatforms)
+    , ("synthesizer-midi",                                  allPlatforms)
+    , ("Sysmon",                                            allPlatforms)
+    , ("system-canonicalpath",                              allPlatforms)
+    , ("system-lifted",                                     allPlatforms)
+    , ("system-random-effect",                              allPlatforms)
+    , ("ta",                                                allPlatforms)
+    , ("Tables",                                            allPlatforms)
+    , ("tablestorage",                                      allPlatforms)
+    , ("tabloid",                                           allPlatforms)
+    , ("tagged-list",                                       allPlatforms)
+    , ("tagged-th",                                         allPlatforms)
+    , ("tagsoup-ht",                                        allPlatforms)
+    , ("tagsoup-parsec",                                    allPlatforms)
+    , ("Takusen",                                           allPlatforms)
+    , ("takusen-oracle",                                    allPlatforms)
+    , ("tamarin-prover",                                    allPlatforms)
+    , ("tamarin-prover-term",                               allPlatforms)
+    , ("tamarin-prover-theory",                             allPlatforms)
+    , ("tamarin-prover-utils",                              allPlatforms)
+    , ("tamper",                                            allPlatforms)
+    , ("target",                                            allPlatforms)
+    , ("task",                                              allPlatforms)
+    , ("tasty-integrate",                                   allPlatforms)
+    , ("TBC",                                               allPlatforms)
+    , ("tbox",                                              allPlatforms)
+    , ("tccli",                                             allPlatforms)
+    , ("tcp",                                               allPlatforms)
+    , ("tdd-util",                                          allPlatforms)
+    , ("TeaHS",                                             allPlatforms)
+    , ("teams",                                             allPlatforms)
+    , ("telegram",                                          allPlatforms)
+    , ("template-default",                                  allPlatforms)
+    , ("template-haskell-util",                             allPlatforms)
+    , ("template-hsml",                                     allPlatforms)
+    , ("templatepg",                                        allPlatforms)
+    , ("tempodb",                                           allPlatforms)
+    , ("temporal-csound",                                   allPlatforms)
+    , ("tempus",                                            allPlatforms)
+    , ("tensor",                                            allPlatforms)
+    , ("termbox-bindings",                                  allPlatforms)
+    , ("term-rewriting",                                    allPlatforms)
+    , ("terrahs",                                           allPlatforms)
+    , ("tersmu",                                            allPlatforms)
+    , ("test-framework-doctest",                            allPlatforms)
+    , ("test-framework-quickcheck",                         allPlatforms)
+    , ("testloop",                                          allPlatforms)
+    , ("testpattern",                                       allPlatforms)
+    , ("testPkg",                                           allPlatforms)
+    , ("testrunner",                                        allPlatforms)
+    , ("tetris",                                            allPlatforms)
+    , ("tex2txt",                                           allPlatforms)
+    , ("texrunner",                                         allPlatforms)
+    , ("text-json-qq",                                      allPlatforms)
+    , ("textmatetags",                                      allPlatforms)
+    , ("text-normal",                                       allPlatforms)
+    , ("textPlot",                                          allPlatforms)
+    , ("text-register-machine",                             allPlatforms)
+    , ("texts",                                             allPlatforms)
+    , ("text-xml-generic",                                  allPlatforms)
+    , ("text-xml-qq",                                       allPlatforms)
+    , ("tfp-th",                                            allPlatforms)
+    , ("Theora",                                            allPlatforms)
+    , ("theoremquest-client",                               allPlatforms)
+    , ("thih",                                              allPlatforms)
+    , ("thimk",                                             allPlatforms)
+    , ("Thingie",                                           allPlatforms)
+    , ("th-instances",                                      allPlatforms)
+    , ("th-kinds",                                          allPlatforms)
+    , ("thrift",                                            allPlatforms)
+    , ("Thrift",                                            allPlatforms)
+    , ("throttle",                                          allPlatforms)
+    , ("tic-tac-toe",                                       allPlatforms)
+    , ("TicTacToe",                                         allPlatforms)
+    , ("tiger",                                             allPlatforms)
+    , ("tighttp",                                           allPlatforms)
+    , ("timberc",                                           allPlatforms)
+    , ("timecalc",                                          allPlatforms)
+    , ("time-extras",                                       allPlatforms)
+    , ("time-http",                                         allPlatforms)
+    , ("timeout",                                           allPlatforms)
+    , ("timeout-control",                                   allPlatforms)
+    , ("timeparsers",                                       allPlatforms)
+    , ("TimePiece",                                         allPlatforms)
+    , ("timeplot",                                          allPlatforms)
+    , ("time-recurrence",                                   allPlatforms)
+    , ("time-series",                                       allPlatforms)
+    , ("timestamp-subprocess-lines",                        allPlatforms)
+    , ("time-w3c",                                          allPlatforms)
+    , ("TinyLaunchbury",                                    allPlatforms)
+    , ("TinyURL",                                           allPlatforms)
+    , ("Titim",                                             allPlatforms)
+    , ("tkhs",                                              allPlatforms)
+    , ("tkyprof",                                           allPlatforms)
+    , ("tls-extra",                                         allPlatforms)
+    , ("todos",                                             allPlatforms)
+    , ("to-haskell",                                        allPlatforms)
+    , ("toilet",                                            allPlatforms)
+    , ("toktok",                                            allPlatforms)
+    , ("tokyocabinet-haskell",                              allPlatforms)
+    , ("toml",                                              allPlatforms)
+    , ("Top",                                               allPlatforms)
+    , ("topkata",                                           allPlatforms)
+    , ("torch",                                             allPlatforms)
+    , ("to-string-class",                                   allPlatforms)
+    , ("to-string-instances",                               allPlatforms)
+    , ("Tournament",                                        allPlatforms)
+    , ("tracker",                                           allPlatforms)
+    , ("trajectory",                                        allPlatforms)
+    , ("transactional-events",                              allPlatforms)
+    , ("transformers-convert",                              allPlatforms)
+    , ("transformers-runnable",                             allPlatforms)
+    , ("translate",                                         allPlatforms)
+    , ("traypoweroff",                                      allPlatforms)
+    , ("treemap-html-tools",                                allPlatforms)
+    , ("treeviz",                                           allPlatforms)
+    , ("tremulous-query",                                   allPlatforms)
+    , ("TrendGraph",                                        allPlatforms)
+    , ("trhsx",                                             allPlatforms)
+    , ("triangulation",                                     allPlatforms)
+    , ("TrieMap",                                           allPlatforms)
+    , ("trimpolya",                                         allPlatforms)
+    , ("true-name",                                         allPlatforms)
+    , ("tsession",                                          allPlatforms)
+    , ("tsession-happstack",                                allPlatforms)
+    , ("tskiplist",                                         allPlatforms)
+    , ("tsp-viz",                                           allPlatforms)
+    , ("tuntap",                                            allPlatforms)
+    , ("tup-functor",                                       allPlatforms)
+    , ("tuple-gen",                                         allPlatforms)
+    , ("tupleinstances",                                    allPlatforms)
+    , ("tuple-morph",                                       allPlatforms)
+    , ("twentefp-rosetree",                                 allPlatforms)
+    , ("twhs",                                              allPlatforms)
+    , ("twidge",                                            allPlatforms)
+    , ("twilight-stm",                                      allPlatforms)
+    , ("twilio",                                            allPlatforms)
+    , ("twill",                                             allPlatforms)
+    , ("twiml",                                             allPlatforms)
+    , ("twine",                                             allPlatforms)
+    , ("twisty",                                            allPlatforms)
+    , ("twitch",                                            allPlatforms)
+    , ("twitter",                                           allPlatforms)
+    , ("twitter-conduit",                                   allPlatforms)
+    , ("twitter-enumerator",                                allPlatforms)
+    , ("twitter-types",                                     allPlatforms)
+    , ("twitter-types-lens",                                allPlatforms)
+    , ("tx",                                                allPlatforms)
+    , ("TYB",                                               allPlatforms)
+    , ("typalyze",                                          allPlatforms)
+    , ("typeable-th",                                       allPlatforms)
+    , ("type-cereal",                                       allPlatforms)
+    , ("TypeClass",                                         allPlatforms)
+    , ("type-digits",                                       allPlatforms)
+    , ("typedquery",                                        allPlatforms)
+    , ("type-equality-check",                               allPlatforms)
+    , ("typehash",                                          allPlatforms)
+    , ("TypeIlluminator",                                   allPlatforms)
+    , ("type-int",                                          allPlatforms)
+    , ("type-level",                                        allPlatforms)
+    , ("type-level-bst",                                    allPlatforms)
+    , ("type-level-sets",                                   allPlatforms)
+    , ("typelevel-tensor",                                  allPlatforms)
+    , ("type-list",                                         allPlatforms)
+    , ("type-natural",                                      allPlatforms)
+    , ("type-ord",                                          allPlatforms)
+    , ("type-ord-spine-cereal",                             allPlatforms)
+    , ("typeparams",                                        allPlatforms)
+    , ("type-prelude",                                      allPlatforms)
+    , ("typescript-docs",                                   allPlatforms)
+    , ("type-settheory",                                    allPlatforms)
+    , ("type-spine",                                        allPlatforms)
+    , ("type-structure",                                    allPlatforms)
+    , ("type-sub-th",                                       allPlatforms)
+    , ("typography-geometry",                               allPlatforms)
+    , ("tz",                                                allPlatforms)
+    , ("uAgda",                                             allPlatforms)
+    , ("uberlast",                                          allPlatforms)
+    , ("uconv",                                             allPlatforms)
+    , ("udbus",                                             allPlatforms)
+    , ("udbus-model",                                       allPlatforms)
+    , ("udev",                                              allPlatforms)
+    , ("ui-command",                                        allPlatforms)
+    , ("UMM",                                               allPlatforms)
+    , ("unamb-custom",                                      allPlatforms)
+    , ("unbound",                                           allPlatforms)
+    , ("unbounded-delays-units",                            allPlatforms)
+    , ("unboxed-containers",                                allPlatforms)
+    , ("unicode-normalization",                             allPlatforms)
+    , ("unicoder",                                          allPlatforms)
+    , ("uniform-io",                                        allPlatforms)
+    , ("union-map",                                         allPlatforms)
+    , ("uniqueid",                                          allPlatforms)
+    , ("unique-logic-tf",                                   allPlatforms)
+    , ("units-defs",                                        allPlatforms)
+    , ("units",                                             allPlatforms)
+    , ("unittyped",                                         allPlatforms)
+    , ("universe-th",                                       allPlatforms)
+    , ("unix-process-conduit",                              allPlatforms)
+    , ("unlit",                                             allPlatforms)
+    , ("unordered-containers-rematch",                      allPlatforms)
+    , ("unpack-funcs",                                      allPlatforms)
+    , ("unscramble",                                        allPlatforms)
+    , ("up",                                                allPlatforms)
+    , ("uploadcare",                                        allPlatforms)
+    , ("upskirt",                                           allPlatforms)
+    , ("ureader",                                           allPlatforms)
+    , ("urembed",                                           allPlatforms)
+    , ("uri-conduit",                                       allPlatforms)
+    , ("uri-enumerator",                                    allPlatforms)
+    , ("uri-enumerator-file",                               allPlatforms)
+    , ("urlcheck",                                          allPlatforms)
+    , ("urldecode",                                         allPlatforms)
+    , ("UrlDisp",                                           allPlatforms)
+    , ("urldisp-happstack",                                 allPlatforms)
+    , ("url-generic",                                       allPlatforms)
+    , ("URLT",                                              allPlatforms)
+    , ("urxml",                                             allPlatforms)
+    , ("usb-enumerator",                                    allPlatforms)
+    , ("usb-iteratee",                                      allPlatforms)
+    , ("usb-safe",                                          allPlatforms)
+    , ("uuagc-diagrams",                                    allPlatforms)
+    , ("uu-tc",                                             allPlatforms)
+    , ("uvector",                                           allPlatforms)
+    , ("uvector-algorithms",                                allPlatforms)
+    , ("v4l2",                                              allPlatforms)
+    , ("v4l2-examples",                                     allPlatforms)
+    , ("vacuum",                                            allPlatforms)
+    , ("vacuum-cairo",                                      allPlatforms)
+    , ("vacuum-graphviz",                                   allPlatforms)
+    , ("vacuum-opengl",                                     allPlatforms)
+    , ("vacuum-ubigraph",                                   allPlatforms)
+    , ("validate",                                          allPlatforms)
+    , ("vampire",                                           allPlatforms)
+    , ("var",                                               allPlatforms)
+    , ("vaultaire-common",                                  allPlatforms)
+    , ("vcard",                                             allPlatforms)
+    , ("Vec-Boolean",                                       allPlatforms)
+    , ("Vec-OpenGLRaw",                                     allPlatforms)
+    , ("vector-bytestring",                                 allPlatforms)
+    , ("vector-clock",                                      allPlatforms)
+    , ("vector-conduit",                                    allPlatforms)
+    , ("vector-functorlazy",                                allPlatforms)
+    , ("vector-instances-collections",                      allPlatforms)
+    , ("vector-random",                                     allPlatforms)
+    , ("vector-read-instances",                             allPlatforms)
+    , ("vector-space-opengl",                               allPlatforms)
+    , ("vector-static",                                     allPlatforms)
+    , ("Vec-Transform",                                     allPlatforms)
+    , ("verilog",                                           allPlatforms)
+    , ("vigilance",                                         allPlatforms)
+    , ("vintage-basic",                                     allPlatforms)
+    , ("vinyl",                                             allPlatforms)
+    , ("vinyl-gl",                                          allPlatforms)
+    , ("vinyl-json",                                        allPlatforms)
+    , ("vinyl-utils",                                       allPlatforms)
+    , ("virthualenv",                                       allPlatforms)
+    , ("vision",                                            allPlatforms)
+    , ("visual-graphrewrite",                               allPlatforms)
+    , ("visual-prof",                                       allPlatforms)
+    , ("vk-aws-route53",                                    allPlatforms)
+    , ("VKHS",                                              allPlatforms)
+    , ("vorbiscomment",                                     allPlatforms)
+    , ("vowpal-utils",                                      allPlatforms)
+    , ("voyeur",                                            allPlatforms)
+    , ("vtegtk3",                                           allPlatforms)
+    , ("vty-examples",                                      allPlatforms)
+    , ("vty-menu",                                          allPlatforms)
+    , ("vty-ui-extras",                                     allPlatforms)
+    , ("wai-cors",                                          allPlatforms)
+    , ("wai-eventsource",                                   allPlatforms)
+    , ("wai-graceful",                                      allPlatforms)
+    , ("wai-handler-devel",                                 allPlatforms)
+    , ("wai-handler-snap",                                  allPlatforms)
+    , ("wai-handler-webkit",                                allPlatforms)
+    , ("wai-hastache",                                      allPlatforms)
+    , ("wai-lite",                                          allPlatforms)
+    , ("wai-logger-prefork",                                allPlatforms)
+    , ("wai-middleware-cache",                              allPlatforms)
+    , ("wai-middleware-cache-redis",                        allPlatforms)
+    , ("wai-middleware-catch",                              allPlatforms)
+    , ("wai-middleware-consul",                             allPlatforms)
+    , ("wai-middleware-etag",                               allPlatforms)
+    , ("wai-middleware-headers",                            allPlatforms)
+    , ("wai-middleware-hmac-client",                        allPlatforms)
+    , ("wai-middleware-preprocessor",                       allPlatforms)
+    , ("wai-middleware-route",                              allPlatforms)
+    , ("wai-middleware-static-caching",                     allPlatforms)
+    , ("wai-predicates",                                    allPlatforms)
+    , ("wai-routing",                                       allPlatforms)
+    , ("wai-session-tokyocabinet",                          allPlatforms)
+    , ("wai-static-cache",                                  allPlatforms)
+    , ("wai-throttler",                                     allPlatforms)
+    , ("waitra",                                            allPlatforms)
+    , ("warp-dynamic",                                      allPlatforms)
+    , ("warp-static",                                       allPlatforms)
+    , ("warp-tls-uid",                                      allPlatforms)
+    , ("WashNGo",                                           allPlatforms)
+    , ("watchdog",                                          allPlatforms)
+    , ("watcher",                                           allPlatforms)
+    , ("watchit",                                           allPlatforms)
+    , ("wavesurfer",                                        allPlatforms)
+    , ("weather-api",                                       allPlatforms)
+    , ("WebBits-Html",                                      allPlatforms)
+    , ("WebBits-multiplate",                                allPlatforms)
+    , ("web-browser-in-haskell",                            allPlatforms)
+    , ("WebCont",                                           allPlatforms)
+    , ("webcrank-dispatch",                                 allPlatforms)
+    , ("webcrank-wai",                                      allPlatforms)
+    , ("webdriver-snoy",                                    allPlatforms)
+    , ("web-encodings",                                     allPlatforms)
+    , ("webify",                                            allPlatforms)
+    , ("webkit-javascriptcore",                             allPlatforms)
+    , ("web-mongrel2",                                      allPlatforms)
+    , ("Webrexp",                                           allPlatforms)
+    , ("web-routes-quasi",                                  allPlatforms)
+    , ("web-routes-transformers",                           allPlatforms)
+    , ("webserver",                                         allPlatforms)
+    , ("websnap",                                           allPlatforms)
+    , ("webwire",                                           allPlatforms)
+    , ("wedged",                                            allPlatforms)
+    , ("weighted-regexp",                                   allPlatforms)
+    , ("welshy",                                            allPlatforms)
+    , ("Wheb",                                              allPlatforms)
+    , ("wheb-mongo",                                        allPlatforms)
+    , ("wheb-redis",                                        allPlatforms)
+    , ("wheb-strapped",                                     allPlatforms)
+    , ("whim",                                              allPlatforms)
+    , ("whitespace",                                        allPlatforms)
+    , ("WikimediaParser",                                   allPlatforms)
+    , ("wikipedia4epub",                                    allPlatforms)
+    , ("Win32-dhcp-server",                                 allPlatforms)
+    , ("Win32-errors",                                      allPlatforms)
+    , ("Win32-extras",                                      allPlatforms)
+    , ("Win32-junction-point",                              allPlatforms)
+    , ("Win32-notify",                                      allPlatforms)
+    , ("Win32-security",                                    allPlatforms)
+    , ("Win32-services",                                    allPlatforms)
+    , ("Win32-services-wrapper",                            allPlatforms)
+    , ("windowslive",                                       allPlatforms)
+    , ("winerror",                                          allPlatforms)
+    , ("winio",                                             allPlatforms)
+    , ("WL500gPControl",                                    allPlatforms)
+    , ("wlc-hs",                                            allPlatforms)
+    , ("wobsurv",                                           allPlatforms)
+    , ("woffex",                                            allPlatforms)
+    , ("wolf",                                              allPlatforms)
+    , ("word24",                                            allPlatforms)
+    , ("wordcloud",                                         allPlatforms)
+    , ("Wordlint",                                          allPlatforms)
+    , ("WordNet",                                           allPlatforms)
+    , ("WordNet-ghc74",                                     allPlatforms)
+    , ("wordsearch",                                        allPlatforms)
+    , ("wp-archivebot",                                     allPlatforms)
+    , ("wraxml",                                            allPlatforms)
+    , ("wright",                                            allPlatforms)
+    , ("wtk",                                               allPlatforms)
+    , ("wtk-gtk",                                           allPlatforms)
+    , ("wumpus-basic",                                      allPlatforms)
+    , ("wumpus-core",                                       allPlatforms)
+    , ("wumpus-drawing",                                    allPlatforms)
+    , ("wumpus-microprint",                                 allPlatforms)
+    , ("wumpus-tree",                                       allPlatforms)
+    , ("WURFL",                                             allPlatforms)
+    , ("wxAsteroids",                                       allPlatforms)
+    , ("WXDiffCtrl",                                        allPlatforms)
+    , ("wxFruit",                                           allPlatforms)
+    , ("wxhnotepad",                                        allPlatforms)
+    , ("wxturtle",                                          allPlatforms)
+    , ("wyvern",                                            allPlatforms)
+    , ("X11-extras",                                        allPlatforms)
+    , ("X11-rm",                                            allPlatforms)
+    , ("X11-xdamage",                                       allPlatforms)
+    , ("X11-xfixes",                                        allPlatforms)
+    , ("x11-xinput",                                        allPlatforms)
+    , ("x509-util",                                         allPlatforms)
+    , ("xchat-plugin",                                      allPlatforms)
+    , ("x-dsp",                                             allPlatforms)
+    , ("Xec",                                               allPlatforms)
+    , ("xfconf",                                            allPlatforms)
+    , ("xhaskell-library",                                  allPlatforms)
+    , ("xhb-ewmh",                                          allPlatforms)
+    , ("xine",                                              allPlatforms)
+    , ("xing-api",                                          allPlatforms)
+    , ("XInput",                                            allPlatforms)
+    , ("xkcd",                                              allPlatforms)
+    , ("xlsior",                                            allPlatforms)
+    , ("xlsx-templater",                                    allPlatforms)
+    , ("xml2json",                                          allPlatforms)
+    , ("xml2x",                                             allPlatforms)
+    , ("xml-catalog",                                       allPlatforms)
+    , ("xml-enumerator",                                    allPlatforms)
+    , ("xml-enumerator-combinators",                        allPlatforms)
+    , ("XmlHtmlWriter",                                     allPlatforms)
+    , ("xml-parsec",                                        allPlatforms)
+    , ("xml-pipe",                                          allPlatforms)
+    , ("xml-prettify",                                      allPlatforms)
+    , ("xml-push",                                          allPlatforms)
+    , ("xmltv",                                             allPlatforms)
+    , ("XMMS",                                              allPlatforms)
+    , ("xmms2-client",                                      allPlatforms)
+    , ("xmms2-client-glib",                                 allPlatforms)
+    , ("xmonad-bluetilebranch",                             allPlatforms)
+    , ("xmonad-contrib-bluetilebranch",                     allPlatforms)
+    , ("xmonad-eval",                                       allPlatforms)
+    , ("xmpipe",                                            allPlatforms)
+    , ("XMPP",                                              allPlatforms)
+    , ("xournal-builder",                                   allPlatforms)
+    , ("xournal-convert",                                   allPlatforms)
+    , ("xournal-parser",                                    allPlatforms)
+    , ("xournal-render",                                    allPlatforms)
+    , ("xournal-types",                                     allPlatforms)
+    , ("xsact",                                             allPlatforms)
+    , ("XSaiga",                                            allPlatforms)
+    , ("xslt",                                              allPlatforms)
+    , ("y0l0bot",                                           allPlatforms)
+    , ("Yablog",                                            allPlatforms)
+    , ("YACPong",                                           allPlatforms)
+    , ("yahoo-web-search",                                  allPlatforms)
+    , ("yajl",                                              allPlatforms)
+    , ("yajl-enumerator",                                   allPlatforms)
+    , ("yaml2owl",                                          allPlatforms)
+    , ("YamlReference",                                     allPlatforms)
+    , ("yaml-rpc",                                          allPlatforms)
+    , ("yaml-rpc-scotty",                                   allPlatforms)
+    , ("yaml-rpc-snap",                                     allPlatforms)
+    , ("yampa-canvas",                                      allPlatforms)
+    , ("yampa-glfw",                                        allPlatforms)
+    , ("yampa-glut",                                        allPlatforms)
+    , ("yaop",                                              allPlatforms)
+    , ("yarr",                                              allPlatforms)
+    , ("yarr-image-io",                                     allPlatforms)
+    , ("yate",                                              allPlatforms)
+    , ("yavie",                                             allPlatforms)
+    , ("ycextra",                                           allPlatforms)
+    , ("yesod-angular-ui",                                  allPlatforms)
+    , ("yesod-auth-account-fork",                           allPlatforms)
+    , ("yesod-auth-kerberos",                               allPlatforms)
+    , ("yesod-auth-ldap",                                   allPlatforms)
+    , ("yesod-auth-pam",                                    allPlatforms)
+    , ("yesod-auth-smbclient",                              allPlatforms)
+    , ("yesod-bootstrap",                                   allPlatforms)
+    , ("yesod-comments",                                    allPlatforms)
+    , ("yesod-continuations",                               allPlatforms)
+    , ("yesod-datatables",                                  allPlatforms)
+    , ("yesod-eventsource",                                 allPlatforms)
+    , ("yesod-examples",                                    allPlatforms)
+    , ("yesod-goodies",                                     allPlatforms)
+    , ("yesod-links",                                       allPlatforms)
+    , ("yesod-mangopay",                                    allPlatforms)
+    , ("yesod-media-simple",                                allPlatforms)
+    , ("yesod-paginate",                                    allPlatforms)
+    , ("yesod-pagination",                                  allPlatforms)
+    , ("yesod-paginator",                                   allPlatforms)
+    , ("yesod-platform",                                    allPlatforms)
+    , ("yesod-pure",                                        allPlatforms)
+    , ("yesod-purescript",                                  allPlatforms)
+    , ("yesod-routes-typescript",                           allPlatforms)
+    , ("yesod-rst",                                         allPlatforms)
+    , ("yesod-s3",                                          allPlatforms)
+    , ("yesod-session-redis",                               allPlatforms)
+    , ("yesod-tableview",                                   allPlatforms)
+    , ("yesod-test-json",                                   allPlatforms)
+    , ("yesod-tls",                                         allPlatforms)
+    , ("yesod-vend",                                        allPlatforms)
+    , ("yesod-worker",                                      allPlatforms)
+    , ("YFrob",                                             allPlatforms)
+    , ("yhccore",                                           allPlatforms)
+    , ("yi-contrib",                                        allPlatforms)
+    , ("yi-fuzzy-open",                                     allPlatforms)
+    , ("yi-gtk",                                            allPlatforms)
+    , ("yi-vty",                                            allPlatforms)
+    , ("yjftp",                                             allPlatforms)
+    , ("Yogurt",                                            allPlatforms)
+    , ("Yogurt-Standalone",                                 allPlatforms)
+    , ("yoko",                                              allPlatforms)
+    , ("york-lava",                                         allPlatforms)
+    , ("yql",                                               allPlatforms)
+    , ("yuiGrid",                                           allPlatforms)
+    , ("yuuko",                                             allPlatforms)
+    , ("zampolit",                                          allPlatforms)
+    , ("zasni-gerna",                                       allPlatforms)
+    , ("zendesk-api",                                       allPlatforms)
+    , ("zeno",                                              allPlatforms)
+    , ("zeromq3-conduit",                                   allPlatforms)
+    , ("zeromq3-haskell",                                   allPlatforms)
+    , ("zeromq-haskell",                                    allPlatforms)
+    , ("zeroth",                                            allPlatforms)
+    , ("ZFS",                                               allPlatforms)
+    , ("zipedit",                                           allPlatforms)
+    , ("ZMachine",                                          allPlatforms)
+    , ("zmcat",                                             allPlatforms)
+    , ("zmqat",                                             allPlatforms)
+    , ("zoneinfo",                                          allPlatforms)
+    , ("zoom",                                              allPlatforms)
+    , ("zoom-cache",                                        allPlatforms)
+    , ("zoom-cache-pcm",                                    allPlatforms)
+    , ("zoom-cache-sndfile",                                allPlatforms)
+    , ("zot",                                               allPlatforms)
+    , ("zsh-battery",                                       allPlatforms)
+    , ("ztail",                                             allPlatforms)
+    , ("Zwaluw",                                            allPlatforms)
     ]
 
   }

@@ -12,13 +12,16 @@ module Distribution.Nixpkgs.Meta
   , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
   ) where
 
-
 import Control.DeepSeq.Generics
 import Control.Lens
 import Control.Lens.Create
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
+import Distribution.Nixpkgs.Haskell.FromCabal.Platform
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.License
+import Distribution.System
 import GHC.Generics ( Generic )
 import Internal.PrettyPrinting
 import Language.Nix.Identifier
@@ -28,15 +31,15 @@ import Language.Nix.Identifier
 -- >>> :set -XOverloadedStrings
 -- >>> :{
 --   print (pPrint (Meta "http://example.org" "an example package" (Unknown Nothing)
---                  (Set.singleton "stdenv.lib.platforms.unix")
---                  (Set.singleton "stdenv.lib.platforms.none")
+--                  (Set.singleton (Platform X86_64 Linux))
+--                  Set.empty
 --                  (Set.fromList ["joe","jane"])
 --                  True))
 -- :}
 -- homepage = "http://example.org";
 -- description = "an example package";
 -- license = "unknown";
--- platforms = stdenv.lib.platforms.unix;
+-- platforms = [ "x86_64-linux" ];
 -- hydraPlatforms = stdenv.lib.platforms.none;
 -- maintainers = with stdenv.lib.maintainers; [ jane joe ];
 -- broken = true;
@@ -45,8 +48,8 @@ data Meta = Meta
   { _homepage       :: String           -- ^ URL of the package homepage
   , _description    :: String           -- ^ short description of the package
   , _license        :: License          -- ^ licensing terms
-  , _platforms      :: Set String       -- ^ list of supported platforms (from @pkgs\/lib\/platforms.nix@)
-  , _hydraPlatforms :: Set String       -- ^ list of platforms built by Hydra (from @pkgs\/lib\/platforms.nix@)
+  , _platforms      :: Set Platform     -- ^ We re-use the Cabal type for convenience, but render it to conform to @pkgs\/lib\/platforms.nix@.
+  , _hydraPlatforms :: Set Platform     -- ^ list of platforms built by Hydra (render to conform to @pkgs\/lib\/platforms.nix@)
   , _maintainers    :: Set Identifier   -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   , _broken         :: Bool             -- ^ set to @true@ if the build is known to fail
   }
@@ -61,17 +64,19 @@ instance Pretty Meta where
     [ onlyIf (not (null _homepage)) $ attr "homepage" $ string _homepage
     , onlyIf (not (null _description)) $ attr "description" $ string _description
     , attr "license" $ pPrint _license
-    , onlyIf (not (Set.null _platforms) && _platforms /= Set.singleton "ghc.meta.platforms") $ sep
-      [ text "platforms" <+> equals, renderPlatformList (Set.toAscList _platforms) ]
-    , onlyIf (not (Set.null _hydraPlatforms)) $ sep
-      [ text "hydraPlatforms" <+> equals, renderPlatformList (Set.toAscList _hydraPlatforms) ]
+    , onlyIf (_platforms /= allPlatforms) $ renderPlatforms "platforms" _platforms
+    , onlyIf (_hydraPlatforms /= _platforms) $ renderPlatforms "hydraPlatforms" _hydraPlatforms
     , setattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.map (view ident) _maintainers)
     , boolattr "broken" _broken _broken
     ]
 
-renderPlatformList :: [String] -> Doc
-renderPlatformList plats =
-  nest 2 (fsep $ punctuate (text " ++") $ map text plats) <> semi
+renderPlatforms :: String -> Set Platform -> Doc
+renderPlatforms field ps
+  | Set.null ps = sep [ text field <+> equals <+> text "stdenv.lib.platforms.none" <> semi ]
+  | otherwise   = sep [ text field <+> equals <+> lbrack
+                      , nest 2 $ fsep $ map text (toAscList (Set.map fromCabalPlatform ps))
+                      , rbrack <> semi
+                      ]
 
 instance Default Meta where
   def = Meta
