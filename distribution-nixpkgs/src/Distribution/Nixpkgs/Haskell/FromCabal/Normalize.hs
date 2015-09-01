@@ -27,15 +27,6 @@ normalizeBuildInfo (PackageName pname) bi = bi
   & haskell %~ Set.filter (\b -> view localName b /= fromString pname)
   & tool %~ Set.filter (\b -> view localName b /= fromString pname)
 
-  {-
-  {
-  , testDepends  = normalizeNixNames (Set.delete pname testDepends)
-  , extraLibs    = normalizeNixLibs extraLibs
-  , pkgConfDeps  = normalizeNixLibs pkgConfDeps
-  , configureFlags = normalizeSet configureFlags
-  }
--}
-
 normalizeMeta :: Meta -> Meta
 normalizeMeta meta = meta
   & description %~ normalizeSynopsis
@@ -53,23 +44,6 @@ quote ('\\':c:cs) = '\\' : c : quote cs
 quote ('"':cs)    = '\\' : '"' : quote cs
 quote (c:cs)      = c : quote cs
 quote []          = []
-
--- normalizeSet :: Set String -> Set String
--- normalizeSet = Set.filter (not . null)
-
--- normalizeNixNames :: Set String -> Set String
--- normalizeNixNames = normalizeSet . Set.map toNixName
-
--- normalizeNixLibs :: Set String -> Set String
--- normalizeNixLibs = normalizeSet . Set.fromList . concatMap libNixName . Set.toList
-
--- normalizeNixBuildTools :: Set Identifier -> Set Identifier
--- normalizeNixBuildTools = Set.fromList . concatMap buildToolNixName . Set.toList
-
--- normalizePlatforms :: Set String -> Set String
--- normalizePlatforms = normalizeSet . Set.map
---   (\p -> if '.' `elem` p then p else "stdenv.lib.platforms." ++ p)
-
 
 -- |When a flag is specified multiple times, the first occurrence
 -- counts. This is counter-intuitive, IMHO, but it's how cabal does it.
