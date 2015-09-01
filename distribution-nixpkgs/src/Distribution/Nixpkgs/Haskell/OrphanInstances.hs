@@ -57,6 +57,9 @@ instance NFData TestType where rnf = genericRnf
 instance NFData VersionRange where rnf = genericRnf
 instance NFData a => NFData (Condition a) where rnf = genericRnf
 instance NFData Platform where rnf = genericRnf
+instance NFData CompilerInfo where rnf = genericRnf
+instance NFData CompilerId where rnf = genericRnf
+instance NFData AbiTag where rnf = genericRnf
 
 instance IsString PackageName where
   fromString = text2isString "PackageName"

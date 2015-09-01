@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
   ( Configuration(..), allPlatforms, linux, darwin, arch32, arch64
   , module Distribution.Compiler
@@ -8,6 +10,7 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
   , module Language.Nix.Identifier
   ) where
 
+import Control.DeepSeq.Generics
 import Data.Map as Map
 import Data.Set as Set
 import Distribution.Compiler
@@ -15,6 +18,7 @@ import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Package
 import Distribution.System
 import Distribution.Version
+import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 
 data Configuration = Configuration
@@ -50,7 +54,9 @@ data Configuration = Configuration
   -- 'maintainers' for a given Haskell package.
   , packageMaintainers :: Map PackageName (Set Identifier)
   }
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance NFData Configuration where rnf = genericRnf
 
 allPlatforms :: Set Platform
 allPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
