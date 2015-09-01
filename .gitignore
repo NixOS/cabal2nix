@@ -16,3 +16,7 @@ dist
 # haskell-mode generates files, too
 
 TAGS
+
+# ignore stack build directory
+
+.stack-work

@@ -1,0 +1,9 @@
+flags: {}
+packages:
+- lens-construction-helper/
+- distribution-nixpkgs/
+- hackage2nix/
+- cabal2nix/
+- language-nix/
+extra-deps: []
+resolver: lts-3.3
