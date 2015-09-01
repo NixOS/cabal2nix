@@ -50,9 +50,14 @@ hooks =
   , ("gtk3", gtk3Hook)
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
+  , ("liquid-fixpoint", over configureFlags (Set.union (Set.fromList ["-fbuild-external"]))
+                      . set (executableDepends . system . contains (pkg "ocaml")) True
+                      . set (testDepends . system . contains (pkg "z3")) True)
+  , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
+  , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("xmonad", set phaseOverrides xmonadPostInstall)
