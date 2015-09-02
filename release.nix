@@ -11,19 +11,19 @@ let
 
   overrides = self: super: {
 
-    mkDerivationFor = subdir: args: self.mkDerivation (args // { src = cabal2nixSrc; version = cabal2nixSrc.gitTag; });
+    mkJob = pkg: pkgs.haskell.lib.buildStrictly (super.${pkg}.override {
+      mkDerivation = args: super.mkDerivation (args // { src = cabal2nixSrc; version = cabal2nixSrc.gitTag; });
+    });
 
-    mkJob = path: subdir: pkgs.haskell.lib.buildStrictly (self.callPackage path { mkDerivation = self.mkDerivationFor subdir; });
+    lens-construction-helper = self.mkJob "lens-construction-helper";
 
-    lens-construction-helper = self.mkJob ./release-lens-construction-helper.nix "lens-construction-helper";
+    language-nix = self.mkJob "language-nix";
 
-    language-nix = self.mkJob ./release-language-nix.nix "language-nix";
+    distribution-nixpkgs = self.mkJob "distribution-nixpkgs";
 
-    distribution-nixpkgs = self.mkJob ./release-distribution-nixpkgs.nix "distribution-nixpkgs";
+    cabal2nix = self.mkJob "cabal2nix";
 
-    cabal2nix = self.mkJob ./release-cabal2nix.nix "cabal2nix";
-
-    hackage2nix = self.mkJob ./release-hackage2nix.nix "hackage2nix";
+    hackage2nix = self.mkJob "hackage2nix";
 
   };
 
