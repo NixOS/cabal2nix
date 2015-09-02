@@ -5,6 +5,7 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
   ) where
 
 import Data.Map as Map
+import Data.Set as Set
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
 
@@ -77,7 +78,7 @@ ghc7102 = Configuration
     , "zlib < 0.6"                      -- newer versions break cabal-install
     ]
 
-  , dontDistributePackages = Map.fromList
+  , dontDistributePackages = Prelude.foldr (uncurry (Map.insertWith Set.union)) Map.empty
     [ ("3dmodels",                                          allPlatforms)
     , ("3d-graphics-examples",                              darwin)
     , ("4Blocks",                                           allPlatforms)
@@ -1802,8 +1803,7 @@ ghc7102 = Configuration
     , ("hpuz",                                              darwin)
     , ("hpygments",                                         allPlatforms)
     , ("hpylos",                                            allPlatforms)
-    , ("hquantlib",                                         arch32)
-    , ("hquantlib",                                         darwin)
+    , ("hquantlib",                                         arch32 `Set.union` darwin)
     , ("hR",                                                allPlatforms)
     , ("hranker",                                           allPlatforms)
     , ("HRay",                                              allPlatforms)
@@ -2227,8 +2227,7 @@ ghc7102 = Configuration
     , ("ldif",                                              allPlatforms)
     , ("leaf",                                              allPlatforms)
     , ("leaky",                                             allPlatforms)
-    , ("learning-hmm",                                      arch32)
-    , ("learning-hmm",                                      darwin)
+    , ("learning-hmm",                                      arch32 `Set.union` darwin)
     , ("learn-physics",                                     allPlatforms)
     , ("learn-physics-examples",                            allPlatforms)
     , ("leksah",                                            darwin)
@@ -3309,8 +3308,7 @@ ghc7102 = Configuration
     , ("spoonutil",                                         allPlatforms)
     , ("spoty",                                             allPlatforms)
     , ("Sprig",                                             allPlatforms)
-    , ("spsa",                                              arch32)
-    , ("spsa",                                              darwin)
+    , ("spsa",                                              arch32 `Set.union` darwin)
     , ("spy",                                               allPlatforms)
     , ("sqlite-simple-typed",                               allPlatforms)
     , ("sql-simple",                                        allPlatforms)
@@ -3667,8 +3665,7 @@ ghc7102 = Configuration
     , ("verilog",                                           allPlatforms)
     , ("ViennaRNA-bindings",                                darwin)
     , ("vigilance",                                         allPlatforms)
-    , ("vimus",                                             arch32)
-    , ("vimus",                                             darwin)
+    , ("vimus",                                             arch32 `Set.union` darwin)
     , ("vintage-basic",                                     allPlatforms)
     , ("vinyl",                                             allPlatforms)
     , ("vinyl-gl",                                          allPlatforms)
@@ -3701,8 +3698,7 @@ ghc7102 = Configuration
     , ("wai-middleware-cache-redis",                        allPlatforms)
     , ("wai-middleware-catch",                              allPlatforms)
     , ("wai-middleware-consul",                             allPlatforms)
-    , ("wai-middleware-crowd",                              arch32)
-    , ("wai-middleware-crowd",                              darwin)
+    , ("wai-middleware-crowd",                              arch32 `Set.union` darwin)
     , ("wai-middleware-etag",                               allPlatforms)
     , ("wai-middleware-headers",                            allPlatforms)
     , ("wai-middleware-hmac-client",                        allPlatforms)
