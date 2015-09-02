@@ -1,10 +1,17 @@
 { mkDerivation, base, data-default-class, deepseq-generics, lens
-, lens-construction-helper, pretty, regex-posix, stdenv
+, lens-construction-helper, pretty, regex-posix, stdenv, fetchFromGitHub
 }:
-mkDerivation {
+
+mkDerivation rec {
   pname = "language-nix";
-  version = "20150830";
-  src = /home/simons/src/cabal2nix/language-nix;
+  version = "20150824-66-gd281a60";
+  src = fetchFromGitHub {
+    owner = "nixos";
+    repo = "cabal2nix";
+    rev = "v${version}";
+    sha256 = "1ffizg60ihkipcgqr5km4vxgnqv2pdw4716amqlxgf31wj59nyas";
+  };
+  postUnpack = "sourceRoot+=/${pname}";
   libraryHaskellDepends = [
     base data-default-class deepseq-generics lens
     lens-construction-helper pretty regex-posix

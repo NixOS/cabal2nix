@@ -11,10 +11,7 @@ let
 
   overrides = self: super: {
 
-    mkDerivationFor = subdir: args: self.mkDerivation (args // {
-      src = cabal2nixSrc; version = cabal2nixSrc.gitTag;
-      postUnpack = "sourceRoot+=/${subdir}";
-    });
+    mkDerivationFor = subdir: args: self.mkDerivation (args // { src = cabal2nixSrc; version = cabal2nixSrc.gitTag; });
 
     mkJob = path: subdir: pkgs.haskell.lib.buildStrictly (self.callPackage path { mkDerivation = self.mkDerivationFor subdir; });
 
