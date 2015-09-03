@@ -151,9 +151,11 @@ generatePackageSet config hackage nixpkgs = do
           drv' :: Derivation
           drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver (platform ghc7102) (compilerInfo ghc7102) flagAssignment [] descr
 
+          isInDefaultPackageSet :: Bool
+          isInDefaultPackageSet = maybe False (== pkgversion) (Map.lookup name generatedDefaultPackageSet)
+
           attr :: String
-          attr | Just v <- Map.lookup name generatedDefaultPackageSet, v == pkgversion = name
-               | otherwise = name ++ '_' : [ if c == '.' then '_' else c | c <- display pkgversion ]
+          attr = name ++ if isInDefaultPackageSet then [] else '_' : [ if c == '.' then '_' else c | c <- display pkgversion ]
 
           sha256 :: String
           sha256 | Just x <- lookup "X-Package-SHA256" (customFieldsPD (packageDescription descr)) = x
@@ -163,6 +165,7 @@ generatePackageSet config hackage nixpkgs = do
 
       let drv = drv' & src .~ srcSpec
                      & metaSection.hydraPlatforms %~ (`Set.difference` fromMaybe Set.empty (Map.lookup (PackageName name) (dontDistributePackages ghc7102)))
+                     & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
                      & metaSection.maintainers .~ fromMaybe Set.empty (Map.lookup (PackageName name) (packageMaintainers config))
 
           isFromHackage :: Binding -> Bool
