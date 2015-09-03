@@ -26,10 +26,8 @@ library
   ghc-options: -Wall
   build-depends:
       base < 5
-    , data-default-class
-    , deepseq-generics
+    , deepseq
     , lens
-    , lens-construction-helper
     , pretty >= 1.1.2
     , regex-posix
   exposed-modules:
@@ -37,4 +35,20 @@ library
       Language.Nix.Binding
       Language.Nix.Identifier
       Language.Nix.Path
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-depends:
+      base < 5
+    , deepseq
+    , lens
+    , pretty >= 1.1.2
+    , regex-posix
+    , doctest
+    , QuickCheck
   default-language: Haskell2010
