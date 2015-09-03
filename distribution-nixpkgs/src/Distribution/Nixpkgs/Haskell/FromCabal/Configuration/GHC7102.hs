@@ -2743,6 +2743,7 @@ ghc7102 = Configuration
     , ("picologic",                                         allPlatforms)
     , ("piet",                                              allPlatforms)
     , ("piki",                                              allPlatforms)
+    , ("pinboard",                                          allPlatforms)
     , ("Pipe",                                              allPlatforms)
     , ("pipes-cereal-plus",                                 allPlatforms)
     , ("pipes-conduit",                                     allPlatforms)
