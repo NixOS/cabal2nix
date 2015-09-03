@@ -15,8 +15,6 @@ let
       mkDerivation = args: super.mkDerivation (args // { src = cabal2nixSrc; version = cabal2nixSrc.gitTag; });
     });
 
-    lens-construction-helper = self.mkJob "lens-construction-helper";
-
     language-nix = self.mkJob "language-nix";
 
     distribution-nixpkgs = self.mkJob "distribution-nixpkgs";
@@ -31,8 +29,6 @@ let
 
 in
 {
-
-  lens-construction-helper = mkJob "lens-construction-helper";
 
   language-nix = mkJob "language-nix";
 
