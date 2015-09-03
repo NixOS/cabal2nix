@@ -1,5 +1,5 @@
 name:                   cabal2nix
-version:                "20150830"
+version:                "20150903"
 synopsis:               Convert Cabal files into Nix build instructions.
 description:            Convert Cabal files into Nix build instructions.
 maintainer:             Peter Simons <simons@cryp.to>
@@ -10,9 +10,9 @@ category:               Distribution
 ghc-options:            -Wall
 
 dependencies:
-  - Cabal >= 1.22.2
   - ansi-wl-pprint
   - base < 5
+  - Cabal >= 1.22.2
   - containers
   - distribution-nixpkgs
   - language-nix

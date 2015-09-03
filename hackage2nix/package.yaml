@@ -1,5 +1,5 @@
 name:                   hackage2nix
-version:                "20150830"
+version:                "20150903"
 synopsis:               Convert Cabal files into Nix build instructions.
 description:            Convert Cabal files into Nix build instructions.
 maintainer:             Peter Simons <simons@cryp.to>

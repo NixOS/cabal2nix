@@ -1,5 +1,5 @@
 name:                   language-nix
-version:                "20150830"
+version:                "20150903"
 synopsis:               Data types and useful functions to represent and manipulate the Nix language.
 description:            Data types and useful functions to represent and manipulate the Nix language.
 maintainer:             Peter Simons <simons@cryp.to>
