@@ -10,14 +10,13 @@ category:               Distribution
 ghc-options:            -Wall
 
 dependencies:
+  - Cabal >= 1.22.2
   - ansi-wl-pprint
   - base < 5
-  - Cabal >= 1.22.2
   - containers
   - distribution-nixpkgs
   - language-nix
   - lens
-  - lens-construction-helper
   - optparse-applicative
   - pretty >= 1.1.2
   - pretty-show

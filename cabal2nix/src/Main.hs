@@ -4,6 +4,7 @@
 module Main ( main ) where
 
 import Control.Exception ( bracket )
+import Control.Lens
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Fetch
@@ -14,14 +15,12 @@ import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.Text ( display )
-import Paths_cabal2nix
-import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
-import Control.Lens
-import Control.Lens.Create
 import Language.Nix
 import Options.Applicative
+import Paths_cabal2nix
 import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
+import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
 -- import Text.Show.Pretty
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 
@@ -97,7 +96,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   let deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
-                                            (\i -> Just (create binding (i, create path [i])))
+                                            (\i -> Just (binding # (i, path # [i])))
                                             (platform ghc7102)
                                             (compilerInfo ghc7102)
                                             (readFlagList optFlags)
@@ -109,7 +108,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & hyperlinkSource .~ optHyperlinkSource
               & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
               & enableExecutableProfiling .~ (fromMaybe False optEnableProfiling || optEnableExecutableProfiling)
-              & metaSection.maintainers .~ Set.fromList (map (create ident) optMaintainer)
+              & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
 --            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
               & extraFunctionArgs . contains "stdenv" .~ True
