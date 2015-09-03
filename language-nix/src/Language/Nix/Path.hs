@@ -1,54 +1,51 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Path ( Path, path ) where
 
-import Data.Default.Class
+import Control.DeepSeq
 import Control.Lens
-import Text.PrettyPrint.HughesPJClass ( Pretty (..), char, hcat, punctuate )
 import Language.Nix.Identifier
-import Control.DeepSeq.Generics
-import GHC.Generics ( Generic )
+import Text.PrettyPrint.HughesPJClass ( Pretty (..), char, hcat, punctuate )
 
 -- | Paths are non-empty lists of identifiers in Nix.
 --
--- >>> set path [set ident "yo" undefined] undefined
--- Path {_segments = [Identifier "yo"]}
+-- >>> path # [ident # "yo"]
+-- Path [Identifier "yo"]
 --
 -- Any attempt to construct the empty path throws an 'error':
 --
--- >>> set path [] undefined
--- Path {_segments = *** Exception: Nix paths cannot be empty
+-- >>> path # []
+-- Path *** Exception: Nix paths cannot be empty
 --
 -- 'Identifier' is an instance of 'IsString':
 --
 -- >>> :set -XOverloadedStrings
--- >>> pPrint $ set path ["yo","bar"] undefined
+-- >>> pPrint $ path # ["yo","bar"]
 -- yo.bar
 --
 -- Freaky quoted identifiers are fine except in the first segment:
 --
--- >>> pPrint $ set path ["yo","b\"ar"] undefined
+-- >>> pPrint $ path # ["yo","b\"ar"]
 -- yo."b\"ar"
--- >>> pPrint $ set path ["5ident"] undefined
+-- >>> pPrint $ path # ["5ident"]
 -- *** Exception: invalid Nix path: [Identifier "5ident"]
--- >>> pPrint $ set path ["5ident","foo","bar"] undefined
+-- >>> pPrint $ path # ["5ident","foo","bar"]
 -- *** Exception: invalid Nix path: [Identifier "5ident",Identifier "foo",Identifier "bar"]
 
-newtype Path = Path { _segments :: [Identifier] }
-  deriving (Show, Eq, Ord, Generic)
+declareLenses [d| newtype Path = Path [Identifier]
+                    deriving (Show, Eq, Ord)
+              |]
 
-instance NFData Path where rnf = genericRnf
+instance NFData Path where rnf (Path p) = rnf p
 
-instance Default Path where def = Path (error "undefined Nix.Path")
+instance Pretty Path where
+  pPrint p = hcat $ punctuate (char '.') $ pPrint <$> p^.path
 
-path :: Lens' Path [Identifier]
-path f (Path ids) = mkPath `fmap` f ids
+path :: Iso' Path [Identifier]
+path = iso (\(Path p) -> p) mkPath
   where
     mkPath :: [Identifier] -> Path
     mkPath []                           = error "Nix paths cannot be empty"
     mkPath p@(s0:_)
       | s0^.ident.to needsQuoting       = error ("invalid Nix path: " ++ show p)
       | otherwise                       = Path p
-
-instance Pretty Path where
-  pPrint p = hcat $ punctuate (char '.') $ pPrint <$> p^.path

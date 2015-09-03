@@ -11,10 +11,9 @@ ghc-options:            -Wall
 
 dependencies:
   - base < 5
-  - data-default-class
-  - deepseq-generics
+  - deepseq
+  - doctest
   - lens
-  - lens-construction-helper
   - pretty >= 1.1.2
   - regex-posix
 
@@ -25,3 +24,9 @@ library:
     - Language.Nix.Binding
     - Language.Nix.Identifier
     - Language.Nix.Path
+
+tests:
+  spec:
+    main: Main.hs
+    source-dirs:
+      - test
