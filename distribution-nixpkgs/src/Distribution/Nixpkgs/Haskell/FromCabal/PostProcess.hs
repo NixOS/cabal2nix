@@ -3,7 +3,6 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
 import Control.Lens
-import Control.Lens.Create
 import Data.List.Split
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -28,7 +27,7 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
     collidesWithHaskellName b = view localName b `Set.member` buildDeps
 
     myName :: Identifier
-    myName = create ident n where PackageName n = packageName drv
+    myName = ident # n where PackageName n = packageName drv
 
     buildDeps :: Set Identifier
     buildDeps = Set.delete myName (setOf (dependencies . haskell . folded . localName) drv)
@@ -68,15 +67,15 @@ hooks =
   ]
 
 pkg :: Identifier -> Binding
-pkg i = create binding (i, create path ["pkgs",i])
+pkg i = binding # (i, path # ["pkgs",i])
 
 pkgs :: [Identifier] -> Set Binding
 pkgs = Set.fromList . map pkg
 
 bind :: String -> Binding
-bind s = create binding (i, create path is)
+bind s = binding # (i, path # is)
   where
-    is = map (create ident) (splitOn "." s)
+    is = map (review ident) (splitOn "." s)
     i = last is
 
 -- TODO: I need to figure out how to conveniently replace a binding in a set.

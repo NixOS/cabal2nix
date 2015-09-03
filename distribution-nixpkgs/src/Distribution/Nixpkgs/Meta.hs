@@ -8,13 +8,12 @@
  -}
 
 module Distribution.Nixpkgs.Meta
-  ( Meta
+  ( Meta, nullMeta
   , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
   ) where
 
 import Control.DeepSeq.Generics
 import Control.Lens
-import Control.Lens.Create
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
@@ -78,13 +77,13 @@ renderPlatforms field ps
                       , rbrack <> semi
                       ]
 
-instance Default Meta where
-  def = Meta
-        { _homepage = error "undefined Meta.homepage"
-        , _description = error "undefined Meta.description"
-        , _license = error "undefined Meta.license"
-        , _platforms = error "undefined Meta.platforms"
-        , _hydraPlatforms = error "undefined Meta.hydraPlatforms"
-        , _maintainers = error "undefined Meta.maintainers"
-        , _broken = error "undefined Meta.broken"
-        }
+nullMeta :: Meta
+nullMeta = Meta
+  { _homepage = error "undefined Meta.homepage"
+  , _description = error "undefined Meta.description"
+  , _license = error "undefined Meta.license"
+  , _platforms = error "undefined Meta.platforms"
+  , _hydraPlatforms = error "undefined Meta.hydraPlatforms"
+  , _maintainers = error "undefined Meta.maintainers"
+  , _broken = error "undefined Meta.broken"
+  }

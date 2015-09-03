@@ -9,7 +9,6 @@ module Distribution.Nixpkgs.Haskell.FromCabal
 
 import Control.Arrow ( second )
 import Control.Lens
-import Control.Lens.Create
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -67,7 +66,7 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
     enableTest t = t { testEnabled = True }
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ def
+fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -91,7 +90,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & editedCabalFile .~ (if xrev > 0
                              then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
                              else "")
-    & metaSection .~ ( def
+    & metaSection .~ ( Nix.nullMeta
                      & Nix.homepage .~ homepage
                      & Nix.description .~ synopsis
                      & Nix.license .~ fromCabalLicense license
@@ -105,14 +104,14 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
 
     resolveInHackage :: Identifier -> Binding
     resolveInHackage i | (i^.ident) `elem` [ n | (Dependency (PackageName n) _) <- missingDeps ] = bindNull i
-                       | otherwise = create binding (i, create path ["self",i])   -- TODO: "self" shouldn't be hardcoded.
+                       | otherwise = binding # (i, path # ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
     goodScopes :: Set [Identifier]
     goodScopes = Set.fromList (map ("pkgs":) [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
 
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
-      | i `elem` ["clang","lldb","llvm"] = create binding (i,create path ["self","llvmPackages",i])     -- TODO: evil!
+      | i `elem` ["clang","lldb","llvm"] = binding # (i, path # ["self","llvmPackages",i])     -- TODO: evil!
       | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
       | otherwise                        = bindNull i
 
@@ -128,4 +127,4 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
       & tool .~ Set.fromList [ resolveInHackageThenNixpkgs y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x ]
 
 bindNull :: Identifier -> Binding
-bindNull i = create binding (i, create path ["null"])
+bindNull i = binding # (i, path # ["null"])

@@ -24,7 +24,6 @@ dependencies:
   - hspec
   - language-nix
   - lens
-  - lens-construction-helper
   - pretty >= 1.1.2
   - process
   - SHA

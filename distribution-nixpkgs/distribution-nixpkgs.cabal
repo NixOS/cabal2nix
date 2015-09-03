@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.5.4.
+-- This file has been generated from package.yaml by hpack version 0.7.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -38,7 +38,6 @@ library
     , hspec
     , language-nix
     , lens
-    , lens-construction-helper
     , pretty >= 1.1.2
     , process
     , SHA
@@ -93,7 +92,6 @@ test-suite spec
     , hspec
     , language-nix
     , lens
-    , lens-construction-helper
     , pretty >= 1.1.2
     , process
     , SHA

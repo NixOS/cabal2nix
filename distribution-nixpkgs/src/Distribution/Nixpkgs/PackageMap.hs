@@ -13,7 +13,6 @@ import Data.Map.Strict ( Map )
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Control.Lens.Create
 import Text.PrettyPrint.HughesPJClass
 import Language.Nix
 import System.Process
@@ -47,13 +46,13 @@ parsePackage :: String -> Maybe (Identifier, Path)
 parsePackage x | null x                 = error "Distribution.Nixpkgs.PackageMap.parsepackage: empty string is no valid identifier"
                | xs <- splitOn "." x    = if needsQuoting (head xs)
                                              then Nothing
-                                             else Just (create ident (last xs), create path (map (create ident) xs))
+                                             else Just (ident # last xs, path # map (review ident) xs)
 
 resolve :: PackageMap -> Identifier -> Maybe Binding
 resolve nixpkgs i = case Map.lookup i nixpkgs of
                       Nothing -> Nothing
                       Just ps -> let p = chooseShortestPath (Set.toList ps)
-                                 in Just $ create binding (i,p)
+                                 in Just $ binding # (i,p)
 
 chooseShortestPath :: [Path] -> Path
 chooseShortestPath [] = error "chooseShortestPath: called with empty list argument"

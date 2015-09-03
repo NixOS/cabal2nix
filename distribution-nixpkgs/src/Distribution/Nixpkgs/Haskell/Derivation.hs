@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
-  ( Derivation, pkgid, revision, src, isLibrary, isExecutable
+  ( Derivation, nullDerivation, pkgid, revision, src, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
@@ -25,7 +25,6 @@ import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
 import Language.Nix
-import Control.Lens.Create
 import Text.PrettyPrint.HughesPJClass
 import Control.Lens
 import Internal.PrettyPrinting
@@ -60,31 +59,31 @@ data Derivation = MkDerivation
   }
   deriving (Show, Eq, Generic)
 
-instance Default Derivation where
-  def = MkDerivation
-    { _pkgid = error "undefined Derivation.pkgid"
-    , _revision = error "undefined Derivation.revision"
-    , _src = error "undefined Derivation.src"
-    , _isLibrary = error "undefined Derivation.isLibrary"
-    , _isExecutable = error "undefined Derivation.isExecutable"
-    , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
-    , _libraryDepends = error "undefined Derivation.libraryDepends"
-    , _executableDepends = error "undefined Derivation.executableDepends"
-    , _testDepends = error "undefined Derivation.testDepends"
-    , _configureFlags = error "undefined Derivation.configureFlags"
-    , _cabalFlags = error "undefined Derivation.cabalFlags"
-    , _runHaddock = error "undefined Derivation.runHaddock"
-    , _jailbreak = error "undefined Derivation.jailbreak"
-    , _doCheck = error "undefined Derivation.doCheck"
-    , _testTarget = error "undefined Derivation.testTarget"
-    , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
-    , _enableLibraryProfiling = error "undefined Derivation.enableLibraryProfiling"
-    , _enableExecutableProfiling = error "undefined Derivation.enableExecutableProfiling"
-    , _enableSplitObjs = error "undefined Derivation.enableSplitObjs"
-    , _phaseOverrides = error "undefined Derivation.phaseOverrides"
-    , _editedCabalFile = error "undefined Derivation.editedCabalFile"
-    , _metaSection = error "undefined Derivation.metaSection"
-    }
+nullDerivation :: Derivation
+nullDerivation = MkDerivation
+  { _pkgid = error "undefined Derivation.pkgid"
+  , _revision = error "undefined Derivation.revision"
+  , _src = error "undefined Derivation.src"
+  , _isLibrary = error "undefined Derivation.isLibrary"
+  , _isExecutable = error "undefined Derivation.isExecutable"
+  , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
+  , _libraryDepends = error "undefined Derivation.libraryDepends"
+  , _executableDepends = error "undefined Derivation.executableDepends"
+  , _testDepends = error "undefined Derivation.testDepends"
+  , _configureFlags = error "undefined Derivation.configureFlags"
+  , _cabalFlags = error "undefined Derivation.cabalFlags"
+  , _runHaddock = error "undefined Derivation.runHaddock"
+  , _jailbreak = error "undefined Derivation.jailbreak"
+  , _doCheck = error "undefined Derivation.doCheck"
+  , _testTarget = error "undefined Derivation.testTarget"
+  , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
+  , _enableLibraryProfiling = error "undefined Derivation.enableLibraryProfiling"
+  , _enableExecutableProfiling = error "undefined Derivation.enableExecutableProfiling"
+  , _enableSplitObjs = error "undefined Derivation.enableSplitObjs"
+  , _phaseOverrides = error "undefined Derivation.phaseOverrides"
+  , _editedCabalFile = error "undefined Derivation.editedCabalFile"
+  , _metaSection = error "undefined Derivation.metaSection"
+  }
 
 makeLenses ''Derivation
 

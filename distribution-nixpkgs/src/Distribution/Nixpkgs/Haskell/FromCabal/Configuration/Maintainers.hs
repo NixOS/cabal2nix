@@ -1,9 +1,9 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers ( globalPackageMaintainers ) where
 
+import Control.Lens
 import Data.Map as Map
 import Data.Set as Set
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration
-import Control.Lens.Create
 
 globalPackageMaintainers :: Map PackageName (Set Identifier)
 globalPackageMaintainers = Map.unionsWith Set.union [ Map.singleton p (Set.singleton m) | (m,ps) <- maintainedPackages, p <- ps ]
@@ -24,4 +24,4 @@ maintainedPackages =
   ]
 
 (|->) :: String -> [String] -> (Identifier,[PackageName])
-(|->) m ps = (create ident m, Prelude.map PackageName ps)
+(|->) m ps = (ident # m, Prelude.map PackageName ps)
