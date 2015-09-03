@@ -29,6 +29,7 @@ library
     , doctest
     , lens
     , pretty >= 1.1.2
+    , QuickCheck
     , regex-posix
   exposed-modules:
       Language.Nix
@@ -49,5 +50,6 @@ test-suite spec
     , doctest
     , lens
     , pretty >= 1.1.2
+    , QuickCheck
     , regex-posix
   default-language: Haskell2010
