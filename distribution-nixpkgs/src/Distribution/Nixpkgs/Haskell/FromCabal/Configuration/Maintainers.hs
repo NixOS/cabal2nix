@@ -13,7 +13,7 @@ maintainedPackages =
   [ "simons" |->
        [ "cabal2nix", "funcmp", "hackage-db", "hledger-interest", "hopenssl"
        , "hsdns", "hsemail", "hsyslog", "jailbreak-cabal", "language-nix"
-       , "streamproc", "git-annex"
+       , "streamproc", "git-annex", "stack", "cabal-install"
        ]
   , "gebner" |-> [ "hledger-diff" ]
   , "gridaphobe" |-> [ "ghc-srcspan-plugin", "liquid-fixpoint", "liquidhaskell", "located-base", "target" ]

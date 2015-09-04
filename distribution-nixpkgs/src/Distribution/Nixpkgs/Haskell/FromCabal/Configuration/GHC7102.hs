@@ -3325,7 +3325,6 @@ ghc7102 = Configuration
     , ("sssp",                                              allPlatforms)
     , ("sstable",                                           allPlatforms)
     , ("stackage-curator",                                  allPlatforms)
-    , ("stack",                                             darwin)
     , ("stack-prism",                                       allPlatforms)
     , ("starrover2",                                        allPlatforms)
     , ("stateful-mtl",                                      allPlatforms)
