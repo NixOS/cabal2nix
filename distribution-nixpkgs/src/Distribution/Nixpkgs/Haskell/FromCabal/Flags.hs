@@ -24,6 +24,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "snap-server"        = [enable "openssl"]
  | name == "xmobar"             = [enable "all_extensions"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
+ | name == "yaml"               = [enable "system-libyaml"]
  | name == "yi"                 = [enable "pango", enable "vty"]
  | otherwise                    = []
 

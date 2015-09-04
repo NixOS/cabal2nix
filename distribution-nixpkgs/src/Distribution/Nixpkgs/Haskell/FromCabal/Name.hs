@@ -158,6 +158,7 @@ libNixName "Xrandr"                             = return "libXrandr"
 libNixName "Xss"                                = return "libXScrnSaver"
 libNixName "Xtst"                               = return "libXtst"
 libNixName "Xxf86vm"                            = return "libXxf86vm"
+libNixName "yaml-0.1"                           = return "libyaml"
 libNixName "zmq"                                = return "zeromq"
 libNixName "z"                                  = return "zlib"
 libNixName x                                    = return (fromString x)
