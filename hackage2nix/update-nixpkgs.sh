@@ -37,7 +37,7 @@ hackage=$(git rev-parse --verify HEAD)
 cd ..
 
 stack --verbosity 0 build hackage2nix
-.stack-work/dist/x86_64-linux/Cabal-1.22.4.0/build/hackage2nix/hackage2nix >hackage-packages.nix
+stack --verbosity 0 exec hackage2nix -- >hackage-packages.nix
 
 cd nixpkgs
 git pull -q
