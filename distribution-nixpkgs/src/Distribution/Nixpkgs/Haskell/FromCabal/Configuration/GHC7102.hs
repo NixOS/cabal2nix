@@ -18,7 +18,7 @@ ghc7102 = Configuration
   , packageMaintainers = globalPackageMaintainers
 
   , defaultPackageOverrides =
-    [ "HUnit < 1.3.0.0"         -- newer versions break test-framework-hunit-0.3.0.1
+    [
     ]
 
   , corePackages =
