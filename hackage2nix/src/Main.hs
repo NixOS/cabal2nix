@@ -3,12 +3,7 @@
 
 module Main ( main ) where
 
-import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
-import Distribution.Nixpkgs.Haskell.FromCabal.Flags
-import Distribution.Nixpkgs.Haskell.HackageGit ( readHackage, Hackage )
-import Distribution.Nixpkgs.Haskell.Constraint
-import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
-import Distribution.Nixpkgs.Haskell.PackageSourceSpec
+import Control.Lens
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
@@ -23,18 +18,23 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell.Constraint
+import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
+import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.HackageGit ( readHackage, Hackage )
+import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
+import Distribution.Package
 import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
 import Distribution.Text
-import Distribution.Package
 import Distribution.Version
-import Control.Lens
-import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
-import Paths_hackage2nix
 import Language.Nix
 import Options.Applicative
+import Paths_hackage2nix
 import System.FilePath
+import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
 
 defaultConfiguration :: Configuration
 defaultConfiguration = ghc7102
