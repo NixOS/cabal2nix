@@ -18,7 +18,7 @@ ghc7102 = Configuration
   , packageMaintainers = globalPackageMaintainers
 
   , defaultPackageOverrides =
-    [
+    [ "cabal-helper < 0.6.0.0"  -- newer versions break ghc-mod
     ]
 
   , corePackages =
