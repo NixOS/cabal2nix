@@ -8,7 +8,6 @@ import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
-import Data.Function
 import Data.List
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
