@@ -26,10 +26,8 @@ library
   build-depends:
       base < 5
     , deepseq
-    , doctest
     , lens
     , pretty >= 1.1.2
-    , QuickCheck
     , regex-posix
   exposed-modules:
       Language.Nix
@@ -47,9 +45,9 @@ test-suite spec
   build-depends:
       base < 5
     , deepseq
-    , doctest
     , lens
     , pretty >= 1.1.2
-    , QuickCheck
     , regex-posix
+    , doctest
+    , QuickCheck
   default-language: Haskell2010

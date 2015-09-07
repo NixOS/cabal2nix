@@ -29,10 +29,8 @@ library
     , bytestring
     , Cabal >= 1.22.2
     , containers
-    , deepseq
     , deepseq-generics
     , directory
-    , doctest
     , filepath
     , hackage-db
     , hashable
@@ -84,10 +82,8 @@ test-suite spec
     , bytestring
     , Cabal >= 1.22.2
     , containers
-    , deepseq
     , deepseq-generics
     , directory
-    , doctest
     , filepath
     , hackage-db
     , hashable
@@ -103,5 +99,8 @@ test-suite spec
     , unordered-containers
     , utf8-string
     , yaml
+    , deepseq
     , distribution-nixpkgs
+    , doctest
+    , QuickCheck
   default-language: Haskell2010

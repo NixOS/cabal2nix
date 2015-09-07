@@ -15,10 +15,8 @@ dependencies:
   - bytestring
   - Cabal >= 1.22.2
   - containers
-  - deepseq
   - deepseq-generics
   - directory
-  - doctest
   - filepath
   - hackage-db
   - hashable
@@ -64,4 +62,7 @@ tests:
     source-dirs:
       - test
     dependencies:
+      - deepseq
       - distribution-nixpkgs
+      - doctest
+      - QuickCheck

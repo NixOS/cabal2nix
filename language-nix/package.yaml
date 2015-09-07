@@ -12,10 +12,8 @@ ghc-options:            -Wall
 dependencies:
   - base < 5
   - deepseq
-  - doctest
   - lens
   - pretty >= 1.1.2
-  - QuickCheck
   - regex-posix
 
 library:
@@ -31,3 +29,6 @@ tests:
     main: Main.hs
     source-dirs:
       - test
+    dependencies:
+      - doctest
+      - QuickCheck
