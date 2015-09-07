@@ -20,4 +20,4 @@ install:
   - stack build --only-snapshot
 
 script:
-  - stack build --test --haddock
+  - stack build --ghc-options=-Wall --ghc-options=-Werror --test --haddock
