@@ -13,6 +13,7 @@ dependencies:
   - base < 5
   - Cabal >= 1.22.2
   - containers
+  - deepseq-generics
   - distribution-nixpkgs
   - filepath
   - language-nix
@@ -22,12 +23,15 @@ dependencies:
   - mtl
   - optparse-applicative
   - pretty >= 1.1.2
+  - text
+  - yaml
 
 executables:
   hackage2nix:
     main:               Main.hs
     source-dirs:        src
     other-modules:
+      - Configuration
       - Paths_hackage2nix
     ghc-options:
       - -threaded

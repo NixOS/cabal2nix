@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric   #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 {- |
    A representation of the @meta@ section used in Nix expressions. A
    detailed description can be found in section 4, \"Meta-attributes\",
@@ -10,13 +11,13 @@
 module Distribution.Nixpkgs.Meta
   ( Meta, nullMeta
   , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
+  , allKnownPlatforms
   ) where
 
 import Control.DeepSeq.Generics
 import Control.Lens
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
 import Distribution.Nixpkgs.Haskell.FromCabal.Platform
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.License
@@ -63,7 +64,7 @@ instance Pretty Meta where
     [ onlyIf (not (null _homepage)) $ attr "homepage" $ string _homepage
     , onlyIf (not (null _description)) $ attr "description" $ string _description
     , attr "license" $ pPrint _license
-    , onlyIf (_platforms /= allPlatforms) $ renderPlatforms "platforms" _platforms
+    , onlyIf (_platforms /= allKnownPlatforms) $ renderPlatforms "platforms" _platforms
     , onlyIf (_hydraPlatforms /= _platforms) $ renderPlatforms "hydraPlatforms" _hydraPlatforms
     , setattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.map (view ident) _maintainers)
     , boolattr "broken" _broken _broken
@@ -87,3 +88,8 @@ nullMeta = Meta
   , _maintainers = error "undefined Meta.maintainers"
   , _broken = error "undefined Meta.broken"
   }
+
+allKnownPlatforms :: Set Platform
+allKnownPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
+                                 , Platform X86_64 (OtherOS "darwin")
+                                 ]

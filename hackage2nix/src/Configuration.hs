@@ -1,23 +1,19 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
-  ( Configuration(..), allPlatforms, linux, darwin, arch32, arch64
-  , module Distribution.Compiler
-  , module Distribution.Nixpkgs.Haskell.Constraint
-  , module Distribution.Package
-  , module Distribution.System
-  , module Distribution.Version
-  , module Language.Nix.Identifier
-  ) where
+module Configuration ( Configuration(..) ) where
 
 import Control.DeepSeq.Generics
+import Control.Lens
 import Data.Map as Map
 import Data.Set as Set
+import Data.Text as T
+import Data.Yaml
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Package
 import Distribution.System
-import Distribution.Version
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 
@@ -32,10 +28,7 @@ data Configuration = Configuration
   , compilerInfo :: CompilerInfo
 
   -- |Core packages found on Hackageg
-  , corePackages :: [PackageIdentifier]
-
-  -- |Core packages not found on Hackage.
-  , hardCorePackages :: [PackageIdentifier]
+  , corePackages :: Set PackageIdentifier
 
   -- |These packages replace the latest respective version during
   -- dependency resolution.
@@ -52,23 +45,29 @@ data Configuration = Configuration
 
   -- |This information is used by the @hackage2nix@ utility to determine the
   -- 'maintainers' for a given Haskell package.
-  , packageMaintainers :: Map PackageName (Set Identifier)
+  , packageMaintainers :: Map Identifier (Set PackageName)
   }
   deriving (Show, Generic)
 
 instance NFData Configuration where rnf = genericRnf
 
-allPlatforms :: Set Platform
-allPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
-                            , Platform X86_64 (OtherOS "darwin")
-                            ]
+instance FromJSON Configuration where
+  parseJSON (Object o) = Configuration
+        <$> o .:? "platform" .!= buildPlatform
+        <*> o .:? "compiler" .!= unknownCompilerInfo buildCompilerId NoAbiTag
+        <*> o .:? "core-packages" .!= mempty
+        <*> o .:? "default-package-overrides" .!= mempty
+        <*> o .:? "extra-packages" .!= mempty
+        <*> o .:? "dont-distribute-packages" .!= mempty
+        <*> o .:? "package-maintainers" .!= mempty
+  parseJSON _ = error "invalid Configuration"
 
-linux, darwin :: Set Platform
-linux = Set.filter (\(Platform _ os) -> os == Linux) allPlatforms
-darwin = Set.filter (\(Platform _ os) -> os == OtherOS "darwin") allPlatforms
+instance FromJSON Identifier where
+  parseJSON (String s) = pure (review ident (T.unpack s))
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Nix identifier")
 
-arch32, arch64 :: Set Platform
-arch32 = Set.filter (\(Platform arch _) -> arch == I386) allPlatforms
-arch64 = Set.filter (\(Platform arch _) -> arch == X86_64) allPlatforms
-
-{-# ANN module "HLint: ignore Use import/export shortcut" #-}
+instance (Ord k, FromJSON k, FromJSON v) => FromJSON (Map k v) where
+  parseJSON  = fmap (Map.mapKeys parseKey) . parseJSON
+    where
+      parseKey :: FromJSON k => Text -> k
+      parseKey s = either error id (parseEither parseJSON (String s))

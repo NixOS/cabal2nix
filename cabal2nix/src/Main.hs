@@ -7,13 +7,14 @@ import Control.Exception ( bracket )
 import Control.Lens
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
+import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
-import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
+import Distribution.System
 import Distribution.Text ( display )
 import Language.Nix
 import Options.Applicative
@@ -99,8 +100,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   let deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
                                             (\i -> Just (binding # (i, path # [i])))
-                                            (platform ghc7102)
-                                            (compilerInfo ghc7102)
+                                            buildPlatform
+                                            (unknownCompilerInfo buildCompilerId NoAbiTag)
                                             (readFlagList optFlags)
                                             []
                                             (pkgCabal pkg)
@@ -113,7 +114,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
 --            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
-              & extraFunctionArgs %~ (Set.union (Set.fromList ("stdenv":(map (review ident) optExtraArgs))))
+              & extraFunctionArgs %~ Set.union (Set.fromList ("stdenv":map (review ident) optExtraArgs))
 
       shell :: Doc
       shell = vcat

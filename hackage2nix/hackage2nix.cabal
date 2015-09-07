@@ -28,6 +28,7 @@ executable hackage2nix
       base < 5
     , Cabal >= 1.22.2
     , containers
+    , deepseq-generics
     , distribution-nixpkgs
     , filepath
     , language-nix
@@ -37,6 +38,9 @@ executable hackage2nix
     , mtl
     , optparse-applicative
     , pretty >= 1.1.2
+    , text
+    , yaml
   other-modules:
+      Configuration
       Paths_hackage2nix
   default-language: Haskell2010

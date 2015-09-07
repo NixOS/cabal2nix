@@ -16,7 +16,6 @@ import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Distribution.Nixpkgs.Haskell.Constraint
-import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
 import Distribution.Nixpkgs.Haskell.FromCabal.License
 import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
@@ -94,8 +93,8 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
                      & Nix.homepage .~ homepage
                      & Nix.description .~ synopsis
                      & Nix.license .~ fromCabalLicense license
-                     & Nix.platforms .~ allPlatforms
-                     & Nix.hydraPlatforms .~ allPlatforms
+                     & Nix.platforms .~ Nix.allKnownPlatforms
+                     & Nix.hydraPlatforms .~ Nix.allKnownPlatforms
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
                      )

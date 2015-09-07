@@ -6,7 +6,6 @@ import Data.List
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Haskell
-import Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( allPlatforms )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
@@ -30,7 +29,7 @@ normalizeBuildInfo (PackageName pname) bi = bi
 normalizeMeta :: Meta -> Meta
 normalizeMeta meta = meta
   & description %~ normalizeSynopsis
-  & platforms %~ Set.intersection allPlatforms
+  & platforms %~ Set.intersection allKnownPlatforms
   & hydraPlatforms %~ Set.intersection (meta^.platforms)
 
 normalizeSynopsis :: String -> String

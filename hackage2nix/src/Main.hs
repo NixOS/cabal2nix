@@ -3,6 +3,7 @@
 
 module Main ( main ) where
 
+import Configuration
 import Control.Lens
 import Control.Monad
 import Control.Monad.Par.Combinator
@@ -15,11 +16,11 @@ import Data.Maybe
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Data.Yaml ( decodeFile )
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
-import Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import Distribution.Nixpkgs.Haskell.HackageGit ( readHackage, Hackage )
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
@@ -34,9 +35,6 @@ import Options.Applicative
 import Paths_hackage2nix
 import System.FilePath
 import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
-
-defaultConfiguration :: Configuration
-defaultConfiguration = ghc7102
 
 type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
@@ -54,6 +52,7 @@ data Options = Options
   { hackageRepository :: FilePath
   , preferredVersionsFile :: Maybe FilePath
   , nixpkgsRepository :: FilePath
+  , configFile :: FilePath
   }
   deriving (Show)
 
@@ -62,6 +61,7 @@ options = Options
           <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault <> metavar "PATH")
           <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
           <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefault <> metavar "PATH")
+          <*> strOption (long "config" <> help "path to configuration file" <> value "nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml" <> showDefault <> metavar "PATH")
 
 pinfo :: ParserInfo Options
 pinfo = info
@@ -77,6 +77,7 @@ main :: IO ()
 main = do
   Options {..} <- execParser pinfo
 
+  defaultConfiguration <- fromMaybe (error ("invalid config file at " ++ show configFile)) <$> decodeFile configFile
   hackage <- readHackage hackageRepository
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository Nothing
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
@@ -95,8 +96,14 @@ enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (
 generatePackageSet :: Configuration -> Hackage -> Nixpkgs -> ParIO ()
 generatePackageSet config hackage nixpkgs = do
   let
+    hardCorePackages :: Set PackageIdentifier   -- TODO: review whether this set is needed at all
+    hardCorePackages = Set.filter isOnHackage  (corePackages config)
+      where
+        isOnHackage :: PackageIdentifier -> Bool
+        isOnHackage (PackageIdentifier (PackageName n) v) = maybe False (Set.member v . Map.keysSet) (Map.lookup n hackage)
+
     corePackageSet :: PackageSet
-    corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- corePackages config ++ hardCorePackages config ]
+    corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- Set.toList (corePackages config) ++ Set.toList hardCorePackages ]
 
     latestVersionSet :: PackageSet
     latestVersionSet = Map.map (Set.findMax . Map.keysSet) hackage
@@ -133,6 +140,9 @@ generatePackageSet config hackage nixpkgs = do
     nixpkgsResolver :: Identifier -> Maybe Binding
     nixpkgsResolver = resolve (Map.map (Set.map (over path ("pkgs":))) nixpkgs)
 
+    globalPackageMaintainers :: Map PackageName (Set Identifier)
+    globalPackageMaintainers = Map.unionsWith Set.union [ Map.singleton p (Set.singleton m) | (m,ps) <- Map.toList (packageMaintainers config), p <- Set.toList ps ]
+
   liftIO $ do putStrLn "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
               putStrLn ""
               putStrLn "{ pkgs, stdenv, callPackage }:"
@@ -148,7 +158,7 @@ generatePackageSet config hackage nixpkgs = do
           flagAssignment = configureCabalFlags (packageId descr)
 
           drv' :: Derivation
-          drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver (platform ghc7102) (compilerInfo ghc7102) flagAssignment [] descr
+          drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver (platform config) (compilerInfo config) flagAssignment [] descr
 
           isInDefaultPackageSet :: Bool
           isInDefaultPackageSet = maybe False (== pkgversion) (Map.lookup name generatedDefaultPackageSet)
@@ -163,9 +173,9 @@ generatePackageSet config hackage nixpkgs = do
       srcSpec <- liftIO $ sourceFromHackage (Certain sha256) (name ++ "-" ++ display pkgversion)
 
       let drv = drv' & src .~ srcSpec
-                     & metaSection.hydraPlatforms %~ (`Set.difference` fromMaybe Set.empty (Map.lookup (PackageName name) (dontDistributePackages ghc7102)))
+                     & metaSection.hydraPlatforms %~ (`Set.difference` fromMaybe Set.empty (Map.lookup (PackageName name) (dontDistributePackages config)))
                      & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
-                     & metaSection.maintainers .~ fromMaybe Set.empty (Map.lookup (PackageName name) (packageMaintainers config))
+                     & metaSection.maintainers .~ fromMaybe Set.empty (Map.lookup (PackageName name) globalPackageMaintainers)
 
           isFromHackage :: Binding -> Bool
           isFromHackage b = case view (reference . path) b of

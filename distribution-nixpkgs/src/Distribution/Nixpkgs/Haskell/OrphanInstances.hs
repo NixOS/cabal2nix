@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -7,9 +8,11 @@ module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
 import Control.DeepSeq.Generics
 import Data.Maybe
 import Data.String
+import qualified Data.Text as T
+import Data.Yaml
 import Distribution.Compiler
 import Distribution.License
-import Distribution.ModuleName hiding ( main )
+import Distribution.ModuleName hiding ( main, fromString )
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.System
@@ -69,6 +72,33 @@ instance IsString PackageIdentifier where
 
 instance IsString Dependency where
   fromString = text2isString "Dependency"
+
+instance IsString CompilerId where
+  fromString = text2isString "CompilerId"
+
+instance FromJSON Platform where
+  parseJSON (String "i686-linux") = pure (Platform I386 Linux)
+  parseJSON (String "x86_64-linux") = pure (Platform X86_64 Linux)
+  parseJSON (String "x86_64-darwin") = pure (Platform X86_64 (OtherOS "darwin"))
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid platform")
+
+instance FromJSON PackageName where
+  parseJSON (String s) = return (fromString (T.unpack s))
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell package name")
+
+instance FromJSON PackageIdentifier where
+  parseJSON (String s) = return (fromString (T.unpack s))
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell package identifier")
+
+instance FromJSON Dependency where
+  parseJSON (String s) = return (fromString (T.unpack s))
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell Dependency")
+
+instance FromJSON CompilerInfo where
+  parseJSON (String s) = return (unknownCompilerInfo (fromString (T.unpack s)) NoAbiTag)
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell compiler")
+
+-- parsing tools
 
 text2isString :: Text a => String -> String -> a
 text2isString t s = fromMaybe (error ("fromString: " ++ show s ++ " is not a valid " ++ t)) (simpleParse s)

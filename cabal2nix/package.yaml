@@ -20,6 +20,8 @@ dependencies:
   - optparse-applicative
   - pretty >= 1.1.2
   - pretty-show
+  - text
+  - yaml
 
 executables:
   cabal2nix:

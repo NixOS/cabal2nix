@@ -21,6 +21,7 @@ dependencies:
   - doctest
   - filepath
   - hackage-db
+  - hashable
   - hspec
   - language-nix
   - lens
@@ -28,8 +29,11 @@ dependencies:
   - process
   - SHA
   - split
+  - text
   - transformers
+  - unordered-containers
   - utf8-string
+  - yaml
 
 library:
   source-dirs:       src
@@ -40,9 +44,6 @@ library:
     - Distribution.Nixpkgs.Haskell.Constraint
     - Distribution.Nixpkgs.Haskell.Derivation
     - Distribution.Nixpkgs.Haskell.FromCabal
-    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration
-    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration.GHC7102
-    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration.Maintainers
     - Distribution.Nixpkgs.Haskell.FromCabal.Flags
     - Distribution.Nixpkgs.Haskell.FromCabal.License
     - Distribution.Nixpkgs.Haskell.FromCabal.Name
