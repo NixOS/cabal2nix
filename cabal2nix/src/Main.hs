@@ -36,6 +36,7 @@ data Options = Options
   , optEnableLibraryProfiling :: Bool
   , optEnableExecutableProfiling :: Bool
   , optEnableProfiling :: Maybe Bool
+  , optExtraArgs :: [String]
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
   , optFlags :: [String]
@@ -56,6 +57,7 @@ options = Options
           <*> switch (long "enable-library-profiling" <> help "enable library profiling in the generated build")
           <*> switch (long "enable-executable-profiling" <> help "enable executable profiling in the generated build")
           <*> optional (switch (long "enable-profiling" <> help "enable both library and executable profiling in the generated build"))
+          <*> many (strOption $ long "extra-arguments" <> help "extra parameters required for the function body")
           <*> optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
           <*> switch (long "shell" <> help "generate output suitable for nix-shell")
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
@@ -111,7 +113,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
 --            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
-              & extraFunctionArgs . contains "stdenv" .~ True
+              & extraFunctionArgs %~ (Set.union (Set.fromList ("stdenv":(map (review ident) optExtraArgs))))
 
       shell :: Doc
       shell = vcat
