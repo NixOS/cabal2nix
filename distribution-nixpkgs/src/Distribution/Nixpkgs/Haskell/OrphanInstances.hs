@@ -76,10 +76,14 @@ instance IsString Dependency where
 instance IsString CompilerId where
   fromString = text2isString "CompilerId"
 
+instance IsString Platform where
+  fromString "i686-linux" = Platform I386 Linux
+  fromString "x86_64-linux" = Platform X86_64 Linux
+  fromString "x86_64-darwin" = Platform X86_64 (OtherOS "darwin")
+  fromString s = error ("fromString: " ++ show s ++ " is not a valid platform")
+
 instance FromJSON Platform where
-  parseJSON (String "i686-linux") = pure (Platform I386 Linux)
-  parseJSON (String "x86_64-linux") = pure (Platform X86_64 Linux)
-  parseJSON (String "x86_64-darwin") = pure (Platform X86_64 (OtherOS "darwin"))
+  parseJSON (String s) = pure (fromString (T.unpack s))
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid platform")
 
 instance FromJSON PackageName where
