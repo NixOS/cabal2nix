@@ -3,7 +3,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Configuration ( Configuration(..), readConfiguration, assertConsistency ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( Configuration(..), readConfiguration, assertConsistency ) where
 
 import Control.DeepSeq.Generics
 import Control.Lens

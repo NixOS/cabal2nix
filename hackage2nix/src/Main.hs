@@ -3,7 +3,6 @@
 
 module Main ( main ) where
 
-import Configuration
 import Control.Lens
 import Control.Monad
 import Control.Monad.Par.Combinator
@@ -21,6 +20,7 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal ( fromGenericPackageDescription )
+import Distribution.Nixpkgs.Haskell.FromCabal.Configuration
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import Distribution.Nixpkgs.Haskell.HackageGit ( readHackage, Hackage )
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
