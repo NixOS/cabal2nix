@@ -1,11 +1,13 @@
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Configuration ( Configuration(..) ) where
+module Configuration ( Configuration(..), readConfiguration, assertConsistency ) where
 
 import Control.DeepSeq.Generics
 import Control.Lens
+import Control.Monad
 import Data.Map as Map
 import Data.Set as Set
 import Data.Text as T
@@ -66,3 +68,19 @@ instance (Ord k, FromJSON k, FromJSON v) => FromJSON (Map k v) where
     where
       parseKey :: FromJSON k => Text -> k
       parseKey s = either error id (parseEither parseJSON (String s))
+
+readConfiguration :: FilePath -> IO Configuration
+readConfiguration path =
+  decodeFile path >>= maybe (fail ("invalid config file at " ++ show path)) assertConsistency
+
+assertConsistency :: Monad m => Configuration -> m Configuration
+assertConsistency cfg@(Configuration {..}) = do
+  let report msg = fail ("*** configuration error: " ++ msg)
+
+      maintainedPackages = Set.unions (Map.elems packageMaintainers)
+      disabledPackages = Map.keysSet dontDistributePackages
+      disabledMaintainedPackages = maintainedPackages `Set.intersection` disabledPackages
+  when (not (Set.null disabledMaintainedPackages)) $
+    report ("disabled packages that have a maintainer: " ++ show disabledMaintainedPackages)
+
+  return cfg

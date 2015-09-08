@@ -17,7 +17,6 @@ import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.String
-import Data.Yaml ( decodeFile )
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.Constraint
@@ -81,7 +80,7 @@ main :: IO ()
 main = do
   Options {..} <- execParser pinfo
 
-  defaultConfiguration <- fromMaybe (error ("invalid config file at " ++ show configFile)) <$> decodeFile configFile
+  defaultConfiguration <- readConfiguration configFile
   hackage <- readHackage hackageRepository
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository Nothing
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
