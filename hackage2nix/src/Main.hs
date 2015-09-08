@@ -99,14 +99,8 @@ enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (
 generatePackageSet :: Platform -> Configuration -> Hackage -> Nixpkgs -> ParIO ()
 generatePackageSet targetPlatform config hackage nixpkgs = do
   let
-    hardCorePackages :: Set PackageIdentifier   -- TODO: review whether this set is needed at all
-    hardCorePackages = Set.filter isOnHackage  (corePackages config)
-      where
-        isOnHackage :: PackageIdentifier -> Bool
-        isOnHackage (PackageIdentifier (PackageName n) v) = maybe False (Set.member v . Map.keysSet) (Map.lookup n hackage)
-
     corePackageSet :: PackageSet
-    corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- Set.toList (corePackages config) ++ Set.toList hardCorePackages ]
+    corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- Set.toList (corePackages config) ]
 
     latestVersionSet :: PackageSet
     latestVersionSet = Map.map (Set.findMax . Map.keysSet) hackage
