@@ -12,7 +12,11 @@ let
   overrides = self: super: {
 
     mkJob = pkg: pkgs.haskell.lib.buildStrictly (super.${pkg}.override {
-      mkDerivation = args: super.mkDerivation (args // { src = cabal2nixSrc; version = cabal2nixSrc.gitTag; });
+      mkDerivation = args: super.mkDerivation (args // {
+        src = cabal2nixSrc;
+        version = cabal2nixSrc.gitTag;
+        libraryHaskellDepends = args.libraryHaskellDepends or [] ++ [self.yaml];
+      });
     });
 
     language-nix = self.mkJob "language-nix";
