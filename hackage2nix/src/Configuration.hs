@@ -19,13 +19,9 @@ import Language.Nix.Identifier
 
 data Configuration = Configuration
   {
-  -- |Target architecture. Used by 'finalizePackageDescription' to
-  -- choose appropriate flags and dependencies.
-    platform :: Platform
-
   -- |Target compiler. Used by 'finalizePackageDescription' to choose
   -- appropriate flags and dependencies.
-  , compilerInfo :: CompilerInfo
+    compilerInfo :: CompilerInfo
 
   -- |Core packages found on Hackageg
   , corePackages :: Set PackageIdentifier
@@ -53,8 +49,7 @@ instance NFData Configuration where rnf = genericRnf
 
 instance FromJSON Configuration where
   parseJSON (Object o) = Configuration
-        <$> o .:? "platform" .!= buildPlatform
-        <*> o .:? "compiler" .!= unknownCompilerInfo buildCompilerId NoAbiTag
+        <$> o .:? "compiler" .!= unknownCompilerInfo buildCompilerId NoAbiTag
         <*> o .:? "core-packages" .!= mempty
         <*> o .:? "default-package-overrides" .!= mempty
         <*> o .:? "extra-packages" .!= mempty

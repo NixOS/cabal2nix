@@ -16,6 +16,7 @@ import Data.Maybe
 import Data.Monoid
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import Data.String
 import Data.Yaml ( decodeFile )
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
@@ -28,6 +29,7 @@ import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Package
 import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
+import Distribution.System
 import Distribution.Text
 import Distribution.Version
 import Language.Nix
@@ -53,15 +55,17 @@ data Options = Options
   , preferredVersionsFile :: Maybe FilePath
   , nixpkgsRepository :: FilePath
   , configFile :: FilePath
+  , targetPlatform :: Platform
   }
   deriving (Show)
 
 options :: Parser Options
 options = Options
-          <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefault <> metavar "PATH")
+          <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefaultWith id <> metavar "PATH")
           <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
-          <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefault <> metavar "PATH")
-          <*> strOption (long "config" <> help "path to configuration file" <> value "nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml" <> showDefault <> metavar "PATH")
+          <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "<nixpkgs>" <> showDefaultWith id <> metavar "PATH")
+          <*> strOption (long "config" <> help "path to configuration file" <> value "nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml" <> showDefaultWith id <> metavar "PATH")
+          <*> option (fmap fromString str) (long "platform" <> help "target platform to generate package set for" <> value "x86_64-linux" <> showDefaultWith display <> metavar "PLATFORM")
 
 pinfo :: ParserInfo Options
 pinfo = info
@@ -87,14 +91,14 @@ main = do
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
             . Map.filter (/= Map.empty)
             . Map.mapWithKey (enforcePreferredVersions preferredVersions)
-  runParIO $ generatePackageSet defaultConfiguration (fixup hackage) nixpkgs
+  runParIO $ generatePackageSet targetPlatform defaultConfiguration (fixup hackage) nixpkgs
 
 enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
                          -> Map Version GenericPackageDescription
 enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
 
-generatePackageSet :: Configuration -> Hackage -> Nixpkgs -> ParIO ()
-generatePackageSet config hackage nixpkgs = do
+generatePackageSet :: Platform -> Configuration -> Hackage -> Nixpkgs -> ParIO ()
+generatePackageSet targetPlatform config hackage nixpkgs = do
   let
     hardCorePackages :: Set PackageIdentifier   -- TODO: review whether this set is needed at all
     hardCorePackages = Set.filter isOnHackage  (corePackages config)
@@ -158,7 +162,7 @@ generatePackageSet config hackage nixpkgs = do
           flagAssignment = configureCabalFlags (packageId descr)
 
           drv' :: Derivation
-          drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver (platform config) (compilerInfo config) flagAssignment [] descr
+          drv' = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
 
           isInDefaultPackageSet :: Bool
           isInDefaultPackageSet = maybe False (== pkgversion) (Map.lookup name generatedDefaultPackageSet)
