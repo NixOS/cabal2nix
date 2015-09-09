@@ -20,4 +20,4 @@ install:
   - stack build --only-snapshot
 
 script:
-  - stack build --pedantic --test --haddock
+  - stack build --pedantic --test --haddock --flag=nix-paths:allow-relative-paths

@@ -22,7 +22,7 @@
 > configure :: (GenericPackageDescription, HookedBuildInfo) -> ConfigFlags -> IO LocalBuildInfo
 > configure (gpd, hbi) flags = do
 >   lbi' <- confHook simpleUserHooks (gpd, hbi) flags
->   let paths = [ (p, programPath pc) | p <- programs, Just pc <- [lookupProgram (simpleProgram p) (withPrograms lbi)] ]
+>   let paths = map (\p -> (p, maybe p programPath (lookupProgram (simpleProgram p) (withPrograms lbi)))) programs
 >       descr = localPkgDescr lbi'
 >       lib = fromJust (library descr)
 >       libbi = libBuildInfo lib
