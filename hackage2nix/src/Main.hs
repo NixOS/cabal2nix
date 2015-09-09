@@ -46,8 +46,11 @@ resolveConstraint c = fromMaybe (error msg) . resolveConstraint' c
   where msg = "constraint " ++ display c ++ " cannot be resolved in Hackage"
 
 resolveConstraint' :: Constraint -> Hackage -> Maybe Version
-resolveConstraint' (Dependency (PackageName name) vrange) hackage =
-  Set.findMax . Set.filter (`withinRange` vrange) . Map.keysSet <$> Map.lookup name hackage
+resolveConstraint' (Dependency (PackageName name) vrange) hackage
+  | Just vset' <- Map.lookup name hackage
+  , vset <- Set.filter (`withinRange` vrange) (Map.keysSet vset')
+  , not (Set.null vset)         = Just (Set.findMax vset)
+  | otherwise                   = Nothing
 
 data Options = Options
   { hackageRepository :: FilePath
