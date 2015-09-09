@@ -19,8 +19,7 @@ let
       });
     });
 
-    # Don't build nix-paths strictly: it doesn't have a working sdist target yet.
-    # nix-paths = self.mkJob "nix-paths";
+    nix-paths = self.mkJob "nix-paths";
 
     language-nix = self.mkJob "language-nix";
 
