@@ -29,4 +29,5 @@ language-nix/language-nix.cabal : language-nix/package.yaml
 	touch $@
 
 clean::
-	@rm -f */*.cabal
+	@rm -f language-nix/language-nix.cabal distribution-nixpkgs/distribution-nixpkgs.cabal \
+	@rm -f cabal2nix/cabal2nix.cabal hackage2nix/hackage2nix.cabal
