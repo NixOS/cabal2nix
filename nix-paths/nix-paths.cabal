@@ -1,0 +1,24 @@
+name:                   nix-paths
+version:                1
+synopsis:               Knowledge of Nix's installation directories.
+description:            This module provides full paths to various Nix
+                        utilities, like @nix-store@, @nix-instantiate@, and
+                        @nix-env@.
+category:               Distribution
+homepage:               https://github.com/nixos/cabal2nix#readme
+bug-reports:            https://github.com/nixos/cabal2nix/issues
+maintainer:             Peter Simons <simons@cryp.to>
+license:                BSD3
+license-file:           LICENSE
+build-type:             Custom
+cabal-version:          >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/nixos/cabal2nix
+
+library
+  default-language:     Haskell2010
+  exposed-modules:      Nix.Paths
+  build-depends:        base < 5
+  build-tools:          nix-instantiate, nix-build, nix-env, nix-store
