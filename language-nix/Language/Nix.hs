@@ -29,6 +29,7 @@ module Language.Nix
   where
 
 import Prelude hiding ( lookup )
+import Control.Applicative ( (<$), (<$>), (<*), (*>), (<*>) )
 import Data.Functor.Identity
 import Text.Parsec hiding ( parse )
 import qualified Text.Parsec as Parsec
