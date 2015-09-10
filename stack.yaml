@@ -1,6 +1,5 @@
 flags: {}
 packages:
-  - nix-paths
   - distribution-nixpkgs
   - hackage2nix
   - cabal2nix
