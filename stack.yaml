@@ -5,4 +5,4 @@ packages:
   - cabal2nix
   - language-nix
 extra-deps: []
-resolver: lts-3.3
+resolver: lts-3.4

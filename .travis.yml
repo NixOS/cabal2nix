@@ -1,7 +1,6 @@
 # .travis.yml
 
 language: haskell
-
 sudo: false
 
 cache:
@@ -17,7 +16,8 @@ before_install:
 
 install:
   - stack build hscolour --copy-bins
-  - stack build --only-snapshot
+  - stack build --only-snapshot --flag=nix-paths:allow-relative-paths
 
 script:
-  - stack build --pedantic --test --haddock --flag=nix-paths:allow-relative-paths
+  - stack build --pedantic --test
+  - stack build --haddock
