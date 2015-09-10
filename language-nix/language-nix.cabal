@@ -17,25 +17,25 @@ Source-Repository head
 
 Library
   Exposed-Modules:      Language.Nix
-  Build-Depends:        base >= 3 && < 5, parsec, transformers > 0.4, QuickCheck,
-                        containers >= 0.4.2, mtl
+  Build-Depends:        base >= 3 && < 5, parsec, transformers-compat > 0.4, QuickCheck,
+                        containers >= 0.4.2, mtl, transformers >= 0.2
   Ghc-Options:          -Wall
 
 Executable parse-nix
   main-is:              parse-nix.hs
-  Build-Depends:        base, language-nix, parsec, transformers > 0.4, QuickCheck,
-                        containers >= 0.4.2, mtl
+  Build-Depends:        base, language-nix, parsec, transformers-compat > 0.4, QuickCheck,
+                        containers >= 0.4.2, mtl, transformers >= 0.2
   Ghc-Options:          -Wall
 
 Executable run-nix
   main-is:              run-nix.hs
-  Build-Depends:        base, language-nix, parsec, transformers > 0.4, QuickCheck,
-                        containers >= 0.4.2, mtl
+  Build-Depends:        base, language-nix, parsec, transformers-compat > 0.4, QuickCheck,
+                        containers >= 0.4.2, mtl, transformers >= 0.2
   Ghc-Options:          -Wall
 
 Test-Suite self-test
   type:                 exitcode-stdio-1.0
   main-is:              self-test.hs
-  build-depends:        base, language-nix, parsec, transformers > 0.4,
+  build-depends:        base, language-nix, parsec, transformers-compat > 0.4, transformers >= 0.2,
                         containers >= 0.4.2, mtl, doctest, QuickCheck, hspec, HUnit
   Ghc-Options:          -Wall
