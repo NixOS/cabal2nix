@@ -1,13 +1,14 @@
 name:                   language-nix
-version:                1.0
-synopsis:               Haskell AST and Parsers for the Nix language
-description:            This library provides parsec combinators that parse Nix into an AST.
+version:                1.0.1
+synopsis:               Data types and useful functions to represent and manipulate the Nix language.
+description:            Data types and useful functions to represent and manipulate the Nix language.
 homepage:               https://github.com/peti/language-nix
+bug-reports:            https://github.com/peti/language-nix/issues
 license:                BSD3
 license-file:           LICENSE
 author:                 Peter Simons <simons@cryp.to>
 maintainer:             Peter Simons <simons@cryp.to>
-category:               Language
+category:               Distribution, Language
 build-type:             Simple
 cabal-version:          >= 1.8
 
