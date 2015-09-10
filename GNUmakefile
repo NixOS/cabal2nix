@@ -4,8 +4,7 @@ srcdir := $(CURDIR)
 
 .PHONY: all clean hlint
 
-all::		language-nix/language-nix.cabal \
-		distribution-nixpkgs/distribution-nixpkgs.cabal \
+all::		distribution-nixpkgs/distribution-nixpkgs.cabal \
 		cabal2nix/cabal2nix.cabal \
 		hackage2nix/hackage2nix.cabal
 
@@ -24,10 +23,6 @@ hackage2nix/hackage2nix.cabal : hackage2nix/package.yaml
 	cd $(dir $@) && hpack && cabal check
 	touch $@
 
-language-nix/language-nix.cabal : language-nix/package.yaml
-	cd $(dir $@) && hpack && cabal check
-	touch $@
-
 clean::
-	@rm -f language-nix/language-nix.cabal distribution-nixpkgs/distribution-nixpkgs.cabal \
+	@rm -f distribution-nixpkgs/distribution-nixpkgs.cabal
 	@rm -f cabal2nix/cabal2nix.cabal hackage2nix/hackage2nix.cabal

@@ -1,8 +1,9 @@
 flags: {}
 packages:
   - distribution-nixpkgs
-  - hackage2nix
   - cabal2nix
-  - language-nix
-extra-deps: []
+  - hackage2nix
+extra-deps:
+  - nix-paths-1
+  - language-nix-2
 resolver: lts-3.4
