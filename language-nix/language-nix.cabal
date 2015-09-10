@@ -7,8 +7,8 @@ version:        2
 synopsis:       Data types and useful functions to represent and manipulate the Nix language.
 description:    Data types and useful functions to represent and manipulate the Nix language.
 category:       Distribution, Language
-homepage:       https://github.com/nixos/cabal2nix#readme
-bug-reports:    https://github.com/nixos/cabal2nix/issues
+homepage:       https://github.com/peti/language-nix#readme
+bug-reports:    https://github.com/peti/language-nix/issues
 author:         Peter Simons
 maintainer:     simons@cryp.to
 license:        BSD3
@@ -18,7 +18,7 @@ cabal-version:  >= 1.10
 
 source-repository head
   type: git
-  location: https://github.com/nixos/cabal2nix
+  location: https://github.com/peti/language-nix
 
 library
   hs-source-dirs:

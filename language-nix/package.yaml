@@ -5,7 +5,7 @@ description:            Data types and useful functions to represent and manipul
 author:                 Peter Simons
 maintainer:             simons@cryp.to
 license:                BSD3
-github:                 nixos/cabal2nix
+github:                 peti/language-nix
 category:               Distribution, Language
 
 ghc-options:            -Wall
