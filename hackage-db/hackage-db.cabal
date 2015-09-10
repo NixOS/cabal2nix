@@ -10,6 +10,8 @@ category:               Distribution
 synopsis:               access Hackage's package database via Data.Map
 cabal-version:          >= 1.6
 build-type:             Simple
+Tested-With:            GHC > 7.2 && < 8.1
+
 description:
    This module provides simple access to the Hackage database by means
    of @Data.Map@. Suppose you wanted to implement a utility that queries
