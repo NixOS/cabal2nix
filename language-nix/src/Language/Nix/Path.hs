@@ -39,7 +39,7 @@ declareLenses [d| newtype Path = Path [Identifier]
 instance NFData Path where rnf (Path p) = rnf p
 
 instance Pretty Path where
-  pPrint p = hcat $ punctuate (char '.') $ pPrint <$> p^.path
+  pPrint p = hcat $ punctuate (char '.') $ fmap pPrint (p^.path)
 
 path :: Iso' Path [Identifier]
 path = iso (\(Path p) -> p) mkPath
