@@ -38,8 +38,10 @@ executable hackage2nix
     , mtl
     , optparse-applicative
     , pretty >= 1.1.2
+    , stackage-types
     , text
     , yaml
   other-modules:
       Paths_hackage2nix
+      Stackage
   default-language: Haskell2010

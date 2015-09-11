@@ -23,6 +23,7 @@ dependencies:
   - mtl
   - optparse-applicative
   - pretty >= 1.1.2
+  - stackage-types
   - text
   - yaml
 
@@ -32,6 +33,7 @@ executables:
     source-dirs:        src
     other-modules:
       - Paths_hackage2nix
+      - Stackage
     ghc-options:
       - -threaded
       - -rtsopts
