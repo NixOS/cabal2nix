@@ -34,7 +34,6 @@ library
     , filepath
     , hackage-db
     , hashable
-    , hspec
     , language-nix
     , lens
     , pretty >= 1.1.2
@@ -88,7 +87,6 @@ test-suite spec
     , filepath
     , hackage-db
     , hashable
-    , hspec
     , language-nix
     , lens
     , pretty >= 1.1.2
@@ -103,5 +101,6 @@ test-suite spec
     , deepseq
     , distribution-nixpkgs
     , doctest
+    , hspec
     , QuickCheck
   default-language: Haskell2010
