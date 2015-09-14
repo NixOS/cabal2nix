@@ -27,6 +27,7 @@ dependencies:
   - optparse-applicative
   - pretty >= 1.1.2
   - SHA
+  - split
   - stackage-types
   - text
   - time
