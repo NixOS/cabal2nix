@@ -10,10 +10,13 @@ category:               Distribution
 ghc-options:            -Wall
 
 dependencies:
+  - aeson
   - base < 5
+  - bytestring
   - Cabal >= 1.22.2
   - containers
   - deepseq-generics
+  - directory
   - distribution-nixpkgs
   - filepath
   - language-nix
@@ -23,8 +26,11 @@ dependencies:
   - mtl
   - optparse-applicative
   - pretty >= 1.1.2
+  - SHA
   - stackage-types
   - text
+  - time
+  - utf8-string
   - yaml
 
 executables:
@@ -32,6 +38,7 @@ executables:
     main:               Main.hs
     source-dirs:        src
     other-modules:
+      - HackageGit
       - Paths_hackage2nix
       - Stackage
     ghc-options:

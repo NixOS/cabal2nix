@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Distribution.Nixpkgs.Haskell.HackageGit ( Hackage, readHackage, module Data.Map )  where
+module HackageGit where
 
 import Control.Monad
 import Data.Aeson

@@ -49,7 +49,6 @@ library:
     - Distribution.Nixpkgs.Haskell.FromCabal.Platform
     - Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
     - Distribution.Nixpkgs.Haskell.Hackage
-    - Distribution.Nixpkgs.Haskell.HackageGit
     - Distribution.Nixpkgs.Haskell.OrphanInstances
     - Distribution.Nixpkgs.Haskell.PackageSourceSpec
     - Distribution.Nixpkgs.License
