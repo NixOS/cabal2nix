@@ -46,7 +46,7 @@ gzip -k "$TAR"
 hackage=$(git rev-parse --verify HEAD)
 cd ..
 
-stack --verbosity 0 build hackage2nix
+stack --verbosity 0 build --test hackage2nix
 stack --verbosity 0 exec hackage2nix -- >hackage-packages.nix
 
 cd nixpkgs
