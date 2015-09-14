@@ -19,6 +19,16 @@ git pull -q
 export NIX_PATH=nixpkgs=$PWD
 cd ..
 
+cd lts-haskell
+git pull -q
+ltshaskell=$(git rev-parse --verify HEAD)
+cd ..
+
+cd stackage-nightly
+git pull -q
+stackagenightly=$(git rev-parse --verify HEAD)
+cd ..
+
 cd hackage
 git pull -q
 rm -f preferred-versions
