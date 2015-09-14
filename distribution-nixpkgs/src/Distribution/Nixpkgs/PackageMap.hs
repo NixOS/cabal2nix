@@ -26,7 +26,7 @@ readNixpkgPackageMap nixpkgs attrpath = fmap identifierSet2PackageMap (readNixpk
 readNixpkgSet :: FilePath -> Maybe Path -> IO (Set String)
 readNixpkgSet nixpkgs attrpath = do
   let extraArgs = maybe [] (\p -> ["-A", render (pPrint p)]) attrpath
-  (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json", "-f"++nixpkgs] ++ extraArgs))
+  (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json", "-f", nixpkgs] ++ extraArgs))
                        { std_out = CreatePipe, env = Nothing }  -- TODO: ensure that overrides don't screw up our results
   buf <- LBS.hGetContents h
   let pkgmap :: Either String (Map String JSON.Object)
