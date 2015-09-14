@@ -80,7 +80,7 @@ assertConsistency cfg@(Configuration {..}) = do
       maintainedPackages = Set.unions (Map.elems packageMaintainers)
       disabledPackages = Map.keysSet dontDistributePackages
       disabledMaintainedPackages = maintainedPackages `Set.intersection` disabledPackages
-  when (not (Set.null disabledMaintainedPackages)) $
+  unless (Set.null disabledMaintainedPackages) $
     report ("disabled packages that have a maintainer: " ++ show disabledMaintainedPackages)
 
   return cfg

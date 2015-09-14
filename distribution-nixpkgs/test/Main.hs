@@ -12,7 +12,7 @@ main :: IO ()
 main = do
   doctest [ "-isrc", "-optP-include", "-optPdist/build/autogen/cabal_macros.h", "src" ]
 
-  hspec $ do
+  hspec $
     describe "DeepSeq instances work properly for" $ do
       it "License" $ mapM_ hitsBottom [Known undefined, Unknown (Just undefined)]
       it "Meta" $ mapM_ hitsBottom
