@@ -182,11 +182,17 @@ main = do
     hPutStrLn h "}"
 
   void $ runParIO $ flip parMapM snapshots $ \Snapshot {..} -> liftIO $ do
-     let ltsConfigFile :: FilePath
+     let allPackages :: PackageSet
+         allPackages = Map.delete "Cabal" $ Map.delete "rts" $ Map.fromList
+                         [ (name, Stackage.version spec) | (PackageName name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet
+
+         ltsConfigFile :: FilePath
          ltsConfigFile = nixpkgsRepository </> "pkgs/development/haskell-modules/configuration-" ++ show (pPrint snapshot) ++ ".nix"
-     putStrLn ("writing " ++ ltsConfigFile)
+
      withFile ltsConfigFile WriteMode $ \h -> do
        hPutStrLn h "{ pkgs }:"
+       hPutStrLn h ""
+       hPutStrLn h "with import ./lib.nix { inherit pkgs; };"
        hPutStrLn h ""
        hPutStrLn h ("self: super: assert super.ghc.name == " ++ show (display compiler) ++ "; {")
        hPutStrLn h ""
@@ -195,11 +201,19 @@ main = do
          unless (n == "ghc") (hPutStrLn h ("  " ++ n ++ " = null;"))
        hPutStrLn h ""
        hPutStrLn h ("  # " ++ show (pPrint snapshot) ++ " packages")
-       forM_ (Map.toList packages) $ \(PackageName name, spec) -> do
-         let isInDefaultPackageSet :: Bool
-             isInDefaultPackageSet = maybe False (== Stackage.version spec) (Map.lookup name generatedDefaultPackageSet)
-         unless (isInDefaultPackageSet || name `elem` ["Cabal","rts"]) $
-           hPutStrLn h ("  " ++ show name ++ " = super." ++ show (mangle (PackageIdentifier (PackageName name) (Stackage.version spec))) ++ ";")
+       forM_ (Map.toList allPackages) $ \(name, v) -> do
+         let pkgId = PackageIdentifier (PackageName name) v
+
+             isInDefaultPackageSet :: Bool
+             isInDefaultPackageSet = maybe False (== v) (Map.lookup name generatedDefaultPackageSet)
+
+             isInStackage :: Bool
+             isInStackage = isJust (Map.lookup (PackageName name) packages)
+         case (isInStackage,isInDefaultPackageSet) of
+           (True,True)   -> return ()           -- build is visible and enabled
+           (True,False)  -> hPutStrLn h ("  " ++ show name ++ " = doDistribute super." ++ show (mangle pkgId) ++ ";")
+           (False,True)  -> hPutStrLn h ("  " ++ show name ++ " = dontDistribute super." ++ show name ++ ";")
+           (False,False) -> fail ("logic error processing " ++ display pkgId ++ " in " ++  show (pPrint snapshot))
        hPutStrLn h ""
        hPutStrLn h "}"
 
