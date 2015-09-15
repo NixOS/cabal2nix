@@ -56,6 +56,7 @@ hooks =
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("nanospec", set doCheck False)
+  , ("nats", set runHaddock False)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("stack", set phaseOverrides stackPostInstall)
