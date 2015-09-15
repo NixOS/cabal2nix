@@ -57,8 +57,10 @@ hooks =
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("stack", set phaseOverrides stackPostInstall)
+  , ("stringbuilder", set doCheck False)
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
+  , ("text", set doCheck False)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("xmonad", set phaseOverrides xmonadPostInstall)
   , ("wxc", wxcHook)
