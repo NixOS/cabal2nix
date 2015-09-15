@@ -183,11 +183,15 @@ main = do
 
   void $ runParIO $ flip parMapM snapshots $ \Snapshot {..} -> liftIO $ do
      let allPackages :: PackageSet
-         allPackages = Map.delete "Cabal" $ Map.delete "rts" $ Map.fromList
-                         [ (name, Stackage.version spec) | (PackageName name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet
+         allPackages = Map.difference
+                         (Map.fromList [ (name, Stackage.version spec) | (PackageName name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet)
+                         corePackages'
 
          ltsConfigFile :: FilePath
          ltsConfigFile = nixpkgsRepository </> "pkgs/development/haskell-modules/configuration-" ++ show (pPrint snapshot) ++ ".nix"
+
+         corePackages' :: PackageSet
+         corePackages' = Map.mapKeys unPackageName corePackages `Map.union` Map.fromList [("Cabal", Version [] []), ("rts", Version [] [])]
 
      withFile ltsConfigFile WriteMode $ \h -> do
        hPutStrLn h "{ pkgs }:"
@@ -197,7 +201,7 @@ main = do
        hPutStrLn h ("self: super: assert super.ghc.name == " ++ show (display compiler) ++ "; {")
        hPutStrLn h ""
        hPutStrLn h "  # core libraries provided by the compiler"
-       forM_ (Map.keys (Map.insert (PackageName "rts") (Version [] []) (Map.insert (PackageName "Cabal") (Version [] []) corePackages))) $ \(PackageName n) -> do
+       forM_ (Map.keys corePackages') $ \n -> do
          unless (n == "ghc") (hPutStrLn h ("  " ++ n ++ " = null;"))
        hPutStrLn h ""
        hPutStrLn h ("  # " ++ show (pPrint snapshot) ++ " packages")
