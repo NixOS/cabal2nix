@@ -540,21 +540,21 @@ in their `~/.bashrc` file to avoid the compiler error.
 
 ## Using Stack together with Nix
 
-> --  While building package zlib-0.5.4.2 using:
->       /home/simons/.nix-profile/bin/runhaskell -package=Cabal-1.22.4.0 -clear-package-db -global-package-db -package-db=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/pkgdb/ /tmp/stack14237/Setup.hs --builddir=.stack-work/dist/x86_64-linux/Cabal-1.22.4.0/ configure --user --package-db=clear --package-db=global --package-db=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/pkgdb/ --dependency=base=base-4.8.1.0-4f7206fd964c629946bb89db72c80011 --dependency=bytestring=bytestring-0.10.6.0-18c05887c1aaac7adb3350f6a4c6c8ed --libdir=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/lib --bindir=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/bin --datadir=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/share --docdir=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/doc/zlib-0.5.4.2 --htmldir=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/doc/zlib-0.5.4.2 --haddockdir=/home/simons/.stack/snapshots/x86_64-linux/nightly-2015-08-06/7.10.2/doc/zlib-0.5.4.2 --extra-lib-dirs=/nix/store/alsvwzkiw4b7ip38l4nlfjijdvg3fvzn-zlib-1.2.8/lib
->     Process exited with code: ExitFailure 1
->     Logs have been written to: /home/simons/src/stack-ide/.stack-work/logs/zlib-0.5.4.2.log
+    --  While building package zlib-0.5.4.2 using:
+      runhaskell -package=Cabal-1.22.4.0 -clear-package-db [... lots of flags ...]
+    Process exited with code: ExitFailure 1
+    Logs have been written to: /home/foo/src/stack-ide/.stack-work/logs/zlib-0.5.4.2.log
 
->     Configuring zlib-0.5.4.2...
->     Setup.hs: Missing dependency on a foreign library:
->     * Missing (or bad) header file: zlib.h
->     This problem can usually be solved by installing the system package that
->     provides this library (you may need the "-dev" version). If the library is
->     already installed but in a non-standard location then you can use the flags
->     --extra-include-dirs= and --extra-lib-dirs= to specify where it is.
->     If the header file does exist, it may contain errors that are caught by the C
->     compiler at the preprocessing stage. In this case you can re-run configure
->     with the verbosity flag -v3 to see the error messages.
+    Configuring zlib-0.5.4.2...
+    Setup.hs: Missing dependency on a foreign library:
+    * Missing (or bad) header file: zlib.h
+    This problem can usually be solved by installing the system package that
+    provides this library (you may need the "-dev" version). If the library is
+    already installed but in a non-standard location then you can use the flags
+    --extra-include-dirs= and --extra-lib-dirs= to specify where it is.
+    If the header file does exist, it may contain errors that are caught by the C
+    compiler at the preprocessing stage. In this case you can re-run configure
+    with the verbosity flag -v3 to see the error messages.
 
 When you run the build inside of the nix-shell environment, the system
 is configured to find libz.so without any special flags -- the compiler
@@ -562,44 +562,44 @@ and linker "just know" how to find it. Consequently, Cabal won't record
 any search paths for libz.so in the package description, which means
 that the package works fine inside of nix-shell, but once you leave the
 shell the shared object can no longer be found. That issue is by no
-means specific to "stack": you'll have that problem with any other
+means specific to Stack: you'll have that problem with any other
 Haskell package that's built inside of nix-shell but run outside of that
 environment.
 
-I suppose we could try to remedy the issue by wrapping "stack" or
-"cabal" with a script that tries to find those kind of implicit search
+I suppose we could try to remedy the issue by wrapping `stack` or
+`cabal` with a script that tries to find those kind of implicit search
 paths and makes them explicit on the "cabal configure" command line. I
 don't think anyone is working on that subject yet, though, because the
 problem doesn't seem so bad in practice.
 
 You can remedy that issue in several ways. First of all, run
 
-  $ nix-build --no-out-link "<nixpkgs>" -A zlib
-  /nix/store/alsvwzkiw4b7ip38l4nlfjijdvg3fvzn-zlib-1.2.8
+    $ nix-build --no-out-link "<nixpkgs>" -A zlib
+    /nix/store/alsvwzkiw4b7ip38l4nlfjijdvg3fvzn-zlib-1.2.8
 
 to find out the store path of the system's zlib library. Now, you can
 
- 1) add that path (plus a "/lib" suffix) to your $LD_LIBRARY_PATH
-    environment variable to make sure your system linker finds libz.so
-    automatically. It's no pretty solution, but it will work.
+1) add that path (plus a "/lib" suffix) to your $LD_LIBRARY_PATH
+   environment variable to make sure your system linker finds libz.so
+   automatically. It's no pretty solution, but it will work.
 
- 2) As a variant of (1), you can also install any number of system
-    libraries into your user's profile (or some other profile) and point
-    $LD_LIBRARY_PATH to that profile instead, so that you don't have to
-    list dozens of those store paths all over the place.
+2) As a variant of (1), you can also install any number of system
+   libraries into your user's profile (or some other profile) and point
+   $LD_LIBRARY_PATH to that profile instead, so that you don't have to
+   list dozens of those store paths all over the place.
 
- 3) The solution I prefer is to call stack with an appropriate
-    --extra-lib-dirs flag like so:
+3) The solution I prefer is to call stack with an appropriate
+   --extra-lib-dirs flag like so:
 
-     $ stack --extra-lib-dirs=/nix/store/alsvwzkiw4b7ip38l4nlfjijdvg3fvzn-zlib-1.2.8/lib build
+    $ stack --extra-lib-dirs=/nix/store/alsvwzkiw4b7ip38l4nlfjijdvg3fvzn-zlib-1.2.8/lib build
 
-    Typically, you'll need --extra-include-dirs as well. It's possible
-    to add those flag to the project's "stack.yaml" or your user's
-    global "~/.stack/global/stack.yaml" file so that you don't have to
-    specify them manually every time.
+   Typically, you'll need --extra-include-dirs as well. It's possible
+   to add those flag to the project's "stack.yaml" or your user's
+   global "~/.stack/global/stack.yaml" file so that you don't have to
+   specify them manually every time.
 
-    The same thing applies to "cabal configure", of course, if you're
-    building with cabal-install instead of Stack.
+   The same thing applies to `cabal configure`, of course, if you're
+   building with `cabal-install` instead of Stack.
 
 
 # Other resources
