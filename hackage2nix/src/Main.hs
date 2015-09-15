@@ -200,6 +200,12 @@ main = do
        hPutStrLn h ""
        hPutStrLn h ("self: super: assert super.ghc.name == " ++ show (display compiler) ++ "; {")
        hPutStrLn h ""
+       hPutStrLn h "  # Disable all tests suites and jailbreaks in this package set."
+       hPutStrLn h "  mkDerivation = args: super.mkDerivation (args // {"
+       hPutStrLn h "    doCheck = false;"
+       hPutStrLn h "    jailbreak = false;"
+       hPutStrLn h "  });"
+       hPutStrLn h ""
        hPutStrLn h "  # core libraries provided by the compiler"
        forM_ (Map.keys corePackages') $ \n -> do
          unless (n == "ghc") (hPutStrLn h ("  " ++ n ++ " = null;"))
