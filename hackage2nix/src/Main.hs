@@ -161,8 +161,8 @@ main = do
               drv :: Derivation
               drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
                       & src .~ DerivationSource "url" ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") "" sha256
-                      & metaSection.hydraPlatforms %~ (`Set.difference` fromMaybe Set.empty (Map.lookup (PackageName name) (dontDistributePackages config)))
-                      & metaSection.maintainers .~ fromMaybe Set.empty (Map.lookup (PackageName name) globalPackageMaintainers)
+                      & metaSection.hydraPlatforms %~ (`Set.difference` Map.findWithDefault Set.empty (PackageName name) (dontDistributePackages config))
+                      & metaSection.maintainers .~ Map.findWithDefault Set.empty (PackageName name) globalPackageMaintainers
                       & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
 
               overrides :: Doc
