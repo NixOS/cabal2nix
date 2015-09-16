@@ -20,6 +20,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "hxt"                = [enable "network-uri"]
  | name == "idris"              = [enable "gmp", enable "ffi"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
+ | name == "liquid-fixpoint"    = [enable "build-external"]
  | name == "pandoc"             = [enable "https"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
