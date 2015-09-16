@@ -50,6 +50,7 @@ hooks =
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
+  , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("libconfig", over (libraryDepends . system) (replace (binding # ("config", path # ["null"])) (pkg "libconfig")))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True)
