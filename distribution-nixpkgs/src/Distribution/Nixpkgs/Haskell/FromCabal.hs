@@ -77,7 +77,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
     & configureFlags .~ mempty
     & cabalFlags .~ flags
-    & runHaddock .~ True
+    & runHaddock .~ maybe True (not . null . exposedModules) library
     & jailbreak .~ not (null mismatchedDeps && null missingDeps)
     & doCheck .~ True
     & testTarget .~ mempty
