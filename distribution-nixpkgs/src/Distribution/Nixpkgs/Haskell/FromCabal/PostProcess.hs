@@ -48,6 +48,7 @@ hooks =
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("gtk3", gtk3Hook)
+  , ("libconfig", over (libraryDepends . system) (Set.insert (pkg "libconfig") . Set.delete (binding # ("config", path # ["null"]))))
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("liquid-fixpoint", over configureFlags (Set.union (Set.fromList ["-fbuild-external"]))
