@@ -48,10 +48,10 @@ hooks =
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
-  , ("hslua", over (libraryDepends . pkgconfig) (Set.insert (pkg "lua5_1") . Set.delete (pkg "lua")))
+  , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
-  , ("libconfig", over (libraryDepends . system) (Set.insert (pkg "libconfig") . Set.delete (binding # ("config", path # ["null"]))))
+  , ("libconfig", over (libraryDepends . system) (replace (binding # ("config", path # ["null"])) (pkg "libconfig")))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
@@ -78,6 +78,9 @@ bind s = binding # (i, path # is)
   where
     is = map (review ident) (splitOn "." s)
     i = last is
+
+replace :: Binding -> Binding -> Set Binding -> Set Binding
+replace old new bs = if old `Set.member` bs then Set.insert new (Set.delete old bs) else bs
 
 -- TODO: I need to figure out how to conveniently replace a binding in a set.
 gtk3Hook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
