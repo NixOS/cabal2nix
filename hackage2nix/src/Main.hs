@@ -17,7 +17,7 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Fetch
-import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell as Derivation
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration as Config
@@ -153,11 +153,14 @@ main = do
               descr :: GenericPackageDescription
               descr = fromMaybe (abort "not on Hackage") (Map.lookup name hackage >>= Map.lookup v)
 
-              flagAssignment :: FlagAssignment
-              flagAssignment = configureCabalFlags (packageId descr)
-
               sha256 :: String
               sha256 = fromMaybe (abort "has no hash") (lookup "X-Package-SHA256" (customFieldsPD (packageDescription descr)))
+
+              spec :: Spec
+              spec = Map.findWithDefault (Spec v mempty True True True) (PackageName name) (packages nightly)
+
+              flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
+              flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
 
               attr :: String
               attr = if isInDefaultPackageSet then name else mangle pkgId
@@ -165,6 +168,8 @@ main = do
               drv :: Derivation
               drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
                       & src .~ DerivationSource "url" ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") "" sha256
+                      & Derivation.runHaddock .~ (Stackage.runHaddock spec)
+                      & doCheck .~ runTests spec
                       & metaSection.hydraPlatforms %~ (`Set.difference` Map.findWithDefault Set.empty (PackageName name) (dontDistributePackages config))
                       & metaSection.maintainers .~ Map.findWithDefault Set.empty (PackageName name) globalPackageMaintainers
                       & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
