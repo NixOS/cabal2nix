@@ -76,7 +76,7 @@ main = do
               )
   CLI {..} <- execParser pinfo
 
-  config <- readConfiguration (nixpkgsRepository </>  configFile)
+  config' <- readConfiguration (nixpkgsRepository </>  configFile)
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository Nothing
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
@@ -84,8 +84,12 @@ main = do
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
   hackage <- fixup <$> readHackage hackageRepository
-  snapshots <- runParIO (readStackage ltsHaskellRepository)
+  snapshots <- runParIO (readLTSHaskell ltsHaskellRepository)
+  nightly <- readStackageNightly stackageNightlyRepository
   let
+      config :: Configuration
+      config = config' { defaultPackageOverrides = [ Dependency n (thisVersion (Stackage.version spec)) | (n, spec) <- Map.toList (packages nightly) ] }
+
       hackagePackagesFile :: FilePath
       hackagePackagesFile = nixpkgsRepository </> "pkgs/development/haskell-modules/hackage-packages.nix"
 

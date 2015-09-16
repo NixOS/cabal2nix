@@ -59,10 +59,16 @@ instance Pretty SnapshotType where
   pPrint (STNightly2 _) = text "stackage-nightly"
   pPrint (STLTS m n) = text "lts-" <> int m <> char '.' <> int n
 
-readStackage :: FilePath -> ParIO [Snapshot]
-readStackage dirPath = do
+readLTSHaskell :: FilePath -> ParIO [Snapshot]
+readLTSHaskell dirPath = do
   filePaths <- liftIO (listFiles dirPath)
   parMapM (liftIO . readSnapshot) [ dirPath </> p | p <- filePaths, takeExtension p == ".yaml" ]
+
+readStackageNightly :: FilePath -> IO Snapshot
+readStackageNightly dirPath = do
+  filePaths <- liftIO (listFiles dirPath)
+  let filePath = last (sort [ p | p <- filePaths, takeExtension p == ".yaml" ])
+  readSnapshot (dirPath </> filePath)
 
 readSnapshot :: FilePath -> IO Snapshot
 readSnapshot p = fmap (fromBuildPlan (parseSnapshotType (takeFileName p))) (readBuildPlan p)
