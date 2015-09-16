@@ -35,22 +35,23 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
   [ ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
-  , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xlibs.libXext", bind "pkgs.xlibs.libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
+  , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
-  , ("git-annex", gitAnnexHook)
-  , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
-  , ("HFuse", set phaseOverrides hfusePreConfigure)
-  , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
+  , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("gtk3", gtk3Hook)
-  , ("libconfig", over (libraryDepends . system) (Set.insert (pkg "libconfig") . Set.delete (binding # ("config", path # ["null"]))))
+  , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
+  , ("HFuse", set phaseOverrides hfusePreConfigure)
+  , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
+  , ("hslua", over (libraryDepends . pkgconfig) (Set.insert (pkg "lua5_1") . Set.delete (pkg "lua")))
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
+  , ("libconfig", over (libraryDepends . system) (Set.insert (pkg "libconfig") . Set.delete (binding # ("config", path # ["null"]))))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
@@ -60,10 +61,10 @@ hooks =
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
-  , ("xmonad", set phaseOverrides xmonadPostInstall)
-  , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
+  , ("wxc", wxcHook)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xlibs.libXinerama","pkgs.xlibs.libXext","pkgs.xlibs.libXrender"])))
+  , ("xmonad", set phaseOverrides xmonadPostInstall)
   ]
 
 pkg :: Identifier -> Binding

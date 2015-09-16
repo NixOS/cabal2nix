@@ -201,7 +201,7 @@ main = do
        hPutStrLn h ("self: super: assert super.ghc.name == " ++ show (display compiler) ++ "; {")
        hPutStrLn h ""
        hPutStrLn h "  # core libraries provided by the compiler"
-       forM_ (Map.keys corePackages') $ \n -> do
+       forM_ (Map.keys corePackages') $ \n ->
          unless (n == "ghc") (hPutStrLn h ("  " ++ n ++ " = null;"))
        hPutStrLn h ""
        hPutStrLn h ("  # " ++ show (pPrint snapshot) ++ " packages")
