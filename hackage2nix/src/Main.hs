@@ -35,8 +35,8 @@ import Options.Applicative
 import Paths_hackage2nix as Config
 import Stackage
 import System.FilePath
-import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
 import System.IO
+import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
 
 -- type Nixpkgs = PackageMap       -- Map String (Set [String])
 type PackageSet = Map String Version
