@@ -32,7 +32,7 @@ import Distribution.Version
 import HackageGit ( readHackage, Hackage )
 import Language.Nix
 import Options.Applicative
-import Paths_hackage2nix as Config
+import qualified Paths_hackage2nix as Main
 import Stackage
 import System.FilePath
 import System.IO
@@ -68,7 +68,7 @@ main = do
       pinfo :: ParserInfo CLI
       pinfo = info
               (   helper
-              <*> infoOption ("hackage2nix " ++ display Config.version) (long "version" <> help "Show version number")
+              <*> infoOption ("hackage2nix " ++ display Main.version) (long "version" <> help "Show version number")
               <*> cliOptions
               )
               (  fullDesc
