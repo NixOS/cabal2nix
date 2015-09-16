@@ -15,6 +15,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "haste-compiler"     = [enable "portable"]
  | name == "highlighting-kate"  = [enable "pcre-light"]
  | name == "hlibsass"           = [enable "externalLibsass"]
+ | name == "hmatrix"            = [enable "openblas"]
  | name == "hslua"              = [enable "system-lua"]
  | name == "hxt"                = [enable "network-uri"]
  | name == "idris"              = [enable "gmp", enable "ffi"]
