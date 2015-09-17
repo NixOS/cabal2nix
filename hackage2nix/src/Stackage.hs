@@ -67,7 +67,7 @@ readLTSHaskell dirPath = do
 readStackageNightly :: FilePath -> IO Snapshot
 readStackageNightly dirPath = do
   filePaths <- liftIO (listFiles dirPath)
-  let filePath = last (sort [ p | p <- filePaths, takeExtension p == ".yaml" ])
+  let filePath = maximum [ p | p <- filePaths, takeExtension p == ".yaml" ]
   readSnapshot (dirPath </> filePath)
 
 readSnapshot :: FilePath -> IO Snapshot
