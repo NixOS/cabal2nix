@@ -115,15 +115,15 @@ main = do
       extraPackageSet = Map.unionsWith Set.union
                           [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency (PackageName name) _) <- extraPackages config ]
 
-      stackagePackageSet :: PackageMultiSet
-      stackagePackageSet = Map.fromListWith Set.union [ (unPackageName n, Set.singleton (Stackage.version spec)) | snapshot <- snapshots, (n, spec) <- Map.toList (packages snapshot) ]
+      stackagePackageSet :: Map String (Map Version Spec)
+      stackagePackageSet = Map.fromListWith Map.union [ (unPackageName n, Map.singleton (Stackage.version spec) spec) | snapshot <- nightly:snapshots, (n, spec) <- Map.toList (packages snapshot) ]
 
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
                                     , Map.map Set.singleton latestCorePackageSet
                                     , Map.map Set.singleton latestOverridePackageSet
                                     , extraPackageSet
-                                    , stackagePackageSet
+                                    , Map.map Map.keysSet stackagePackageSet
                                     ]
 
       haskellResolver :: Dependency -> Bool
@@ -157,7 +157,7 @@ main = do
               sha256 = fromMaybe (abort "has no hash") (lookup "X-Package-SHA256" (customFieldsPD (packageDescription descr)))
 
               spec :: Spec
-              spec = Map.findWithDefault (Spec v mempty True True True) (PackageName name) (packages nightly)
+              spec = Spec v mempty True True True `fromMaybe` (Map.lookup name stackagePackageSet >>= Map.lookup v)
 
               flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
               flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
