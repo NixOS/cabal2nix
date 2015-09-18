@@ -29,7 +29,7 @@ import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
-import HackageGit ( readHackage, Hackage )
+import HackageGit
 import Language.Nix
 import Options.Applicative
 import qualified Paths_hackage2nix as Main
@@ -38,9 +38,8 @@ import System.FilePath
 import System.IO
 import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
 
--- type Nixpkgs = PackageMap       -- Map String (Set [String])
-type PackageSet = Map String Version
-type PackageMultiSet = Map String (Set Version)
+type PackageSet = Map PackageName Version
+type PackageMultiSet = Map PackageName (Set Version)
 
 data CLI = CLI
   { hackageRepository :: FilePath
@@ -94,13 +93,13 @@ main = do
       hackagePackagesFile = nixpkgsRepository </> "pkgs/development/haskell-modules/hackage-packages.nix"
 
       corePackageSet :: PackageSet
-      corePackageSet = Map.fromList [ (name, v) | PackageIdentifier (PackageName name) v <- Set.toList (Config.corePackages config) ]
+      corePackageSet = Map.fromList [ (name, v) | PackageIdentifier name v <- Set.toList (Config.corePackages config) ]
 
       latestVersionSet :: PackageSet
-      latestVersionSet = Map.map (Set.findMax . Map.keysSet) (Map.filter (/= Map.empty) (Map.mapWithKey (enforcePreferredVersions preferredVersions) hackage))
+      latestVersionSet = Map.map Set.findMax (Map.filter (not . Set.null) (Map.mapWithKey (enforcePreferredVersions preferredVersions) hackage))
 
       defaultPackageOverridesSet :: PackageSet
-      defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency (PackageName name) _) <- defaultPackageOverrides config ]
+      defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency name _) <- defaultPackageOverrides config ]
 
       generatedDefaultPackageSet :: PackageSet
       generatedDefaultPackageSet = (defaultPackageOverridesSet `Map.union` latestVersionSet) `Map.difference` corePackageSet
@@ -113,10 +112,10 @@ main = do
 
       extraPackageSet :: PackageMultiSet
       extraPackageSet = Map.unionsWith Set.union
-                          [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency (PackageName name) _) <- extraPackages config ]
+                          [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _) <- extraPackages config ]
 
-      stackagePackageSet :: Map String (Map Version Spec)
-      stackagePackageSet = Map.fromListWith Map.union [ (unPackageName n, Map.singleton (Stackage.version spec) spec) | snapshot <- nightly:snapshots, (n, spec) <- Map.toList (packages snapshot) ]
+      stackagePackageSet :: Map PackageName (Map Version Spec)
+      stackagePackageSet = Map.fromListWith Map.union [ (n, Map.singleton (Stackage.version spec) spec) | snapshot <- nightly:snapshots, (n, spec) <- Map.toList (packages snapshot) ]
 
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
@@ -127,7 +126,7 @@ main = do
                                     ]
 
       haskellResolver :: Dependency -> Bool
-      haskellResolver (Dependency (PackageName name) vrange)
+      haskellResolver (Dependency name vrange)
         | Just v <- Map.lookup name corePackageSet                = v `withinRange` vrange
         | Just v <- Map.lookup name generatedDefaultPackageSet    = v `withinRange` vrange
         | otherwise                                               = False
@@ -139,45 +138,44 @@ main = do
       globalPackageMaintainers = Map.unionsWith Set.union [ Map.singleton p (Set.singleton m) | (m,ps) <- Map.toList (packageMaintainers config), p <- Set.toList ps ]
 
   pkgs <- runParIO $ flip parMapM (Map.toAscList db) $ \(name, vs) -> do
-    let defs = flip map (Set.toAscList vs) $ \v ->
-          let
-              pkgId :: PackageIdentifier
-              pkgId = PackageIdentifier (PackageName name) v
+    defs <- flip mapM (Set.toAscList vs) $ \v -> liftIO $ do
+      let pkgId :: PackageIdentifier
+          pkgId = PackageIdentifier name v
 
-              isInDefaultPackageSet :: Bool
-              isInDefaultPackageSet = maybe False (== v) (Map.lookup name generatedDefaultPackageSet)
+      (descr, cabalSHA256) <- readPackage hackageRepository pkgId
+      meta <- readPackageMeta hackageRepository pkgId
 
-              abort :: String -> a
-              abort msg = error (display pkgId ++ ": " ++ msg)
+      let isInDefaultPackageSet :: Bool
+          isInDefaultPackageSet = maybe False (== v) (Map.lookup name generatedDefaultPackageSet)
 
-              descr :: GenericPackageDescription
-              descr = fromMaybe (abort "not on Hackage") (Map.lookup name hackage >>= Map.lookup v)
+          tarballSHA256 :: SHA256Hash
+          tarballSHA256 = fromMaybe (error (display pkgId ++ ": meta data has no hash for the tarball"))
+                                    (view (hashes . at "SHA256") meta)
 
-              sha256 :: String
-              sha256 = fromMaybe (abort "has no hash") (lookup "X-Package-SHA256" (customFieldsPD (packageDescription descr)))
+          spec :: Spec
+          spec = Spec v mempty True True True `fromMaybe` (Map.lookup name stackagePackageSet >>= Map.lookup v)
 
-              spec :: Spec
-              spec = Spec v mempty True True True `fromMaybe` (Map.lookup name stackagePackageSet >>= Map.lookup v)
+          flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
+          flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
 
-              flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
-              flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
+          attr :: String
+          attr = if isInDefaultPackageSet then unPackageName name else mangle pkgId
 
-              attr :: String
-              attr = if isInDefaultPackageSet then name else mangle pkgId
+          drv :: Derivation
+          drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
+                  & src .~ DerivationSource "url" ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") "" tarballSHA256
+                  & editedCabalFile .~ cabalSHA256
+                  & Derivation.runHaddock &&~ Stackage.runHaddock spec
+                  & doCheck &&~ runTests spec
+                  & metaSection.hydraPlatforms %~ (`Set.difference` Map.findWithDefault Set.empty name (dontDistributePackages config))
+                  & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
+                  & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
 
-              drv :: Derivation
-              drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
-                      & src .~ DerivationSource "url" ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") "" sha256
-                      & Derivation.runHaddock &&~ Stackage.runHaddock spec
-                      & doCheck &&~ runTests spec
-                      & metaSection.hydraPlatforms %~ (`Set.difference` Map.findWithDefault Set.empty (PackageName name) (dontDistributePackages config))
-                      & metaSection.maintainers .~ Map.findWithDefault Set.empty (PackageName name) globalPackageMaintainers
-                      & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
+          overrides :: Doc
+          overrides = fcat $ punctuate space [ pPrint b | b <- Set.toList (view (dependencies . each) drv), not (isFromHackage b) ]
+      return $ render $ nest 2 $
+        hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 
-              overrides :: Doc
-              overrides = fcat $ punctuate space [ pPrint b | b <- Set.toList (view (dependencies . each) drv), not (isFromHackage b) ]
-          in
-            render $ nest 2 $ hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
     return (intercalate "\n\n" defs)
 
   withFile hackagePackagesFile WriteMode $ \h -> do
@@ -193,14 +191,14 @@ main = do
   void $ runParIO $ flip parMapM snapshots $ \Snapshot {..} -> liftIO $ do
      let allPackages :: PackageSet
          allPackages = Map.difference
-                         (Map.fromList [ (name, Stackage.version spec) | (PackageName name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet)
+                         (Map.fromList [ (name, Stackage.version spec) | (name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet)
                          corePackages'
 
          ltsConfigFile :: FilePath
          ltsConfigFile = nixpkgsRepository </> "pkgs/development/haskell-modules/configuration-" ++ show (pPrint snapshot) ++ ".nix"
 
          corePackages' :: PackageSet
-         corePackages' = Map.mapKeys unPackageName corePackages `Map.union` Map.fromList [("Cabal", Version [] []), ("rts", Version [] [])]
+         corePackages' = corePackages `Map.union` Map.fromList [("Cabal", Version [] []), ("rts", Version [] [])]
 
      withFile ltsConfigFile WriteMode $ \h -> do
        hPutStrLn h "{ pkgs }:"
@@ -211,21 +209,21 @@ main = do
        hPutStrLn h ""
        hPutStrLn h "  # core libraries provided by the compiler"
        forM_ (Map.keys corePackages') $ \n ->
-         unless (n == "ghc") (hPutStrLn h ("  " ++ n ++ " = null;"))
+         unless (n == "ghc") (hPutStrLn h ("  " ++ unPackageName n ++ " = null;"))
        hPutStrLn h ""
        hPutStrLn h ("  # " ++ show (pPrint snapshot) ++ " packages")
        forM_ (Map.toList allPackages) $ \(name, v) -> do
-         let pkgId = PackageIdentifier (PackageName name) v
+         let pkgId = PackageIdentifier name v
 
              isInDefaultPackageSet :: Bool
              isInDefaultPackageSet = maybe False (== v) (Map.lookup name generatedDefaultPackageSet)
 
              isInStackage :: Bool
-             isInStackage = isJust (Map.lookup (PackageName name) packages)
+             isInStackage = isJust (Map.lookup name packages)
          case (isInStackage,isInDefaultPackageSet) of
            (True,True)   -> return ()           -- build is visible and enabled
-           (True,False)  -> hPutStrLn h ("  " ++ show name ++ " = doDistribute super." ++ show (mangle pkgId) ++ ";")
-           (False,True)  -> hPutStrLn h ("  " ++ show name ++ " = dontDistribute super." ++ show name ++ ";")
+           (True,False)  -> hPutStrLn h ("  " ++ show (unPackageName name) ++ " = doDistribute super." ++ show (mangle pkgId) ++ ";")
+           (False,True)  -> hPutStrLn h ("  " ++ show (unPackageName name) ++ " = dontDistribute super." ++ show (unPackageName name) ++ ";")
            (False,False) -> fail ("logic error processing " ++ display pkgId ++ " in " ++  show (pPrint snapshot))
        hPutStrLn h ""
        hPutStrLn h "}"
@@ -244,18 +242,17 @@ parsePreferredVersionsLine [] = Nothing
 parsePreferredVersionsLine ('-':'-':_) = Nothing
 parsePreferredVersionsLine l = simpleParse l `mplus` error ("invalid preferred-versions line: " ++ show l)
 
-enforcePreferredVersions :: [Constraint] -> String -> Map Version GenericPackageDescription
-                         -> Map Version GenericPackageDescription
-enforcePreferredVersions cs pkg = Map.filterWithKey (\v _ -> PackageIdentifier (PackageName pkg) v `satisfiesConstraints` cs)
+enforcePreferredVersions :: [Constraint] -> PackageName -> Set Version -> Set Version
+enforcePreferredVersions cs pkg = Set.filter (\v -> PackageIdentifier pkg v `satisfiesConstraints` cs)
 
 resolveConstraint :: Constraint -> Hackage -> Version
 resolveConstraint c = fromMaybe (error msg) . resolveConstraint' c
   where msg = "constraint " ++ display c ++ " cannot be resolved in Hackage"
 
 resolveConstraint' :: Constraint -> Hackage -> Maybe Version
-resolveConstraint' (Dependency (PackageName name) vrange) hackage
+resolveConstraint' (Dependency name vrange) hackage
   | Just vset' <- Map.lookup name hackage
-  , vset <- Set.filter (`withinRange` vrange) (Map.keysSet vset')
+  , vset <- Set.filter (`withinRange` vrange) vset'
   , not (Set.null vset)         = Just (Set.findMax vset)
   | otherwise                   = Nothing
 
