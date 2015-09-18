@@ -1,5 +1,9 @@
+-- This file has been generated from package.yaml by hpack version 0.7.0.
+--
+-- see: https://github.com/sol/hpack
+
 name:           language-nix
-version:        2
+version:        2.1
 synopsis:       Data types and useful functions to represent and manipulate the Nix language.
 description:    Data types and useful functions to represent and manipulate the Nix language.
 category:       Distribution, Language
@@ -12,9 +16,6 @@ license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
 
-flag pretty-class-is-builtin
-  description:  Enable when building with 'pretty' version 1.1.2.0 or later.
-
 source-repository head
   type: git
   location: https://github.com/peti/language-nix
@@ -25,13 +26,11 @@ library
   ghc-options: -Wall
   build-depends:
       base < 5
+    , Cabal
     , deepseq
     , lens
-    , regex-posix
-  if flag(pretty-class-is-builtin)
-    build-depends: pretty >= 1.1.2.0
-  else
-    build-depends: pretty < 1.1.2.0, prettyclass
+    , pretty
+    , QuickCheck
   exposed-modules:
       Language.Nix
       Language.Nix.Binding
@@ -47,13 +46,10 @@ test-suite spec
   ghc-options: -Wall
   build-depends:
       base < 5
+    , Cabal
     , deepseq
     , lens
-    , regex-posix
-    , doctest
+    , pretty
     , QuickCheck
-  if flag(pretty-class-is-builtin)
-    build-depends: pretty >= 1.1.2
-  else
-    build-depends: pretty <1.1.2.0, prettyclass
+    , doctest
   default-language: Haskell2010
