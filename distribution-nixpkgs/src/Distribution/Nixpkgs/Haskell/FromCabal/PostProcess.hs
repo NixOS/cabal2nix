@@ -96,6 +96,7 @@ gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . 
       , "postBuild = \"ln -sf dist/build/git-annex/git-annex git-annex\";"
       , "installPhase = \"make PREFIX=$out CABAL=./Setup install\";"
       , "checkPhase = \"./git-annex test\";"
+      , "enableSharedExecutables = false;"
       ]
     buildInputs = pkgs ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
 
