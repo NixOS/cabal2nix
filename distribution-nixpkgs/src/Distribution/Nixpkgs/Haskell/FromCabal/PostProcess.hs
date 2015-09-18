@@ -41,7 +41,6 @@ hooks =
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
-  , ("gio", set (libraryDepends . pkgconfig . contains (pkg "glib")) True)
   , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
