@@ -67,6 +67,9 @@ instance NFData AbiTag where rnf = genericRnf
 instance IsString PackageName where
   fromString = text2isString "PackageName"
 
+instance IsString Version where
+  fromString = text2isString "Version"
+
 instance IsString PackageIdentifier where
   fromString = text2isString "PackageIdentifier"
 
