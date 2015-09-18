@@ -102,7 +102,7 @@ instance Pretty Derivation where
       , attr "version" $ doubleQuotes $ disp (packageVersion _pkgid)
       , sourceAttr _src
       , onlyIf (_revision > 0) $ attr "revision" $ doubleQuotes $ int _revision
-      , onlyIf (not (null _editedCabalFile)) $ attr "editedCabalFile" $ string _editedCabalFile
+      , onlyIf (not (null _editedCabalFile) && _revision > 0) $ attr "editedCabalFile" $ string _editedCabalFile
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
       , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
