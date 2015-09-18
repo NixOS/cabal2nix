@@ -138,7 +138,7 @@ main = do
       globalPackageMaintainers = Map.unionsWith Set.union [ Map.singleton p (Set.singleton m) | (m,ps) <- Map.toList (packageMaintainers config), p <- Set.toList ps ]
 
   pkgs <- runParIO $ flip parMapM (Map.toAscList db) $ \(name, vs) -> do
-    defs <- flip mapM (Set.toAscList vs) $ \v -> liftIO $ do
+    defs <- forM (Set.toAscList vs) $ \v -> liftIO $ do
       let pkgId :: PackageIdentifier
           pkgId = PackageIdentifier name v
 
