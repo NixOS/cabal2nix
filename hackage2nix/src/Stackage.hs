@@ -5,6 +5,7 @@
 module Stackage where
 
 import Control.DeepSeq.Generics
+import Control.Exception ( assert )
 import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
@@ -18,7 +19,6 @@ import Data.Yaml
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Package
-import Distribution.PackageDescription
 import Distribution.Version
 import GHC.Generics ( Generic )
 import Stackage.Types hiding ( display )
@@ -28,10 +28,10 @@ import Text.PrettyPrint.HughesPJClass
 
 data Spec = Spec
             { version :: Version
-            , flagOverrides :: Map FlagName Bool
+  --        , flagOverrides :: Map FlagName Bool
             , runTests :: Bool
             , runHaddock :: Bool
-            , runLinuxBuilds :: Bool
+  --        , runLinuxBuilds :: Bool
             }
   deriving (Show, Generic)
 
@@ -94,13 +94,21 @@ fromBuildPlan snt bp = Snapshot snt
 
 fromPackagePlan :: PackagePlan -> Spec
 fromPackagePlan pp = Spec (ppVersion pp)
-                          (pcFlagOverrides ppc)
+    --                    (pcFlagOverrides ppc)
                           (pcTests ppc == ExpectSuccess)
                           (pcHaddocks ppc == ExpectSuccess)
-                          (not (pcSkipBuild ppc))
+    --                    (not (pcSkipBuild ppc))
   where ppc = ppConstraints pp
 
 listFiles :: FilePath -> IO [FilePath]
 listFiles path = do
   let isFile p = doesFileExist (path </> p)
   getDirectoryContents path >>= filterM isFile . Prelude.filter (\x -> head x /= '.')
+
+mergeSpecs :: Spec -> Spec -> Spec
+mergeSpecs a b = Spec { version = assert (version a == version b) version a
+         --           , flagOverrides = flagOverrides a
+                      , runTests = runTests a && runTests b
+                      , runHaddock = runHaddock a && runHaddock b
+         --           , runLinuxBuilds = runLinuxBuilds a
+                      }
