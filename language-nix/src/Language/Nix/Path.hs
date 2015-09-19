@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Path ( Path, path ) where
@@ -11,6 +12,7 @@ import Distribution.Compat.ReadP as ReadP
 import Distribution.Text
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
+import Prelude.Compat
 import Test.QuickCheck
 import Text.PrettyPrint as PP
 

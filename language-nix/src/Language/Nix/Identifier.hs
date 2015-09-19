@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Identifier
@@ -59,6 +60,7 @@ import Data.String
 import Distribution.Compat.ReadP as ReadP
 import Distribution.Text
 import GHC.Generics ( Generic )
+import Prelude.Compat
 import Test.QuickCheck
 import Text.PrettyPrint as PP
 

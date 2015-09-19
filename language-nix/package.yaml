@@ -12,6 +12,7 @@ ghc-options:            -Wall
 
 dependencies:
   - base < 5
+  - base-compat
   - Cabal
   - deepseq
   - lens

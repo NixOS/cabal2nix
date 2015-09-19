@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Binding ( Binding, binding, localName, reference ) where
@@ -12,6 +13,7 @@ import Distribution.Text
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 import Language.Nix.Path
+import Prelude.Compat
 import Test.QuickCheck
 import Text.PrettyPrint as PP
 
