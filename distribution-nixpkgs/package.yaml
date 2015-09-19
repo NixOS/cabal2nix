@@ -1,5 +1,5 @@
 name:                   distribution-nixpkgs
-version:                "20150903"
+version:                "20150919"
 synopsis:               Convert Cabal files into Nix build instructions.
 description:            Convert Cabal files into Nix build instructions.
 maintainer:             Peter Simons <simons@cryp.to>
@@ -20,7 +20,7 @@ dependencies:
   - filepath
   - hackage-db
   - hashable
-  - language-nix
+  - language-nix > 2
   - lens
   - pretty >= 1.1.2
   - process

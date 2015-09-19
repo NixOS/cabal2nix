@@ -1,9 +1,9 @@
--- This file has been generated from package.yaml by hpack version 0.7.0.
+-- This file has been generated from package.yaml by hpack version 0.7.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           distribution-nixpkgs
-version:        20150903
+version:        20150919
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions.
 category:       Distribution
@@ -34,7 +34,7 @@ library
     , filepath
     , hackage-db
     , hashable
-    , language-nix
+    , language-nix > 2
     , lens
     , pretty >= 1.1.2
     , process
@@ -86,7 +86,7 @@ test-suite spec
     , filepath
     , hackage-db
     , hashable
-    , language-nix
+    , language-nix > 2
     , lens
     , pretty >= 1.1.2
     , process

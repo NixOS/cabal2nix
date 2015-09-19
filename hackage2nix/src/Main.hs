@@ -172,7 +172,7 @@ main = do
                   & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
 
           overrides :: Doc
-          overrides = fcat $ punctuate space [ pPrint b | b <- Set.toList (view (dependencies . each) drv), not (isFromHackage b) ]
+          overrides = fcat $ punctuate space [ disp b <> semi | b <- Set.toList (view (dependencies . each) drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
         hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 

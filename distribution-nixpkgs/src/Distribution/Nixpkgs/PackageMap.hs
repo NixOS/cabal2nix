@@ -13,7 +13,7 @@ import Data.Map.Strict ( Map )
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Text.PrettyPrint.HughesPJClass
+import Distribution.Text
 import Language.Nix
 import System.Process
 import Control.Lens
@@ -25,7 +25,7 @@ readNixpkgPackageMap nixpkgs attrpath = fmap identifierSet2PackageMap (readNixpk
 
 readNixpkgSet :: FilePath -> Maybe Path -> IO (Set String)
 readNixpkgSet nixpkgs attrpath = do
-  let extraArgs = maybe [] (\p -> ["-A", render (pPrint p)]) attrpath
+  let extraArgs = maybe [] (\p -> ["-A", display p]) attrpath
   (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json", "-f", nixpkgs] ++ extraArgs))
                        { std_out = CreatePipe, env = Nothing }  -- TODO: ensure that overrides don't screw up our results
   buf <- LBS.hGetContents h

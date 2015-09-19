@@ -1,5 +1,5 @@
 name:                   hackage2nix
-version:                "20150903"
+version:                "20150919"
 synopsis:               Convert Cabal files into Nix build instructions.
 description:            Convert Cabal files into Nix build instructions.
 maintainer:             Peter Simons <simons@cryp.to>
@@ -19,7 +19,7 @@ dependencies:
   - directory
   - distribution-nixpkgs
   - filepath
-  - language-nix
+  - language-nix > 2
   - lens
   - monad-par
   - monad-par-extras

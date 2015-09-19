@@ -5,5 +5,5 @@ packages:
   - hackage2nix
 extra-deps:
   - nix-paths-1
-  - language-nix-2
+  - language-nix-2.1
 resolver: lts-3.4
