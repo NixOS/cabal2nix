@@ -55,6 +55,7 @@ hooks =
   , ("libconfig", over (libraryDepends . system) (replace (binding # ("config", path # ["null"])) (pkg "libconfig")))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
+  , ("MFlow < 0.4.5.11", set (libraryDepends . tool . contains (bind "self.cpphs")) True)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
@@ -217,7 +218,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "libffi"           = deriv { extraLibs = Set.delete "ffi" extraLibs }
   | pname == "liquid-fixpoint"  = deriv { buildTools = Set.insert "z3" (Set.insert "ocaml" buildTools), configureFlags = Set.insert "-fbuild-external" configureFlags }
   | pname == "liquidhaskell"    = deriv { buildTools = Set.insert "z3" buildTools }
-  | pname == "MFlow"            = deriv { buildTools = Set.insert "cpphs" buildTools }
   | pname == "multiarg"         = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
   | pname == "ncurses"          = deriv { phaseOverrides = ncursesPatchPhase }
   | pname == "Omega"            = deriv { testDepends = Set.delete "stdc++" testDepends }
