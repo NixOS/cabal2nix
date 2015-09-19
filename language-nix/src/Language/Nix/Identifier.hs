@@ -40,15 +40,16 @@ module Language.Nix.Identifier
     quote
 
   , -- | Checks whether a given string needs quoting when interpreted as an
-    -- 'Identifier'. Simple identifiers -- i.e. those that *don't* need
-    -- quoting, match the regular expression @^[a-zA-Z_][a-zA-Z0-9_'-]*$@.
+    -- 'Identifier'. Simple identifiers that don't need quoting match the
+    -- regular expression @^[a-zA-Z_][a-zA-Z0-9_'-]*$@.
     needsQuoting
 
-  , -- | 'ReadP' parser for simple identifiers, i.e. those that *don't* need
+  , -- | 'ReadP' parser for simple identifiers, i.e. those that don't need
     -- quoting.
     parseSimpleIdentifier
 
-  , -- | 'ReadP' parser for quoted identifiers, i.e. those that *do* quoting.
+  , -- | 'ReadP' parser for quoted identifiers, i.e. those that /do/ need
+    -- quoting.
     parseQuotedIdentifier
 
   ) where

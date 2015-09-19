@@ -69,5 +69,8 @@ instance IsString Path where
 instance Arbitrary Path where
   arbitrary = Path <$> listOf1 arbitrary
 
+-- | Use this isomorphism to construct a path from a list of identifiers, or to
+-- access that list for a given path.
+
 path :: Iso' Path [Identifier]
 path = iso (\(Path p) -> p) (\p -> if null p then error "Nix paths cannot be empty" else Path p)
