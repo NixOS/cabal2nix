@@ -61,7 +61,7 @@ instance NFData Path where
 
 instance Text Path where
   disp p = hcat $ punctuate (PP.char '.') (map disp (p^.path))
-  parse = review path <$> sepBy (skipSpaces *> parse) (skipSpaces *> ReadP.char '.')
+  parse = review path <$> sepBy (skipSpaces >> parse) (skipSpaces >> ReadP.char '.')
 
 instance IsString Path where
   fromString s = fromMaybe (error ("invalid Nix path: " ++ s)) (simpleParse s)
