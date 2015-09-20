@@ -19,6 +19,8 @@ let
       });
     });
 
+    language-nix = self.language-nix_2_1;
+
     distribution-nixpkgs = self.mkJob "distribution-nixpkgs";
 
     cabal2nix = self.mkJob "cabal2nix";
