@@ -59,7 +59,7 @@ hooks =
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
-  , ("stack", set phaseOverrides stackPostInstall)
+  , ("stack", set phaseOverrides stackOverrides)
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
@@ -167,9 +167,10 @@ agdaPostInstall = unlines
   , "'';"
   ]
 
-stackPostInstall :: String
-stackPostInstall = unlines
-  [ "postInstall = ''"
+stackOverrides :: String
+stackOverrides = unlines
+  [ "enableSharedExecutables = false;"
+  , "postInstall = ''"
   , "  exe=$out/bin/stack"
   , "  mkdir -p $out/share/bash-completion/completions"
   , "  $exe --bash-completion-script $exe >$out/share/bash-completion/completions/stack"
