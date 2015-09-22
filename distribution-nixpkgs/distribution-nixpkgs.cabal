@@ -1,11 +1,11 @@
--- This file has been generated from package.yaml by hpack version 0.7.1.
+-- This file has been generated from package.yaml by hpack version 0.7.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           distribution-nixpkgs
-version:        20150919
-synopsis:       Convert Cabal files into Nix build instructions.
-description:    Convert Cabal files into Nix build instructions.
+version:        1
+synopsis:       Data types and functions to manipulate the Nixpkgs distribution.
+description:    Data types and useful functions to represent and manipulate the Nixpkgs distribution.
 category:       Distribution
 homepage:       https://github.com/nixos/cabal2nix#readme
 bug-reports:    https://github.com/nixos/cabal2nix/issues

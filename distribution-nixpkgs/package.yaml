@@ -1,7 +1,7 @@
 name:                   distribution-nixpkgs
-version:                "20150919"
-synopsis:               Convert Cabal files into Nix build instructions.
-description:            Convert Cabal files into Nix build instructions.
+version:                "1"
+synopsis:               Data types and functions to manipulate the Nixpkgs distribution.
+description:            Data types and useful functions to represent and manipulate the Nixpkgs distribution.
 maintainer:             Peter Simons <simons@cryp.to>
 license:                BSD3
 github:                 nixos/cabal2nix

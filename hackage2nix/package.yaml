@@ -1,7 +1,7 @@
 name:                   hackage2nix
-version:                "20150919"
-synopsis:               Convert Cabal files into Nix build instructions.
-description:            Convert Cabal files into Nix build instructions.
+version:                "20150922"
+synopsis:               Generate hackage-packages.nix.
+description:            Generate hackage-packages.nix.
 maintainer:             Peter Simons <simons@cryp.to>
 license:                BSD3
 github:                 nixos/cabal2nix

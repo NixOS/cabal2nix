@@ -3,9 +3,9 @@
 -- see: https://github.com/sol/hpack
 
 name:           hackage2nix
-version:        20150919
-synopsis:       Convert Cabal files into Nix build instructions.
-description:    Convert Cabal files into Nix build instructions.
+version:        20150922
+synopsis:       Generate hackage-packages.nix.
+description:    Generate hackage-packages.nix.
 category:       Distribution
 homepage:       https://github.com/nixos/cabal2nix#readme
 bug-reports:    https://github.com/nixos/cabal2nix/issues

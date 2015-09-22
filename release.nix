@@ -15,11 +15,8 @@ let
       mkDerivation = args: super.mkDerivation (args // {
         src = cabal2nixSrc;
         version = cabal2nixSrc.gitTag;
-        libraryHaskellDepends = args.libraryHaskellDepends or [] ++ [self.yaml self.stackage-types];
       });
     });
-
-    language-nix = self.language-nix_2_1;
 
     distribution-nixpkgs = self.mkJob "distribution-nixpkgs";
 
