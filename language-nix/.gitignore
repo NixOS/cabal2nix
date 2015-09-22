@@ -1,3 +1,4 @@
 # ignore cabal build files
 
+/.stack-work/*
 /dist

@@ -1,5 +1,6 @@
-flags: {}
+# language-nix/stack.yaml
+
+resolver: lts-3.6
+
 packages:
-  - '.'
-extra-deps: []
-resolver: lts-3.4
+  - .
