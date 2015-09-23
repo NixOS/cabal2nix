@@ -35,7 +35,7 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
   [ ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
-  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xlibs.libXext", bind "pkgs.xlibs.libXfixes"])))
+  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
@@ -65,7 +65,7 @@ hooks =
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("wxc", wxcHook)
-  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xlibs.libXinerama","pkgs.xlibs.libXext","pkgs.xlibs.libXrender"])))
+  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender"])))
   , ("xmonad", set phaseOverrides xmonadPostInstall)
   ]
 
@@ -123,7 +123,7 @@ gfPhaseOverrides = unlines
   ]
 
 wxcHook :: Derivation -> Derivation
-wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "mesa", bind "pkgs.xlibs.libX11"])
+wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "mesa", bind "pkgs.xorg.libX11"])
                   & libraryDepends . pkgconfig . contains (pkg "wxGTK") .~ True
                   & phaseOverrides .~ wxcPostInstall (packageVersion drv)
                   & runHaddock .~ False

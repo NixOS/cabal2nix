@@ -106,7 +106,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
                        | otherwise = binding # (i, path # ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
     goodScopes :: Set [Identifier]
-    goodScopes = Set.fromList (map ("pkgs":) [[], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
+    goodScopes = Set.fromList (map ("pkgs":) [[], ["xorg"], ["xlibs"], ["gnome"], ["gnome3"], ["kde4"]])
 
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
