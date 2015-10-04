@@ -67,6 +67,7 @@ hooks =
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
+  , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("wxc", wxcHook)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender"])))
