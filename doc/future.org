@@ -63,3 +63,8 @@
 ** Today
 ** Possible Solutions
 ** Open Questions
+* Support multi-output derivations
+
+  Put static, shared, and profiled library variants into separate output so
+  that we can build everything without forcing users to download all that stuff
+  if they just want the regular build.
