@@ -205,7 +205,7 @@ main = do
        hPutStrLn h ""
        hPutStrLn h "with import ./lib.nix { inherit pkgs; };"
        hPutStrLn h ""
-       hPutStrLn h ("self: super: assert super.ghc.name == " ++ show (display compiler) ++ "; {")
+       hPutStrLn h "self: super: {"
        hPutStrLn h ""
        hPutStrLn h "  # core libraries provided by the compiler"
        forM_ (Map.keys corePackages') $ \n ->
