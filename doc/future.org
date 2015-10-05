@@ -1,69 +1,27 @@
 #+TITLE: The Future of Haskell Packaging in Nix
 
-* Use Function Application instead of Overrides
-** Today
-** Possible Solutions
-** Open Questions
-* Guarantee Consistent Builds and Obsolete =overrideScope=
-** Today
-** Possible Solutions
-** Open Questions
-* Map Cabal Files To Nix Without Information Loss
-** Today
-** Possible Solutions
-** Open Questions
-* Implement Proper Dependency Resolution
-** Today
-** Possible Solutions
-** Open Questions
-* Develop Intelligent Policies for Post-processing and Patching
-** Today
-** Possible Solutions
-** Open Questions
-* Users Need a Configuration Mechanism That Is Both Simpler and More Powerful
-** Today
-** Possible Solutions
-** Open Questions
-* Deal With Infinite Recursions in Test Dependencies
-** Today
-** Possible Solutions
-** Open Questions
-* Set up a Sufficiently Powerful Build Farm
-** Today
-** Possible Solutions
-** Open Questions
-* Define and Publish Processes for Managing the Package Set(s)
-** Today
-** Possible Solutions
-** Open Questions
-* Publish All of Hackage
-** Today
+* TODO Use Function Application To Escape Override Hell
+* TODO Guarantee Consistent Builds and Obsolete =overrideScope=
+* TODO Map Cabal Files To Nix Without Information Loss
+* TODO Implement Proper Dependency Resolution
+* TODO Develop Intelligent Policies for Post-processing and Patching
+* TODO Users Need a Configuration Mechanism That Is Both Simpler and More Powerful
+* TODO Deal With Infinite Recursions in Test Dependencies
+* TODO Set up a Sufficiently Powerful Build Farm
+* TODO Define and Publish Processes for Managing the Package Set(s)
+* TODO Publish All of Hackage
 
-   We publish 10,745 package versions out of 60,504 available ones, i.e. 18% of
-   Hackage. Those packages are selected as follows: we distribute the latest
-   version of every package --- 8,764 builds --- plus an additional 1,981 older
-   versions that are required by the various LTS Haskell and Stackage Nightly
-   package sets we support.
+  We publish 10,745 package versions out of 60,504 available ones, i.e. 18% of
+  Hackage. Those packages are selected as follows: we distribute the latest
+  version of every package --- 8,764 builds --- plus an additional 1,981 older
+  versions that are required by the various LTS Haskell and Stackage Nightly
+  package sets we support.
 
-** Possible Solutions
-** Open Questions
-* Generate Differential Build Expressions
-** Today
-** Possible Solutions
-** Open Questions
-* Generate Build Expressions for Hydra
-** Today
-** Possible Solutions
-** Open Questions
-* Add Support for Mega Repositories to =cabal2nix=
-** Today
-** Possible Solutions
-** Open Questions
-* Support Building With =stack=
-** Today
-** Possible Solutions
-** Open Questions
-* Support multi-output derivations
+* TODO Generate Differential Build Expressions
+* TODO Generate Build Expressions for Hydra
+* TODO Add Support for Mega Repositories to =cabal2nix=
+* TODO Support Building With =stack=
+* TODO Support multi-output derivations
 
   Put static, shared, and profiled library variants into separate output so
   that we can build everything without forcing users to download all that stuff

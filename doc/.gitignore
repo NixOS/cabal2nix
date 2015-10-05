@@ -1,14 +1,7 @@
-/hal8.aux
-/hal8-folien.pdf
-/hal8.html
-/hal8.log
-/hal8.out
-/hal8.pdf
-/nixos-meetup-3-slides.aux
-/nixos-meetup-3-slides.log
-/nixos-meetup-3-slides.out
-/nixos-meetup-3-slides.pdf
-/user-guide.aux
-/user-guide.log
-/user-guide.out
-/user-guide.pdf
+# ignored files in the doc hierarchy
+
+/*.aux
+/*.html
+/*.log
+/*.out
+/*.pdf

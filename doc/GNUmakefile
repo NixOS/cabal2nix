@@ -4,7 +4,9 @@ PANDOC_FLAGS := --smart -V papersize:"a4paper"
 
 .PHONY: all clean
 
-all: hal8.pdf hal8.html hal8-folien.pdf user-guide.pdf nixos-meetup-3-slides.pdf
+all:: hal8.pdf hal8.html hal8-folien.pdf nixos-meetup-3-slides.pdf
+all:: 00-future-of-haskell-packaging-in-nixpkgs.pdf
+all:: 01-use-function-application-to-escape-override-hell.pdf
 
 %.tex : %.md
 	pandoc -s $(PANDOC_FLAGS) -f markdown -t latex $< -o $@
