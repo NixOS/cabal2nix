@@ -40,6 +40,7 @@ hooks =
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
+  , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
