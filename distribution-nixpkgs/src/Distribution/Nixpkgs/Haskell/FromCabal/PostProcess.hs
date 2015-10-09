@@ -63,6 +63,7 @@ hooks =
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
+  , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
   , ("stack", set phaseOverrides stackOverrides)
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
