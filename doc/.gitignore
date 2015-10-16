@@ -5,3 +5,6 @@
 /*.log
 /*.out
 /*.pdf
+/*.json
+/.RData
+/.Rhistory
