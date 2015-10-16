@@ -29,9 +29,11 @@ Everyone is invited to participate in the conversation with ideas, questions,
 suggestions, or references to Github Pull Requests that implement a perfect,
 production-ready solution waiting to be merged.
 
-Best regards,
-Peter
+The issues we've identified so far are:
 
+- [Use Function Application To Escape Override Hell](01-use-function-application-to-escape-override-hell.md)
+- [Guarantee Consistent Builds and Obsolete `overrideScope`](02-guarantee-consistent-builds-and-obsolete-overridescope.md)
+- [Map Cabal Files To Nix Without Information Loss](03-map-cabal-files-to-nix-without-information-loss.md)
 
 [1]: https://github.com/NixOS/nixpkgs/commit/c0c82ea2ebbcf0632260a931cf832cac1c8a014e
 [2]: https://github.com/NixOS/nixpkgs/blob/master/pkgs/top-level/haskell-packages.nix
