@@ -9,6 +9,8 @@ all:: 00-future-of-haskell-packaging-in-nixpkgs.pdf
 all:: 01-use-function-application-to-escape-override-hell.pdf
 all:: 02-guarantee-consistent-builds-and-obsolete-overridescope.pdf
 all:: 03-map-cabal-files-to-nix-without-information-loss.md
+all:: 04-set-up-a-sufficiently-powerful-build-farm.md
+
 
 %.tex : %.md
 	pandoc -s $(PANDOC_FLAGS) -f markdown -t latex $< -o $@

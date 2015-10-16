@@ -1,13 +1,13 @@
 #+TITLE: The Future of Haskell Packaging in Nix
 
-* TODO Use Function Application To Escape Override Hell
-* TODO Guarantee Consistent Builds and Obsolete =overrideScope=
-* TODO Map Cabal Files To Nix Without Information Loss
+* DONE Use Function Application To Escape Override Hell
+* DONE Guarantee Consistent Builds and Obsolete =overrideScope=
+* DONE Map Cabal Files To Nix Without Information Loss
 * TODO Implement Proper Dependency Resolution
 * TODO Develop Intelligent Policies for Post-processing and Patching
 * TODO Users Need a Configuration Mechanism That Is Both Simpler and More Powerful
 * TODO Deal With Infinite Recursions in Test Dependencies
-* TODO Set up a Sufficiently Powerful Build Farm
+* DONE Set up a Sufficiently Powerful Build Farm
 * TODO Define and Publish Processes for Managing the Package Set(s)
 * TODO Publish All of Hackage
 
