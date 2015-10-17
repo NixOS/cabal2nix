@@ -17,7 +17,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "hlibsass"           = [enable "externalLibsass"]
  | name == "hmatrix"            = [enable "openblas"]
  | name == "hslua"              = [enable "system-lua"]
- | name == "idris"              = [enable "gmp", enable "ffi"]
+ | name == "idris"              = [enable "gmp", enable "ffi", enable "curses"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "liquid-fixpoint"    = [enable "build-external"]
  | name == "pandoc"             = [enable "https"]
