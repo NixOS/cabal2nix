@@ -63,6 +63,7 @@ hooks =
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (bind "self.cpphs")) True)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
+  , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
