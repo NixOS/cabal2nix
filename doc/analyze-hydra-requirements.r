@@ -22,7 +22,7 @@ builds <- foreach (i=list.files(".", "*.json"), .combine="rbind") %dopar% {
 setkey(builds, pkgset, pkg)
 
 t <- foreach (out=unique(builds$out), .combine="rbind") %dopar% {
-    size=system(paste("( du -sb", out, "| cut -f1 ) 2>/dev/null || true"), intern=TRUE)
+    size <- system(paste("( du -sb", out, "| cut -f1 ) 2>/dev/null || true"), intern=TRUE)
     size <- if (identical(size, character(0))) "" else size
     data.table(out, size=as.integer(size))
 }
@@ -37,10 +37,17 @@ builds_total <- nrow(builds)
 # Number of distict builds (output paths).
 builds_unique <- length(unique(builds$out))
 
+# Size of haskellPackages per platform.
+haskellPackages <- unique(builds[pkgset != "ghc7102" & !is.na(size),list(out,size)])
+haskellPackages_size <- sum(as.numeric(haskellPackages$size))
+
+# List of distinct sizes.
+sizes <- unique(builds[pkg != "ghc" & !is.na(size),list(out,size)])$size
+
 # Average output path size.
-avg_build_size <- mean(builds[pkg != "ghc", size], na.rm=T)
-sd_build_size <- sd(builds[pkg != "ghc", size], na.rm=T)
-summary(builds[pkg != "ghc", size/1e6])
+avg_build_size <- mean(sizes)
+sd_build_size <- sd(sizes)
+summary(sizes / 1e6)
 
 # Biggest builds.
 biggest_builds <- head(builds[!is.na(size),list(size=mean(size)),by=pkg][order(size, decreasing=T)], n=20)
