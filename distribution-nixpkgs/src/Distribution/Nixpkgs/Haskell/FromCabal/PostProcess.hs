@@ -68,6 +68,7 @@ hooks =
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
   , ("stack", set phaseOverrides stackOverrides)
+  , ("stripe-http-streams", set doCheck False . set (metaSection . broken) False)
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
