@@ -52,6 +52,7 @@ hooks =
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
   , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
+  , ("hsignal", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
   , ("http-client", set doCheck False)          -- attempts to access the network
   , ("http-conduit", set doCheck False)         -- attempts to access the network
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
