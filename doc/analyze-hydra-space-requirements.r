@@ -1,4 +1,4 @@
-# cabal2nix/doc/create-workspace.r
+# cabal2nix/doc/analyze-hydra-space-requirements.r
 
 library(data.table)
 library(rjson)

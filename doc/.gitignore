@@ -1,10 +1,11 @@
 # ignored files in the doc hierarchy
 
 /*.aux
+/*.csv
 /*.html
+/*.json
 /*.log
 /*.out
 /*.pdf
-/*.json
 /.RData
 /.Rhistory
