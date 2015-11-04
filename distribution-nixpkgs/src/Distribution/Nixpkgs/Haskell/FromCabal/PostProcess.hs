@@ -48,6 +48,7 @@ hooks =
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("gtk3", gtk3Hook)
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
+  , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
