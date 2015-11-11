@@ -2,10 +2,12 @@
 
 /*.aux
 /*.csv
+/*.eps
 /*.html
 /*.json
 /*.log
 /*.out
 /*.pdf
+/*~
 /.RData
 /.Rhistory
