@@ -10,7 +10,26 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
  | name == "diagrams-builder"   = [enable "cairo", enable "svg", enable "ps", enable "rasterific"]
  | name == "folds"              = [disable "test-hlint"]
- | name == "git-annex"          = [enable "Assistant" , enable "Production"]
+ | name == "git-annex"          = [ enable "assistant"
+                                  , enable "cryptonite"
+                                  , enable "dbus"
+                                  , enable "desktopnotify"
+                                  , enable "dns"
+                                  , enable "feed"
+                                  , enable "inotify"
+                                  , enable "pairing"
+                                  , enable "production"
+                                  , enable "quvi"
+                                  , enable "s3"
+                                  , enable "tahoe"
+                                  , enable "tdfa"
+                                  , enable "testsuite"
+                                  , enable "torrentparser"
+                                  , enable "webapp"
+                                  , enable "webapp-secure"
+                                  , enable "webdav"
+                                  , enable "xmpp"
+                                  ]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
  | name == "highlighting-kate"  = [enable "pcre-light"]
