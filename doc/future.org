@@ -26,3 +26,30 @@
   Put static, shared, and profiled library variants into separate output so
   that we can build everything without forcing users to download all that stuff
   if they just want the regular build.
+* TODO Write a =ghcWithPackages= combinator to create conglomerate workspaces
+
+  Thomas Strobel <thomas@strobel.eu> suggested this:
+
+  I want to hack on a set of libraries, say transformers and mtl, and I'd like
+  to do that in an environment that contains criterion, QuickCheck, etc. So I
+  run
+
+    stackWithPackages (hp: {
+      sources = with hp; [transformers mtl];
+      env = with hp; [criterion QuickCheck];
+    })
+
+  This should create a conglomerate workspace / nix-shell environment that
+  contains the source code for transformers and lens in subdirectories plus a
+  stack.yaml file that builds them both:
+
+    stack.yaml
+    mtl / ...
+    transformers ...
+
+  The environment would contain a GHC with criterion and QuickCheck registered
+  in appropriate LTS versions so that the stack builds don't compile anything
+  except the packages I'm hacking on.
+
+  The value of env could possibly be auto-determined from the dependencies of
+  transformers and mtl.
