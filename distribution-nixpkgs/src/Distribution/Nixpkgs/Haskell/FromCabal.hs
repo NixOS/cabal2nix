@@ -111,6 +111,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
       | i `elem` ["clang","lldb","llvm"] = binding # (i, path # ["self","llvmPackages",i])     -- TODO: evil!
+      | i `elem` ["gtk2","gtk3"]         = binding # (i, path # ["pkgs","gnome2","gtk"])
       | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
       | otherwise                        = bindNull i
 
