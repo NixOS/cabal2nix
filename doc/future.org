@@ -53,3 +53,8 @@
 
   The value of env could possibly be auto-determined from the dependencies of
   transformers and mtl.
+* TODO Solve the too-eager evaluation of meta.broken
+
+  We'd like to mark builds that are known to fail with `meta.broken = true`,
+  but this is impractical because users have no way to override that setting if
+  they discover that the package has been fixed in a new version.
