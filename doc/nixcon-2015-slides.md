@@ -210,7 +210,7 @@ environment. For example, pandoc 1.15.1.1 defines:
 
 -------------------------------------------------------------------------------
 
-# Nixpkgs: `haskell-packages.nix`
+# Nixpkgs: `hackage-packages.nix`
 
 The package set is represented as a primitive recursive function:
 
@@ -227,12 +227,12 @@ The Nixpkgs attribute set `haskellPackages` refers to the fixpoint of that
 function which is computed by the expression:
 
         let self = ps self;
-        in     # = ps (ps self) = ps (ps (self)) = ...
+        in     # = ps (ps self) = ps (ps (ps (self))) = ...
           self
 
 -------------------------------------------------------------------------------
 
-# Nixpkgs: haskell-packages.nix
+# Nixpkgs: hackage-packages.nix
 
 We can modify the package set using OO-style inheritance:
 
@@ -273,7 +273,7 @@ We can modify the package set using OO-style inheritance:
 
 # Nixpkgs: Multiple Views Of The Package Set
 
-- `haskell-packages.nix` represents "Stackage Nightly".
+- `hackage-packages.nix` represents "Stackage Nightly".
 
 - `configuration-common.nix` "extends" that to work around deficiencies in
   `hackage2nix`.
