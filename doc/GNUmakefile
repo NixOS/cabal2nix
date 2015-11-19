@@ -8,8 +8,9 @@ all:: hal8.pdf hal8.html hal8-folien.pdf nixos-meetup-3-slides.pdf
 all:: 00-future-of-haskell-packaging-in-nixpkgs.pdf
 all:: 01-use-function-application-to-escape-override-hell.pdf
 all:: 02-guarantee-consistent-builds-and-obsolete-overridescope.pdf
-all:: 03-map-cabal-files-to-nix-without-information-loss.md
-all:: 04-set-up-a-sufficiently-powerful-build-farm.md
+all:: 03-map-cabal-files-to-nix-without-information-loss.pdf
+all:: 04-set-up-a-sufficiently-powerful-build-farm.pdf
+all:: 05-publish-all-of-hackage.pdf
 all:: nixcon-2015-slides.pdf
 
 %.tex : %.md

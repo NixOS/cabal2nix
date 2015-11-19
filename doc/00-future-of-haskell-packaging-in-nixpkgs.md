@@ -35,6 +35,7 @@ The issues we've identified so far are:
 - [Guarantee Consistent Builds and Obsolete `overrideScope`](02-guarantee-consistent-builds-and-obsolete-overridescope.md)
 - [Map Cabal Files To Nix Without Information Loss](03-map-cabal-files-to-nix-without-information-loss.md)
 - [Set up a Sufficiently Powerful Build Farm](04-set-up-a-sufficiently-powerful-build-farm.md)
+- [Publish All of Hackage](05-publish-all-of-hackage.md)
 
 [1]: https://github.com/NixOS/nixpkgs/commit/c0c82ea2ebbcf0632260a931cf832cac1c8a014e
 [2]: https://github.com/NixOS/nixpkgs/blob/master/pkgs/top-level/haskell-packages.nix

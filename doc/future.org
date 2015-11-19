@@ -9,7 +9,7 @@
 * TODO Deal With Infinite Recursions in Test Dependencies
 * DONE Set up a Sufficiently Powerful Build Farm
 * TODO Define and Publish Processes for Managing the Package Set(s)
-* TODO Publish All of Hackage
+* DONE Publish All of Hackage
 
   We publish 10,745 package versions out of 60,504 available ones, i.e. 18% of
   Hackage. Those packages are selected as follows: we distribute the latest
