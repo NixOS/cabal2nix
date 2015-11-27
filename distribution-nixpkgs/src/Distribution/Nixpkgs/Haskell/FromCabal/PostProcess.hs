@@ -34,7 +34,9 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
-  [ ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
+  [ ("alex",  set (executableDepends . tool . contains (bind "self.happy")) True)
+  , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
+  , ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
