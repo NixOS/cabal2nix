@@ -25,7 +25,7 @@ data Configuration = Configuration
   -- appropriate flags and dependencies.
     compilerInfo :: CompilerInfo
 
-  -- |Core packages found on Hackageg
+  -- |Compiler core packages that are also found on Hackage.
   , corePackages :: Set PackageIdentifier
 
   -- |These packages replace the latest respective version during
