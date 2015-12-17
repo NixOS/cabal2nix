@@ -2,9 +2,10 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags ) wher
 
 import Distribution.Package
 import Distribution.PackageDescription
+import Data.Version
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
-configureCabalFlags (PackageIdentifier (PackageName name) _)
+configureCabalFlags (PackageIdentifier (PackageName name) version)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "arithmoi"           = [disable "llvm"]
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
@@ -33,7 +34,8 @@ configureCabalFlags (PackageIdentifier (PackageName name) _)
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
  | name == "highlighting-kate"  = [enable "pcre-light"]
- | name == "hlibsass"           = [enable "externalLibsass"]
+ | name == "hlibsass" && version >= Version [1,4,0] []
+                                = [enable "externalLibsass"]
  | name == "hmatrix"            = [enable "openblas"]
  | name == "hslua"              = [enable "system-lua"]
  | name == "idris"              = [enable "gmp", enable "ffi", enable "curses"]
