@@ -52,6 +52,7 @@ hooks =
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
   , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
+  , ("hlibgit2 == 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
   , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
