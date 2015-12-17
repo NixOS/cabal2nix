@@ -1,9 +1,9 @@
--- This file has been generated from package.yaml by hpack version 0.7.1.
+-- This file has been generated from package.yaml by hpack version 0.8.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           hackage2nix
-version:        20150922
+version:        20151217
 synopsis:       Generate hackage-packages.nix.
 description:    Generate hackage-packages.nix.
 category:       Distribution
