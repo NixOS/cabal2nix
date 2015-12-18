@@ -1,6 +1,6 @@
 # language-nix/stack.yaml
 
-resolver: lts-3.6
+resolver: nightly-2015-12-17
 
 packages:
   - .
