@@ -1,12 +1,8 @@
 # cabal2nix/stack.yaml
 
-resolver: lts-3.12
+resolver: nightly-2015-12-17
 
 packages:
   - distribution-nixpkgs
   - cabal2nix
   - hackage2nix
-
-extra-deps:
-  - nix-paths-1
-  - language-nix-2.1
