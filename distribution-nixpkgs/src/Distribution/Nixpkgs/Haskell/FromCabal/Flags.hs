@@ -34,7 +34,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) version)
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
  | name == "highlighting-kate"  = [enable "pcre-light"]
- | name == "hlibsass" && version >= Version [1,4,0] []
+ | name == "hlibsass" && version >= Version [0,1,5] []
                                 = [enable "externalLibsass"]
  | name == "hmatrix"            = [enable "openblas"]
  | name == "hslua"              = [enable "system-lua"]
