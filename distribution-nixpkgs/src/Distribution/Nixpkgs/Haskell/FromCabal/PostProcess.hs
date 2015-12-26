@@ -75,6 +75,7 @@ hooks =
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
   , ("stack", set phaseOverrides stackOverrides)
   , ("stripe-http-streams", set doCheck False . set (metaSection . broken) False)
+  , ("text", set doCheck False)         -- break infinite recursion
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
