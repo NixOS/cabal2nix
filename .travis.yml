@@ -8,8 +8,8 @@ cache:
     - $HOME/.stack
 
 before_install:
-  - curl -L https://github.com/commercialhaskell/stack/releases/download/v0.1.5.0/stack-0.1.5.0-x86_64-linux.tar.gz | tar xfz -
-  - install -m 555 -D stack-0.1.5.0-x86_64-linux/stack $HOME/.local/bin/stack
+  - curl -L https://github.com/commercialhaskell/stack/releases/download/v1.0.0/stack-1.0.0-linux-x86_64.tar.gz | tar xfz -
+  - install -m 555 -D stack-1.0.0-linux-x86_64/stack $HOME/.local/bin/stack
   - export PATH=$HOME/.local/bin:$PATH
   - stack setup
 
