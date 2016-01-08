@@ -1,7 +1,6 @@
 # .travis.yml
 
 language: haskell
-
 sudo: false
 
 cache:
@@ -9,15 +8,14 @@ cache:
     - $HOME/.stack
 
 before_install:
-  - mkdir -p $HOME/.local/bin
+  - curl -L https://github.com/commercialhaskell/stack/releases/download/v1.0.0/stack-1.0.0-linux-x86_64.tar.gz | tar xfz -
+  - install -m 555 -D stack-1.0.0-linux-x86_64/stack $HOME/.local/bin/stack
   - export PATH=$HOME/.local/bin:$PATH
-  - travis_retry curl -L https://github.com/commercialhaskell/stack/releases/download/v0.1.3.1/stack-0.1.3.1-x86_64-linux.gz | gunzip > $HOME/.local/bin/stack
-  - chmod a+x $HOME/.local/bin/stack
   - stack setup
 
 install:
+  - stack build hscolour --copy-bins
   - stack build --only-snapshot
 
 script:
-  - stack build --pedantic --test
-  - stack build --haddock
+  - stack build --pedantic --test --haddock
