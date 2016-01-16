@@ -38,6 +38,7 @@ hooks =
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
   , ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
+  , ("bustle", set (libraryDepends . pkgconfig . contains (binding # ("system-glib", path # ["pkgs","glib"]))) True)
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
   , ("darcs", set phaseOverrides darcsInstallPostInstall)
