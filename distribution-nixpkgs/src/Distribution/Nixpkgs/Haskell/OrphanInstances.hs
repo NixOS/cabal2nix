@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -18,14 +19,18 @@ import Distribution.PackageDescription
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
-import GHC.Generics ( Generic )
 import Language.Haskell.Extension
 
+#if !MIN_VERSION_Cabal(1,23,0)
+import GHC.Generics ( Generic )
 deriving instance Generic (CondTree v c a)
 deriving instance Generic (Condition a)
 deriving instance Generic ConfVar
 deriving instance Generic Flag
 deriving instance Generic GenericPackageDescription
+#else
+instance NFData SetupBuildInfo where rnf = genericRnf
+#endif
 
 instance (NFData v, NFData c, NFData a) => NFData (CondTree v c a) where rnf = genericRnf
 instance NFData Arch where rnf = genericRnf
