@@ -1,5 +1,5 @@
 name:                   cabal2nix
-version:                "20151217"
+version:                "20160308"
 synopsis:               Convert Cabal files into Nix build instructions.
 description:            Convert Cabal files into Nix build instructions.
 maintainer:             Peter Simons <simons@cryp.to>

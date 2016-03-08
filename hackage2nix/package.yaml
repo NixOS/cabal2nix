@@ -1,5 +1,5 @@
 name:                   hackage2nix
-version:                "20151217"
+version:                "20160308"
 synopsis:               Generate hackage-packages.nix.
 description:            Generate hackage-packages.nix.
 maintainer:             Peter Simons <simons@cryp.to>
