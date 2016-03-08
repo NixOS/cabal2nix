@@ -15,6 +15,8 @@ import Control.DeepSeq.Generics
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
+import Data.Aeson
+import qualified Data.ByteString.Lazy.Char8 as BS
 import GHC.Generics ( Generic )
 import System.Directory
 import System.Environment
@@ -56,6 +58,13 @@ data DerivationSource = DerivationSource
   deriving (Show, Eq, Ord, Generic)
 
 instance NFData DerivationSource where rnf = genericRnf
+
+instance FromJSON DerivationSource where
+  parseJSON (Object o) = DerivationSource (error "undefined DerivationSource.kind")
+        <$> o .: "url"
+        <*> o .: "rev"
+        <*> o .: "sha256"
+  parseJSON _ = error "invalid DerivationSource"
 
 fromDerivationSource :: DerivationSource -> Source
 fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision $ Certain derivHash
@@ -118,9 +127,17 @@ fetchWith (supportsRev, kind, addArgs) source = do
 
     exitCode <- waitForProcess processH
     case exitCode of
-      ExitSuccess   -> fmap Just . processOutputSwitch . lines =<< hGetContents stdoutH
       ExitFailure _ -> return Nothing
-
+      ExitSuccess   -> do
+        buf <- BS.hGetContents stdoutH
+        let (l:ls) = reverse (BS.lines buf)
+            buf'   = BS.unlines (reverse ls)
+        case length ls of
+          0 -> return Nothing
+          1 -> return (Just (DerivationSource kind (sourceUrl source) "" (BS.unpack (head (ls)))  , sourceUrl source))
+          _ -> case eitherDecode buf' of
+                 Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
+                 Right ds -> return (Just (ds { derivKind = kind }, BS.unpack l))
  where
 
    script :: String
@@ -128,29 +145,6 @@ fetchWith (supportsRev, kind, addArgs) source = do
 
    args :: [String]
    args = addArgs ++ sourceUrl source : [ sourceRevision source | supportsRev ] ++ hashToList (sourceHash source)
-
-   processOutputWithRev :: [String] -> IO (DerivationSource, FilePath)
-   processOutputWithRev [rev,hash,path] = return (DerivationSource kind (sourceUrl source) (extractRevision rev) hash, path)
-   processOutputWithRev [rev,_,hash,path] = processOutputWithRev [rev,hash,path]
-   processOutputWithRev out = unexpectedOutput out
-
-   extractRevision :: String -> String
-   extractRevision = unwords . drop 3 . words -- drop the "<vcs> revision is" prefix
-
-   processOutput :: [String] -> IO (DerivationSource, FilePath)
-   processOutput [hash,path] = return (DerivationSource kind (sourceUrl source) (sourceRevision source) hash, path)
-   processOutput out = unexpectedOutput out
-
-   unexpectedOutput :: [String] -> IO a
-   unexpectedOutput out = do
-     hPutStrLn stderr $ "*** unexpected output from " ++ "nix-prefetch-" ++ kind ++ " script: "
-     hPutStr   stderr $ unlines out
-     exitFailure
-
-   processOutputSwitch :: [String] -> IO (DerivationSource, FilePath)
-   processOutputSwitch
-     | supportsRev && isUnknown (sourceHash source) = processOutputWithRev
-     | otherwise                                   = processOutput
 
 stripPrefix :: Eq a => [a] -> [a] -> [a]
 stripPrefix prefix as
