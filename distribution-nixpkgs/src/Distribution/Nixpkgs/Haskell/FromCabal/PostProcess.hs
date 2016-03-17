@@ -112,7 +112,9 @@ gtk3Hook = set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
          . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
 
 gitAnnexHook :: Derivation -> Derivation
-gitAnnexHook = set phaseOverrides gitAnnexOverrides . over (executableDepends . system) (Set.union buildInputs)
+gitAnnexHook = set phaseOverrides gitAnnexOverrides
+             . over (executableDepends . system) (Set.union buildInputs)
+             . over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin"))
   where
     gitAnnexOverrides = unlines
       [ "preConfigure = \"export HOME=$TEMPDIR; patchShebangs .\";"
