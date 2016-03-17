@@ -50,6 +50,7 @@ hooks =
   , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
+  , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin")))
   , ("gtk3", gtk3Hook)
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
   , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
