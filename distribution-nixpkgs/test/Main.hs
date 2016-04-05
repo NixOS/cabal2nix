@@ -3,14 +3,18 @@ module Main ( main ) where
 import Control.DeepSeq
 import Control.Exception
 import Control.Lens
+import Data.Maybe
 import Distribution.Nixpkgs.License
 import Distribution.Nixpkgs.Meta
+import System.Environment
 import Test.DocTest
 import Test.Hspec
 
 main :: IO ()
 main = do
-  doctest [ "-isrc", "-optP-include", "-optPdist/build/autogen/cabal_macros.h", "src" ]
+  distDir <- fromMaybe "dist" `fmap` lookupEnv "HASKELL_DIST_DIR"
+  let cabalMacrosHeader = distDir ++ "/build/autogen/cabal_macros.h"
+  doctest [ "-isrc", "-optP-include", "-optP"++cabalMacrosHeader, "src" ]
 
   hspec $
     describe "DeepSeq instances work properly for" $ do
