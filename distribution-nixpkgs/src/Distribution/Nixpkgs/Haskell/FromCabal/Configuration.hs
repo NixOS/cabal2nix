@@ -1,4 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE CPP               #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -63,11 +65,24 @@ instance FromJSON Identifier where
   parseJSON (String s) = pure (review ident (T.unpack s))
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Nix identifier")
 
+-- aeson-0.11 introduces a general instance, so we just need a couple
+-- of specific ones
+#if MIN_VERSION_aeson(0,11,0)
+instance (FromJSON v) => FromJSON (Map Identifier v) where
+  parseJSON = fmap (Map.mapKeys parseKey) . parseJSON
+
+instance (FromJSON v) => FromJSON (Map PackageName v) where
+  parseJSON = fmap (Map.mapKeys parseKey) . parseJSON
+
+parseKey :: (FromJSON k) => Text -> k
+parseKey s = either error id (parseEither parseJSON (String s))
+#else
 instance (Ord k, FromJSON k, FromJSON v) => FromJSON (Map k v) where
   parseJSON  = fmap (Map.mapKeys parseKey) . parseJSON
     where
       parseKey :: FromJSON k => Text -> k
       parseKey s = either error id (parseEither parseJSON (String s))
+#endif
 
 readConfiguration :: FilePath -> IO Configuration
 readConfiguration path =
