@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.7.0.
+-- This file has been generated from package.yaml by hpack version 0.11.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -67,6 +67,7 @@ library
       Distribution.Nixpkgs.PackageMap
   other-modules:
       Internal.PrettyPrinting
+      Paths_distribution_nixpkgs
   default-language: Haskell2010
 
 test-suite spec
