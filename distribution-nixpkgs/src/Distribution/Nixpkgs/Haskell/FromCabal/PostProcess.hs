@@ -61,6 +61,7 @@ hooks =
   , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
   , ("http-client", set doCheck False)          -- attempts to access the network
+  , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
   , ("http-conduit", set doCheck False)         -- attempts to access the network
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
