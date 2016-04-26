@@ -53,6 +53,7 @@ hooks =
   , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin")))
   , ("gtk3", gtk3Hook)
   , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
+  , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hlibgit2 == 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
