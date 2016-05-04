@@ -41,7 +41,7 @@ hooks =
   , ("bustle", set (libraryDepends . pkgconfig . contains (binding # ("system-glib", path # ["pkgs","glib"]))) True)
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
-  , ("darcs", set phaseOverrides darcsInstallPostInstall)
+  , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
