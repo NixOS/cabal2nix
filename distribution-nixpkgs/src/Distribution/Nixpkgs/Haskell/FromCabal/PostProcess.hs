@@ -199,8 +199,7 @@ agdaPostInstall = unlines
 
 stackOverrides :: String
 stackOverrides = unlines
-  [ "enableSharedExecutables = false;"
-  , "postInstall = ''"
+  [ "postInstall = ''"
   , "  exe=$out/bin/stack"
   , "  mkdir -p $out/share/bash-completion/completions"
   , "  $exe --bash-completion-script $exe >$out/share/bash-completion/completions/stack"
