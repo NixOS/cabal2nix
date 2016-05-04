@@ -82,7 +82,7 @@ hooks =
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("sdr", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
-  , ("stack", set phaseOverrides stackOverrides)
+  , ("stack", set phaseOverrides stackOverrides . set doCheck False)
   , ("stripe-http-streams", set doCheck False . set (metaSection . broken) False)
   , ("text", set doCheck False)         -- break infinite recursion
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
@@ -199,7 +199,8 @@ agdaPostInstall = unlines
 
 stackOverrides :: String
 stackOverrides = unlines
-  [ "postInstall = ''"
+  [ "preCheck = \"export HOME=$TMPDIR\";"
+  , "postInstall = ''"
   , "  exe=$out/bin/stack"
   , "  mkdir -p $out/share/bash-completion/completions"
   , "  $exe --bash-completion-script $exe >$out/share/bash-completion/completions/stack"
