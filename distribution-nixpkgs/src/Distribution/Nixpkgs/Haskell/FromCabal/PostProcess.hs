@@ -88,6 +88,7 @@ hooks =
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
+  , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("wxc", wxcHook)
