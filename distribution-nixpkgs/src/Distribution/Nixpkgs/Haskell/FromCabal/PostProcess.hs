@@ -52,7 +52,7 @@ hooks =
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin")))
   , ("gtk3", gtk3Hook)
-  , ("haddock", set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";")
+  , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
@@ -117,6 +117,11 @@ replace old new bs = if old `Set.member` bs then Set.insert new (Set.delete old 
 gtk3Hook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
 gtk3Hook = set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
          . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
+
+haddockHook :: Derivation -> Derivation
+haddockHook = set doCheck False
+            . set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";"
+            . over (dependencies . haskell) (Set.filter (\b -> view localName b /= "haddock-test"))
 
 gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides
@@ -232,8 +237,6 @@ postProcess' deriv@(MkDerivation {..})
   | pname == "GLUT"             = deriv { extraLibs = Set.fromList ["glut","libSM","libICE","libXmu","libXi","mesa"] `Set.union` extraLibs }
   | pname == "gtkglext"         = deriv { pkgConfDeps = Set.insert "pangox_compat" pkgConfDeps }
   | pname == "gtk2hs-buildtools"= deriv { buildDepends = Set.insert "hashtables" buildDepends }
-  | pname == "haddock" && version < Version [2,14] []
-                                = deriv { buildTools = Set.insert "alex" (Set.insert "happy" buildTools) }
   | pname == "happy"            = deriv { buildTools = Set.insert "perl" buildTools }
   | pname == "haskeline"        = deriv { buildDepends = Set.insert "utf8-string" buildDepends }
   | pname == "haskell-src"      = deriv { buildTools = Set.insert "happy" buildTools }
@@ -333,9 +336,6 @@ sloanePostInstall = unlines
   , "  cp sloane.1 $out/share/man/man1/"
   , "'';"
   ]
-
-haddockPreCheck :: String
-haddockPreCheck = "preCheck = \"unset GHC_PACKAGE_PATH\";"
 
 ghcParserPatchPhase :: String
 ghcParserPatchPhase = unlines
