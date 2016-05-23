@@ -19,7 +19,7 @@ import Distribution.Text ( simpleParse )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
-import System.IO ( hPutStrLn, stderr, hPutStr )
+import System.IO ( hPutStrLn, stderr, hPutStr, openFile, InputMode(ReadMode), hSetEncoding, utf8, hGetContents )
 
 data Package = Package
   { pkgSource :: DerivationSource
@@ -143,7 +143,9 @@ cabalFromFile failHard file =
   -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
   -- the reading of the file, so we will always catch the expression here.
   MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
-    content <- readFile file
+    inputHandle <- openFile ReadMode file
+    hSetEncoding inputHandle utf8
+    content <- hGetContent inputHandle
     case Cabal.parsePackageDescription content of
       Cabal.ParseFailed e | failHard -> do
         let (line, err) = ParseUtils.locatedErrorMsg e
