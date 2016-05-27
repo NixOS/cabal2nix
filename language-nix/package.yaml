@@ -1,5 +1,5 @@
 name:                   language-nix
-version:                "2.1"
+version:                "2.1.0.1"
 synopsis:               Data types and useful functions to represent and manipulate the Nix language.
 description:            Data types and useful functions to represent and manipulate the Nix language.
 author:                 Peter Simons
@@ -7,7 +7,7 @@ maintainer:             simons@cryp.to
 license:                BSD3
 github:                 peti/language-nix
 category:               Distribution, Language
-tested-with:            GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.2
+tested-with:            GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
 
 ghc-options:            -Wall
 
