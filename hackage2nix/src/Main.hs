@@ -82,8 +82,6 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "dictionary-sharing"   -- TODO: https://github.com/NixOS/cabal2nix/issues/175
-            . Map.delete "ghci"                 -- TODO: remove once GHC 8.x becomes the default
-            . Map.delete "ghc-boot"             -- TODO: remove once GHC 8.x becomes the default
   hackage <- fixup <$> readHackage hackageRepository
   snapshots <- runParIO (readLTSHaskell ltsHaskellRepository)
   nightly <- readStackageNightly stackageNightlyRepository
