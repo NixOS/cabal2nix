@@ -16,6 +16,9 @@ import Prelude.Compat
 import Test.QuickCheck
 import Text.PrettyPrint as PP
 
+-- $setup
+-- >>> import Control.Exception
+
 -- | Paths are non-empty lists of identifiers in Nix.
 --
 -- >>> path # [ident # "yo"]
@@ -23,8 +26,9 @@ import Text.PrettyPrint as PP
 --
 -- Any attempt to construct the empty path throws an 'error':
 --
--- >>> path # []
--- Path *** Exception: Nix paths cannot be empty
+-- >>> :set -XScopedTypeVariables
+-- >>> either (\(_::SomeException) -> "empty paths are illegal") show <$> try (evaluate (path # []))
+-- "empty paths are illegal"
 --
 -- Paths can be pretty-printed and parsed with the 'Text' class:
 --
