@@ -39,7 +39,7 @@ hooks =
   , ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("Agda >= 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
-  , ("bustle", set (libraryDepends . pkgconfig . contains (binding # ("system-glib", path # ["pkgs","glib"]))) True)
+  , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
@@ -72,7 +72,7 @@ hooks =
   , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
   , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("js-jquery", set doCheck False)            -- attempts to access the network
-  , ("libconfig", over (libraryDepends . system) (replace (binding # ("config", path # ["null"])) (pkg "libconfig")))
+  , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (bind "self.cpphs")) True)
