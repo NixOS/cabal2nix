@@ -6,7 +6,7 @@
 
 module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Data.Maybe
 import Data.String
 import qualified Data.Text as T
@@ -29,45 +29,45 @@ deriving instance Generic ConfVar
 deriving instance Generic Flag
 deriving instance Generic GenericPackageDescription
 #else
-instance NFData SetupBuildInfo where rnf = genericRnf
+instance NFData SetupBuildInfo
 #endif
 
-instance (NFData v, NFData c, NFData a) => NFData (CondTree v c a) where rnf = genericRnf
-instance NFData Arch where rnf = genericRnf
-instance NFData Benchmark where rnf = genericRnf
-instance NFData BenchmarkInterface where rnf = genericRnf
-instance NFData BenchmarkType where rnf = genericRnf
-instance NFData BuildInfo where rnf = genericRnf
-instance NFData BuildType where rnf = genericRnf
-instance NFData CompilerFlavor where rnf = genericRnf
-instance NFData ConfVar where rnf = genericRnf
-instance NFData Dependency where rnf = genericRnf
-instance NFData Executable where rnf = genericRnf
-instance NFData Extension where rnf = genericRnf
-instance NFData Flag where rnf = genericRnf
-instance NFData FlagName where rnf = genericRnf
-instance NFData GenericPackageDescription where rnf = genericRnf
-instance NFData KnownExtension where rnf = genericRnf
-instance NFData Language where rnf = genericRnf
-instance NFData Library where rnf = genericRnf
-instance NFData License where rnf = genericRnf
-instance NFData ModuleName where rnf = genericRnf
-instance NFData ModuleReexport where rnf = genericRnf
-instance NFData ModuleRenaming where rnf = genericRnf
-instance NFData OS where rnf = genericRnf
-instance NFData PackageDescription where rnf = genericRnf
-instance NFData RepoKind where rnf = genericRnf
-instance NFData RepoType where rnf = genericRnf
-instance NFData SourceRepo where rnf = genericRnf
-instance NFData TestSuite where rnf = genericRnf
-instance NFData TestSuiteInterface where rnf = genericRnf
-instance NFData TestType where rnf = genericRnf
-instance NFData VersionRange where rnf = genericRnf
-instance NFData a => NFData (Condition a) where rnf = genericRnf
-instance NFData Platform where rnf = genericRnf
-instance NFData CompilerInfo where rnf = genericRnf
-instance NFData CompilerId where rnf = genericRnf
-instance NFData AbiTag where rnf = genericRnf
+instance (NFData v, NFData c, NFData a) => NFData (CondTree v c a)
+instance NFData Arch
+instance NFData Benchmark
+instance NFData BenchmarkInterface
+instance NFData BenchmarkType
+instance NFData BuildInfo
+instance NFData BuildType
+instance NFData CompilerFlavor
+instance NFData ConfVar
+instance NFData Dependency
+instance NFData Executable
+instance NFData Extension
+instance NFData Flag
+instance NFData FlagName
+instance NFData GenericPackageDescription
+instance NFData KnownExtension
+instance NFData Language
+instance NFData Library
+instance NFData License
+instance NFData ModuleName
+instance NFData ModuleReexport
+instance NFData ModuleRenaming
+instance NFData OS
+instance NFData PackageDescription
+instance NFData RepoKind
+instance NFData RepoType
+instance NFData SourceRepo
+instance NFData TestSuite
+instance NFData TestSuiteInterface
+instance NFData TestType
+instance NFData VersionRange
+instance NFData a => NFData (Condition a)
+instance NFData Platform
+instance NFData CompilerInfo
+instance NFData CompilerId
+instance NFData AbiTag
 
 instance IsString PackageName where
   fromString = text2isString "PackageName"

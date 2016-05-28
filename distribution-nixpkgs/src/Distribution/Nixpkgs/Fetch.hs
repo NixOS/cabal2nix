@@ -11,7 +11,7 @@ module Distribution.Nixpkgs.Fetch
   ) where
 
 import Control.Applicative
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
@@ -32,12 +32,12 @@ data Source = Source
   , sourceHash      :: Hash         -- ^ The expected hash of the source, if available.
   } deriving (Show, Eq, Ord, Generic)
 
-instance NFData Source where rnf = genericRnf
+instance NFData Source
 
 data Hash = Certain String | Guess String | UnknownHash
   deriving (Show, Eq, Ord, Generic)
 
-instance NFData Hash where rnf = genericRnf
+instance NFData Hash
 
 isUnknown :: Hash -> Bool
 isUnknown UnknownHash = True
@@ -57,7 +57,7 @@ data DerivationSource = DerivationSource
   }
   deriving (Show, Eq, Ord, Generic)
 
-instance NFData DerivationSource where rnf = genericRnf
+instance NFData DerivationSource
 
 instance FromJSON DerivationSource where
   parseJSON (Object o) = DerivationSource (error "undefined DerivationSource.kind")

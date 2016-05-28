@@ -7,7 +7,7 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( Configuration(..), readConfiguration, assertConsistency ) where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Control.Lens
 import Control.Monad
 import Data.Map as Map
@@ -49,7 +49,7 @@ data Configuration = Configuration
   }
   deriving (Show, Generic)
 
-instance NFData Configuration where rnf = genericRnf
+instance NFData Configuration
 
 instance FromJSON Configuration where
   parseJSON (Object o) = Configuration

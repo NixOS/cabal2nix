@@ -29,7 +29,7 @@ library
     , bytestring
     , Cabal >= 1.22.2
     , containers
-    , deepseq-generics
+    , deepseq >= 1.4
     , directory
     , filepath
     , hackage-db
@@ -82,7 +82,7 @@ test-suite spec
     , bytestring
     , Cabal >= 1.22.2
     , containers
-    , deepseq-generics
+    , deepseq >= 1.4
     , directory
     , filepath
     , hackage-db
@@ -98,7 +98,6 @@ test-suite spec
     , unordered-containers
     , utf8-string
     , yaml
-    , deepseq
     , distribution-nixpkgs
     , doctest
     , hspec

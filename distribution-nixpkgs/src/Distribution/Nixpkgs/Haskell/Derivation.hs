@@ -12,7 +12,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   )
   where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -92,7 +92,7 @@ makeLensesFor [("_libraryDepends", "dependencies"), ("_executableDepends", "depe
 instance Package Derivation where
   packageId = view pkgid
 
-instance NFData Derivation where rnf = genericRnf
+instance NFData Derivation
 
 instance Pretty Derivation where
   pPrint drv@(MkDerivation {..}) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
