@@ -36,7 +36,8 @@ hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
   [ ("alex",  set (executableDepends . tool . contains (bind "self.happy")) True)
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
-  , ("Agda", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
+  , ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
+  , ("Agda >= 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("bustle", set (libraryDepends . pkgconfig . contains (binding # ("system-glib", path # ["pkgs","glib"]))) True)
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
@@ -201,6 +202,21 @@ agdaPostInstall :: String
 agdaPostInstall = unlines
   [ "postInstall = ''"
   , "  $out/bin/agda -c --no-main $(find $out/share -name Primitive.agda)"
+  , "  $out/bin/agda-mode compile"
+  , "'';"
+  ]
+
+agda25PostInstall :: String
+agda25PostInstall = unlines
+  [ "postInstall = ''"
+  , "  files=($out/share/*-ghc-*/Agda-*/lib/prim/Agda/{Primitive.agda,Builtin/*.agda})"
+  -- Separate loops to avoid internal error
+  , "  for f in \"''${files[@]}\" ; do"
+  , "    $out/bin/agda $f"
+  , "  done"
+  , "  for f in \"''${files[@]}\" ; do"
+  , "    $out/bin/agda -c --no-main $f"
+  , "  done"
   , "  $out/bin/agda-mode compile"
   , "'';"
   ]
