@@ -53,6 +53,7 @@ hooks =
   , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin")))
   , ("gtk3", gtk3Hook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
+  , ("haskell-src-exts == 1.17.1", set doCheck False) -- test suite fails with ghc 8.0.1
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
