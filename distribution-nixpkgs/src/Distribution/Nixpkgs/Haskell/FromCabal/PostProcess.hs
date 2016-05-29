@@ -34,14 +34,14 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
-  [ ("alex",  set (executableDepends . tool . contains (bind "self.happy")) True)
-  , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
-  , ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
+  [ ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("Agda >= 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
+  , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
+  , ("alex",  set (executableDepends . tool . contains (bind "self.happy")) True)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
-  , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
+  , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
@@ -55,29 +55,29 @@ hooks =
   , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin")))
   , ("gtk3", gtk3Hook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
-  , ("haskell-src-exts == 1.17.1", set doCheck False) -- test suite fails with ghc 8.0.1
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
+  , ("haskell-src-exts == 1.17.1", set doCheck False) -- test suite fails with ghc 8.0.1
   , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
-  , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
+  , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
   , ("http-client", set doCheck False)          -- attempts to access the network
-  , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
   , ("http-client-openssl >= 0.2.0.1", set doCheck False) -- attempts to access the network
+  , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
   , ("http-conduit", set doCheck False)         -- attempts to access the network
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
-  , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("js-jquery", set doCheck False)            -- attempts to access the network
+  , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (bind "self.cpphs")) True)
-  , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("mwc-random", set doCheck False)
+  , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("pandoc >= 1.16.0.2", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
@@ -85,17 +85,19 @@ hooks =
   , ("rocksdb-haskell", set (metaSection . platforms) (Set.singleton (Platform X86_64 Linux)))
   , ("sdr", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
+  , ("sharc-timbre", set (metaSection . broken) True) -- The build takes insanely long, i.e. >8 hours.
+  , ("ssh", set doCheck False) -- test suite runs forever, probably can't deal with our lack of network access
   , ("stack", set phaseOverrides stackOverrides . set doCheck False)
   , ("stripe-http-streams", set doCheck False . set (metaSection . broken) False)
-  , ("text", set doCheck False)         -- break infinite recursion
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
+  , ("text", set doCheck False)         -- break infinite recursion
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
-  , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("wxc", wxcHook)
+  , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender"])))
   , ("xmonad", set phaseOverrides xmonadPostInstall)
   , ("zip-archive", over (testDepends . tool) (replace (bind "self.zip") (pkg "zip")))
