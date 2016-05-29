@@ -40,6 +40,7 @@ hooks =
   , ("alex",  set (executableDepends . tool . contains (bind "self.happy")) True)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
   , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
