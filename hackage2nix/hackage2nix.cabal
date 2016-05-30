@@ -30,7 +30,7 @@ executable hackage2nix
     , bytestring
     , Cabal >= 1.22.2
     , containers
-    , deepseq-generics
+    , deepseq >= 1.4
     , directory
     , distribution-nixpkgs
     , filepath

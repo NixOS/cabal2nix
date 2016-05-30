@@ -7,7 +7,7 @@
 
 module Distribution.Nixpkgs.License ( License(..) ) where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Data.Maybe
 import GHC.Generics ( Generic )
 import Internal.PrettyPrinting
@@ -44,4 +44,4 @@ instance Pretty License where
   pPrint (Known x)   = text x
   pPrint (Unknown x) = string (fromMaybe "unknown" x)
 
-instance NFData License where rnf = genericRnf
+instance NFData License

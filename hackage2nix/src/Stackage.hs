@@ -4,7 +4,7 @@
 
 module Stackage where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Control.Exception ( assert )
 import Control.Monad
 import Control.Monad.Par.Combinator
@@ -50,9 +50,9 @@ data Snapshot = Snapshot
   deriving (Show, Generic)
 
 deriving instance Generic SnapshotType
-instance NFData Spec where
-instance NFData Snapshot where
-instance NFData SnapshotType where
+instance NFData Spec
+instance NFData Snapshot
+instance NFData SnapshotType
 
 instance Pretty SnapshotType where
   pPrint STNightly = text "stackage-nightly"

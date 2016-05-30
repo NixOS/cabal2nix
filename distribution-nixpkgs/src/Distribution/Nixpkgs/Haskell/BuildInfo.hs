@@ -9,7 +9,7 @@ module Distribution.Nixpkgs.Haskell.BuildInfo
   )
   where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Data.Set ( Set )
 import Data.Set.Lens
 import GHC.Generics ( Generic )
@@ -35,7 +35,7 @@ instance Monoid BuildInfo where
   mempty = BuildInfo mempty mempty mempty mempty
   BuildInfo w1 x1 y1 z1 `mappend` BuildInfo w2 x2 y2 z2 = BuildInfo (w1 `mappend` w2) (x1 `mappend` x2) (y1 `mappend` y2) (z1 `mappend` z2)
 
-instance NFData BuildInfo where rnf = genericRnf
+instance NFData BuildInfo
 
 pPrintBuildInfo :: String -> BuildInfo -> Doc
 pPrintBuildInfo prefix bi = vcat

@@ -14,7 +14,7 @@ module Distribution.Nixpkgs.Meta
   , allKnownPlatforms
   ) where
 
-import Control.DeepSeq.Generics
+import Control.DeepSeq
 import Control.Lens
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -57,7 +57,7 @@ data Meta = Meta
 
 makeLenses ''Meta
 
-instance NFData Meta where rnf = genericRnf
+instance NFData Meta
 
 instance Pretty Meta where
   pPrint Meta {..} = vcat
