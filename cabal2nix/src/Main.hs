@@ -15,7 +15,7 @@ import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
-import Distribution.Text ( display )
+import Distribution.Text ( display, simpleParse )
 import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix
@@ -41,6 +41,7 @@ data Options = Options
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
   , optFlags :: [String]
+  , optCompilerId :: Maybe String
   , optUrl :: String
   }
   deriving (Show)
@@ -62,6 +63,7 @@ options = Options
           <*> optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
           <*> switch (long "shell" <> help "generate output suitable for nix-shell")
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
+          <*> optional (strOption $ long "compiler-id" <> help "Compiler identifier to use when evaluating cabal file")
           <*> strArgument (metavar "URI")
 
 pinfo :: ParserInfo Options
@@ -97,11 +99,15 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
 
   pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256)
 
-  let deriv :: Derivation
+  let
+      compilerId :: CompilerId
+      compilerId = fromMaybe buildCompilerId (optCompilerId >>= simpleParse)
+
+      deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
                                             (\i -> Just (binding # (i, path # [i])))
                                             buildPlatform
-                                            (unknownCompilerInfo buildCompilerId NoAbiTag)
+                                            (unknownCompilerInfo compilerId NoAbiTag)
                                             (readFlagList optFlags)
                                             []
                                             (pkgCabal pkg)
