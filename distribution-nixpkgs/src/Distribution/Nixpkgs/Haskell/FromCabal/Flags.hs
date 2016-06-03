@@ -41,7 +41,7 @@ configureCabalFlags (PackageIdentifier (PackageName name) version)
  | name == "idris"              = [enable "gmp", enable "ffi", enable "curses"]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "liquid-fixpoint"    = [enable "build-external"]
- | name == "pandoc"             = [enable "https"]
+ | name == "pandoc"             = [enable "https", disable "trypandoc"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
  | name == "xmobar"             = [enable "all_extensions"]
