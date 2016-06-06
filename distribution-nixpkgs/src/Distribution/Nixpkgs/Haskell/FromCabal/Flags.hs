@@ -44,7 +44,18 @@ configureCabalFlags (PackageIdentifier (PackageName name) version)
  | name == "pandoc"             = [enable "https", disable "trypandoc"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
- | name == "xmobar"             = [enable "all_extensions"]
+ | name == "xmobar"             = [ enable "with_xft"
+                                  , enable "with_utf8"
+                                  , enable "with_inotify"
+                                  , enable "with_iwlib"
+                                  , disable "with_mpd" -- https://github.com/vimus/libmpd-haskell/issues/92
+                                  , enable "with_alsa"
+                                  , enable "with_datezone"
+                                  , enable "with_mpris"
+                                  , enable "with_dbus"
+                                  , enable "with_xpm"
+                                  , enable "with_threaded"
+                                  ]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
  | name == "yaml"               = [enable "system-libyaml"]
  | name == "yi"                 = [enable "pango", enable "vty"]
