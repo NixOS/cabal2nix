@@ -99,6 +99,7 @@ hooks =
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
+  , ("Win32", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Windows)))
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender"])))
