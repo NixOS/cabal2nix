@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.13.0.
+-- This file has been generated from package.yaml by hpack version 0.12.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -98,7 +98,6 @@ test-suite spec
     , unordered-containers
     , utf8-string
     , yaml
-    , deepseq >= 1.4
     , distribution-nixpkgs
     , doctest
     , hspec

@@ -61,7 +61,6 @@ tests:
     source-dirs:
       - test
     dependencies:
-      - deepseq >= 1.4
       - distribution-nixpkgs
       - doctest
       - hspec
