@@ -8,7 +8,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
-  , dependencies
+  , dependencies, setupDepends
   )
   where
 
@@ -40,6 +40,7 @@ data Derivation = MkDerivation
   , _isLibrary                  :: Bool
   , _isExecutable               :: Bool
   , _extraFunctionArgs          :: Set Identifier
+  , _setupDepends               :: BuildInfo
   , _libraryDepends             :: BuildInfo
   , _executableDepends          :: BuildInfo
   , _testDepends                :: BuildInfo
@@ -67,6 +68,7 @@ nullDerivation = MkDerivation
   , _isLibrary = error "undefined Derivation.isLibrary"
   , _isExecutable = error "undefined Derivation.isExecutable"
   , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
+  , _setupDepends = error "undefined Derivation.setupDepends"
   , _libraryDepends = error "undefined Derivation.libraryDepends"
   , _executableDepends = error "undefined Derivation.executableDepends"
   , _testDepends = error "undefined Derivation.testDepends"
@@ -87,7 +89,7 @@ nullDerivation = MkDerivation
 
 makeLenses ''Derivation
 
-makeLensesFor [("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies")] ''Derivation
+makeLensesFor [("_setupDepends", "dependencies"), ("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies")] ''Derivation
 
 instance Package Derivation where
   packageId = view pkgid
@@ -106,6 +108,7 @@ instance Pretty Derivation where
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
       , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
+      , onlyIf (_setupDepends /= mempty) $ pPrintBuildInfo "setup" _setupDepends
       , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
       , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
       , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends

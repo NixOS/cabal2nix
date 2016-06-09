@@ -75,6 +75,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & libraryDepends .~ maybe mempty (convertBuildInfo . libBuildInfo) library
     & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
     & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
+    & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags
     & runHaddock .~ maybe True (not . null . exposedModules) library
@@ -125,6 +126,10 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x ]
       & tool .~ Set.fromList [ resolveInHackageThenNixpkgs y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x ]
+
+    convertSetupBuildInfo :: Cabal.SetupBuildInfo -> Nix.BuildInfo
+    convertSetupBuildInfo bi = mempty
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- Cabal.setupDepends bi ]
 
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])
