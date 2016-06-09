@@ -13,7 +13,7 @@ dependencies:
   - aeson
   - base > 4.2 && < 5
   - bytestring
-  - Cabal >= 1.22.2
+  - Cabal > 1.24
   - containers
   - deepseq >= 1.4
   - directory

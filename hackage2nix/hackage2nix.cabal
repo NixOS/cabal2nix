@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.12.0.
+-- This file has been generated from package.yaml by hpack version 0.14.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -28,7 +28,7 @@ executable hackage2nix
       aeson
     , base < 5
     , bytestring
-    , Cabal >= 1.22.2
+    , Cabal > 1.24
     , containers
     , deepseq >= 1.4
     , directory

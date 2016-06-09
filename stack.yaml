@@ -1,6 +1,6 @@
 # cabal2nix/stack.yaml
 
-resolver: lts-6.2
+resolver: nightly-2016-06-09
 
 packages:
   - distribution-nixpkgs

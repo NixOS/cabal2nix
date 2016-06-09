@@ -12,7 +12,7 @@ ghc-options:            -Wall
 dependencies:
   - ansi-wl-pprint
   - base < 5
-  - Cabal >= 1.22.2
+  - Cabal > 1.24
   - containers
   - distribution-nixpkgs
   - language-nix
