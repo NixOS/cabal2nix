@@ -221,7 +221,7 @@ agdaPostInstall = unlines
 agda25PostInstall :: String
 agda25PostInstall = unlines
   [ "postInstall = ''"
-  , "  files=($out/share/*-ghc-*/Agda-*/lib/prim/Agda/{Primitive.agda,Builtin/*.agda})"
+  , "  files=(\"$out/share/\"*\"-ghc-\"*\"/Agda-\"*\"/lib/prim/Agda/\"{Primitive.agda,Builtin\"/\"*.agda})"
   -- Separate loops to avoid internal error
   , "  for f in \"''${files[@]}\" ; do"
   , "    $out/bin/agda $f"
