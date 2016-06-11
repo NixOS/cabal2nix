@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           cabal2nix
-version:        20160406
+version:        20160611
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions.
 category:       Distribution

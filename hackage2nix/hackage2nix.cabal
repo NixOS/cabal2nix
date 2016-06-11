@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           hackage2nix
-version:        20160406
+version:        20160611
 synopsis:       Generate hackage-packages.nix.
 description:    Generate hackage-packages.nix.
 category:       Distribution
