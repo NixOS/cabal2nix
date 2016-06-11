@@ -11,7 +11,7 @@ ghc-options:            -Wall
 
 dependencies:
   - aeson
-  - base < 5
+  - base > 4.2 && < 5
   - bytestring
   - Cabal >= 1.22.2
   - containers

@@ -25,7 +25,7 @@ library
   ghc-options: -Wall
   build-depends:
       aeson
-    , base < 5
+    , base > 4.2 && < 5
     , bytestring
     , Cabal >= 1.22.2
     , containers
@@ -78,7 +78,7 @@ test-suite spec
   ghc-options: -Wall
   build-depends:
       aeson
-    , base < 5
+    , base > 4.2 && < 5
     , bytestring
     , Cabal >= 1.22.2
     , containers
