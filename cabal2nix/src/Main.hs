@@ -18,7 +18,7 @@ import Distribution.System
 import Distribution.Text ( display, simpleParse )
 import Language.Nix
 import Options.Applicative
-import Paths_cabal2nix
+import Paths_cabal2nix ( version )
 import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
