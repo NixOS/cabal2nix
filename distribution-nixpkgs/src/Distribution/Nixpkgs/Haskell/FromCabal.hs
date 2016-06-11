@@ -35,16 +35,19 @@ type NixpkgsResolver = Identifier -> Maybe Binding
 
 fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo ->  FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
 fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints descr'' =
+  -- TODO: This logic needs simplification and cleanup. :-(
   case finalize haskellResolver of
-    Left mismatch -> case finalize jailbrokenResolver of
-                       Left missing -> case finalize (const True) of
-                                         Left missing' -> error $ "finalizePackageDescription complains about missing dependencies \
-                                                                  \even though we told it that everything exists: " ++ show missing'
-                                         Right (descr,_) -> fromPackageDescription haskellResolver nixpkgsResolver mismatch missing flags descr
-                       Right (descr,_) -> fromPackageDescription haskellResolver nixpkgsResolver mismatch [] flags descr
-    Right (descr,_) -> fromPackageDescription haskellResolver nixpkgsResolver [] [] flags descr
-
+    Left _ -> case finalize jailbrokenResolver of
+                Left missing -> case finalize (const True) of
+                                  Left missing' -> error $ "finalizePackageDescription complains about missing dependencies \
+                                                           \even though we told it that everything exists: " ++ show missing'
+                                  Right (descr_,_) -> fromPackageDescription haskellResolver nixpkgsResolver True missing flags descr_
+                Right _      -> fromPackageDescription haskellResolver nixpkgsResolver True [] flags descr
+    Right _ -> fromPackageDescription haskellResolver nixpkgsResolver False [] flags descr
   where
+    descr :: PackageDescription
+    Right (descr,_) = finalize jailbrokenResolver
+
     -- We have to call the Cabal finalizer several times with different resolver functions, and this
     -- convenience function makes our code shorter.
     finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
@@ -64,7 +67,7 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
     enableTest :: TestSuite -> TestSuite
     enableTest t = t { testEnabled = True }
 
-fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
+fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> Bool -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
 fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
@@ -79,7 +82,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & configureFlags .~ mempty
     & cabalFlags .~ flags
     & runHaddock .~ maybe True (not . null . exposedModules) library
-    & jailbreak .~ not (null mismatchedDeps && null missingDeps)
+    & jailbreak .~ (mismatchedDeps || not (null missingDeps))
     & doCheck .~ True
     & testTarget .~ mempty
     & hyperlinkSource .~ True
