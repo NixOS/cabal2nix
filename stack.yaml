@@ -6,3 +6,6 @@ packages:
   - distribution-nixpkgs
   - cabal2nix
   - hackage2nix
+
+extra-deps:
+  - stackage-types-1.2.0
