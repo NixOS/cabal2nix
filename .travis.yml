@@ -11,7 +11,6 @@ before_install:
   - curl -L https://github.com/commercialhaskell/stack/releases/download/v1.1.2/stack-1.1.2-linux-x86_64.tar.gz | tar xfz -
   - install -m 555 -D stack-1.1.2-linux-x86_64/stack $HOME/.local/bin/stack
   - export PATH=$HOME/.local/bin:$PATH
-  - rm -v */package.yaml    # prevent stack from trying to re-generate the cabal files
   - stack setup
 
 install:
