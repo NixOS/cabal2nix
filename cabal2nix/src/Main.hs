@@ -7,23 +7,23 @@ import Control.Exception ( bracket )
 import Control.Lens
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
+import qualified Distribution.Compat.ReadP as P
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
+import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
-import Distribution.Text ( display, simpleParse )
+import Distribution.Text
 import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix ( version )
 import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
--- import Text.Show.Pretty
-import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 
 data Options = Options
   { optSha256 :: Maybe String
@@ -41,7 +41,8 @@ data Options = Options
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
   , optFlags :: [String]
-  , optCompilerId :: Maybe String
+  , optCompiler :: CompilerId
+  , optSystem :: Platform
   , optUrl :: String
   }
   deriving (Show)
@@ -63,8 +64,20 @@ options = Options
           <*> optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
           <*> switch (long "shell" <> help "generate output suitable for nix-shell")
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
-          <*> optional (strOption $ long "compiler-id" <> help "Compiler identifier to use when evaluating cabal file")
+          <*> option (readP parse) (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith display)
+          <*> option (readP parsePlatform) (long "system" <> help "target system to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> strArgument (metavar "URI")
+
+readP :: P.ReadP a a -> ReadM a
+readP p = eitherReader $ \s -> case [ r' | (r',"") <- P.readP_to_S p s ] of
+                                    (r:_) -> Right r
+                                    _     -> Left ("invalid value " ++ show s)
+
+parsePlatform :: P.ReadP r Platform
+parsePlatform = do arch <- P.choice [P.string "i686" >> return I386, P.string "x86_64" >> return X86_64]
+                   _ <- P.char '-'
+                   os <- P.choice [P.string "linux" >> return Linux, P.string "darwin" >> return OSX]
+                   return (Platform arch os)
 
 pinfo :: ParserInfo Options
 pinfo = info
@@ -100,14 +113,11 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256)
 
   let
-      compilerId :: CompilerId
-      compilerId = fromMaybe buildCompilerId (optCompilerId >>= simpleParse)
-
       deriv :: Derivation
       deriv = fromGenericPackageDescription (const True)
                                             (\i -> Just (binding # (i, path # [i])))
-                                            buildPlatform
-                                            (unknownCompilerInfo compilerId NoAbiTag)
+                                            optSystem
+                                            (unknownCompilerInfo optCompiler NoAbiTag)
                                             (readFlagList optFlags)
                                             []
                                             (pkgCabal pkg)
