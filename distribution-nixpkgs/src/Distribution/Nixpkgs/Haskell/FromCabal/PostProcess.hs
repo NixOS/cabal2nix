@@ -58,12 +58,12 @@ hooks =
   , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
-  , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin")))
+  , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OSX)))
   , ("gtk3", gtk3Hook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts == 1.17.1", set doCheck False) -- test suite fails with ghc 8.0.1
-  , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OtherOS "darwin")))
+  , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OSX)))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
@@ -141,7 +141,7 @@ haddockHook = set doCheck False
 gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides
              . over (executableDepends . system) (Set.union buildInputs)
-             . over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OtherOS "darwin"))
+             . over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OSX))
   where
     gitAnnexOverrides = unlines
       [ "preConfigure = \"export HOME=$TEMPDIR; patchShebangs .\";"

@@ -91,5 +91,5 @@ nullMeta = Meta
 
 allKnownPlatforms :: Set Platform
 allKnownPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
-                                 , Platform X86_64 (OtherOS "darwin")
+                                 , Platform X86_64 OSX
                                  ]
