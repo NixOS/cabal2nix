@@ -2,24 +2,26 @@ module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( Package(..), getPackage, sourceFromHackage
   ) where
 
-import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
+import qualified Data.ByteString.Lazy.Char8 as BS8
+import Data.Digest.Pure.SHA ( sha256, showDigest )
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe
 import Data.Version
+import Distribution.Hackage.DB.Parsed
 import Distribution.Nixpkgs.Fetch
+import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
+import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
-import qualified Distribution.PackageDescription.Parse as Cabal
-import qualified Distribution.ParseUtils as ParseUtils
 import Distribution.Text ( simpleParse )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
-import System.IO ( hPutStrLn, stderr, hPutStr, openFile, IOMode(ReadMode), hSetEncoding, utf8, hGetContents )
+import System.IO ( hPutStrLn, stderr, hPutStr )
 
 data Package = Package
   { pkgSource :: DerivationSource
@@ -143,14 +145,13 @@ cabalFromFile failHard file =
   -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
   -- the reading of the file, so we will always catch the expression here.
   MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
-    inputHandle <- openFile file ReadMode
-    hSetEncoding inputHandle utf8
-    content <- hGetContents inputHandle
-    case Cabal.parsePackageDescription content of
-      Cabal.ParseFailed e | failHard -> do
-        let (line, err) = ParseUtils.locatedErrorMsg e
-            msg = maybe "" ((++ ": ") . show) line ++ err
-        hPutStrLn stderr $ "*** error parsing cabal file: " ++ msg
-        exitFailure
-      Cabal.ParseFailed _  -> return Nothing
-      Cabal.ParseOk     _ a -> return (Just a)
+    buf <- BS8.readFile file
+    let hash = showDigest (sha256 buf)
+    case parsePackage' buf of
+      Left msg    -> if failHard
+                     then fail ("*** cannot parse " ++ show file ++ ": " ++ msg)
+                     else return Nothing
+      Right pkg -> do return $ Just $ pkg { packageDescription = (packageDescription pkg) {
+                                               customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg)
+                                            }
+                                          }
