@@ -134,7 +134,7 @@ fetchWith (supportsRev, kind, addArgs) source = do
             buf'   = BS.unlines (reverse ls)
         case length ls of
           0 -> return Nothing
-          1 -> return (Just (DerivationSource kind (sourceUrl source) "" (BS.unpack (head (ls)))  , sourceUrl source))
+          1 -> return (Just (DerivationSource kind (sourceUrl source) "" (BS.unpack (head ls))  , sourceUrl source))
           _ -> case eitherDecode buf' of
                  Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
                  Right ds -> return (Just (ds { derivKind = kind }, BS.unpack l))
