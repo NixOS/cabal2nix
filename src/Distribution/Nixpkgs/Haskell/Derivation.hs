@@ -13,21 +13,20 @@ module Distribution.Nixpkgs.Haskell.Derivation
   where
 
 import Control.DeepSeq
+import Control.Lens
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Set.Lens
 import Distribution.Nixpkgs.Fetch
+import Distribution.Nixpkgs.Haskell.BuildInfo
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
-import Distribution.Nixpkgs.Haskell.BuildInfo
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
 import GHC.Generics ( Generic )
 import Language.Nix
-import Text.PrettyPrint.HughesPJClass
-import Control.Lens
-import Internal.PrettyPrinting
+import Language.Nix.PrettyPrinting
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of

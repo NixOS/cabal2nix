@@ -20,3 +20,5 @@ TAGS
 # ignore stack build directory
 
 .stack-work
+/src/highlight.js
+/src/style.css

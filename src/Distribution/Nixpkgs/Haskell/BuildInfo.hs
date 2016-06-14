@@ -10,13 +10,12 @@ module Distribution.Nixpkgs.Haskell.BuildInfo
   where
 
 import Control.DeepSeq
+import Control.Lens
 import Data.Set ( Set )
 import Data.Set.Lens
 import GHC.Generics ( Generic )
-import Text.PrettyPrint.HughesPJClass
 import Language.Nix
-import Control.Lens
-import Internal.PrettyPrinting
+import Language.Nix.PrettyPrinting
 
 data BuildInfo = BuildInfo
   { _haskell   :: Set Binding

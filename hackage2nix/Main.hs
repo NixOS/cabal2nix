@@ -32,7 +32,7 @@ import Distribution.Version
 import HackageGit
 import Language.Nix
 import Options.Applicative
-import qualified Paths_hackage2nix as Main
+import qualified Paths_cabal2nix as Main
 import Stackage
 import System.FilePath
 import System.IO

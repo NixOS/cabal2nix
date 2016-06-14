@@ -10,22 +10,33 @@ category:               Distribution
 ghc-options:            -Wall
 
 dependencies:
+  - aeson
   - ansi-wl-pprint
   - base < 5
+  - bytestring
   - Cabal > 1.24
   - containers
+  - deepseq >= 1.4
+  - directory
   - distribution-nixpkgs
+  - filepath
+  - hackage-db
   - language-nix
   - lens
   - optparse-applicative
   - pretty >= 1.1.2
   - pretty-show
+  - process
+  - SHA
+  - split
   - text
+  - transformers
   - yaml
 
 library:
   source-dirs: src
   exposed-modules:
+    - Distribution.Nixpkgs.Fetch
     - Distribution.Nixpkgs.Haskell
     - Distribution.Nixpkgs.Haskell.BuildInfo
     - Distribution.Nixpkgs.Haskell.Constraint
@@ -36,7 +47,6 @@ library:
     - Distribution.Nixpkgs.Haskell.FromCabal.License
     - Distribution.Nixpkgs.Haskell.FromCabal.Name
     - Distribution.Nixpkgs.Haskell.FromCabal.Normalize
-    - Distribution.Nixpkgs.Haskell.FromCabal.Platform
     - Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
     - Distribution.Nixpkgs.Haskell.Hackage
     - Distribution.Nixpkgs.Haskell.OrphanInstances
@@ -45,6 +55,24 @@ library:
 executables:
   cabal2nix:
     main:               Main.hs
-    source-dirs:        src
+    source-dirs:        cabal2nix
     other-modules:
       - Paths_cabal2nix
+    dependencies:
+      - cabal2nix
+
+  hackage2nix:
+    main:               Main.hs
+    source-dirs:        hackage2nix
+    other-modules:
+      - Paths_cabal2nix
+      - HackageGit
+      - Stackage
+    dependencies:
+      - cabal2nix
+      - monad-par
+      - monad-par-extras
+      - mtl
+      - stackage-types
+      - time
+      - utf8-string
