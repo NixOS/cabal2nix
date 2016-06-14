@@ -1,10 +1,10 @@
 name:                   distribution-nixpkgs
 version:                "1"
-synopsis:               Data types and functions to manipulate the Nixpkgs distribution.
-description:            Data types and useful functions to represent and manipulate the Nixpkgs distribution.
+synopsis:               Types and functions to manipulate the Nixpkgs distribution.
+description:            Types and functions to represent, query, and manipulate the Nixpkgs distribution.
 maintainer:             Peter Simons <simons@cryp.to>
 license:                BSD3
-github:                 nixos/cabal2nix
+github:                 peti/distribution-nixpkgs
 category:               Distribution
 
 ghc-options:            -Wall
@@ -16,44 +16,21 @@ dependencies:
   - Cabal > 1.24
   - containers
   - deepseq >= 1.4
-  - directory
-  - filepath
-  - hackage-db
-  - hashable
   - language-nix > 2
   - lens
   - pretty >= 1.1.2
   - process
-  - SHA
   - split
-  - text
-  - transformers
-  - unordered-containers
-  - utf8-string
-  - yaml
 
 library:
-  source-dirs:       src
+  source-dirs: src
   exposed-modules:
-    - Distribution.Nixpkgs.Fetch
-    - Distribution.Nixpkgs.Haskell
-    - Distribution.Nixpkgs.Haskell.BuildInfo
-    - Distribution.Nixpkgs.Haskell.Constraint
-    - Distribution.Nixpkgs.Haskell.Derivation
-    - Distribution.Nixpkgs.Haskell.FromCabal
-    - Distribution.Nixpkgs.Haskell.FromCabal.Configuration
-    - Distribution.Nixpkgs.Haskell.FromCabal.Flags
-    - Distribution.Nixpkgs.Haskell.FromCabal.License
-    - Distribution.Nixpkgs.Haskell.FromCabal.Name
-    - Distribution.Nixpkgs.Haskell.FromCabal.Normalize
-    - Distribution.Nixpkgs.Haskell.FromCabal.Platform
-    - Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
-    - Distribution.Nixpkgs.Haskell.Hackage
-    - Distribution.Nixpkgs.Haskell.OrphanInstances
-    - Distribution.Nixpkgs.Haskell.PackageSourceSpec
     - Distribution.Nixpkgs.License
     - Distribution.Nixpkgs.Meta
     - Distribution.Nixpkgs.PackageMap
+  other-modules:
+    - Internal.PrettyPrinting
+    - Internal.OrphanInstances
 
 tests:
   spec:

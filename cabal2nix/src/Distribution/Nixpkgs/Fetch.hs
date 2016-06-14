@@ -2,6 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DeriveGeneric #-}
+
 module Distribution.Nixpkgs.Fetch
   ( Source(..)
   , Hash(..)

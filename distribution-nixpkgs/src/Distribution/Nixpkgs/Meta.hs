@@ -18,12 +18,11 @@ import Control.DeepSeq
 import Control.Lens
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Distribution.Nixpkgs.Haskell.FromCabal.Platform
-import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.License
 import Distribution.System
 import GHC.Generics ( Generic )
 import Internal.PrettyPrinting
+import Internal.OrphanInstances ( )
 import Language.Nix.Identifier
 
 -- | A representation of the @meta@ section used in Nix expressions.
@@ -93,3 +92,9 @@ allKnownPlatforms :: Set Platform
 allKnownPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
                                  , Platform X86_64 OSX
                                  ]
+
+fromCabalPlatform :: Platform -> String
+fromCabalPlatform (Platform I386 Linux)   = "\"i686-linux\""
+fromCabalPlatform (Platform X86_64 Linux) = "\"x86_64-linux\""
+fromCabalPlatform (Platform X86_64 OSX)   = "\"x86_64-darwin\""
+fromCabalPlatform p                       = error ("fromCabalPlatform: invalid Nix platform" ++ show p)
