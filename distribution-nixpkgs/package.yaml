@@ -29,8 +29,8 @@ library:
     - Distribution.Nixpkgs.License
     - Distribution.Nixpkgs.Meta
     - Distribution.Nixpkgs.PackageMap
+    - Language.Nix.PrettyPrinting
   other-modules:
-    - Internal.PrettyPrinting
     - Internal.OrphanInstances
 
 tests:

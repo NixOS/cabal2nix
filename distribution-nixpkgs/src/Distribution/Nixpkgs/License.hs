@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+
 {- |
    Known licenses in Nix expressions are represented using the
    attributes defined in @pkgs\/lib\/licenses.nix@, and unknown licenses
@@ -10,7 +11,7 @@ module Distribution.Nixpkgs.License ( License(..) ) where
 import Control.DeepSeq
 import Data.Maybe
 import GHC.Generics ( Generic )
-import Internal.PrettyPrinting
+import Language.Nix.PrettyPrinting
 
 -- | The representation for licenses used in Nix derivations. Known
 -- licenses are Nix expressions -- such as @stdenv.lib.licenses.bsd3@
