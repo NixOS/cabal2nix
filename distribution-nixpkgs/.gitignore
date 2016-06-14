@@ -1,0 +1,5 @@
+# ignore cabal build files
+
+/.cabal-sandbox/*
+/cabal.sandbox.config
+/dist

@@ -1,0 +1,70 @@
+-- This file has been generated from package.yaml by hpack version 0.14.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           distribution-nixpkgs
+version:        1
+synopsis:       Types and functions to manipulate the Nixpkgs distribution.
+description:    Types and functions to represent, query, and manipulate the Nixpkgs distribution.
+category:       Distribution
+homepage:       https://github.com/peti/distribution-nixpkgs#readme
+bug-reports:    https://github.com/peti/distribution-nixpkgs/issues
+maintainer:     Peter Simons <simons@cryp.to>
+license:        BSD3
+license-file:   LICENSE
+tested-with:    GHC > 7.10 && < 8.1
+build-type:     Simple
+cabal-version:  >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/peti/distribution-nixpkgs
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base > 4.2 && < 5
+    , bytestring
+    , Cabal > 1.24
+    , containers
+    , deepseq >= 1.4
+    , language-nix > 2
+    , lens
+    , pretty >= 1.1.2
+    , process
+    , split
+  exposed-modules:
+      Distribution.Nixpkgs.License
+      Distribution.Nixpkgs.Meta
+      Distribution.Nixpkgs.PackageMap
+  other-modules:
+      Internal.PrettyPrinting
+      Internal.OrphanInstances
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base > 4.2 && < 5
+    , bytestring
+    , Cabal > 1.24
+    , containers
+    , deepseq >= 1.4
+    , language-nix > 2
+    , lens
+    , pretty >= 1.1.2
+    , process
+    , split
+    , distribution-nixpkgs
+    , doctest
+    , hspec
+    , QuickCheck
+  default-language: Haskell2010

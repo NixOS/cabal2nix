@@ -1,0 +1,45 @@
+name:                   distribution-nixpkgs
+version:                "1"
+synopsis:               Types and functions to manipulate the Nixpkgs distribution.
+description:            Types and functions to represent, query, and manipulate the Nixpkgs distribution.
+maintainer:             Peter Simons <simons@cryp.to>
+license:                BSD3
+github:                 peti/distribution-nixpkgs
+category:               Distribution
+tested-with:            GHC > 7.10 && < 8.1
+
+ghc-options:            -Wall
+
+dependencies:
+  - aeson
+  - base > 4.2 && < 5
+  - bytestring
+  - Cabal > 1.24
+  - containers
+  - deepseq >= 1.4
+  - language-nix > 2
+  - lens
+  - pretty >= 1.1.2
+  - process
+  - split
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Distribution.Nixpkgs.License
+    - Distribution.Nixpkgs.Meta
+    - Distribution.Nixpkgs.PackageMap
+  other-modules:
+    - Internal.PrettyPrinting
+    - Internal.OrphanInstances
+
+tests:
+  spec:
+    main: Main.hs
+    source-dirs:
+      - test
+    dependencies:
+      - distribution-nixpkgs
+      - doctest
+      - hspec
+      - QuickCheck
