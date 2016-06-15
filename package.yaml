@@ -77,3 +77,7 @@ executables:
       - stackage-types
       - time
       - utf8-string
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
