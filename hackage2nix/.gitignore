@@ -1,6 +1,0 @@
-# hackage2nix ususally needs those two repositories around
-
-/hackage/*
-/lts-haskell/*
-/nixpkgs/*
-/stackage-nightly/*

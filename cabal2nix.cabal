@@ -102,7 +102,7 @@ executable hackage2nix
   main-is: Main.hs
   hs-source-dirs:
       hackage2nix
-  ghc-options: -Wall
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
     , ansi-wl-pprint

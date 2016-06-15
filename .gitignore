@@ -1,4 +1,4 @@
-# ignore build Cabal build files
+## ignore build Cabal build files
 
 .cabal-sandbox
 Setup
@@ -22,3 +22,10 @@ TAGS
 .stack-work
 /src/highlight.js
 /src/style.css
+
+# hackage2nix ususally needs those two repositories around
+
+/hackage/*
+/lts-haskell/*
+/nixpkgs/*
+/stackage-nightly/*

@@ -48,8 +48,7 @@ gzip -k "$TAR"
 hackage=$(git rev-parse --verify HEAD)
 cd ..
 
-stack --verbosity 0 build --test hackage2nix
-stack --verbosity 0 exec hackage2nix -- --nixpkgs="$PWD/nixpkgs" +RTS -M4G -RTS
+cabal run -v0 hackage2nix -- --nixpkgs="$PWD/nixpkgs" +RTS -M4G -RTS
 
 cd nixpkgs
 git add pkgs/development/haskell-modules
