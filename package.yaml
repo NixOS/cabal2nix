@@ -4,8 +4,10 @@ synopsis:               Convert Cabal files into Nix build instructions.
 description:            Convert Cabal files into Nix build instructions.
 maintainer:             Peter Simons <simons@cryp.to>
 license:                BSD3
+license-file:           LICENSE
 github:                 nixos/cabal2nix
 category:               Distribution
+tested-with:            GHC > 7.10 && < 8.1
 
 ghc-options:            -Wall
 
@@ -25,7 +27,6 @@ dependencies:
   - lens
   - optparse-applicative
   - pretty >= 1.1.2
-  - pretty-show
   - process
   - SHA
   - split

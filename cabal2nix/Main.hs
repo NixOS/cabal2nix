@@ -153,7 +153,6 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               , text "  if pkgs.lib.inNixShell then drv.env else drv"
               ]
 
-  -- putStrLn $ ppShow deriv
   print (if optNixShellOutput then shell else pPrint deriv)
 
 readFlagList :: [String] -> FlagAssignment
