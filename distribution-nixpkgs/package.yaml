@@ -5,7 +5,7 @@ description:            Types and functions to represent, query, and manipulate 
 maintainer:             Peter Simons <simons@cryp.to>
 license:                BSD3
 github:                 peti/distribution-nixpkgs
-category:               Distribution
+category:               Distribution, Nix
 tested-with:            GHC > 7.10 && < 8.1
 
 ghc-options:            -Wall
