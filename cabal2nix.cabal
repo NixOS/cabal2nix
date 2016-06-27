@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.14.0.
+-- This file has been generated from package.yaml by hpack version 0.14.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -6,7 +6,7 @@ name:           cabal2nix
 version:        20160613
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions.
-category:       Distribution
+category:       Distribution, Nix
 homepage:       https://github.com/nixos/cabal2nix#readme
 bug-reports:    https://github.com/nixos/cabal2nix/issues
 maintainer:     Peter Simons <simons@cryp.to>

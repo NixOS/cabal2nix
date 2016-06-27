@@ -6,7 +6,7 @@ maintainer:             Peter Simons <simons@cryp.to>
 license:                BSD3
 license-file:           LICENSE
 github:                 nixos/cabal2nix
-category:               Distribution
+category:               Distribution, Nix
 tested-with:            GHC > 7.10 && < 8.1
 
 ghc-options:            -Wall
