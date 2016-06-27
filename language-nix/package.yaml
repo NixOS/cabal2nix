@@ -6,7 +6,7 @@ author:                 Peter Simons
 maintainer:             simons@cryp.to
 license:                BSD3
 github:                 peti/language-nix
-category:               Distribution, Language
+category:               Distribution, Language, Nix
 tested-with:            GHC > 7.6 && < 8.1
 
 ghc-options:            -Wall
