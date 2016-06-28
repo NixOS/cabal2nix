@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           distribution-nixpkgs
-version:        1
+version:        1.0.0.1
 synopsis:       Types and functions to manipulate the Nixpkgs distribution.
 description:    Types and functions to represent, query, and manipulate the Nixpkgs distribution.
 category:       Distribution, Nix

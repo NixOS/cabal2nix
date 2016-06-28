@@ -1,5 +1,5 @@
 name:                   distribution-nixpkgs
-version:                "1"
+version:                1.0.0.1
 synopsis:               Types and functions to manipulate the Nixpkgs distribution.
 description:            Types and functions to represent, query, and manipulate the Nixpkgs distribution.
 maintainer:             Peter Simons <simons@cryp.to>
