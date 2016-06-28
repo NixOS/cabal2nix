@@ -1,3 +1,5 @@
+{-# LANGUAGE PackageImports #-}
+
 -- | Internal pretty-printing helpers for Nix expressions.
 
 module Language.Nix.PrettyPrinting
@@ -20,7 +22,7 @@ import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Text ( Text, disp )
-import Text.PrettyPrint.HughesPJClass
+import "pretty" Text.PrettyPrint.HughesPJClass
 
 attr :: String -> Doc -> Doc
 attr n v = text n <+> equals <+> v <> semi
