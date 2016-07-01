@@ -55,6 +55,7 @@ hooks =
   , ("gi-gobject", giPhaseOverrides)    -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giPhaseOverrides)      -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
