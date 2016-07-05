@@ -6,6 +6,7 @@ name:           cabal2nix
 version:        2.0
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
+                .
                 > nix-env -i cabal2nix
 category:       Distribution, Nix
 stability:      stable
