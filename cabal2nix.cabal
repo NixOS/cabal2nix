@@ -3,12 +3,55 @@
 -- see: https://github.com/sol/hpack
 
 name:           cabal2nix
-version:        20160613
+version:        2.0
 synopsis:       Convert Cabal files into Nix build instructions.
-description:    Convert Cabal files into Nix build instructions.
+description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
+                > nix-env -i cabal2nix
 category:       Distribution, Nix
 homepage:       https://github.com/nixos/cabal2nix#readme
 bug-reports:    https://github.com/nixos/cabal2nix/issues
+author:         Peter Simons,
+                Andres Loeh,
+                Benno Fünfstück,
+                Mateusz Kowalczyk,
+                Mathijs Kwik,
+                Michael Alan Dorman,
+                Shea Levy,
+                Dmitry Malikov,
+                Eric Seidel,
+                Nikolay Amiantov,
+                Aycan iRiCAN,
+                John Wiegley,
+                Philipp Hausmann,
+                Spencer Janssen,
+                William Casarin,
+                Adam Vogt,
+                Bryan Gardiner,
+                Corey O'Connor,
+                Cray Elliott,
+                Felix Kunzmann,
+                Gabriel Ebner,
+                Gergely Risko,
+                John Albietz,
+                John Chee,
+                Jussi Maki,
+                Mark Laws,
+                Mark Wotton,
+                Matvey Aksenov,
+                Nicolas Rolland,
+                Oliver Charles,
+                Pascal Wittmann,
+                Patrick John Wheeler,
+                Raymond Gauthier,
+                Renzo Carbonara,
+                Sibi,
+                Tanner Doshier,
+                Tom Hunger,
+                Viktar Basharymau,
+                danbst,
+                karsten gebbert,
+                laMudri,
+                Александр Цамутали
 maintainer:     Peter Simons <simons@cryp.to>
 license:        BSD3
 license-file:   LICENSE

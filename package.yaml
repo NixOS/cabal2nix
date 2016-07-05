@@ -1,13 +1,60 @@
-name:                   cabal2nix
-version:                "20160613"
-synopsis:               Convert Cabal files into Nix build instructions.
-description:            Convert Cabal files into Nix build instructions.
-maintainer:             Peter Simons <simons@cryp.to>
-license:                BSD3
-license-file:           LICENSE
-github:                 nixos/cabal2nix
-category:               Distribution, Nix
-tested-with:            GHC > 7.10 && < 8.1
+name:           cabal2nix
+version:        "2.0"
+synopsis:       Convert Cabal files into Nix build instructions.
+author:
+  - Peter Simons
+  - Andres Loeh
+  - Benno Fünfstück
+  - Mateusz Kowalczyk
+  - Mathijs Kwik
+  - Michael Alan Dorman
+  - Shea Levy
+  - Dmitry Malikov
+  - Eric Seidel
+  - Nikolay Amiantov
+  - Aycan iRiCAN
+  - John Wiegley
+  - Philipp Hausmann
+  - Spencer Janssen
+  - William Casarin
+  - Adam Vogt
+  - Bryan Gardiner
+  - Corey O'Connor
+  - Cray Elliott
+  - Felix Kunzmann
+  - Gabriel Ebner
+  - Gergely Risko
+  - John Albietz
+  - John Chee
+  - Jussi Maki
+  - Mark Laws
+  - Mark Wotton
+  - Matvey Aksenov
+  - Nicolas Rolland
+  - Oliver Charles
+  - Pascal Wittmann
+  - Patrick John Wheeler
+  - Raymond Gauthier
+  - Renzo Carbonara
+  - Sibi
+  - Tanner Doshier
+  - Tom Hunger
+  - Viktar Basharymau
+  - danbst
+  - karsten gebbert
+  - laMudri
+  - Александр Цамутали
+maintainer:     Peter Simons <simons@cryp.to>
+license:        BSD3
+license-file:   LICENSE
+github:         nixos/cabal2nix
+category:       Distribution, Nix
+tested-with:    GHC > 7.10 && < 8.1
+description: >
+  Convert Cabal files into Nix build instructions. Users of Nix can install the
+  latest version by running:
+
+  > nix-env -i cabal2nix
 
 ghc-options:            -Wall
 
