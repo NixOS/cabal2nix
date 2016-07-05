@@ -49,6 +49,7 @@ license:        BSD3
 license-file:   LICENSE
 github:         nixos/cabal2nix
 category:       Distribution, Nix
+stability:      stable
 tested-with:    GHC > 7.10 && < 8.1
 description: >
   Convert Cabal files into Nix build instructions. Users of Nix can install the
