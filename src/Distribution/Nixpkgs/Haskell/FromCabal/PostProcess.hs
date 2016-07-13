@@ -49,11 +49,12 @@ hooks =
   , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
-  , ("gi-cairo", giPhaseOverrides)      -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gio", giPhaseOverrides)        -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-glib", giPhaseOverrides)       -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gobject", giPhaseOverrides)    -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-pango", giPhaseOverrides)      -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-cairo", giPhaseOverrides)                          -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gio", giPhaseOverrides)                            -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-glib", giPhaseOverrides)                           -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gobject", giPhaseOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-javascriptcore", giJavascriptCorePhaseOverrides)   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-pango", giPhaseOverrides)                          -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex", gitAnnexHook)
@@ -248,6 +249,11 @@ giPhaseOverrides :: Derivation -> Derivation
 giPhaseOverrides
   = set phaseOverrides "preConfigure = \"export HASKELL_GI_GIR_SEARCH_PATH=${gobjectIntrospection.dev}/share/gir-1.0\";"
   . set (libraryDepends . pkgconfig . contains (pkg "gobjectIntrospection")) True
+
+giJavascriptCorePhaseOverrides :: Derivation -> Derivation
+giJavascriptCorePhaseOverrides
+  = set phaseOverrides "preConfigure = \"export HASKELL_GI_GIR_SEARCH_PATH=${webkitgtk}/share/gir-1.0\";"
+  . set (libraryDepends . pkgconfig . contains (pkg "webkitgtk")) True
 
 {-
 postProcess' :: Derivation -> Derivation
