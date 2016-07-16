@@ -7,6 +7,7 @@ import Control.Exception ( bracket )
 import Control.Lens
 import Data.Maybe ( fromMaybe )
 import qualified Data.Set as Set
+import Data.String
 import qualified Distribution.Compat.ReadP as P
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
@@ -130,7 +131,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
               & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
 --            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
-              & extraFunctionArgs %~ Set.union (Set.fromList ("stdenv":map (review ident) optExtraArgs))
+              & extraFunctionArgs %~ Set.union (Set.fromList ("inherit stdenv":map (fromString . ("inherit " ++)) optExtraArgs))
 
       shell :: Doc
       shell = vcat
