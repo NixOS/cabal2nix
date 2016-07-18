@@ -65,8 +65,8 @@ hooks =
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts == 1.17.1", set doCheck False) -- test suite fails with ghc 8.0.1
-  , ("hfsevents", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OSX)))
   , ("HFuse", set phaseOverrides hfusePreConfigure)
+  , ("hfsevents", hfseventsOverrides)
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
@@ -263,6 +263,14 @@ giCairoPhaseOverrides = over phaseOverrides (++'\n':txt) . giPhaseOverrides
                   , "  setupCompileFlags+=\" $(pkg-config --libs cairo-gobject)\""
                   , "'';"
                   ]
+
+hfseventsOverrides :: Derivation -> Derivation
+hfseventsOverrides
+  = set isLibrary True
+  . over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OSX))
+  . set (libraryDepends . tool . contains (bind "pkgs.darwin.apple_sdk.frameworks.CoreServices")) True
+  . set (libraryDepends . system . contains (bind "pkgs.darwin.apple_sdk.frameworks.Cocoa")) True
+  . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
 
 {-
 postProcess' :: Derivation -> Derivation
