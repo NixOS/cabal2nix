@@ -4,11 +4,8 @@
 
 module Stackage where
 
-import Control.DeepSeq
 import Control.Exception ( assert )
 import Control.Monad
-import Control.Monad.Par.Combinator
-import Control.Monad.Par.IO
 import Control.Monad.Trans
 import Data.List
 import Data.List.Split
@@ -17,7 +14,6 @@ import Data.Maybe
 import Data.Time.Calendar
 import Data.Yaml
 import Distribution.Compiler
-import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Package
 import Distribution.Version
 import GHC.Generics ( Generic )
@@ -47,22 +43,18 @@ data Snapshot = Snapshot
             , corePackages :: Map PackageName Version
             , packages :: Map PackageName Spec
             }
-  deriving (Show, Generic)
-
-deriving instance Generic SnapshotType
-instance NFData Spec
-instance NFData Snapshot
-instance NFData SnapshotType
+  deriving (Show)
 
 instance Pretty SnapshotType where
   pPrint STNightly = text "stackage-nightly"
   pPrint (STNightly2 _) = text "stackage-nightly"
   pPrint (STLTS m n) = text "lts-" <> int m <> char '.' <> int n
 
-readLTSHaskell :: FilePath -> ParIO [Snapshot]
+readLTSHaskell :: FilePath -> IO Snapshot
 readLTSHaskell dirPath = do
   filePaths <- liftIO (listFiles dirPath)
-  parMapM (liftIO . readSnapshot) [ dirPath </> p | p <- filePaths, takeExtension p == ".yaml" ]
+  let latest = maximum (Prelude.filter (\p -> takeExtension p == ".yaml") filePaths)
+  readSnapshot (dirPath </> latest)
 
 readStackageNightly :: FilePath -> IO Snapshot
 readStackageNightly dirPath = do

@@ -82,7 +82,7 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
   hackage <- fixup <$> readHackage hackageRepository
-  snapshots <- runParIO (readLTSHaskell ltsHaskellRepository)
+  lts <- readLTSHaskell ltsHaskellRepository
   nightly <- readStackageNightly stackageNightlyRepository
   let
       config :: Configuration
@@ -114,7 +114,7 @@ main = do
                           [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _) <- extraPackages config ]
 
       stackagePackageSet :: Map PackageName (Map Version Spec)
-      stackagePackageSet = Map.fromListWith (Map.unionWith mergeSpecs) [ (n, Map.singleton (Stackage.version spec) spec) | snapshot <- nightly:snapshots, (n, spec) <- Map.toList (packages snapshot) ]
+      stackagePackageSet = Map.fromListWith (Map.unionWith mergeSpecs) [ (n, Map.singleton (Stackage.version spec) spec) | snapshot <- [nightly,lts], (n, spec) <- Map.toList (packages snapshot) ]
 
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
@@ -187,14 +187,14 @@ main = do
     mapM_ (\pkg -> hPutStrLn h pkg >> hPutStrLn h "") pkgs
     hPutStrLn h "}"
 
-  void $ runParIO $ flip parMapM snapshots $ \Snapshot {..} -> liftIO $ do
+  forM_ [lts] $ \Snapshot {..} -> liftIO $ do
      let allPackages :: PackageSet
          allPackages = Map.difference
                          (Map.fromList [ (name, Stackage.version spec) | (name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet)
                          corePackages'
 
          ltsConfigFile :: FilePath
-         ltsConfigFile = nixpkgsRepository </> "pkgs/development/haskell-modules/configuration-" ++ show (pPrint snapshot) ++ ".nix"
+         ltsConfigFile = nixpkgsRepository </> "pkgs/development/haskell-modules/configuration-lts.nix"
 
          corePackages' :: PackageSet
          corePackages' = corePackages `Map.union` Map.fromList [("Cabal", Version [] []), ("rts", Version [] [])]
