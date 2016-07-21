@@ -2,18 +2,19 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
-import Control.Lens
-import Data.List.Split
-import Data.Set ( Set )
-import qualified Data.Set as Set
-import Data.Set.Lens
-import Distribution.Nixpkgs.Haskell
-import Distribution.Nixpkgs.Meta
-import Distribution.Package
-import Distribution.System
-import Distribution.Text
-import Distribution.Version
-import Language.Nix
+import           Control.Lens
+import           Data.List
+import           Data.List.Split
+import           Data.Set                     (Set)
+import qualified Data.Set                     as Set
+import           Data.Set.Lens
+import           Distribution.Nixpkgs.Haskell
+import           Distribution.Nixpkgs.Meta
+import           Distribution.Package
+import           Distribution.System
+import           Distribution.Text
+import           Distribution.Version
+import           Language.Nix
 
 postProcess :: Derivation -> Derivation
 postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
@@ -50,11 +51,15 @@ hooks =
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("gi-cairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gdk", giGdkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gdkpixbuf", giGdkPixBufPhaseOverrides)             -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gio", giPhaseOverrides)                            -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-glib", giPhaseOverrides)                           -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gobject", giPhaseOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-javascriptcore", giJavascriptCorePhaseOverrides)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giPhaseOverrides)                          -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-webkit2", giWebkit2PhaseOverrides)                 -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex", gitAnnexHook)
@@ -245,14 +250,39 @@ stackOverrides = unlines
   , "'';"
   ]
 
+exportGirSearchPath :: [String] -> String
+exportGirSearchPath packages =
+  "export HASKELL_GI_GIR_SEARCH_PATH="
+  ++ intercalate ":" [ "${" ++ package ++ "}/share/gir-1.0" | package <- packages]
+
 giPhaseOverrides :: Derivation -> Derivation
 giPhaseOverrides
-  = set phaseOverrides "preConfigure = \"export HASKELL_GI_GIR_SEARCH_PATH=${gobjectIntrospection.dev}/share/gir-1.0\";"
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gobjectIntrospection.dev"] ++ "'';")
   . set (libraryDepends . pkgconfig . contains (pkg "gobjectIntrospection")) True
+
+giGdkPhaseOverrides :: Derivation -> Derivation
+giGdkPhaseOverrides
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk.dev"] ++ "'';")
+  . set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
+
+giGdkPixBufPhaseOverrides :: Derivation -> Derivation
+giGdkPixBufPhaseOverrides
+  = set phaseOverrides (unlines
+    [ "preConfigure = ''"
+    , "  " ++ exportGirSearchPath ["gobjectIntrospection.dev", "gdk_pixbuf.dev"]
+    , "  export GI_TYPELIB_PATH=${gdk_pixbuf.out}/lib/girepository-1.0"
+    , "'';"
+    ])
+  . set (libraryDepends . pkgconfig . contains (pkg "gobjectIntrospection")) True
+
+giGtkPhaseOverrides :: Derivation -> Derivation
+giGtkPhaseOverrides
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk.dev"] ++ "'';")
+  . set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
 
 giJavascriptCorePhaseOverrides :: Derivation -> Derivation
 giJavascriptCorePhaseOverrides
-  = set phaseOverrides "preConfigure = \"export HASKELL_GI_GIR_SEARCH_PATH=${webkitgtk}/share/gir-1.0\";"
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["webkitgtk"] ++ "'';")
   . set (libraryDepends . pkgconfig . contains (pkg "webkitgtk")) True
 
 giCairoPhaseOverrides :: Derivation -> Derivation
@@ -263,6 +293,11 @@ giCairoPhaseOverrides = over phaseOverrides (++'\n':txt) . giPhaseOverrides
                   , "  setupCompileFlags+=\" $(pkg-config --libs cairo-gobject)\""
                   , "'';"
                   ]
+
+giWebkit2PhaseOverrides :: Derivation -> Derivation
+giWebkit2PhaseOverrides
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["webkitgtk"] ++ "'';")
+  . set (libraryDepends . pkgconfig . contains (pkg "webkitgtk")) True
 
 hfseventsOverrides :: Derivation -> Derivation
 hfseventsOverrides
