@@ -262,8 +262,7 @@ giPhaseOverrides
 
 giGdkPhaseOverrides :: Derivation -> Derivation
 giGdkPhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk.dev"] ++ "'';")
-  . set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
 
 giGdkPixBufPhaseOverrides :: Derivation -> Derivation
 giGdkPixBufPhaseOverrides
@@ -277,8 +276,7 @@ giGdkPixBufPhaseOverrides
 
 giGtkPhaseOverrides :: Derivation -> Derivation
 giGtkPhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk.dev"] ++ "'';")
-  . set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
+  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
 
 giJavascriptCorePhaseOverrides :: Derivation -> Derivation
 giJavascriptCorePhaseOverrides
