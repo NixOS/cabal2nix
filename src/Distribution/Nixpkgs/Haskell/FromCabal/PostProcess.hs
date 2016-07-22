@@ -2,19 +2,19 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
-import           Control.Lens
-import           Data.List
-import           Data.List.Split
-import           Data.Set                     (Set)
-import qualified Data.Set                     as Set
-import           Data.Set.Lens
-import           Distribution.Nixpkgs.Haskell
-import           Distribution.Nixpkgs.Meta
-import           Distribution.Package
-import           Distribution.System
-import           Distribution.Text
-import           Distribution.Version
-import           Language.Nix
+import Control.Lens
+import Data.List
+import Data.List.Split
+import Data.Set ( Set )
+import qualified Data.Set as Set
+import Data.Set.Lens
+import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Meta
+import Distribution.Package
+import Distribution.System
+import Distribution.Text
+import Distribution.Version
+import Language.Nix
 
 postProcess :: Derivation -> Derivation
 postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
