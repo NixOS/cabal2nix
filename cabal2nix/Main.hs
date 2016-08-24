@@ -6,6 +6,7 @@ module Main ( main ) where
 import Control.Exception ( bracket )
 import Control.Lens
 import Data.Maybe ( fromMaybe )
+import Data.Monoid ( (<>) )
 import qualified Data.Set as Set
 import Data.String
 import qualified Distribution.Compat.ReadP as P
