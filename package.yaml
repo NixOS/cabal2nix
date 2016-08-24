@@ -62,7 +62,7 @@ description: >
 ghc-options:            -Wall
 
 dependencies:
-  - aeson
+  - aeson < 1
   - ansi-wl-pprint
   - base < 5
   - bytestring
