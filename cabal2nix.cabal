@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           cabal2nix
-version:        2.0
+version:        2.0.1
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
                 .
