@@ -128,6 +128,7 @@ libNixName "poppler-glib"                       = return "poppler"
 libNixName "portaudio-2.0"                      = return "portaudio"
 libNixName "pq"                                 = return "postgresql"
 libNixName "pthread"                            = []
+libNixName "pulse"                              = return "libpulseaudio"
 libNixName "pulse-simple"                       = return "libpulseaudio"
 libNixName "python-3.3"                         = return "python33"
 libNixName "python-3.4"                         = return "python34"
