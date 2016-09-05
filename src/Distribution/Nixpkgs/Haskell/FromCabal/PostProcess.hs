@@ -56,6 +56,10 @@ hooks =
   , ("gi-gio", giPhaseOverrides)                            -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-glib", giPhaseOverrides)                           -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gobject", giPhaseOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gst", gstLibOverrides)                             -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gstaudio", gstLibAudioOverrides)                   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gstbase", gstLibAudioOverrides)                    -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gstvideo", gstLibAudioOverrides)                   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-javascriptcore", giJavascriptCorePhaseOverrides)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giPhaseOverrides)                          -- https://github.com/haskell-gi/haskell-gi/issues/36
@@ -265,6 +269,14 @@ giPhaseOverrides
 giGdkPhaseOverrides :: Derivation -> Derivation
 giGdkPhaseOverrides
   = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
+
+gstLibOverrides :: Derivation -> Derivation
+gstLibOverrides
+  = set (libraryDepends . pkgconfig . contains "gstreamer = pkgs.gst_all_1.gstreamer") True
+
+gstLibAudioOverrides :: Derivation -> Derivation
+gstLibAudioOverrides
+  = set (libraryDepends . pkgconfig . contains "gstreamer = pkgs.gst_all_1.gst-plugins-base") True
 
 giGdkPixBufPhaseOverrides :: Derivation -> Derivation
 giGdkPixBufPhaseOverrides
