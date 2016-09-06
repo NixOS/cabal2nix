@@ -57,9 +57,9 @@ hooks =
   , ("gi-glib", giPhaseOverrides)                           -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gobject", giPhaseOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gst", gstLibOverrides)                             -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gstaudio", gstLibAudioOverrides)                   -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gstbase", gstLibAudioOverrides)                    -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gstvideo", gstLibAudioOverrides)                   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gstaudio", gstLibOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gstbase", gstLibOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gstvideo", gstLibOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-javascriptcore", giJavascriptCorePhaseOverrides)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giPhaseOverrides)                          -- https://github.com/haskell-gi/haskell-gi/issues/36
@@ -272,11 +272,8 @@ giGdkPhaseOverrides
 
 gstLibOverrides :: Derivation -> Derivation
 gstLibOverrides
-  = set (libraryDepends . pkgconfig . contains "gstreamer = pkgs.gst_all_1.gstreamer") True
-
-gstLibAudioOverrides :: Derivation -> Derivation
-gstLibAudioOverrides
-  = set (libraryDepends . pkgconfig . contains "gstreamer = pkgs.gst_all_1.gst-plugins-base") True
+  = over (libraryDepends . pkgconfig) (replace ("gstreamer-1 = null") ("gstreamer-1 = pkgs.gst_all_1.gstreamer"))
+  . over (libraryDepends . pkgconfig) (replace ("gst-plugins-base-1 = null") ("gst-plugins-base-1 = pkgs.gst_all_1.gst-plugins-base"))
 
 giGdkPixBufPhaseOverrides :: Derivation -> Derivation
 giGdkPixBufPhaseOverrides
