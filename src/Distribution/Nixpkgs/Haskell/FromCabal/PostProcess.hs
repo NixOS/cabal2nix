@@ -272,11 +272,11 @@ giGdkPhaseOverrides
 
 gstLibOverrides :: Derivation -> Derivation
 gstLibOverrides
-  = set (libraryDepends . pkgconfig . contains "gstreamer = pkgs.gst_all_1.gstreamer") True
+  = over (libraryDepends . pkgconfig) (replace (pkg "gstreamer") "gstreamer = pkgs.gst_all_1.gstreamer")
 
 gstLibAudioOverrides :: Derivation -> Derivation
 gstLibAudioOverrides
-  = set (libraryDepends . pkgconfig . contains "gstreamer = pkgs.gst_all_1.gst-plugins-base") True
+  = over (libraryDepends . pkgconfig) (replace (pkg "gst_plugins_base") "gst_plugins_base = pkgs.gst_all_1.gst-plugins-base")
 
 giGdkPixBufPhaseOverrides :: Derivation -> Derivation
 giGdkPixBufPhaseOverrides
