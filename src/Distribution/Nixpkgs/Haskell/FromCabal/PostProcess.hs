@@ -273,6 +273,7 @@ giGdkPhaseOverrides
 gstLibOverrides :: Derivation -> Derivation
 gstLibOverrides
   = over (libraryDepends . pkgconfig) (replace (pkg "gstreamer") "gstreamer = pkgs.gst_all_1.gstreamer")
+  . set (libraryDepends . system . contains (pkg "gobjectIntrospection")) True
 
 gstLibAudioOverrides :: Derivation -> Derivation
 gstLibAudioOverrides
