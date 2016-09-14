@@ -46,7 +46,6 @@ data CLI = CLI
   , preferredVersionsFile :: Maybe FilePath
   , nixpkgsRepository :: FilePath
   , ltsHaskellRepository :: FilePath
-  , stackageNightlyRepository :: FilePath
   , configFile :: FilePath
   , targetPlatform :: Platform
   }
@@ -60,7 +59,6 @@ main = do
         <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
         <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "nixpkgs" <> showDefaultWith id <> metavar "PATH")
         <*> strOption (long "lts-haskell" <> help "path to LTS Haskell repository" <> value "lts-haskell" <> showDefaultWith id <> metavar "PATH")
-        <*> strOption (long "stackage-nightly" <> help "path to Stackage Nightly repository" <> value "stackage-nightly" <> showDefaultWith id <> metavar "PATH")
         <*> strOption (long "config" <> help "path to configuration file inside of Nixpkgs" <> value "pkgs/development/haskell-modules/configuration-hackage2nix.yaml" <> showDefaultWith id <> metavar "PATH")
         <*> option (fmap fromString str) (long "platform" <> help "target platform to generate package set for" <> value "x86_64-linux" <> showDefaultWith display <> metavar "PLATFORM")
 
@@ -83,10 +81,9 @@ main = do
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
   hackage <- fixup <$> readHackage hackageRepository
   lts <- readLTSHaskell ltsHaskellRepository
-  nightly <- readStackageNightly stackageNightlyRepository
   let
       config :: Configuration
-      config = config' { defaultPackageOverrides = [ Dependency n (thisVersion (Stackage.version spec)) | (n, spec) <- Map.toList (packages nightly) ] }
+      config = config' { defaultPackageOverrides = [ Dependency n (thisVersion (Stackage.version spec)) | (n, spec) <- Map.toList (packages lts) ] }
 
       hackagePackagesFile :: FilePath
       hackagePackagesFile = nixpkgsRepository </> "pkgs/development/haskell-modules/hackage-packages.nix"
@@ -114,7 +111,7 @@ main = do
                           [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _) <- extraPackages config ]
 
       stackagePackageSet :: Map PackageName (Map Version Spec)
-      stackagePackageSet = Map.fromListWith (Map.unionWith mergeSpecs) [ (n, Map.singleton (Stackage.version spec) spec) | snapshot <- [nightly,lts], (n, spec) <- Map.toList (packages snapshot) ]
+      stackagePackageSet = Map.fromListWith (Map.unionWith mergeSpecs) [ (n, Map.singleton (Stackage.version spec) spec) | snapshot <- [lts], (n, spec) <- Map.toList (packages snapshot) ]
 
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
@@ -186,47 +183,6 @@ main = do
     hPutStrLn h ""
     mapM_ (\pkg -> hPutStrLn h pkg >> hPutStrLn h "") pkgs
     hPutStrLn h "}"
-
-  forM_ [lts] $ \Snapshot {..} -> liftIO $ do
-     let allPackages :: PackageSet
-         allPackages = Map.difference
-                         (Map.fromList [ (name, Stackage.version spec) | (name, spec) <- Map.toList packages ] `Map.union` generatedDefaultPackageSet)
-                         corePackages'
-
-         ltsConfigFile :: FilePath
-         ltsConfigFile = nixpkgsRepository </> "pkgs/development/haskell-modules/configuration-lts.nix"
-
-         corePackages' :: PackageSet
-         corePackages' = corePackages `Map.union` Map.fromList [("Cabal", Version [] []), ("rts", Version [] [])]
-
-     withFile ltsConfigFile WriteMode $ \h -> do
-       hPutStrLn h "{ pkgs }:"
-       hPutStrLn h ""
-       hPutStrLn h "with import ./lib.nix { inherit pkgs; };"
-       hPutStrLn h ""
-       hPutStrLn h "self: super: {"
-       hPutStrLn h ""
-       hPutStrLn h "  # core libraries provided by the compiler"
-       forM_ (Map.keys corePackages') $ \n ->
-         unless (n == "ghc") (hPutStrLn h ("  " ++ unPackageName n ++ " = null;"))
-       hPutStrLn h ""
-       hPutStrLn h ("  # " ++ show (pPrint snapshot) ++ " packages")
-       forM_ (Map.toList allPackages) $ \(name, v) -> do
-         let pkgId = PackageIdentifier name v
-
-             isInDefaultPackageSet :: Bool
-             isInDefaultPackageSet = maybe False (== v) (Map.lookup name generatedDefaultPackageSet)
-
-             isInStackage :: Bool
-             isInStackage = isJust (Map.lookup name packages)
-         case (isInStackage,isInDefaultPackageSet) of
-           (True,True)   -> return ()           -- build is visible and enabled
-           (True,False)  -> hPutStrLn h ("  " ++ show (unPackageName name) ++ " = doDistribute super." ++ show (mangle pkgId) ++ ";")
-           (False,True)  -> hPutStrLn h ("  " ++ show (unPackageName name) ++ " = dontDistribute super." ++ show (unPackageName name) ++ ";")
-           (False,False) -> fail ("logic error processing " ++ display pkgId ++ " in " ++  show (pPrint snapshot))
-       hPutStrLn h ""
-       hPutStrLn h "}"
-
 
 isFromHackage :: Binding -> Bool
 isFromHackage b = case view (reference . path) b of
