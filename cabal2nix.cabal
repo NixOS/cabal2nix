@@ -70,7 +70,7 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      aeson < 1
+      aeson
     , ansi-wl-pprint
     , base < 5
     , bytestring
@@ -117,7 +117,7 @@ executable cabal2nix
       cabal2nix
   ghc-options: -Wall
   build-depends:
-      aeson < 1
+      aeson
     , ansi-wl-pprint
     , base < 5
     , bytestring
@@ -149,7 +149,7 @@ executable hackage2nix
       hackage2nix
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson < 1
+      aeson
     , ansi-wl-pprint
     , base < 5
     , bytestring
