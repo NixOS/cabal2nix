@@ -3,6 +3,8 @@
 
 module Main ( main ) where
 
+import HackageGit
+
 import Control.Lens
 import Control.Monad
 import Control.Monad.Par.Combinator
@@ -29,11 +31,9 @@ import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
-import HackageGit
 import Language.Nix
 import Options.Applicative
 import qualified Paths_cabal2nix as Main
-import Stackage
 import System.FilePath
 import System.IO
 import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
@@ -45,7 +45,6 @@ data CLI = CLI
   { hackageRepository :: FilePath
   , preferredVersionsFile :: Maybe FilePath
   , nixpkgsRepository :: FilePath
-  , ltsHaskellRepository :: FilePath
   , configFile :: FilePath
   , targetPlatform :: Platform
   }
@@ -58,7 +57,6 @@ main = do
         <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefaultWith id <> metavar "PATH")
         <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
         <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "nixpkgs" <> showDefaultWith id <> metavar "PATH")
-        <*> strOption (long "lts-haskell" <> help "path to LTS Haskell repository" <> value "lts-haskell" <> showDefaultWith id <> metavar "PATH")
         <*> strOption (long "config" <> help "path to configuration file inside of Nixpkgs" <> value "pkgs/development/haskell-modules/configuration-hackage2nix.yaml" <> showDefaultWith id <> metavar "PATH")
         <*> option (fmap fromString str) (long "platform" <> help "target platform to generate package set for" <> value "x86_64-linux" <> showDefaultWith display <> metavar "PLATFORM")
 
@@ -73,18 +71,14 @@ main = do
               )
   CLI {..} <- execParser pinfo
 
-  config' <- readConfiguration (nixpkgsRepository </>  configFile)
+  config <- readConfiguration (nixpkgsRepository </>  configFile)
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository Nothing
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
   hackage <- fixup <$> readHackage hackageRepository
-  lts <- readLTSHaskell ltsHaskellRepository
   let
-      config :: Configuration
-      config = config' { defaultPackageOverrides = [ Dependency n (thisVersion (Stackage.version spec)) | (n, spec) <- Map.toList (packages lts) ] }
-
       hackagePackagesFile :: FilePath
       hackagePackagesFile = nixpkgsRepository </> "pkgs/development/haskell-modules/hackage-packages.nix"
 
@@ -110,15 +104,11 @@ main = do
       extraPackageSet = Map.unionsWith Set.union
                           [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _) <- extraPackages config ]
 
-      stackagePackageSet :: Map PackageName (Map Version Spec)
-      stackagePackageSet = Map.fromListWith (Map.unionWith mergeSpecs) [ (n, Map.singleton (Stackage.version spec) spec) | snapshot <- [lts], (n, spec) <- Map.toList (packages snapshot) ]
-
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
                                     , Map.map Set.singleton latestCorePackageSet
                                     , Map.map Set.singleton latestOverridePackageSet
                                     , extraPackageSet
-                                    , Map.map Map.keysSet stackagePackageSet
                                     ]
 
       haskellResolver :: Dependency -> Bool
@@ -148,9 +138,6 @@ main = do
           tarballSHA256 = fromMaybe (error (display pkgId ++ ": meta data has no hash for the tarball"))
                                     (view (hashes . at "SHA256") meta)
 
-          spec :: Spec
-          spec = Spec v True True `fromMaybe` (Map.lookup name stackagePackageSet >>= Map.lookup v)
-
           flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
           flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
 
@@ -161,8 +148,6 @@ main = do
           drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
                   & src .~ DerivationSource "url" ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") "" tarballSHA256
                   & editedCabalFile .~ cabalSHA256
-                  & Derivation.runHaddock &&~ Stackage.runHaddock spec
-                  & doCheck &&~ runTests spec
                   & metaSection.hydraPlatforms %~ (`Set.difference` Map.findWithDefault Set.empty name (dontDistributePackages config))
                   & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
                   & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)

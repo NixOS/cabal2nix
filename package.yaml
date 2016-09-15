@@ -118,13 +118,11 @@ executables:
     other-modules:
       - Paths_cabal2nix
       - HackageGit
-      - Stackage
     dependencies:
       - cabal2nix
       - monad-par
       - monad-par-extras
       - mtl
-      - stackage-types
       - time
       - utf8-string
     ghc-options:
