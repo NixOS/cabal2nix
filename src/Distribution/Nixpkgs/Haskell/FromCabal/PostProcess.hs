@@ -43,7 +43,7 @@ hooks =
   , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
-  , ("cabal-install", set phaseOverrides cabalInstallPostInstall)
+  , ("cabal-install", set doCheck False . set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
