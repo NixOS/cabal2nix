@@ -45,7 +45,8 @@ hackage-version-boxplot.pdf : analyze-hackage.r hackage.csv
 	Rscript $<
 
 hackage.csv:
-	( cd ../hackage2nix/hackage; \
+	{ set -eu -o pipefail; \
+	  cd ../hackage; \
 	  echo package,version; \
 	  for n in *; do \
 	    test -d $$n || continue; \
@@ -53,7 +54,8 @@ hackage.csv:
 	      echo $$n,$$(basename $$v); \
 	    done; \
 	  done \
-	) >$@
+	} >$@.tmp
+	mv $@.tmp $@
 
 clean:
 	@rm -f *.aux *.html *.log *.out *.pdf *.toc
