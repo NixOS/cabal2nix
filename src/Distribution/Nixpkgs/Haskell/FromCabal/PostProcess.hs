@@ -300,7 +300,9 @@ giJavascriptCorePhaseOverrides
   . set (libraryDepends . pkgconfig . contains (pkg "webkitgtk")) True
 
 giCairoPhaseOverrides :: Derivation -> Derivation
-giCairoPhaseOverrides = over phaseOverrides (++'\n':txt) . giPhaseOverrides
+giCairoPhaseOverrides = over phaseOverrides (++'\n':txt)
+                      . set (libraryDepends . pkgconfig . contains (pkg "cairo")) True
+                      . giPhaseOverrides
   where
     txt = unlines [ "preCompileBuildDriver = ''"
                   , "  PKG_CONFIG_PATH+=\":${cairo}/lib/pkgconfig\""
