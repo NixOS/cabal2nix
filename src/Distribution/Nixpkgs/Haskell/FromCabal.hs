@@ -34,41 +34,26 @@ type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
 fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo ->  FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
-fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints descr'' =
-  -- TODO: This logic needs simplification and cleanup. :-(
-  case finalize haskellResolver of
-    Left _ -> case finalize jailbrokenResolver of
-                Left missing -> case finalize (const True) of
-                                  Left missing' -> error $ "finalizePackageDescription complains about missing dependencies \
-                                                           \even though we told it that everything exists: " ++ show missing'
-                                  Right (descr_,_) -> fromPackageDescription haskellResolver nixpkgsResolver True missing flags descr_
-                Right _      -> fromPackageDescription haskellResolver nixpkgsResolver True [] flags descr
-    Right _ -> fromPackageDescription haskellResolver nixpkgsResolver False [] flags descr
-  where
-    descr :: PackageDescription
-    Right (descr,_) = finalize jailbrokenResolver
+fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
+  fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
+    where
+      -- We have to call the Cabal finalizer several times with different resolver
+      -- functions, and this convenience function makes our code shorter.
+      finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
+      finalize resolver = finalizePackageDescription flags resolver arch compiler constraints (enableTests genDesc)
 
-    -- We have to call the Cabal finalizer several times with different resolver functions, and this
-    -- convenience function makes our code shorter.
-    finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
-    finalize resolver = finalizePackageDescription flags resolver arch compiler constraints descr'
+      descr :: PackageDescription; missingDeps :: [Dependency]
+      (descr,missingDeps) = case finalize jailbrokenResolver of
+                              Left m -> case finalize (const True) of
+                                          Left _      -> error ("Cabal cannot finalize " ++ display (packageId genDesc))
+                                          Right (d,_) -> (d,m)
+                              Right (d,_)  -> (d,[])
 
-    jailbrokenResolver :: HaskellResolver
-    jailbrokenResolver (Dependency pkg _) = haskellResolver (Dependency pkg anyVersion)
+      jailbrokenResolver :: HaskellResolver
+      jailbrokenResolver (Dependency pkg _) = haskellResolver (Dependency pkg anyVersion)
 
-    -- A variant of the cabal file that has all test suites enabled to ensure
-    -- that their dependencies are recognized by finalizePackageDescription.
-    descr' :: GenericPackageDescription
-    descr' = descr'' { condTestSuites = flaggedTests }
-
-    flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
-    flaggedTests = map (second (mapTreeData enableTest)) (condTestSuites descr'')
-
-    enableTest :: TestSuite -> TestSuite
-    enableTest t = t { testEnabled = True }
-
-fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> Bool -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ nullDerivation
+fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
+fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -82,7 +67,7 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
     & configureFlags .~ mempty
     & cabalFlags .~ flags
     & runHaddock .~ maybe True (not . null . exposedModules) library
-    & jailbreak .~ (mismatchedDeps || not (null missingDeps))
+    & jailbreak .~ False
     & doCheck .~ True
     & testTarget .~ mempty
     & hyperlinkSource .~ True
@@ -137,3 +122,12 @@ fromPackageDescription haskellResolver nixpkgsResolver mismatchedDeps missingDep
 
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])
+
+enableTests :: GenericPackageDescription -> GenericPackageDescription
+enableTests gd = gd { condTestSuites = flaggedTests }
+  where
+    flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
+    flaggedTests = map (second (mapTreeData enableTest)) (condTestSuites gd)
+
+    enableTest :: TestSuite -> TestSuite
+    enableTest t = t { testEnabled = True }
