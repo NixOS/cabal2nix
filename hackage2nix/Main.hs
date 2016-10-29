@@ -77,6 +77,7 @@ main = do
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
+            . Map.delete "control-invariants"   -- TODO: depends on "assert"
   hackage <- fixup <$> readHackage hackageRepository
   let
       hackagePackagesFile :: FilePath
