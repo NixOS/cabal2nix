@@ -143,6 +143,7 @@ libNixName "rtlsdr"                             = return "rtl-sdr"
 libNixName "ruby1.8"                            = return "ruby"
 libNixName "sane-backends"                      = return "saneBackends"
 libNixName "sass"                               = return "libsass"
+libNixName "sctp"                               = return "lksctp-tools" -- This is linux-specific, we should create a common attribute if we ever add sctp support for other systems
 libNixName "sdl2"                               = return "SDL2"
 libNixName "SDL2-2.0"                           = return "SDL2"
 libNixName "sndfile"                            = return "libsndfile"
