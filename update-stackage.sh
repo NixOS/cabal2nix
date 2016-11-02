@@ -21,6 +21,8 @@ sed -r \
 sed -r \
     -e '/ cabal2nix /d' \
     -e '/ stack /d' \
+    -e '/ hoogle /d' \
+    -e '/ ShellCheck /d' \
     -i "$tmpfile"
 
 # Drop the previous configuration ...
