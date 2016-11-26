@@ -20,10 +20,10 @@ sed -r \
 # Drop restrictions on some tools where we always want the latest version.
 sed -r \
     -e '/ cabal2nix /d' \
-    -e '/ stack /d' \
-    -e '/ hoogle /d' \
     -e '/ hindent /d' \
+    -e '/ hoogle /d' \
     -e '/ ShellCheck /d' \
+    -e '/ stack /d' \
     -i "$tmpfile"
 
 # Drop the previous configuration ...
