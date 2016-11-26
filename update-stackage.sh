@@ -22,6 +22,7 @@ sed -r \
     -e '/ cabal2nix /d' \
     -e '/ stack /d' \
     -e '/ hoogle /d' \
+    -e '/ hindent /d' \
     -e '/ ShellCheck /d' \
     -i "$tmpfile"
 
