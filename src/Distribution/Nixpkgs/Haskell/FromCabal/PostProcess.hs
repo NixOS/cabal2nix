@@ -64,6 +64,7 @@ hooks =
   , ("gi-javascriptcore", giJavascriptCorePhaseOverrides)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-webkit2", giWebkit2PhaseOverrides)                 -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-webkit2webextension", giWebkit2PhaseOverrides)     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex", gitAnnexHook)
