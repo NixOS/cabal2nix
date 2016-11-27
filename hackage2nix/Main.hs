@@ -78,6 +78,7 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "control-invariants"   -- TODO: depends on "assert"
+            . Map.delete "hermes"               -- TODO: https://github.com/haskell/hackage-server/issues/436
   hackage <- fixup <$> readHackage hackageRepository
   let
       hackagePackagesFile :: FilePath
