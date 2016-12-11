@@ -19,6 +19,7 @@ sed -r \
 
 # Drop restrictions on some tools where we always want the latest version.
 sed -r \
+    -e '/ cabal-install /d' \
     -e '/ cabal2nix /d' \
     -e '/ hindent /d' \
     -e '/ hoogle /d' \
