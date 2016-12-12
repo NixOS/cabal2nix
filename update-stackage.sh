@@ -22,6 +22,7 @@ sed -r \
     -e '/ cabal-install /d' \
     -e '/ cabal2nix /d' \
     -e '/ hindent /d' \
+    -e '/ hpack /d' \
     -e '/ hoogle /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
