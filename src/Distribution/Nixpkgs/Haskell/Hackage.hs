@@ -1,4 +1,4 @@
-module Distribution.Nixpkgs.Haskell.Hackage ( readHashedHackage, module Distribution.Hackage.DB ) where
+module Distribution.Nixpkgs.Haskell.Hackage ( readHashedHackage, readHashedHackage', module Distribution.Hackage.DB ) where
 
 import Data.ByteString.Lazy ( ByteString )
 import Data.Digest.Pure.SHA ( sha256, showDigest )
@@ -13,7 +13,10 @@ import qualified Distribution.Hackage.DB.Unparsed as Unparsed
 -- original tarball.
 
 readHashedHackage :: IO Hackage
-readHashedHackage = fmap parseUnparsedHackage Unparsed.readHackage
+readHashedHackage = hackagePath >>= readHashedHackage'
+
+readHashedHackage' :: FilePath -> IO Hackage
+readHashedHackage' = fmap parseUnparsedHackage . Unparsed.readHackage'
   where
     parseUnparsedHackage :: Unparsed.Hackage -> Hackage
     parseUnparsedHackage = mapWithKey (mapWithKey . parsePackage)

@@ -48,7 +48,7 @@ fetchOrFromDB optHackageDB src
 
 fromDB :: Maybe String -> String -> IO Cabal.GenericPackageDescription
 fromDB optHackageDB pkg = do
-  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> maybe DB.readHashedHackage DB.readHackage' optHackageDB
+  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> maybe DB.readHashedHackage DB.readHashedHackage' optHackageDB
   case pkgDesc of
     Just r -> return r
     Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure
