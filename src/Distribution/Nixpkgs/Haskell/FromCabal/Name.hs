@@ -26,6 +26,7 @@ libNixName "appindicator3-0.1"                  = return "appindicator"
 libNixName "asound"                             = return "alsaLib"
 libNixName "awesomium-1.6.5"                    = return "awesomium"
 libNixName "b2"                                 = return "libb2"
+libNixName "babl-0.1"                           = return "babl"
 libNixName "bz2"                                = return "bzip2"
 libNixName "c++"                                = []  -- What is that?
 libNixName "cairo-gobject"                      = return "cairo"
