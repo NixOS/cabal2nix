@@ -129,3 +129,11 @@ executables:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
+
+tests:
+  spec:
+    main: Main.hs
+    source-dirs:
+      - test
+    dependencies:
+      - doctest
