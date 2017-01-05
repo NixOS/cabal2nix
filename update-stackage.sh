@@ -26,6 +26,7 @@ sed -r \
     -e '/ hoogle /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
+    -e '/ hledger/d' \
     -i "$tmpfile"
 
 # Drop the previous configuration ...
