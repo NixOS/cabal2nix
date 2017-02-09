@@ -4,14 +4,18 @@ import Distribution.Nixpkgs.License
 import Distribution.License ( License(..) )
 import Data.Version
 
+-- TODO: Programatically strip trailing zeros from license version numbers.
+
 fromCabalLicense :: Distribution.License.License -> Distribution.Nixpkgs.License.License
 fromCabalLicense (GPL Nothing)                          = Unknown (Just "GPL")
 fromCabalLicense (GPL (Just (Version [2] [])))          = Known "stdenv.lib.licenses.gpl2"
 fromCabalLicense (GPL (Just (Version [3] [])))          = Known "stdenv.lib.licenses.gpl3"
+fromCabalLicense (GPL (Just (Version [3,0] [])))        = Known "stdenv.lib.licenses.gpl3"
 fromCabalLicense (LGPL Nothing)                         = Unknown (Just "LGPL")
 fromCabalLicense (LGPL (Just (Version [2,1] [])))       = Known "stdenv.lib.licenses.lgpl21"
 fromCabalLicense (LGPL (Just (Version [2] [])))         = Known "stdenv.lib.licenses.lgpl2"
 fromCabalLicense (LGPL (Just (Version [3] [])))         = Known "stdenv.lib.licenses.lgpl3"
+fromCabalLicense (LGPL (Just (Version [3,0] [])))       = Known "stdenv.lib.licenses.lgpl3"
 fromCabalLicense (AGPL Nothing)                         = Unknown (Just "AGPL")
 fromCabalLicense (AGPL (Just (Version [3] [])))         = Known "stdenv.lib.licenses.agpl3"
 fromCabalLicense (AGPL (Just (Version [3,0] [])))       = Known "stdenv.lib.licenses.agpl3"
