@@ -8,7 +8,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
-  , dependencies, setupDepends
+  , dependencies, setupDepends, benchDepends
   )
   where
 
@@ -43,6 +43,7 @@ data Derivation = MkDerivation
   , _libraryDepends             :: BuildInfo
   , _executableDepends          :: BuildInfo
   , _testDepends                :: BuildInfo
+  , _benchDepends               :: BuildInfo
   , _configureFlags             :: Set String
   , _cabalFlags                 :: FlagAssignment
   , _runHaddock                 :: Bool
@@ -71,6 +72,7 @@ nullDerivation = MkDerivation
   , _libraryDepends = error "undefined Derivation.libraryDepends"
   , _executableDepends = error "undefined Derivation.executableDepends"
   , _testDepends = error "undefined Derivation.testDepends"
+  , _benchDepends = error "undefined Derivation.benchDepends"
   , _configureFlags = error "undefined Derivation.configureFlags"
   , _cabalFlags = error "undefined Derivation.cabalFlags"
   , _runHaddock = error "undefined Derivation.runHaddock"
@@ -88,7 +90,7 @@ nullDerivation = MkDerivation
 
 makeLenses ''Derivation
 
-makeLensesFor [("_setupDepends", "dependencies"), ("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies")] ''Derivation
+makeLensesFor [("_setupDepends", "dependencies"), ("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies"), ("_benchDepends", "dependencies")] ''Derivation
 
 instance Package Derivation where
   packageId = view pkgid
@@ -111,6 +113,7 @@ instance Pretty Derivation where
       , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
       , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
       , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends
+      , onlyIf (_benchDepends /= mempty) $ pPrintBuildInfo "bench" _benchDepends
       , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
       , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
       , boolattr "enableSplitObjs"  (not _enableSplitObjs) _enableSplitObjs
