@@ -63,7 +63,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     & libraryDepends .~ maybe mempty (convertBuildInfo . libBuildInfo) library
     & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
     & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
-    & benchDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
+    & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags

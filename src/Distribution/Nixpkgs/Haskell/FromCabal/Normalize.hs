@@ -17,7 +17,7 @@ normalize drv = drv
   & over libraryDepends (normalizeBuildInfo (packageName drv))
   & over executableDepends (normalizeBuildInfo (packageName drv))
   & over testDepends (normalizeBuildInfo (packageName drv))
-  & over benchDepends (normalizeBuildInfo (packageName drv))
+  & over benchmarkDepends (normalizeBuildInfo (packageName drv))
   & over metaSection normalizeMeta
   & over cabalFlags normalizeCabalFlags
   & jailbreak %~ (&& (packageName drv /= PackageName "jailbreak-cabal"))
