@@ -40,7 +40,7 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
       -- We have to call the Cabal finalizer several times with different resolver
       -- functions, and this convenience function makes our code shorter.
       finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
-      finalize resolver = finalizePackageDescription flags resolver arch compiler constraints (enableTests genDesc)
+      finalize resolver = finalizePackageDescription flags resolver arch compiler constraints (enableBenchmarks (enableTests genDesc))
 
       descr :: PackageDescription; missingDeps :: [Dependency]
       (descr,missingDeps) = case finalize jailbrokenResolver of
@@ -132,3 +132,12 @@ enableTests gd = gd { condTestSuites = flaggedTests }
 
     enableTest :: TestSuite -> TestSuite
     enableTest t = t { testEnabled = True }
+
+enableBenchmarks :: GenericPackageDescription -> GenericPackageDescription
+enableBenchmarks gd = gd { condBenchmarks = flaggedBenchmarks }
+  where
+    flaggedBenchmarks :: [(String, CondTree ConfVar [Dependency] Benchmark)]
+    flaggedBenchmarks = map (second (mapTreeData enableBenchmark)) (condBenchmarks gd)
+
+    enableBenchmark :: Benchmark -> Benchmark
+    enableBenchmark t = t { benchmarkEnabled = True }
