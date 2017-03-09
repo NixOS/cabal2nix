@@ -56,16 +56,15 @@ hooks =
   , ("gi-gio", giPhaseOverrides)                            -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-glib", giPhaseOverrides)                           -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gobject", giPhaseOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-javascriptcore", giJavascriptCorePhaseOverrides)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gst", giGstLibOverrides "gstreamer")               -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstaudio", giGstLibOverrides "gst-plugins-base")   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstbase", giGstLibOverrides "gst-plugins-base")    -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstvideo", giGstLibOverrides "gst-plugins-base")   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-javascriptcore < 4.0.0.0", webkitgtk24xHook)       -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pangocairo", giPangoCairoPhaseOverrides)           -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-webkit2", giWebkit2PhaseOverrides)                 -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-webkit2webextension", giWebkit2PhaseOverrides)     -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex", gitAnnexHook)
@@ -120,6 +119,8 @@ hooks =
   , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
+  , ("webkitgtk3", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("webkitgtk3-javascriptcore", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
   , ("Win32", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Windows)))
   , ("Win32-shortcut", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Windows)))
@@ -294,11 +295,6 @@ giGtkPhaseOverrides :: Derivation -> Derivation
 giGtkPhaseOverrides
   = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
 
-giJavascriptCorePhaseOverrides :: Derivation -> Derivation
-giJavascriptCorePhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["webkitgtk"] ++ "'';")
-  . set (libraryDepends . pkgconfig . contains (pkg "webkitgtk")) True
-
 giCairoPhaseOverrides :: Derivation -> Derivation
 giCairoPhaseOverrides = over phaseOverrides (++'\n':txt)
                       . set (libraryDepends . pkgconfig . contains (pkg "cairo")) True
@@ -325,11 +321,6 @@ giPangoCairoPhaseOverrides = set phaseOverrides txt
                   , "'';"
                   ]
 
-giWebkit2PhaseOverrides :: Derivation -> Derivation
-giWebkit2PhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["webkitgtk"] ++ "'';")
-  . set (libraryDepends . pkgconfig . contains (pkg "webkitgtk")) True
-
 hfseventsOverrides :: Derivation -> Derivation
 hfseventsOverrides
   = set isLibrary True
@@ -337,3 +328,7 @@ hfseventsOverrides
   . set (libraryDepends . tool . contains (bind "pkgs.darwin.apple_sdk.frameworks.CoreServices")) True
   . set (libraryDepends . system . contains (bind "pkgs.darwin.apple_sdk.frameworks.Cocoa")) True
   . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
+
+webkitgtk24xHook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
+webkitgtk24xHook = set (libraryDepends . pkgconfig . contains (pkg "webkitgtk24x")) True
+                 . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "webkitgtk24x"))

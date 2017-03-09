@@ -141,10 +141,14 @@ libNixName "wayland-client"                     = return "wayland"
 libNixName "wayland-cursor"                     = return "wayland"
 libNixName "wayland-egl"                        = return "mesa"
 libNixName "wayland-server"                     = return "wayland"
-libNixName "webkit2gtk-4.0"                     = return "webkit2gtk"
-libNixName "webkit2gtk-web-extension-4.0"       = return "webkit2gtk-web-extension"
-libNixName "webkitgtk"                          = return "webkit"
-libNixName "webkitgtk-3.0"                      = return "webkit"
+-- These are the old APIs, of which 2.4 is the last provider, so map directly to that
+libNixName "javascriptcoregtk-3.0"              = return "webkitgtk24x"
+libNixName "webkitgtk-3.0"                      = return "webkitgtk24x"
+-- This is the current API, so let it reference an alias for the latest version
+libNixName "javascriptcoregtk-4.0"              = return "webkitgtk"
+libNixName "webkit2gtk-4.0"                     = return "webkitgtk"
+-- This package doesn't actually exist in nixpkgs at present
+libNixName "webkit2gtk-web-extension-4.0"       = return "webkitgtk-web-extension"
 libNixName "X11"                                = return "libX11"
 libNixName "xau"                                = return "libXau"
 libNixName "Xcursor"                            = return "libXcursor"
