@@ -63,7 +63,7 @@ hooks =
   , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-javascriptcore < 4.0.0.0", webkitgtk24xHook)       -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-pangocairo", giPangoCairoPhaseOverrides)           -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-pangocairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
@@ -296,28 +296,12 @@ giGtkPhaseOverrides
   = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
 
 giCairoPhaseOverrides :: Derivation -> Derivation
-giCairoPhaseOverrides = over phaseOverrides (++'\n':txt)
+giCairoPhaseOverrides = over phaseOverrides (++txt)
                       . set (libraryDepends . pkgconfig . contains (pkg "cairo")) True
-                      . giPhaseOverrides
   where
     txt = unlines [ "preCompileBuildDriver = ''"
                   , "  PKG_CONFIG_PATH+=\":${cairo}/lib/pkgconfig\""
                   , "  setupCompileFlags+=\" $(pkg-config --libs cairo-gobject)\""
-                  , "'';"
-                  ]
-
-giPangoCairoPhaseOverrides :: Derivation -> Derivation
-giPangoCairoPhaseOverrides = set phaseOverrides txt
-                           . over (libraryDepends . pkgconfig) addPkgs
-  where
-    addPkgs = Set.union (Set.fromList [ "system-pango = pkgs.pango"
-                                      , "system-cairo = pkgs.cairo" ])
-            . Set.insert (pkg "gobjectIntrospection")
-    gir = [ "system-pango.dev" ]
-    txt = unlines [ "preConfigure = ''" ++ exportGirSearchPath gir ++ "'';"
-                  , "preCompileBuildDriver = ''"
-                  , "  PKG_CONFIG_PATH+=\":${system-pango.dev}/lib/pkgconfig:${system-cairo.dev}/lib/pkgconfig\""
-                  , "  setupCompileFlags+=\" $(pkg-config --libs pangocairo cairo-gobject)\""
                   , "'';"
                   ]
 
