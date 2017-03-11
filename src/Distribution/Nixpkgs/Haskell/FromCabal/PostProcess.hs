@@ -51,16 +51,10 @@ hooks =
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("gi-cairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gdk", giGdkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gdkpixbuf", giGdkPixBufPhaseOverrides)             -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gio", giPhaseOverrides)                            -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-glib", giPhaseOverrides)                           -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gobject", giPhaseOverrides)                        -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gst", giGstLibOverrides "gstreamer")               -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstaudio", giGstLibOverrides "gst-plugins-base")   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstbase", giGstLibOverrides "gst-plugins-base")    -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstvideo", giGstLibOverrides "gst-plugins-base")   -- https://github.com/haskell-gi/haskell-gi/issues/36
-  , ("gi-gtk", giGtkPhaseOverrides)                         -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-javascriptcore < 4.0.0.0", webkitgtk24xHook)       -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pangocairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
@@ -262,38 +256,10 @@ stackOverrides = unlines
   , "'';"
   ]
 
-exportGirSearchPath :: [String] -> String
-exportGirSearchPath packages =
-  "export HASKELL_GI_GIR_SEARCH_PATH="
-  ++ intercalate ":" [ "${" ++ package ++ "}/share/gir-1.0" | package <- packages]
-
-giPhaseOverrides :: Derivation -> Derivation
-giPhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gobjectIntrospection.dev"] ++ "'';")
-  . set (libraryDepends . pkgconfig . contains (pkg "gobjectIntrospection")) True
-
-giGdkPhaseOverrides :: Derivation -> Derivation
-giGdkPhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
-
-giGdkPixBufPhaseOverrides :: Derivation -> Derivation
-giGdkPixBufPhaseOverrides
-  = set phaseOverrides (unlines
-    [ "preConfigure = ''"
-    , "  " ++ exportGirSearchPath ["gobjectIntrospection.dev", "gdk_pixbuf.dev"]
-    , "  export GI_TYPELIB_PATH=${gdk_pixbuf.out}/lib/girepository-1.0"
-    , "'';"
-    ])
-  . set (libraryDepends . pkgconfig . contains (pkg "gobjectIntrospection")) True
-
 -- Replace a binding for <package> to one to pkgs.gst_all_1.<package>
 giGstLibOverrides :: String -> Derivation -> Derivation
 giGstLibOverrides package
   = over (libraryDepends . pkgconfig) (replace (pkg (ident # package)) (binding # (ident # package, path # ["pkgs","gst_all_1", ident # package])))
-
-giGtkPhaseOverrides :: Derivation -> Derivation
-giGtkPhaseOverrides
-  = set phaseOverrides ("preConfigure = ''" ++ exportGirSearchPath ["gtk3.dev"] ++ "'';")
 
 giCairoPhaseOverrides :: Derivation -> Derivation
 giCairoPhaseOverrides = over phaseOverrides (++txt)
