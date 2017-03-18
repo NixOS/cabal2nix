@@ -3,7 +3,6 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
 
 import Control.Lens
-import Data.List
 import Data.List.Split
 import Data.Set ( Set )
 import qualified Data.Set as Set
