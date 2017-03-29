@@ -56,6 +56,18 @@ contains the derivation as the source repository.
 * source archive (zip, tar.gz, ...) from http or https URL or local file.
 * git, mercurial, svn or bazaar repository
 
+
+Troubleshooting
+---------------
+
+*Symptom*: Running `nix-shell` on a generated expression fails with an error.
+
+*Fix*: Use the `--shell` option.
+
+    $ cabal2nix --shell . > default.nix
+    $ nix-shell
+
+
 How to compile this package
 ---------------------------
 
