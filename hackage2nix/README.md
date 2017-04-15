@@ -27,7 +27,7 @@ cabal install
 ```
 
 #### Running Hackage2nix
-This will run hackage2nix and push a commit with the updated `hackage-packages.nix`
+Runs hackage2nix and pushes a commit with the updated `hackage-packages.nix`
 file to your fork of `nixpkgs`.
 ```
 ./update-nixpkgs.sh
