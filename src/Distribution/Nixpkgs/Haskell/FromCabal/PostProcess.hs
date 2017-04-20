@@ -92,6 +92,7 @@ hooks =
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
+  , ("pango", set (libraryDepends . system . contains (bind "pkgs.gnome2.pango")) True)
   , ("pandoc", set jailbreak False) -- jailbreak-cabal break the build
   , ("pandoc >= 1.16.0.2", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
