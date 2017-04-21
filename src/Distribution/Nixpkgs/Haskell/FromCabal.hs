@@ -103,6 +103,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
       | i `elem` ["clang","lldb","llvm"] = binding # (i, path # ["self","llvmPackages",i])     -- TODO: evil!
       | i == "gtk2"                      = binding # (i, path # ["pkgs","gnome2","gtk"])
       | i == "gtk3"                      = binding # (i, path # ["pkgs","gnome3","gtk"])
+      | i == "gtksourceview3"            = binding # (i, path # ["pkgs","gnome3","gtksourceview"])
       | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
       | otherwise                        = bindNull i
 
