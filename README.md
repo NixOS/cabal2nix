@@ -10,12 +10,11 @@ For example:
       pname = "mtl";
       version = "2.2.1";
       sha256 = "1icdbj2rshzn0m1zz5wa7v3xvkf6qw811p4s7jgqwvx1ydwrvrfa";
-      buildDepends = [ base transformers ];
+      libraryHaskellDepends = [ base transformers ];
       homepage = "http://github.com/ekmett/mtl";
       description = "Monad classes, using functional dependencies";
       license = stdenv.lib.licenses.bsd3;
     }
-
 
 Cabal files can be referred to using the magic URL `cabal://NAME-VERSION`,
 which will automatically download the file from Hackage. Alternatively, a
@@ -41,7 +40,7 @@ on the local file system:
       pname = "mtl";
       version = "2.2.1";
       src = ./.;
-      buildDepends = [ base transformers ];
+      libraryHaskellDepends = [ base transformers ];
       homepage = "http://github.com/ekmett/mtl";
       description = "Monad classes, using functional dependencies";
       license = stdenv.lib.licenses.bsd3;
