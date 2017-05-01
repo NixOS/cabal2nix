@@ -32,18 +32,18 @@ data Package = Package
 getPackage :: Maybe String -> Source -> IO Package
 getPackage optHackageDB source = do
   (derivSource, pkgDesc) <- fetchOrFromDB optHackageDB source
-  flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) $ showPackageIdentifier pkgDesc) return derivSource
+  flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
 
 fetchOrFromDB :: Maybe String -> Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
 fetchOrFromDB optHackageDB src
   | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,) Nothing) . fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
   | otherwise                             = do
-    r <- fetch cabalFromPath src
+    r <- fetch (\dir -> cabalFromPath (dir </> sourceCabalDir src)) src
     case r of
       Nothing ->
         hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
-      Just (derivSource, (externalSource, pkgDesc)) ->
+      Just (derivSource, (externalSource, pkgDesc)) -> do
         return (derivSource <$ guard externalSource, pkgDesc)
 
 fromDB :: Maybe String -> String -> IO Cabal.GenericPackageDescription
@@ -77,8 +77,8 @@ hashCachePath pid = do
   createDirectoryIfMissing True cacheDir
   return $ cacheDir </> pid <.> "sha256"
 
-sourceFromHackage :: Hash -> String -> IO DerivationSource
-sourceFromHackage optHash pkgId = do
+sourceFromHackage :: Hash -> String -> String -> IO DerivationSource
+sourceFromHackage optHash pkgId cabalDir = do
   cacheFile <- hashCachePath pkgId
   cachedHash <-
     case optHash of
@@ -99,7 +99,7 @@ sourceFromHackage optHash pkgId = do
       seq (length hash) $
       DerivationSource "url" url "" hash <$ writeFile cacheFile hash
     UnknownHash -> do
-      maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", []) (Source url "" UnknownHash))
+      maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", []) (Source url "" UnknownHash cabalDir))
       case maybeHash of
         Just hash ->
           seq (length hash) $
@@ -133,7 +133,7 @@ cabalFromDirectory dir = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
     [cabalFile] -> cabalFromFile True cabalFile
-    _       -> liftIO $ hPutStrLn stderr "*** found zero or more than one cabal file. Exiting." >> exitFailure
+    _       -> liftIO $ hPutStrLn stderr ("*** found zero or more than one cabal file (" ++ show cabals ++ "). Exiting.") >> exitFailure
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
