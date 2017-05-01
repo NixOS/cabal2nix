@@ -45,6 +45,7 @@ data Options = Options
   , optFlags :: [String]
   , optCompiler :: CompilerId
   , optSystem :: Platform
+  , optSubpath :: Maybe FilePath
   , optUrl :: String
   }
   deriving (Show)
@@ -68,6 +69,7 @@ options = Options
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
           <*> option (readP parse) (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith display)
           <*> option (readP parsePlatform) (long "system" <> help "target system to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
+          <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
           <*> strArgument (metavar "URI")
 
 readP :: P.ReadP a a -> ReadM a
@@ -112,7 +114,7 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
   Options {..} <- execParser pinfo
 
-  pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256)
+  pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "." optSubpath)
 
   let
       deriv :: Derivation
@@ -124,6 +126,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() -> do
                                             []
                                             (pkgCabal pkg)
               & src .~ pkgSource pkg
+              & subpath .~ (fromMaybe "." optSubpath)
               & runHaddock .~ optHaddock
               & jailbreak .~ optJailbreak
               & hyperlinkSource .~ optHyperlinkSource
