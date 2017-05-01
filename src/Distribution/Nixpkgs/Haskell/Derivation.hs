@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
-  ( Derivation, nullDerivation, pkgid, revision, src, isLibrary, isExecutable
+  ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
@@ -36,6 +36,7 @@ data Derivation = MkDerivation
   { _pkgid                      :: PackageIdentifier
   , _revision                   :: Int
   , _src                        :: DerivationSource
+  , _subpath                    :: FilePath
   , _isLibrary                  :: Bool
   , _isExecutable               :: Bool
   , _extraFunctionArgs          :: Set Binding
@@ -65,6 +66,7 @@ nullDerivation = MkDerivation
   { _pkgid = error "undefined Derivation.pkgid"
   , _revision = error "undefined Derivation.revision"
   , _src = error "undefined Derivation.src"
+  , _subpath = error "undefined Derivation.subpath"
   , _isLibrary = error "undefined Derivation.isLibrary"
   , _isExecutable = error "undefined Derivation.isExecutable"
   , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
@@ -104,6 +106,7 @@ instance Pretty Derivation where
       [ attr "pname"   $ doubleQuotes $ disp (packageName _pkgid)
       , attr "version" $ doubleQuotes $ disp (packageVersion _pkgid)
       , sourceAttr _src
+      , onlyIf (_subpath /= ".") $ attr "postUnpack" postUnpack
       , onlyIf (_revision > 0) $ attr "revision" $ doubleQuotes $ int _revision
       , onlyIf (not (null _editedCabalFile) && _revision > 0) $ attr "editedCabalFile" $ string _editedCabalFile
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
@@ -149,3 +152,8 @@ instance Pretty Derivation where
            , rbrace <> semi
            ]
         | otherwise = attr "src" $ text derivUrl
+
+      postUnpack = doubleQuotes $ vcat
+        [ text "sourceRoot=\\${sourceRoot}/" <> text _subpath
+        , text "echo Source root reset to \\${sourceRoot}"
+        ]
