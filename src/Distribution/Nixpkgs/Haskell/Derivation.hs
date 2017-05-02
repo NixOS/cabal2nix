@@ -153,7 +153,4 @@ instance Pretty Derivation where
            ]
         | otherwise = attr "src" $ text derivUrl
 
-      postUnpack = doubleQuotes $ vcat
-        [ text "sourceRoot=\\${sourceRoot}/" <> text _subpath
-        , text "echo Source root reset to \\${sourceRoot}"
-        ]
+      postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"
