@@ -99,6 +99,7 @@ dependencies:
 library:
   source-dirs: src
   exposed-modules:
+    - Cabal2nix
     - Distribution.Nixpkgs.Fetch
     - Distribution.Nixpkgs.Haskell
     - Distribution.Nixpkgs.Haskell.BuildInfo
@@ -148,4 +149,7 @@ tests:
     source-dirs:
       - test
     dependencies:
+      - cabal2nix
       - doctest
+      - tasty
+      - tasty-hunit
