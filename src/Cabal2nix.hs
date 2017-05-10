@@ -124,7 +124,7 @@ mainWithArgs :: [String] -> IO ()
 mainWithArgs args = safeFlush $ do
   Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
 
-  pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "." optSubpath)
+  pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
 
   let
       deriv :: Derivation

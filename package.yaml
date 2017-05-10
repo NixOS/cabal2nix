@@ -151,5 +151,7 @@ tests:
     dependencies:
       - cabal2nix
       - doctest
+      - here
+      - silently
       - tasty
       - tasty-hunit
