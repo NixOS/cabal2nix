@@ -1,12 +1,12 @@
-## ignore build Cabal build files
+# ignore build Cabal build files
 
-.cabal-sandbox
-Setup
-Setup.hi
-Setup.o
-add-source-timestamps
-cabal.sandbox.config
-dist
+/.cabal-sandbox
+/Setup
+/Setup.hi
+/Setup.o
+/cabal.sandbox.config
+/dist
+/dist-newstyle
 
 # vim tmp files
 
@@ -26,6 +26,4 @@ TAGS
 # hackage2nix ususally needs those two repositories around
 
 /hackage/*
-/lts-haskell/*
 /nixpkgs/*
-/stackage-nightly/*
