@@ -1,5 +1,5 @@
 # This file has been generated -- see https://github.com/hvr/multi-ghc-travis
-language: c
+language: nix
 sudo: false
 
 cache:
