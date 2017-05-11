@@ -224,7 +224,6 @@ test-suite spec
     , yaml
     , cabal2nix
     , doctest
-    , here
     , silently
     , tasty
     , tasty-hunit
