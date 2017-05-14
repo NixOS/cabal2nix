@@ -160,9 +160,13 @@ gitAnnexHook = set phaseOverrides gitAnnexOverrides
   where
     gitAnnexOverrides = unlines
       [ "preConfigure = \"export HOME=$TEMPDIR; patchShebangs .\";"
-      , "postBuild = \"ln -sf dist/build/git-annex/git-annex git-annex\";"
       , "installPhase = \"make PREFIX=$out BUILDER=: install\";"
-      , "checkPhase = \"./git-annex test\";"
+      , "checkPhase = ''"
+      , "  ln -sf dist/build/git-annex/git-annex git-annex"
+      , "  ln -sf git-annex git-annex-shell"
+      , "  export PATH+=\":$PWD\""
+      , "  git-annex test"
+      , "'';"
       , "enableSharedExecutables = false;"
       ]
     buildInputs = pkgs ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
