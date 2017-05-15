@@ -68,7 +68,7 @@ description: >
 
   > nix-env -i cabal2nix
 
-ghc-options:            -Wall
+ghc-options: -Wall
 
 extra-source-files:
   README.md
@@ -143,9 +143,11 @@ executables:
       - -with-rtsopts=-N
 
 tests:
-  spec:
-    main: Main.hs
+  doctests:
+    main: doctests.hs
     source-dirs:
       - test
     dependencies:
       - doctest
+    ghc-options:
+      - -threaded
