@@ -98,6 +98,16 @@ dependencies:
 
 library:
   source-dirs: src
+  other-extensions:
+    - CPP
+    - DeriveGeneric
+    - FlexibleInstances
+    - MultiParamTypeClasses
+    - OverloadedStrings
+    - RecordWildCards
+    - ScopedTypeVariables
+    - StandaloneDeriving
+    - TemplateHaskell
   exposed-modules:
     - Distribution.Nixpkgs.Fetch
     - Distribution.Nixpkgs.Haskell

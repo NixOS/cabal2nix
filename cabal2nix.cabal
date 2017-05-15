@@ -80,6 +80,7 @@ source-repository head
 library
   hs-source-dirs:
       src
+  other-extensions: CPP DeriveGeneric FlexibleInstances MultiParamTypeClasses OverloadedStrings RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell
   ghc-options: -Wall
   build-depends:
       aeson
@@ -172,12 +173,12 @@ executable hackage2nix
     , distribution-nixpkgs
     , filepath
     , hackage-db
+    , hopenssl >= 2
     , language-nix
     , lens
     , optparse-applicative
     , pretty >= 1.1.2
     , process
-    , SHA
     , split
     , text
     , transformers
@@ -211,12 +212,12 @@ test-suite doctests
     , distribution-nixpkgs
     , filepath
     , hackage-db
+    , hopenssl >= 2
     , language-nix
     , lens
     , optparse-applicative
     , pretty >= 1.1.2
     , process
-    , SHA
     , split
     , text
     , transformers
