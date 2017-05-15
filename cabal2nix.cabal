@@ -94,12 +94,12 @@ library
     , distribution-nixpkgs
     , filepath
     , hackage-db
+    , hopenssl >= 2
     , language-nix
     , lens
     , optparse-applicative
     , pretty >= 1.1.2
     , process
-    , SHA
     , split
     , text
     , transformers
@@ -141,12 +141,12 @@ executable cabal2nix
     , distribution-nixpkgs
     , filepath
     , hackage-db
+    , hopenssl >= 2
     , language-nix
     , lens
     , optparse-applicative
     , pretty >= 1.1.2
     , process
-    , SHA
     , split
     , text
     , transformers

@@ -8,8 +8,7 @@ import Control.Lens hiding ( (<.>) )
 import Data.Aeson
 import Data.ByteString.Char8 ( ByteString )
 import qualified Data.ByteString.Char8 as BS
-import Data.ByteString.Lazy.Char8 ( fromStrict )
-import Data.Digest.Pure.SHA ( sha256, showDigest )
+import OpenSSL.Digest ( digest, digestByName, toHex )
 import Data.Map as Map
 import Data.Set as Set
 import Data.String
@@ -50,10 +49,7 @@ readPackage dirPrefix (PackageIdentifier name version) = do
   cabal <- case parsePackageDescription (decodeUTF8 buf) of
              ParseOk _ a  -> return a
              ParseFailed err -> fail (cabalFile ++ ": " ++ show err)
-  return (cabal, mkSHA256 buf)
-
-mkSHA256 :: ByteString -> SHA256Hash
-mkSHA256 = showDigest . sha256 . fromStrict
+  return (cabal, BS.unpack (toHex (digest (digestByName "sha256") buf)))
 
 declareLenses [d|
   data Meta = Meta { hashes :: Map String String

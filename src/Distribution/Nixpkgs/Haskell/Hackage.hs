@@ -1,10 +1,11 @@
 module Distribution.Nixpkgs.Haskell.Hackage ( readHashedHackage, readHashedHackage', module Distribution.Hackage.DB ) where
 
 import Data.ByteString.Lazy ( ByteString )
-import Data.Digest.Pure.SHA ( sha256, showDigest )
+import Data.ByteString.Char8 ( unpack )
 import Distribution.Hackage.DB
 import qualified Distribution.Hackage.DB.Parsed as Unparsed ( parsePackage )
 import qualified Distribution.Hackage.DB.Unparsed as Unparsed
+import OpenSSL.Digest ( digest, digestByName, toHex )
 
 -- | A variant of 'readHackage' that adds the SHA256 digest of the
 -- original Cabal file to the parsed 'GenericPackageDescription'. That
@@ -24,7 +25,7 @@ readHashedHackage' = fmap parseUnparsedHackage . Unparsed.readHackage'
     parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
     parsePackage name version buf =
       let pkg = Unparsed.parsePackage name version buf
-          hash = showDigest (sha256 buf)
+          hash = unpack (toHex (digest (digestByName "sha256") buf))
       in
        pkg { packageDescription = (packageDescription pkg) {
                 customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg)

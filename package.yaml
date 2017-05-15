@@ -1,5 +1,5 @@
 name:           cabal2nix
-version:        2.2.1
+version:        2.3
 synopsis:       Convert Cabal files into Nix build instructions.
 author:
   - Peter Simons
@@ -85,12 +85,12 @@ dependencies:
   - distribution-nixpkgs
   - filepath
   - hackage-db
+  - hopenssl >= 2
   - language-nix
   - lens
   - optparse-applicative
   - pretty >= 1.1.2
   - process
-  - SHA
   - split
   - text
   - transformers
