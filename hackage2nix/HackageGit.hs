@@ -3,22 +3,23 @@
 
 module HackageGit where
 
-import Control.Monad
 import Control.Lens hiding ( (<.>) )
+import Control.Monad
 import Data.Aeson
 import Data.ByteString.Char8 ( ByteString )
 import qualified Data.ByteString.Char8 as BS
-import OpenSSL.Digest ( digest, digestByName, toHex )
 import Data.Map as Map
 import Data.Set as Set
 import Data.String
 import Data.String.UTF8 ( toString, fromRep )
+import Distribution.Nixpkgs.Hashes
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
 import Distribution.Text
 import Distribution.Version
+import OpenSSL.Digest ( digest, digestByName )
 import System.Directory
 import System.FilePath
 
@@ -49,7 +50,7 @@ readPackage dirPrefix (PackageIdentifier name version) = do
   cabal <- case parsePackageDescription (decodeUTF8 buf) of
              ParseOk _ a  -> return a
              ParseFailed err -> fail (cabalFile ++ ": " ++ show err)
-  return (cabal, BS.unpack (toHex (digest (digestByName "sha256") buf)))
+  return (cabal, printSHA256 (digest (digestByName "sha256") buf))
 
 declareLenses [d|
   data Meta = Meta { hashes :: Map String String
@@ -72,4 +73,4 @@ readPackageMeta dirPrefix (PackageIdentifier name version) = do
   buf <- BS.readFile metaFile
   case eitherDecodeStrict buf of
     Left msg -> fail (metaFile ++ ": " ++ msg)
-    Right x  -> return x
+    Right x  -> return $ over (hashes . ix "SHA256") (printSHA256 . packHex) x

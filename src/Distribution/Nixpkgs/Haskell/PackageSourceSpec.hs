@@ -7,18 +7,18 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import qualified Data.ByteString.Lazy.Char8 as LBS8
-import qualified Data.ByteString.Char8 as SBS8
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe
 import Data.Version
 import Distribution.Hackage.DB.Parsed
 import Distribution.Nixpkgs.Fetch
+import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.Text ( simpleParse )
-import OpenSSL.Digest ( digest, digestByName, toHex )
+import OpenSSL.Digest ( digest, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
@@ -147,7 +147,7 @@ cabalFromFile failHard file =
   -- the reading of the file, so we will always catch the expression here.
   MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
     buf <- LBS8.readFile file
-    let hash = SBS8.unpack (toHex (digest (digestByName "sha256") buf))
+    let hash = printSHA256 (digest (digestByName "sha256") buf)
     case parsePackage' buf of
       Left msg    -> if failHard
                      then fail ("*** cannot parse " ++ show file ++ ": " ++ msg)

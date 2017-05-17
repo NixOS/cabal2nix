@@ -91,7 +91,7 @@ library
     , containers
     , deepseq >= 1.4
     , directory
-    , distribution-nixpkgs
+    , distribution-nixpkgs >= 1.1
     , filepath
     , hackage-db
     , hopenssl >= 2
@@ -138,7 +138,7 @@ executable cabal2nix
     , containers
     , deepseq >= 1.4
     , directory
-    , distribution-nixpkgs
+    , distribution-nixpkgs >= 1.1
     , filepath
     , hackage-db
     , hopenssl >= 2
@@ -170,7 +170,7 @@ executable hackage2nix
     , containers
     , deepseq >= 1.4
     , directory
-    , distribution-nixpkgs
+    , distribution-nixpkgs >= 1.1
     , filepath
     , hackage-db
     , hopenssl >= 2
@@ -209,7 +209,7 @@ test-suite doctests
     , containers
     , deepseq >= 1.4
     , directory
-    , distribution-nixpkgs
+    , distribution-nixpkgs >= 1.1
     , filepath
     , hackage-db
     , hopenssl >= 2
