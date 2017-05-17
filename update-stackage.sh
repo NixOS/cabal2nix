@@ -19,14 +19,17 @@ sed -r \
 
 # Drop restrictions on some tools where we always want the latest version.
 sed -r \
-    -e '/ cabal-install /d' \
     -e '/ cabal2nix /d' \
+    -e '/ cabal-install /d' \
+    -e '/ distribution-nixpkgs /d' \
     -e '/ hindent /d' \
-    -e '/ hpack /d' \
+    -e '/ hledger/d' \
     -e '/ hoogle /d' \
+    -e '/ hopenssl /d' \
+    -e '/ hpack /d' \
+    -e '/ language-nix /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
-    -e '/ hledger/d' \
     -i "$tmpfile"
 
 # Drop the previous configuration ...
