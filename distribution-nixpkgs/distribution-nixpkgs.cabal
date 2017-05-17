@@ -1,10 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.14.1.
+-- This file has been generated from package.yaml by hpack version 0.17.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           distribution-nixpkgs
-version:        1.0.0.1
-synopsis:       Types and functions to manipulate the Nixpkgs distribution.
+version:        1.1
+synopsis:       Types and functions to manipulate the Nixpkgs distribution
 description:    Types and functions to represent, query, and manipulate the Nixpkgs distribution.
 category:       Distribution, Nix
 homepage:       https://github.com/peti/distribution-nixpkgs#readme
@@ -23,6 +23,7 @@ source-repository head
 library
   hs-source-dirs:
       src
+  other-extensions: DeriveGeneric PackageImports RecordWildCards TemplateHaskell
   ghc-options: -Wall
   build-depends:
       aeson
@@ -40,31 +41,33 @@ library
       Distribution.Nixpkgs.License
       Distribution.Nixpkgs.Meta
       Distribution.Nixpkgs.PackageMap
+      Distribution.Nixpkgs.Hashes
       Language.Nix.PrettyPrinting
   other-modules:
       Internal.OrphanInstances
   default-language: Haskell2010
 
-test-suite spec
+test-suite doctests
   type: exitcode-stdio-1.0
-  main-is: Main.hs
+  main-is: doctests.hs
   hs-source-dirs:
       test
   ghc-options: -Wall
   build-depends:
-      aeson
-    , base > 4.2 && < 5
-    , bytestring
-    , Cabal > 1.24
-    , containers
-    , deepseq >= 1.4
-    , language-nix > 2
-    , lens
-    , pretty >= 1.1.2
-    , process
-    , split
-    , distribution-nixpkgs
+      base
     , doctest
+  default-language: Haskell2010
+
+test-suite hspec
+  type: exitcode-stdio-1.0
+  main-is: hspec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-depends:
+      base
+    , deepseq
+    , distribution-nixpkgs
     , hspec
-    , QuickCheck
+    , lens
   default-language: Haskell2010
