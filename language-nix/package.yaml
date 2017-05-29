@@ -7,7 +7,7 @@ maintainer:             simons@cryp.to
 license:                BSD3
 github:                 peti/language-nix
 category:               Distribution, Language, Nix
-tested-with:            GHC > 7.6 && < 8.1
+tested-with:            GHC > 7 && < 8.1
 
 ghc-options:            -Wall
 
@@ -27,6 +27,11 @@ library:
     - Language.Nix.Binding
     - Language.Nix.Identifier
     - Language.Nix.Path
+  other-extensions:
+    - DeriveGeneric
+    - GeneralizedNewtypeDeriving
+    - NoImplicitPrelude
+    - TemplateHaskell
 
 tests:
   spec:

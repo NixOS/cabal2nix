@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.14.1.
+-- This file has been generated from package.yaml by hpack version 0.17.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -13,7 +13,7 @@ author:         Peter Simons
 maintainer:     simons@cryp.to
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC > 7.6 && < 8.1
+tested-with:    GHC > 7 && < 8.1
 build-type:     Simple
 cabal-version:  >= 1.10
 
@@ -24,6 +24,7 @@ source-repository head
 library
   hs-source-dirs:
       src
+  other-extensions: DeriveGeneric GeneralizedNewtypeDeriving NoImplicitPrelude TemplateHaskell
   ghc-options: -Wall
   build-depends:
       base < 5
