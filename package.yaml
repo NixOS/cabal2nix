@@ -109,6 +109,7 @@ library:
     - StandaloneDeriving
     - TemplateHaskell
   exposed-modules:
+    - Cabal2nix
     - Distribution.Nixpkgs.Fetch
     - Distribution.Nixpkgs.Haskell
     - Distribution.Nixpkgs.Haskell.BuildInfo
