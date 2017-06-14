@@ -124,7 +124,8 @@ hooks =
   , ("wxc", wxcHook)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender"])))
   , ("xmonad", set phaseOverrides xmonadPostInstall)
-  , ("zip-archive", over (testDepends . tool) (replace (bind "self.zip") (pkg "zip")))
+  , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (bind "self.zip") (pkg "zip")))
+  , ("zip-archive >= 0.3.1", set (testDepends . tool . contains (pkg "zip")) True)  -- https://github.com/jgm/zip-archive/issues/35
   ]
 
 pkg :: Identifier -> Binding
