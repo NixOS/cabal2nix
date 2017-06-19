@@ -94,7 +94,7 @@ hooks =
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
-  , ("opencv", set phaseOverrides "hardeningDisable = [ \"bindnow\" ];")
+  , ("opencv", opencvOverrides)
   , ("pandoc >= 1.16.0.2", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
   , ("pandoc", set jailbreak False) -- jailbreak-cabal break the build
@@ -289,3 +289,9 @@ hfseventsOverrides
 webkitgtk24xHook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
 webkitgtk24xHook = set (libraryDepends . pkgconfig . contains (pkg "webkitgtk24x")) True
                  . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "webkitgtk24x"))
+
+opencvOverrides :: Derivation -> Derivation
+opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
+                . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
+                . set (configureFlags . contains "--with-gcc=${stdenv.cc}/bin/c++") True
+                . set (configureFlags . contains "--with-ld=${stdenv.cc}/bin/c++") True
