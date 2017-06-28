@@ -143,8 +143,8 @@ libNixName "wayland-cursor"                     = return "wayland"
 libNixName "wayland-egl"                        = return "mesa"
 libNixName "wayland-server"                     = return "wayland"
 -- These are the old APIs, of which 2.4 is the last provider, so map directly to that
-libNixName "javascriptcoregtk-3.0"              = return "webkitgtk24x"
-libNixName "webkitgtk-3.0"                      = return "webkitgtk24x"
+libNixName "javascriptcoregtk-3.0"              = return "webkitgtk24x-gtk3"
+libNixName "webkitgtk-3.0"                      = return "webkitgtk24x-gtk3"
 -- This is the current API, so let it reference an alias for the latest version
 libNixName "javascriptcoregtk-4.0"              = return "webkitgtk"
 libNixName "webkit2gtk-4.0"                     = return "webkitgtk"
