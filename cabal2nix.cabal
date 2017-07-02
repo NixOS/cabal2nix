@@ -1,9 +1,9 @@
--- This file has been generated from package.yaml by hpack version 0.17.0.
+-- This file has been generated from package.yaml by hpack version 0.18.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           cabal2nix
-version:        2.3
+version:        2.3.1
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
                 .
@@ -67,7 +67,7 @@ maintainer:     Peter Simons <simons@cryp.to>
 license:        BSD3
 license-file:   LICENSE
 tested-with:    GHC > 7.10 && < 8.1
-build-type:     Simple
+build-type:     Custom
 cabal-version:  >= 1.10
 
 extra-source-files:
@@ -76,6 +76,12 @@ extra-source-files:
 source-repository head
   type: git
   location: https://github.com/nixos/cabal2nix
+
+custom-setup
+  setup-depends:
+      base >= 4 && <5
+    , Cabal
+    , cabal-doctest >= 1 && <1.1
 
 library
   hs-source-dirs:
