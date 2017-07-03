@@ -108,7 +108,7 @@ pinfo = info
                      , P2.fillSep (map P2.text (words (  "If the URI refers to a cabal file, information for building the package "
                                                       ++ "will be retrieved from that file, but hackage will be used as a source "
                                                       ++ "for the derivation. Otherwise, the supplied URI will be used to as the "
-                                                      ++ "souce for the derivation and the information is taken from the cabal file "
+                                                      ++ "source for the derivation and the information is taken from the cabal file "
                                                       ++ "at the root of the downloaded source."
                                                       )))
                      ]))
