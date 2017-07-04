@@ -78,8 +78,9 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "control-invariants"   -- TODO: depends on "assert"
-            . over (at ("hermes")) ((fmap (set (contains "1.3.4.3") False)))            -- TODO: https://github.com/haskell/hackage-server/issues/436
-            . over (at ("gogol-admin-reports")) ((fmap (set (contains "0.2.0") False))) -- TODO: https://github.com/commercialhaskell/all-cabal-hashes/issues/11
+            . over (at ("hermes")) ((fmap (set (contains "1.3.4.3") False)))                  -- TODO: https://github.com/haskell/hackage-server/issues/436
+            . over (at ("gogol-admin-reports")) ((fmap (set (contains "0.2.0") False)))       -- TODO: https://github.com/commercialhaskell/all-cabal-hashes/issues/11
+            . over (at ("wai-middleware-prometheus")) ((fmap (set (contains "0.2.0") False))) -- TODO: https://github.com/commercialhaskell/all-cabal-hashes/issues/15
   hackage <- fixup <$> readHackage hackageRepository
   let
       hackagePackagesFile :: FilePath
