@@ -18,7 +18,6 @@ git reset -q --hard
 git clean -dxf -q
 git pull -q
 export NIX_PATH=nixpkgs=$PWD
-nixpkgs=$(git rev-parse --verify HEAD)
 cd ..
 
 cd hackage
