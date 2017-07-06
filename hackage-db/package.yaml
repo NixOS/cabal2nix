@@ -1,0 +1,68 @@
+name:         hackage-db
+version:      "2"
+synopsis:     Access Hackage's package database via Data.Map
+category:     Distribution
+author:       Peter Simons, Alexander Altman, Ben James
+maintainer:   Peter Simons <simons@cryp.to>
+github:       peti/hackage-db
+license:      BSD3
+tested-with:  GHC > 7.2 && < 8.1
+description:  !
+  "This module provides simple access to the Hackage database by means
+
+  of @Data.Map@. Suppose you wanted to implement a utility that queries
+
+  the set of available versions for a given package, the following
+
+  program would do the trick:
+
+
+  > import qualified Distribution.Hackage.DB as DB
+
+  > import Distribution.Text ( display )
+
+  > import System.Environment ( getArgs )
+
+  >
+
+  > main :: IO ()
+
+  > main = do
+
+  >   pkgs <- getArgs
+
+  >   db <- DB.readHackage
+
+  >   let getVersions name = maybe [] DB.keys (DB.lookup name db)
+
+  >   mapM_ (putStrLn . unwords . map display . getVersions) pkgs
+
+
+  When run, it would produce the following output:
+
+
+  > ./a.out containers deepseq cabal-install
+
+  > 0.1.0.0 0.1.0.1 0.2.0.0 0.2.0.1 0.3.0.0 0.4.0.0
+
+  > 1.0.0.0 1.1.0.0 1.1.0.1 1.1.0.2
+
+  > 0.4.0 0.5.0 0.5.1 0.5.2 0.6.0 0.6.2 0.6.4 0.8.0 0.8.2 0.10.0 0.10.2"
+
+dependencies:
+  - base >= 3 && < 5
+  - tar >= 0.4
+  - Cabal
+  - containers
+  - directory
+  - filepath
+  - bytestring
+  - utf8-string
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Distribution.Hackage.DB.Unparsed
+    - Distribution.Hackage.DB.Parsed
+    - Distribution.Hackage.DB.Path
+    - Distribution.Hackage.DB

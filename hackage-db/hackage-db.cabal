@@ -1,50 +1,64 @@
+-- This file has been generated from package.yaml by hpack version 0.18.1.
+--
+-- see: https://github.com/sol/hpack
+
 name:                   hackage-db
-version:                1.23
-copyright:              Peter Simons
+version:                2
 license:                BSD3
 license-file:           LICENSE
-author:                 Peter Simons <simons@cryp.to>
+tested-with:            GHC > 7.2 && < 8.1
+author:                 Peter Simons, Alexander Altman, Ben James
 maintainer:             Peter Simons <simons@cryp.to>
-homepage:               http://github.com/peti/hackage-db
+homepage:               https://github.com/peti/hackage-db#readme
+bug-reports:            https://github.com/peti/hackage-db/issues
 category:               Distribution
-synopsis:               access Hackage's package database via Data.Map
-cabal-version:          >= 1.6
+synopsis:               Access Hackage's package database via Data.Map
+cabal-version:          >= 1.10
 build-type:             Simple
-Tested-With:            GHC > 7.2 && < 8.1
-
-description:
-   This module provides simple access to the Hackage database by means
-   of @Data.Map@. Suppose you wanted to implement a utility that queries
-   the set of available versions for a given package, the following
-   program would do the trick:
-   .
-   > import qualified Distribution.Hackage.DB as DB
-   > import Distribution.Text ( display )
-   > import System.Environment ( getArgs )
-   >
-   > main :: IO ()
-   > main = do
-   >   pkgs <- getArgs
-   >   db <- DB.readHackage
-   >   let getVersions name = maybe [] DB.keys (DB.lookup name db)
-   >   mapM_ (putStrLn . unwords . map display . getVersions) pkgs
-   .
-   When run, it would produce the following output:
-   .
-   > ./a.out containers deepseq cabal-install
-   > 0.1.0.0 0.1.0.1 0.2.0.0 0.2.0.1 0.3.0.0 0.4.0.0
-   > 1.0.0.0 1.1.0.0 1.1.0.1 1.1.0.2
-   > 0.4.0 0.5.0 0.5.1 0.5.2 0.6.0 0.6.2 0.6.4 0.8.0 0.8.2 0.10.0 0.10.2
+description:            This module provides simple access to the Hackage database by means
+                        of @Data.Map@. Suppose you wanted to implement a utility that queries
+                        the set of available versions for a given package, the following
+                        program would do the trick:
+                        .
+                        > import qualified Distribution.Hackage.DB as DB
+                        > import Distribution.Text ( display )
+                        > import System.Environment ( getArgs )
+                        >
+                        > main :: IO ()
+                        > main = do
+                        >   pkgs <- getArgs
+                        >   db <- DB.readHackage
+                        >   let getVersions name = maybe [] DB.keys (DB.lookup name db)
+                        >   mapM_ (putStrLn . unwords . map display . getVersions) pkgs
+                        .
+                        When run, it would produce the following output:
+                        .
+                        > ./a.out containers deepseq cabal-install
+                        > 0.1.0.0 0.1.0.1 0.2.0.0 0.2.0.1 0.3.0.0 0.4.0.0
+                        > 1.0.0.0 1.1.0.0 1.1.0.1 1.1.0.2
+                        > 0.4.0 0.5.0 0.5.1 0.5.2 0.6.0 0.6.2 0.6.4 0.8.0 0.8.2 0.10.0 0.10.2
 
 source-repository head
-  type:                 git
-  location:             git://github.com/peti/hackage-db.git
+  type: git
+  location: https://github.com/peti/hackage-db
 
 library
-  build-depends:        base >= 3 && < 5, tar >= 0.4, Cabal, containers,
-                        directory, filepath, bytestring, utf8-string
-  hs-source-dirs:       src
-  exposed-modules:      Distribution.Hackage.DB.Unparsed
-                        Distribution.Hackage.DB.Parsed
-                        Distribution.Hackage.DB.Path
-                        Distribution.Hackage.DB
+  build-depends:
+    base >= 3 && < 5,
+    tar >= 0.4,
+    Cabal,
+    containers,
+    directory,
+    filepath,
+    bytestring,
+    utf8-string
+  hs-source-dirs:
+    src
+  exposed-modules:
+    Distribution.Hackage.DB.Unparsed
+    Distribution.Hackage.DB.Parsed
+    Distribution.Hackage.DB.Path
+    Distribution.Hackage.DB
+  other-modules:
+    Paths_hackage_db
+  default-language: Haskell2010
