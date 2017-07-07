@@ -65,11 +65,10 @@ handleEntry db e =
   in
   case (ep, entryContent e) of
 
-    (["preferred-versions"], NormalFile buf _) -> alter (Just . addConstraint) pn db
+    (["preferred-versions"], NormalFile buf _) -> insertWith setConstraint pn (PackageData buf Map.empty) db
       where
-        addConstraint :: Maybe PackageData -> PackageData
-        addConstraint Nothing   = PackageData buf Map.empty
-        addConstraint (Just pd) = pd { preferredVersions = buf }
+        setConstraint :: PackageData -> PackageData -> PackageData
+        setConstraint _ old = old { preferredVersions = buf }
 
     ([v',file], NormalFile buf _) -> alter (Just . addVersion v addFile) pn db
       where
