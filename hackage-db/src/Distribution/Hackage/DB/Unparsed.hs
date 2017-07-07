@@ -1,62 +1,86 @@
 {- |
-   Module      :  Distribution.Hackage.DB.Unparsed
-   License     :  BSD3
-   Maintainer  :  simons@cryp.to
-   Stability   :  provisional
-   Portability :  portable
-
-   This module provides simple access to the Hackage database by means
-   of 'Map'.
+   Maintainer:  simons@cryp.to
+   Stability:   provisional
+   Portability: portable
  -}
 
 module Distribution.Hackage.DB.Unparsed
-  ( Hackage, readHackage, readHackage', parseHackage, hackagePath
+  ( HackageDB, PackageData(..), VersionData(..)
+  , readTarball, parseTarball
   )
   where
 
-import qualified Codec.Archive.Tar as Tar
-import Data.ByteString.Lazy.Char8 ( ByteString )
-import qualified Data.ByteString.Lazy.Char8 as BS8 ( readFile )
-import Data.Map
-import Data.Maybe ( fromMaybe )
-import Data.Version
-import Distribution.Hackage.DB.Path
-import Distribution.Text ( simpleParse )
-import System.FilePath ( splitDirectories )
+import Distribution.Hackage.DB.Errors
+import Distribution.Hackage.DB.Utility
 
--- | A 'Map' representation of the Hackage database. Every package name
--- maps to a non-empty set of version, and for every version there is a
--- Cabal file stored as a (lazy) 'ByteString'.
+import Codec.Archive.Tar as Tar
+import Codec.Archive.Tar.Entry as Tar
+import Control.Exception
+import Data.ByteString.Lazy as BS
+import Data.Map as Map
+import Data.Maybe
+import Data.Time.Clock
+import Distribution.Package
+import Distribution.Version
+import System.FilePath
 
-type Hackage = Map String (Map Version ByteString)
+type HackageDB = Map PackageName PackageData
 
--- | Read the Hackage database from the location determined by 'hackagePath'
--- and return a 'Map' that provides fast access to its contents.
+data PackageData = PackageData { preferredVersions :: ByteString
+                               , versions          :: Map Version VersionData
+                               }
+  deriving (Show)
 
-readHackage :: IO Hackage
-readHackage = hackagePath >>= readHackage'
+data VersionData = VersionData { cabalFile :: ByteString
+                               , meta      :: ByteString
+                               }
+  deriving (Show)
 
--- | Read the Hackage database from the given 'FilePath' and return a
--- 'Hackage' map that provides fast access to its contents.
+readTarball :: FilePath -> Maybe UTCTime -> IO HackageDB
+readTarball path snapshot = fmap (parseTarball path snapshot) (BS.readFile path)
 
-readHackage' :: FilePath -> IO Hackage
-readHackage' = fmap parseHackage . BS8.readFile
+parseTarball :: FilePath -> Maybe UTCTime -> ByteString -> HackageDB
+parseTarball path snapshot buf =
+  mapException (\(UnsupportedTarEntry _ e) -> UnsupportedTarEntry path e) $
+    mapException (\(IncorrectTarfile _ e) -> IncorrectTarfile path e) $
+      foldEntriesUntil (maybe maxBound toEpochTime snapshot) Map.empty (Tar.read buf)
 
--- | Parse the contents of Hackage's @00-index.tar@ into a 'Hackage' map.
+foldEntriesUntil :: EpochTime -> HackageDB -> Entries FormatError -> HackageDB
+foldEntriesUntil _        db  Done       = db
+foldEntriesUntil _        _  (Fail err)  = throw (IncorrectTarfile "unknown" err)
+foldEntriesUntil snapshot db (Next e es) | entryTime e <= snapshot = foldEntriesUntil snapshot (handleEntry db e) es
+                                         | otherwise               = db
 
-parseHackage :: ByteString -> Hackage
-parseHackage = Tar.foldEntries addEntry empty (error . show) . Tar.read
-  where
-    addEntry :: Tar.Entry -> Hackage -> Hackage
-    addEntry e db = case splitDirectories (Tar.entryPath e) of
-                        [".",".","@LongLink"] -> db
-                        path@[name,vers,_] -> case Tar.entryContent e of
-                                                Tar.NormalFile buf _ -> add name vers buf db
-                                                _                    -> error ("Hackage.DB.parseHackage: unexpected content type for " ++ show path)
-                        _                  -> db
+addVersion :: Version -> (VersionData -> VersionData) -> Maybe PackageData -> PackageData
+addVersion v addFile Nothing   = PackageData BS.empty (Map.singleton v (addFileMaybe addFile Nothing ))
+addVersion v addFile (Just pd) = pd { versions = alter (Just . addFileMaybe addFile) v (versions pd) }
 
-    add :: String -> String -> ByteString -> Hackage -> Hackage
-    add name version pkg = insertWith union name (singleton (pVersion version) pkg)
+addFileMaybe :: (VersionData -> VersionData) -> Maybe VersionData -> VersionData
+addFileMaybe f = f . fromMaybe (VersionData BS.empty BS.empty)
 
-    pVersion :: String -> Version
-    pVersion str = fromMaybe (error $ "Hackage.DB.parseHackage: cannot parse version " ++ show str) (simpleParse str)
+handleEntry :: HackageDB -> Entry -> HackageDB
+handleEntry db e =
+  let (pn':ep) = splitDirectories (entryPath e)
+      pn = parseText "PackageName" pn'
+  in
+  case (ep, entryContent e) of
+
+    (["preferred-versions"], NormalFile buf _) -> alter (Just . addConstraint) pn db
+      where
+        addConstraint :: Maybe PackageData -> PackageData
+        addConstraint Nothing   = PackageData buf Map.empty
+        addConstraint (Just pd) = pd { preferredVersions = buf }
+
+    ([v',file], NormalFile buf _) -> alter (Just . addVersion v addFile) pn db
+      where
+        v = parseText "Version" v'
+
+        addFile :: VersionData -> VersionData
+        addFile vd | file == "package.json" = vd { meta = buf }
+                   | otherwise              = vd { cabalFile = buf }
+
+    (_, Directory) -> db                -- some tarballs have these superfluous entries
+    ([], NormalFile _ _) -> db
+    ([], OtherEntryType _ _ _) -> db
+
+    _ -> throw (UnsupportedTarEntry "<unknown>" e)

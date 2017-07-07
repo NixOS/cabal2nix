@@ -43,22 +43,36 @@ source-repository head
   location: https://github.com/peti/hackage-db
 
 library
-  build-depends:
-    base >= 3 && < 5,
-    tar >= 0.4,
-    Cabal,
-    containers,
-    directory,
-    filepath,
-    bytestring,
-    utf8-string
   hs-source-dirs:
-    src
+      src
+  build-depends:
+      base >= 3 && < 5
+    , tar >= 0.4
+    , Cabal
+    , containers
+    , directory
+    , filepath
+    , bytestring
+    , utf8-string
+    , time
   exposed-modules:
-    Distribution.Hackage.DB.Unparsed
-    Distribution.Hackage.DB.Parsed
-    Distribution.Hackage.DB.Path
-    Distribution.Hackage.DB
+      Distribution.Hackage.DB.Errors
+      Distribution.Hackage.DB.Unparsed
+      Distribution.Hackage.DB.Utility
+      Distribution.Hackage.DB.Path
   other-modules:
-    Paths_hackage_db
+      Distribution.Hackage.DB
+      Distribution.Hackage.DB.Parsed
+      Paths_hackage_db
+  default-language: Haskell2010
+
+executable list-known-versions
+  main-is: list-known-versions.hs
+  hs-source-dirs:
+      example
+  build-depends:
+      base
+    , Cabal
+    , containers
+    , hackage-db
   default-language: Haskell2010

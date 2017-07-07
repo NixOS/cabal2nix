@@ -49,20 +49,30 @@ description:  !
 
   > 0.4.0 0.5.0 0.5.1 0.5.2 0.6.0 0.6.2 0.6.4 0.8.0 0.8.2 0.10.0 0.10.2"
 
-dependencies:
-  - base >= 3 && < 5
-  - tar >= 0.4
-  - Cabal
-  - containers
-  - directory
-  - filepath
-  - bytestring
-  - utf8-string
-
 library:
   source-dirs: src
   exposed-modules:
+    - Distribution.Hackage.DB.Errors
     - Distribution.Hackage.DB.Unparsed
-    - Distribution.Hackage.DB.Parsed
+    - Distribution.Hackage.DB.Utility
     - Distribution.Hackage.DB.Path
-    - Distribution.Hackage.DB
+  dependencies:
+    - base >= 3 && < 5
+    - tar >= 0.4
+    - Cabal
+    - containers
+    - directory
+    - filepath
+    - bytestring
+    - utf8-string
+    - time
+
+executables:
+  list-known-versions:
+    main:               list-known-versions.hs
+    source-dirs:        example
+    dependencies:
+      - base
+      - Cabal
+      - containers
+      - hackage-db
