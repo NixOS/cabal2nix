@@ -66,6 +66,8 @@ library:
     - bytestring
     - utf8-string
     - time
+  other-extensions:
+    - DeriveDataTypeable
 
 executables:
   list-known-versions:

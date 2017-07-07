@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+
 {- |
    Maintainer:  simons@cryp.to
    Stability:   provisional

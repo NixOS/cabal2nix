@@ -45,6 +45,7 @@ source-repository head
 library
   hs-source-dirs:
       src
+  other-extensions: DeriveDataTypeable
   build-depends:
       base >= 3 && < 5
     , tar >= 0.4
