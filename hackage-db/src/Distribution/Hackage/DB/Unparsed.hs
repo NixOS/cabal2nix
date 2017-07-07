@@ -18,7 +18,6 @@ import Codec.Archive.Tar.Entry as Tar
 import Control.Exception
 import Data.ByteString.Lazy as BS
 import Data.Map as Map
-import Data.Maybe
 import Data.Time.Clock
 import Distribution.Package
 import Distribution.Version
@@ -51,13 +50,6 @@ foldEntriesUntil _        _  (Fail err)  = throw (IncorrectTarfile "unknown" err
 foldEntriesUntil snapshot db (Next e es) | entryTime e <= snapshot = foldEntriesUntil snapshot (handleEntry db e) es
                                          | otherwise               = db
 
-addVersion :: Version -> (VersionData -> VersionData) -> Maybe PackageData -> PackageData
-addVersion v addFile Nothing   = PackageData BS.empty (Map.singleton v (addFileMaybe addFile Nothing ))
-addVersion v addFile (Just pd) = pd { versions = alter (Just . addFileMaybe addFile) v (versions pd) }
-
-addFileMaybe :: (VersionData -> VersionData) -> Maybe VersionData -> VersionData
-addFileMaybe f = f . fromMaybe (VersionData BS.empty BS.empty)
-
 handleEntry :: HackageDB -> Entry -> HackageDB
 handleEntry db e =
   let (pn':ep) = splitDirectories (entryPath e)
@@ -66,20 +58,32 @@ handleEntry db e =
   case (ep, entryContent e) of
 
     (["preferred-versions"], NormalFile buf _) -> insertWith setConstraint pn (PackageData buf Map.empty) db
-      where
-        setConstraint :: PackageData -> PackageData -> PackageData
-        setConstraint _ old = old { preferredVersions = buf }
 
-    ([v',file], NormalFile buf _) -> alter (Just . addVersion v addFile) pn db
+    ([v',file], NormalFile buf _) -> if file == "package.json"
+                                        then insertVersionData setMetaFile pn v (VersionData BS.empty buf) db
+                                        else insertVersionData setCabalFile pn v (VersionData buf BS.empty) db
       where
         v = parseText "Version" v'
-
-        addFile :: VersionData -> VersionData
-        addFile vd | file == "package.json" = vd { meta = buf }
-                   | otherwise              = vd { cabalFile = buf }
 
     (_, Directory) -> db                -- some tarballs have these superfluous entries
     ([], NormalFile _ _) -> db
     ([], OtherEntryType _ _ _) -> db
 
     _ -> throw (UnsupportedTarEntry "<unknown>" e)
+
+setConstraint :: PackageData -> PackageData -> PackageData
+setConstraint new old = old { preferredVersions = preferredVersions new }
+
+insertVersionData :: (VersionData -> VersionData -> VersionData)
+                   -> PackageName -> Version -> VersionData
+                   -> HackageDB -> HackageDB
+insertVersionData setFile pn v vd = insertWith mergeVersionData pn pd
+  where
+    pd = PackageData BS.empty (Map.singleton v vd)
+    mergeVersionData _ old = old { versions = insertWith setFile v vd (versions old) }
+
+setCabalFile :: VersionData -> VersionData -> VersionData
+setCabalFile new old = old { cabalFile = cabalFile new }
+
+setMetaFile :: VersionData -> VersionData -> VersionData
+setMetaFile new old = old { meta = meta new }
