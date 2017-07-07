@@ -66,8 +66,8 @@ handleEntry db e =
         v = parseText "Version" v'
 
     (_, Directory) -> db                -- some tarballs have these superfluous entries
-    ([], NormalFile _ _) -> db
-    ([], OtherEntryType _ _ _) -> db
+    ([], NormalFile {}) -> db
+    ([], OtherEntryType {}) -> db
 
     _ -> throw (UnsupportedTarEntry "<unknown>" e)
 
