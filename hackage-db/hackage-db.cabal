@@ -47,23 +47,24 @@ library
       src
   other-extensions: DeriveDataTypeable
   build-depends:
-      base >= 3 && < 5
-    , tar >= 0.4
+      aeson
+    , base >= 3 && < 5
+    , bytestring
     , Cabal
     , containers
     , directory
     , filepath
-    , bytestring
-    , utf8-string
+    , tar >= 0.4
     , time
+    , utf8-string
   exposed-modules:
+      Distribution.Hackage.DB
       Distribution.Hackage.DB.Errors
+      Distribution.Hackage.DB.Parsed
+      Distribution.Hackage.DB.Path
       Distribution.Hackage.DB.Unparsed
       Distribution.Hackage.DB.Utility
-      Distribution.Hackage.DB.Path
   other-modules:
-      Distribution.Hackage.DB
-      Distribution.Hackage.DB.Parsed
       Paths_hackage_db
   default-language: Haskell2010
 
