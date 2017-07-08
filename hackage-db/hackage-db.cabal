@@ -6,7 +6,7 @@ name:                   hackage-db
 version:                2
 license:                BSD3
 license-file:           LICENSE
-tested-with:            GHC > 7.2 && < 8.1
+tested-with:            GHC > 7.8 && < 8.3
 author:                 Peter Simons, Alexander Altman, Ben James
 maintainer:             Peter Simons <simons@cryp.to>
 homepage:               https://github.com/peti/hackage-db#readme
