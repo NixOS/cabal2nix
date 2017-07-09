@@ -287,8 +287,8 @@ hfseventsOverrides
   . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
 
 webkitgtk24xHook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
-webkitgtk24xHook = set (libraryDepends . pkgconfig . contains (pkg "webkitgtk24x")) True
-                 . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "webkitgtk24x"))
+webkitgtk24xHook = set (libraryDepends . pkgconfig . contains (pkg "webkitgtk24x-gtk3")) True
+                 . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "webkitgtk24x-gtk3"))
 
 opencvOverrides :: Derivation -> Derivation
 opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
