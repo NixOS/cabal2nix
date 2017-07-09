@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Cabal2nix
-  ( main, cabal2nix
+  ( main, cabal2nix, cabal2nix'
   )
   where
 
@@ -118,8 +118,8 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
   cabal2nix =<< getArgs
 
-cabal2nix :: [String] -> IO ()
-cabal2nix args = do
+cabal2nix' :: [String] -> IO (Either Doc Derivation)
+cabal2nix' args = do
   Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
 
   pkg <- getPackage optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
@@ -165,8 +165,14 @@ cabal2nix args = do
               , text ""
               , text "  if pkgs.lib.inNixShell then drv.env else drv"
               ]
+  pure $ if optNixShellOutput then Left shell else Right deriv
 
-  print (if optNixShellOutput then shell else pPrint deriv)
+cabal2nix :: [String] -> IO ()
+cabal2nix args = do
+  v <- cabal2nix' args
+  print $ case v of
+    Left shell -> shell
+    Right d -> pPrint d
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = map tagWithValue
