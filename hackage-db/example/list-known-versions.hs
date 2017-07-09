@@ -13,6 +13,6 @@ main :: IO ()
 main = do
   tarball <- hackagePath
   db <- readTarball tarball Nothing
-  forM_ (toList db) $ \(PackageName pn, PackageData vr vs) ->
-    putStrLn $ pn ++ ": " ++ intercalate ", " (fmap display (keys vs)) ++
+  forM_ (toList db) $ \(pn, PackageData vr vs) ->
+    putStrLn $ display pn ++ ": " ++ intercalate ", " (fmap display (keys vs)) ++
                " (preferred: " ++ show vr ++ ")"
