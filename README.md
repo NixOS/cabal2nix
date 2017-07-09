@@ -49,7 +49,7 @@ on the local file system:
 This derivation will not fetch from hackage, but instead use the directory which
 contains the derivation as the source repository.
 
-`cabal2nix` currently supports the following respository types:
+`cabal2nix` currently supports the following repository types:
 
 * directory
 * source archive (zip, tar.gz, ...) from http or https URL or local file.
