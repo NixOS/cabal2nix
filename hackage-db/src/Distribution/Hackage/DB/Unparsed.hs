@@ -40,13 +40,12 @@ readTarball path snapshot = fmap (parseTarball path snapshot) (BS.readFile path)
 
 parseTarball :: FilePath -> Maybe UTCTime -> ByteString -> HackageDB
 parseTarball path snapshot buf =
-  mapException (\(UnsupportedTarEntry _ e) -> UnsupportedTarEntry path e) $
-    mapException (\(IncorrectTarfile _ e) -> IncorrectTarfile path e) $
+  mapException (\e -> HackageDBTarball path (e :: SomeException)) $
       foldEntriesUntil (maybe maxBound toEpochTime snapshot) Map.empty (Tar.read buf)
 
 foldEntriesUntil :: EpochTime -> HackageDB -> Entries FormatError -> HackageDB
 foldEntriesUntil _        db  Done       = db
-foldEntriesUntil _        _  (Fail err)  = throw (IncorrectTarfile "unknown" err)
+foldEntriesUntil _        _  (Fail err)  = throw (IncorrectTarfile err)
 foldEntriesUntil snapshot db (Next e es) | entryTime e <= snapshot = foldEntriesUntil snapshot (handleEntry db e) es
                                          | otherwise               = db
 
@@ -69,7 +68,7 @@ handleEntry db e =
     ([], NormalFile {}) -> db
     ([], OtherEntryType {}) -> db
 
-    _ -> throw (UnsupportedTarEntry "<unknown>" e)
+    _ -> throw (UnsupportedTarEntry e)
 
 setConstraint :: PackageData -> PackageData -> PackageData
 setConstraint new old = old { preferredVersions = preferredVersions new }

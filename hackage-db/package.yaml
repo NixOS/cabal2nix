@@ -54,6 +54,7 @@ library:
   exposed-modules:
     - Distribution.Hackage.DB
     - Distribution.Hackage.DB.Errors
+    - Distribution.Hackage.DB.MetaData
     - Distribution.Hackage.DB.Parsed
     - Distribution.Hackage.DB.Path
     - Distribution.Hackage.DB.Unparsed
