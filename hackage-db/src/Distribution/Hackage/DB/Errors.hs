@@ -31,3 +31,6 @@ instance Exception UnsupportedTarEntry
 
 newtype InvalidMetaFile = InvalidMetaFile String deriving (Show, Typeable)
 instance Exception InvalidMetaFile
+
+newtype InvalidCabalFile = InvalidCabalFile String deriving (Show, Typeable)
+instance Exception InvalidCabalFile

@@ -8,10 +8,13 @@
 
 module Distribution.Hackage.DB.Parsed where
 
+import Distribution.Hackage.DB.Errors
+import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Hackage.DB.Utility
 
 import Data.Aeson
+import Control.Exception
 import Data.ByteString.Lazy.UTF8 as BS
 import Data.Map as Map
 import Distribution.Package
@@ -36,40 +39,21 @@ parseDB :: U.HackageDB -> HackageDB
 parseDB = Map.mapWithKey parsePackageData
 
 parsePackageData :: PackageName -> U.PackageData -> PackageData
-parsePackageData pn (U.PackageData pv vs) = PackageData vr (Map.mapWithKey (parseVersionData pn) vs)
-  where
-    Dependency _ vr = parseText "Dependency" (toString pv)
+parsePackageData pn (U.PackageData pv vs) =
+  mapException (\e -> HackageDBPackageName pn (e :: SomeException)) $
+    PackageData vr (Map.mapWithKey (parseVersionData pn) vs)
+      where
+        Dependency _ vr = parseText "Dependency" (toString pv)
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
-parseVersionData pn v (U.VersionData cf m) = VersionData gpd md
+parseVersionData pn v (U.VersionData cf m) =
+  mapException (\e -> HackageDBPackageVersion v (e :: SomeException)) $
+    VersionData gpd md
   where
     gpd = case parsePackageDescription (toString cf) of
             ParseOk _ a     -> a
-            ParseFailed msg -> error (show msg) -- TODO: define proper exception
+            ParseFailed msg -> throw (InvalidCabalFile (show msg))
 
-    md = case eitherDecode m of
-           Left msg -> error msg  -- TODO: create proper exception type
-           Right md' -> md'
+    md = U.parseMetaData m
 
-data MetaData = MetaData { signed :: SignedMetaData
-                         , signatures :: [String]
-                         }
-  deriving (Show, Generic)
-
-instance FromJSON MetaData
-
-data SignedMetaData = SignedMetaData { version :: Int
-                                     , expires :: Maybe String
-                                     , _type   :: String
-                                     , targets :: Map String TargetData
-                                     }
-  deriving (Show, Generic)
-
-instance FromJSON SignedMetaData
-
-data TargetData = TargetData { length :: Int
-                             , hashes :: Map String String
-                             }
-  deriving (Show, Generic)
-
-instance FromJSON TargetData
+type MetaData = U.MetaData
