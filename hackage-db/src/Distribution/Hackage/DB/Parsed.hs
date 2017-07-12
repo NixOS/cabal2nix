@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 {- |
    Maintainer:  simons@cryp.to
    Stability:   provisional
@@ -13,7 +11,6 @@ import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Hackage.DB.Utility
 
-import Data.Aeson
 import Control.Exception
 import Data.ByteString.Lazy.UTF8 as BS
 import Data.Map as Map
@@ -21,7 +18,6 @@ import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse
 import Distribution.Version
-import GHC.Generics ( Generic )
 
 type HackageDB = Map PackageName PackageData
 
