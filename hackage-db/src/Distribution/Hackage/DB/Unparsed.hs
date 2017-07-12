@@ -16,7 +16,7 @@ import Distribution.Hackage.DB.Utility
 import Codec.Archive.Tar as Tar
 import Codec.Archive.Tar.Entry as Tar
 import Control.Exception
-import Data.ByteString.Lazy as BS
+import Data.ByteString.Lazy as BS ( ByteString, empty, readFile )
 import Data.Map as Map
 import Data.Time.Clock
 import Distribution.Package
@@ -31,7 +31,7 @@ data PackageData = PackageData { preferredVersions :: ByteString
   deriving (Show)
 
 data VersionData = VersionData { cabalFile :: ByteString
-                               , meta      :: ByteString
+                               , metaFile  :: ByteString
                                }
   deriving (Show)
 
@@ -58,11 +58,10 @@ handleEntry db e =
 
     (["preferred-versions"], NormalFile buf _) -> insertWith setConstraint pn (PackageData buf Map.empty) db
 
-    ([v',file], NormalFile buf _) -> if file == "package.json"
-                                        then insertVersionData setMetaFile pn v (VersionData BS.empty buf) db
-                                        else insertVersionData setCabalFile pn v (VersionData buf BS.empty) db
-      where
-        v = parseText "Version" v'
+    ([v',file], NormalFile buf _) -> let v = parseText "Version" v' in
+          if file == pn' <.> "cabal" then insertVersionData setCabalFile pn v (VersionData buf BS.empty) db else
+          if file == "package.json" then insertVersionData setMetaFile pn v (VersionData BS.empty buf) db else
+          throw (UnsupportedTarEntry e)
 
     (_, Directory) -> db                -- some tarballs have these superfluous entries
     ([], NormalFile {}) -> db
@@ -85,4 +84,4 @@ setCabalFile :: VersionData -> VersionData -> VersionData
 setCabalFile new old = old { cabalFile = cabalFile new }
 
 setMetaFile :: VersionData -> VersionData -> VersionData
-setMetaFile new old = old { meta = meta new }
+setMetaFile new old = old { metaFile = metaFile new }

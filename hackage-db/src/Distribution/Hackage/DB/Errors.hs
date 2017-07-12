@@ -34,3 +34,6 @@ instance Exception InvalidMetaFile
 
 newtype InvalidCabalFile = InvalidCabalFile String deriving (Show, Typeable)
 instance Exception InvalidCabalFile
+
+data InvalidRepresentationOfType = InvalidRepresentationOfType String String deriving (Show, Typeable)
+instance Exception InvalidRepresentationOfType
