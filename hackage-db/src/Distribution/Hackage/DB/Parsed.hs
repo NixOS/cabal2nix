@@ -60,10 +60,3 @@ parseMetaData pn v buf | BS.null buf = Map.empty
     targets = U.targets (U.signed (U.parseMetaData buf))
     target  = "<repo>/package/" ++ display pn ++ "-" ++ display v ++ ".tar.gz"
     targetData = Map.lookup target targets
-
-runTest :: IO ()
-runTest = do
-  let tarball = "/home/simons/.cabal/packages/hackage.haskell.org/01-index.tar"
-  db' <- U.readTarball tarball Nothing
-  db <- evaluate (parseDB db')
-  print (db ! parseText "PackageName" "ztail")

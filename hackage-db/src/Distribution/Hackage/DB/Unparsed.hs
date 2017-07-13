@@ -35,13 +35,13 @@ data VersionData = VersionData { cabalFile :: ByteString
                                }
   deriving (Show)
 
-readTarball :: FilePath -> Maybe UTCTime -> IO HackageDB
-readTarball path snapshot = fmap (parseTarball path snapshot) (BS.readFile path)
+readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
+readTarball snapshot path = fmap (parseTarball snapshot path) (BS.readFile path)
 
-parseTarball :: FilePath -> Maybe UTCTime -> ByteString -> HackageDB
-parseTarball path snapshot buf =
+parseTarball :: Maybe UTCTime -> FilePath -> ByteString -> HackageDB
+parseTarball snapshot path buf =
   mapException (\e -> HackageDBTarball path (e :: SomeException)) $
-      foldEntriesUntil (maybe maxBound toEpochTime snapshot) Map.empty (Tar.read buf)
+    foldEntriesUntil (maybe maxBound toEpochTime snapshot) Map.empty (Tar.read buf)
 
 foldEntriesUntil :: EpochTime -> HackageDB -> Entries FormatError -> HackageDB
 foldEntriesUntil _        db  Done       = db

@@ -11,6 +11,9 @@
 
 module Distribution.Hackage.DB.Path where
 
+import Distribution.Hackage.DB.Errors
+
+import Control.Exception
 import Control.Monad
 import System.Directory
 import System.FilePath
@@ -34,5 +37,7 @@ hackageTarballDir = cabalTarballDir "hackage.haskell.org"
 hackageTarball :: IO FilePath
 hackageTarball = do
   htd <- hackageTarballDir
-  let check p = doesFileExist p >>= \b -> if b then return p else fail p
-  msum (map (check . (htd </>)) ["01-index.tar","00-index.tar"]) `mplus` fail "no tarball"
+  let paths = [htd </> "01-index.tar", htd </> "00-index.tar"]
+      exists p = do b <- doesFileExist p
+                    (if b then return else fail) p
+  msum (map exists paths) `mplus` throwIO NoHackageTarballFound

@@ -37,3 +37,6 @@ instance Exception InvalidCabalFile
 
 data InvalidRepresentationOfType = InvalidRepresentationOfType String String deriving (Show, Typeable)
 instance Exception InvalidRepresentationOfType
+
+data NoHackageTarballFound = NoHackageTarballFound deriving (Show, Typeable)
+instance Exception NoHackageTarballFound
