@@ -9,16 +9,30 @@
    @cabal update@.
  -}
 
-module Distribution.Hackage.DB.Path ( hackagePath ) where
+module Distribution.Hackage.DB.Path where
 
-import System.Directory ( getAppUserDataDirectory )
-import System.FilePath ( joinPath )
+import Control.Monad
+import System.Directory
+import System.FilePath
 
 -- | Determine the default path of the Hackage database, which typically
 -- resides at @"$HOME\/.cabal\/packages\/hackage.haskell.org\/00-index.tar"@.
 -- Running the command @"cabal update"@ will keep that file up-to-date.
 
-hackagePath :: IO FilePath
-hackagePath = do
-  cabalDir <- getAppUserDataDirectory "cabal"
-  return $ joinPath [cabalDir, "packages", "hackage.haskell.org", "00-index.tar"]
+
+cabalStateDir :: IO FilePath
+cabalStateDir = getAppUserDataDirectory "cabal"
+
+cabalTarballDir :: String -> IO FilePath
+cabalTarballDir repo = do
+  csd <- cabalStateDir
+  return $ joinPath [csd, "packages", repo]
+
+hackageTarballDir :: IO FilePath
+hackageTarballDir = cabalTarballDir "hackage.haskell.org"
+
+hackageTarball :: IO FilePath
+hackageTarball = do
+  htd <- hackageTarballDir
+  let check p = doesFileExist p >>= \b -> if b then return p else fail p
+  msum (map (check . (htd </>)) ["01-index.tar","00-index.tar"]) `mplus` fail "no tarball"
