@@ -7,7 +7,6 @@ import Control.Monad
 import qualified Data.ByteString.Lazy as BS
 import Data.List as List
 import Data.Map as Map
-import Distribution.Package
 import Distribution.Text
 
 main :: IO ()
