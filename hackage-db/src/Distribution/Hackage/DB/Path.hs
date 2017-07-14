@@ -14,7 +14,6 @@ module Distribution.Hackage.DB.Path where
 import Distribution.Hackage.DB.Errors
 
 import Control.Exception
-import Control.Monad
 import System.Directory
 import System.FilePath
 
@@ -37,7 +36,13 @@ hackageTarballDir = cabalTarballDir "hackage.haskell.org"
 hackageTarball :: IO FilePath
 hackageTarball = do
   htd <- hackageTarballDir
-  let paths = [htd </> "01-index.tar", htd </> "00-index.tar"]
-      exists p = do b <- doesFileExist p
-                    (if b then return else fail) p
-  msum (map exists paths) `mplus` throwIO NoHackageTarballFound
+  let idx00 = htd </> "00-index.tar"
+      idx01 = htd </> "01-index.tar"
+  -- Yes, using 'msum' here instead of this convolted mess would be nice, but
+  -- unfortunetaly there was no reliable MonadPlus instance for IO in pre 8.x
+  -- versions of GHC. Se we use the ugly code for sake of portability.
+  have01 <- doesFileExist idx01
+  if have01 then return idx01 else do
+    have00 <- doesFileExist idx00
+    if have00 then return idx00 else
+      throwIO NoHackageTarballFound
