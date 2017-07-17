@@ -1,11 +1,15 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags ) where
+
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 
 import Distribution.Package
 import Distribution.PackageDescription
 import Data.Version
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
-configureCabalFlags (PackageIdentifier (PackageName name) version)
+configureCabalFlags (PackageIdentifier name version)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "arithmoi"           = [disable "llvm"]
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
