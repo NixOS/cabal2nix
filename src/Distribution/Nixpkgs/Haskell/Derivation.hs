@@ -8,7 +8,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
-  , dependencies, setupDepends, benchmarkDepends
+  , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
   )
   where
 
@@ -57,6 +57,7 @@ data Derivation = MkDerivation
   , _enableSplitObjs            :: Bool
   , _phaseOverrides             :: String
   , _editedCabalFile            :: String
+  , _enableSeparateDataOutput   :: Bool
   , _metaSection                :: Meta
   }
   deriving (Show, Eq, Generic)
@@ -87,6 +88,7 @@ nullDerivation = MkDerivation
   , _enableSplitObjs = error "undefined Derivation.enableSplitObjs"
   , _phaseOverrides = error "undefined Derivation.phaseOverrides"
   , _editedCabalFile = error "undefined Derivation.editedCabalFile"
+  , _enableSeparateDataOutput = error "undefined Derivation.enableSeparateDataOutput"
   , _metaSection = error "undefined Derivation.metaSection"
   }
 
@@ -112,6 +114,7 @@ instance Pretty Derivation where
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
       , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
+      , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput _enableSeparateDataOutput
       , onlyIf (_setupDepends /= mempty) $ pPrintBuildInfo "setup" _setupDepends
       , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
       , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends

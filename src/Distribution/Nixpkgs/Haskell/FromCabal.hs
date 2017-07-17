@@ -83,6 +83,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     & enableSplitObjs .~ True
     & enableLibraryProfiling .~ False
     & enableExecutableProfiling .~ False
+    & enableSeparateDataOutput .~ not (null dataFiles)
     & subpath .~ "."
     & phaseOverrides .~ mempty
     & editedCabalFile .~ (if xrev > 0
