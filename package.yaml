@@ -59,7 +59,7 @@ license-file:   LICENSE
 github:         nixos/cabal2nix
 category:       Distribution, Nix
 stability:      stable
-tested-with:    GHC > 7.10 && < 8.3
+tested-with:    GHC > 7.10 && < 8.1
 description: >
   Convert Cabal files into Nix build instructions. Users of Nix can install the
   latest version by running:
@@ -84,7 +84,7 @@ dependencies:
   - ansi-wl-pprint
   - base < 5
   - bytestring
-  - Cabal > 1.24
+  - Cabal > 1.24 && < 2
   - containers
   - deepseq >= 1.4
   - directory
