@@ -352,6 +352,6 @@ can change the definition of `mkDerivation`:
 
 - <http://nixos.org/nixpkgs/manual/#users-guide-to-the-haskell-infrastructure>
 
-- <http://lists.science.uu.nl/mailman/listinfo/nix-dev>
+- <https://groups.google.com/forum/#!forum/nix-devel>
 
 - `#nixos` at `irc.freenode.org`
