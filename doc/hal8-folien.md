@@ -284,6 +284,6 @@ BSD, etc. ausführen.
 
 - `http://nixos.org/wiki/Haskell`
 
-- `nix-dev@lists.science.uu.nl`
+- `https://groups.google.com/forum/#!forum/nix-devel`
 
 - `#nixos` auf `irc.freenode.org`
