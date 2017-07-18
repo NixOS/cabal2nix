@@ -342,9 +342,9 @@ Haskell-specific resources:
 - https://github.com/NixOS/nixpkgs/issues/4941
 
 - A Journey into the Haskell NG infrastructure
-    - Part 1: http://lists.science.uu.nl/pipermail/nix-dev/2015-January/015591.html
-    - Part 2: http://lists.science.uu.nl/pipermail/nix-dev/2015-January/015608.html
-    - Part 3: http://lists.science.uu.nl/pipermail/nix-dev/2015-April/016912.html
+    - Part 1: https://nixos.org/nix-dev/2015-January/015591.html
+    - Part 2: https://nixos.org/nix-dev/2015-January/015608.html
+    - Part 3: https://nixos.org/nix-dev/2015-April/016912.html
 
 - Oliver Charles Wiki: http://wiki.ocharles.org.uk/Nix
 
@@ -352,6 +352,6 @@ General Nix resources:
 
 - `https://nixos.org/`
 
-- `nix-dev@lists.science.uu.nl`
+- https://groups.google.com/forum/#!forum/nix-devel
 
 - `#nixos` auf `irc.freenode.org`
