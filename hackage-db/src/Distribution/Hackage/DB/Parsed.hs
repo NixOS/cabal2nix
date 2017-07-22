@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 {- |
    Maintainer:  simons@cryp.to
    Stability:   provisional
@@ -11,10 +13,12 @@ import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Hackage.DB.Utility
 
+import GHC.Generics ( Generic )
 import Control.Exception
 import Data.ByteString.Lazy as BS
 import Data.ByteString.Lazy.UTF8 as BS
 import Data.Map as Map
+import Data.Time.Clock
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse
@@ -26,12 +30,18 @@ type HackageDB = Map PackageName PackageData
 data PackageData = PackageData { preferredVersions :: !VersionRange
                                , versions          :: !(Map Version VersionData)
                                }
-  deriving (Show)
+  deriving (Show, Eq, Generic)
 
 data VersionData = VersionData { cabalFile :: !GenericPackageDescription
                                , tarballHashes :: !(Map String String)
                                }
-  deriving (Show)
+  deriving (Show, Eq, Generic)
+
+readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
+readTarball snapshot path = fmap (parseTarball snapshot path) (BS.readFile path)
+
+parseTarball :: Maybe UTCTime -> FilePath -> ByteString -> HackageDB
+parseTarball snapshot path buf = parseDB (U.parseTarball snapshot path buf)
 
 parseDB :: U.HackageDB -> HackageDB
 parseDB = Map.mapWithKey parsePackageData

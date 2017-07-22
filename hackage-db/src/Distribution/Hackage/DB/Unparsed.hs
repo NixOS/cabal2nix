@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 {- |
    Maintainer:  simons@cryp.to
    Stability:   provisional
@@ -21,6 +23,7 @@ import Data.Map as Map
 import Data.Time.Clock
 import Distribution.Package
 import Distribution.Version
+import GHC.Generics ( Generic )
 import System.FilePath
 
 type HackageDB = Map PackageName PackageData
@@ -28,12 +31,12 @@ type HackageDB = Map PackageName PackageData
 data PackageData = PackageData { preferredVersions :: ByteString
                                , versions          :: Map Version VersionData
                                }
-  deriving (Show)
+  deriving (Show, Eq, Generic)
 
 data VersionData = VersionData { cabalFile :: ByteString
                                , metaFile  :: ByteString
                                }
-  deriving (Show)
+  deriving (Show, Eq, Generic)
 
 readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
 readTarball snapshot path = fmap (parseTarball snapshot path) (BS.readFile path)
