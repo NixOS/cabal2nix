@@ -104,7 +104,6 @@ hooks =
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("sdr", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
-  , ("sharc-timbre", set (metaSection . broken) True) -- The build takes insanely long, i.e. >8 hours.
   , ("ssh", set doCheck False) -- test suite runs forever, probably can't deal with our lack of network access
   , ("stack", set phaseOverrides stackOverrides . set doCheck False)
   , ("stripe-http-streams", set doCheck False . set (metaSection . broken) False)
