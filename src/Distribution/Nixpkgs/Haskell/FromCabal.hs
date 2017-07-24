@@ -7,7 +7,6 @@ module Distribution.Nixpkgs.Haskell.FromCabal
   )
   where
 
-import Control.Arrow ( second )
 import Control.Lens
 import Data.Maybe
 import Data.Set ( Set )
@@ -24,7 +23,10 @@ import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
-import Distribution.PackageDescription.Configuration
+import Distribution.Types.LegacyExeDependency as Cabal
+import Distribution.Types.PkgconfigDependency as Cabal
+import Distribution.PackageDescription.Configuration as Cabal
+import Distribution.Types.ComponentRequestedSpec as Cabal
 import Distribution.System
 import Distribution.Text ( display )
 import Distribution.Version
@@ -40,7 +42,13 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
       -- We have to call the Cabal finalizer several times with different resolver
       -- functions, and this convenience function makes our code shorter.
       finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
-      finalize resolver = finalizePackageDescription flags resolver arch compiler constraints (enableBenchmarks (enableTests genDesc))
+      finalize resolver = finalizePD flags requestedComponents resolver arch compiler constraints genDesc
+
+      requestedComponents :: ComponentRequestedSpec
+      requestedComponents = defaultComponentRequestedSpec
+                            { testsRequested      = True
+                            , benchmarksRequested = True
+                            }
 
       descr :: PackageDescription; missingDeps :: [Dependency]
       (descr,missingDeps) = case finalize jailbrokenResolver of
@@ -93,7 +101,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     resolveInHackage :: Identifier -> Binding
-    resolveInHackage i | (i^.ident) `elem` [ n | (Dependency (PackageName n) _) <- missingDeps ] = bindNull i
+    resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i
                        | otherwise = binding # (i, path # ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
     goodScopes :: Set [Identifier]
@@ -109,15 +117,15 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
       | otherwise                        = bindNull i
 
     resolveInHackageThenNixpkgs :: Identifier -> Binding
-    resolveInHackageThenNixpkgs i | haskellResolver (Dependency (PackageName (i^.ident)) anyVersion) = resolveInHackage i
+    resolveInHackageThenNixpkgs i | haskellResolver (Dependency (mkPackageName (i^.ident)) anyVersion) = resolveInHackage i
                                   | otherwise = resolveInNixpkgs i
 
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} = mempty
       & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
-      & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | Dependency (PackageName x) _ <- pkgconfigDepends, y <- libNixName x ]
-      & tool .~ Set.fromList [ resolveInHackageThenNixpkgs y | Dependency (PackageName x) _ <- buildTools, y <- buildToolNixName x ]
+      & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
+      & tool .~ Set.fromList [ resolveInHackageThenNixpkgs y | LegacyExeDependency x _ <- buildTools, y <- buildToolNixName x ]
 
     convertSetupBuildInfo :: Cabal.SetupBuildInfo -> Nix.BuildInfo
     convertSetupBuildInfo bi = mempty
@@ -125,21 +133,3 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
 
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])
-
-enableTests :: GenericPackageDescription -> GenericPackageDescription
-enableTests gd = gd { condTestSuites = flaggedTests }
-  where
-    flaggedTests :: [(String, CondTree ConfVar [Dependency] TestSuite)]
-    flaggedTests = map (second (mapTreeData enableTest)) (condTestSuites gd)
-
-    enableTest :: TestSuite -> TestSuite
-    enableTest t = t { testEnabled = True }
-
-enableBenchmarks :: GenericPackageDescription -> GenericPackageDescription
-enableBenchmarks gd = gd { condBenchmarks = flaggedBenchmarks }
-  where
-    flaggedBenchmarks :: [(String, CondTree ConfVar [Dependency] Benchmark)]
-    flaggedBenchmarks = map (second (mapTreeData enableBenchmark)) (condBenchmarks gd)
-
-    enableBenchmark :: Benchmark -> Benchmark
-    enableBenchmark t = t { benchmarkEnabled = True }

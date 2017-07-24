@@ -16,7 +16,7 @@ import Distribution.Nixpkgs.Hashes
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Package
 import Distribution.PackageDescription
-import Distribution.PackageDescription.Parse ( parsePackageDescription, ParseResult(..) )
+import Distribution.PackageDescription.Parse ( parseGenericPackageDescription, ParseResult(..) )
 import Distribution.Text
 import Distribution.Version
 import OpenSSL.Digest ( digest, digestByName )
@@ -31,7 +31,7 @@ readHackage path = getSubDirs path >>= foldM discoverPackageVersions mempty
     discoverPackageVersions :: Hackage -> String -> IO Hackage
     discoverPackageVersions db pkg = do
       vs <- getSubDirs (path </> pkg)
-      return (Map.insert (PackageName pkg) (Set.fromList (Prelude.map fromString vs)) db)
+      return (Map.insert (mkPackageName pkg) (Set.fromList (Prelude.map fromString vs)) db)
 
 getSubDirs :: FilePath -> IO [FilePath]
 getSubDirs path = do
@@ -47,7 +47,7 @@ readPackage :: FilePath -> PackageIdentifier -> IO (GenericPackageDescription, S
 readPackage dirPrefix (PackageIdentifier name version) = do
   let cabalFile = dirPrefix </> unPackageName name </> display version </> unPackageName name <.> "cabal"
   buf <- BS.readFile cabalFile
-  cabal <- case parsePackageDescription (decodeUTF8 buf) of
+  cabal <- case parseGenericPackageDescription (decodeUTF8 buf) of
              ParseOk _ a  -> return a
              ParseFailed err -> fail (cabalFile ++ ": " ++ show err)
   return (cabal, printSHA256 (digest (digestByName "sha256") buf))

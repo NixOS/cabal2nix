@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCabalFlags ) where
 
 import Control.Lens
@@ -8,7 +10,7 @@ import Data.String
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
+import Distribution.PackageDescription ( FlagAssignment, mkFlagName, unFlagName )
 import Distribution.Simple.Utils ( lowercase )
 import Language.Nix hiding ( quote )
 
@@ -20,12 +22,12 @@ normalize drv = drv
   & over benchmarkDepends (normalizeBuildInfo (packageName drv))
   & over metaSection normalizeMeta
   & over cabalFlags normalizeCabalFlags
-  & jailbreak %~ (&& (packageName drv /= PackageName "jailbreak-cabal"))
+  & jailbreak %~ (&& (packageName drv /= "jailbreak-cabal"))
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
-normalizeBuildInfo (PackageName pname) bi = bi
-  & haskell %~ Set.filter (\b -> view localName b /= fromString pname)
-  & tool %~ Set.filter (\b -> view localName b /= fromString pname)
+normalizeBuildInfo pname bi = bi
+  & haskell %~ Set.filter (\b -> view localName b /= fromString (unPackageName pname))
+  & tool %~ Set.filter (\b -> view localName b /= fromString (unPackageName pname))
 
 normalizeMeta :: Meta -> Meta
 normalizeMeta meta = meta
@@ -45,14 +47,14 @@ quote ('"':cs)    = '\\' : '"' : quote cs
 quote (c:cs)      = c : quote cs
 quote []          = []
 
--- |When a flag is specified multiple times, the first occurrence
--- counts. This is counter-intuitive, IMHO, but it's how cabal does it.
--- Flag names are spelled in all lowercase.
+-- | When a flag is specified multiple times, the first occurrence counts. This
+-- is counter-intuitive, IMHO, but it's how cabal does it. Flag names are
+-- spelled in all lowercase.
 --
--- >>> normalizeCabalFlags [(FlagName "foo", True), (FlagName "FOO", True), (FlagName "Foo", False)]
+-- >>> normalizeCabalFlags [(mkFlagName "foo", True), (mkFlagName "FOO", True), (mkFlagName "Foo", False)]
 -- [(FlagName "foo",True)]
 
 normalizeCabalFlags :: FlagAssignment -> FlagAssignment
 normalizeCabalFlags flags' = nubBy ((==) `on` fst) (sortBy (compare `on` fst) flags)
   where
-    flags = [ (FlagName (lowercase n), b) | (FlagName n, b) <- flags' ]
+    flags = [ (mkFlagName (lowercase (unFlagName n)), b) | (n, b) <- flags' ]

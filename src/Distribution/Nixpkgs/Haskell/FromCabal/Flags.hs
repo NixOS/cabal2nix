@@ -6,7 +6,7 @@ import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 
 import Distribution.Package
 import Distribution.PackageDescription
-import Data.Version
+import Distribution.Version
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier name version)
@@ -38,7 +38,7 @@ configureCabalFlags (PackageIdentifier name version)
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
  | name == "highlighting-kate"  = [enable "pcre-light"]
- | name == "hlibsass" && version >= Version [0,1,5] []
+ | name == "hlibsass" && version >= mkVersion [0,1,5]
                                 = [enable "externalLibsass"]
  | name == "hmatrix"            = [enable "openblas"]
  | name == "hslua"              = [enable "system-lua"]
@@ -55,7 +55,7 @@ configureCabalFlags (PackageIdentifier name version)
  | otherwise                    = []
 
 enable :: String -> (FlagName,Bool)
-enable name = (FlagName name, True)
+enable name = (mkFlagName name, True)
 
 disable :: String -> (FlagName,Bool)
-disable name = (FlagName name, False)
+disable name = (mkFlagName name, False)

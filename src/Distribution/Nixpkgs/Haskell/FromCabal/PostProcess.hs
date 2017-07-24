@@ -27,7 +27,7 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
     collidesWithHaskellName b = view localName b `Set.member` buildDeps
 
     myName :: Identifier
-    myName = ident # n where PackageName n = packageName drv
+    myName = ident # unPackageName (packageName drv)
 
     buildDeps :: Set Identifier
     buildDeps = Set.delete myName (setOf (dependencies . haskell . folded . localName) drv)

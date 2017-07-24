@@ -201,4 +201,4 @@ resolveConstraint' (Dependency name vrange) hackage
   | otherwise                   = Nothing
 
 mangle :: PackageIdentifier -> String
-mangle (PackageIdentifier (PackageName name) v) = name ++ '_' : [ if c == '.' then '_' else c | c <- display v ]
+mangle (PackageIdentifier name v) = unPackageName name ++ '_' : [ if c == '.' then '_' else c | c <- display v ]

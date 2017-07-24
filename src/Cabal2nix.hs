@@ -19,7 +19,7 @@ import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
-import Distribution.PackageDescription ( FlagName(..), FlagAssignment )
+import Distribution.PackageDescription ( mkFlagName, FlagAssignment )
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
 import Distribution.Text
@@ -34,7 +34,7 @@ import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi 
 data Options = Options
   { optSha256 :: Maybe String
   , optMaintainer :: [String]
---, optPlatform :: [String]                                         -- TODO: fix command line handling of platforms
+--, optPlatform :: [String]       -- TODO: fix command line handling of platforms
   , optHaddock :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
@@ -176,5 +176,5 @@ cabal2nix args = do
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = map tagWithValue
-  where tagWithValue ('-':fname) = (FlagName (lowercase fname), False)
-        tagWithValue fname       = (FlagName (lowercase fname), True)
+  where tagWithValue ('-':fname) = (mkFlagName (lowercase fname), False)
+        tagWithValue fname       = (mkFlagName (lowercase fname), True)

@@ -9,7 +9,6 @@ import Control.Monad.Trans.Maybe
 import qualified Data.ByteString.Lazy.Char8 as LBS8
 import Data.List ( isSuffixOf, isPrefixOf )
 import Data.Maybe
-import Data.Version
 import Distribution.Hackage.DB.Parsed
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
@@ -17,7 +16,7 @@ import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
-import Distribution.Text ( simpleParse )
+import Distribution.Text ( simpleParse, display )
 import OpenSSL.Digest ( digest, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
@@ -34,7 +33,6 @@ getPackage :: Maybe String -> Source -> IO Package
 getPackage optHackageDB source = do
   (derivSource, pkgDesc) <- fetchOrFromDB optHackageDB source
   flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
-
 
 fetchOrFromDB :: Maybe String -> Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
 fetchOrFromDB optHackageDB src
@@ -54,15 +52,12 @@ fromDB optHackageDB pkg = do
     Just r -> return r
     Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure
  where
+  pkgId :: Cabal.PackageIdentifier
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
-  Cabal.PackageName name = Cabal.pkgName pkgId
-  version = Cabal.pkgVersion pkgId
+  name = Cabal.unPackageName (Cabal.packageName pkgId)
 
   lookupVersion :: DB.Map DB.Version Cabal.GenericPackageDescription -> Maybe Cabal.GenericPackageDescription
-  lookupVersion
-    | null (versionBranch version) = fmap snd . listToMaybe . reverse . DB.toAscList
-    | otherwise                    = DB.lookup version
-
+  lookupVersion = fmap snd . listToMaybe . reverse . DB.toAscList
 
 readFileMay :: String -> IO (Maybe String)
 readFileMay file = do
@@ -117,9 +112,9 @@ sourceFromHackage optHash pkgId cabalDir = do
           exitFailure
 
 showPackageIdentifier :: Cabal.GenericPackageDescription -> String
-showPackageIdentifier pkgDesc = name ++ "-" ++ showVersion version where
+showPackageIdentifier pkgDesc = name ++ "-" ++ display version where
   pkgId = Cabal.package . Cabal.packageDescription $ pkgDesc
-  Cabal.PackageName name = Cabal.packageName pkgId
+  name = Cabal.unPackageName (Cabal.packageName pkgId)
   version = Cabal.packageVersion pkgId
 
 cabalFromPath :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)

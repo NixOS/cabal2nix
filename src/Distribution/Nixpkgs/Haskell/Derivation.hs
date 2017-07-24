@@ -23,7 +23,7 @@ import Distribution.Nixpkgs.Haskell.BuildInfo
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.PackageDescription ( FlagAssignment, FlagName(..) )
+import Distribution.PackageDescription ( FlagAssignment, unFlagName )
 import GHC.Generics ( Generic )
 import Language.Nix
 import Language.Nix.PrettyPrinting
@@ -137,7 +137,7 @@ instance Pretty Derivation where
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
                           ]
 
-      renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text f | (FlagName f, enable) <- _cabalFlags ]
+      renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
       sourceAttr (DerivationSource{..})
