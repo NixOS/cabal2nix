@@ -27,13 +27,6 @@ for n in */preferred-versions; do
   cat >>preferred-versions "$n"
   echo >>preferred-versions
 done
-DIR=$HOME/.cabal/packages/hackage.haskell.org
-TAR=$DIR/00-index.tar
-TARGZ=$TAR.gz
-mkdir -p "$DIR"
-rm -f "$TAR" "$TARGZ"
-git archive --format=tar -o "$TAR" HEAD
-gzip -k "$TAR"
 hackage=$(git rev-parse --verify HEAD)
 cd ..
 
