@@ -32,6 +32,12 @@ sed -r \
     -e '/ stack /d' \
     -i "$tmpfile"
 
+# Drop packages which have broken metadata in the stupid all-cabal-hashes
+# repository. We need to drop our dependency on that thing ASAP.
+sed -r \
+    -e '/wai-middleware-prometheus ==0.2.0/d' \
+    -i "$tmpfile"
+
 # Drop the previous configuration ...
 sed -e '/# LTS Haskell/,/^$/c \TODO\
 '   -i nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml
