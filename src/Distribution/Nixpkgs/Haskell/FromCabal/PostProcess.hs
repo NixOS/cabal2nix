@@ -103,6 +103,7 @@ hooks =
   , ("qtah-cpp-qt5", set (libraryDepends . system . contains (bind "pkgs.qt5.qtbase")) True)
   , ("qtah-qt5", set (libraryDepends . tool . contains (bind "pkgs.qt5.qtbase")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
+  , ("sbv > 7", set (testDepends . system . contains (pkg "z3")) True)
   , ("sdr", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
   , ("ssh", set doCheck False) -- test suite runs forever, probably can't deal with our lack of network access
