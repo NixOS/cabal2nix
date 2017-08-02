@@ -14,6 +14,7 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
+import qualified Distribution.Version as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.Text ( simpleParse, display )
@@ -56,8 +57,13 @@ fromDB optHackageDB pkg = do
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
   name = Cabal.unPackageName (Cabal.packageName pkgId)
 
+  version :: [Int]
+  version = Cabal.versionNumbers $ Cabal.packageVersion pkgId
+
   lookupVersion :: DB.Map DB.Version Cabal.GenericPackageDescription -> Maybe Cabal.GenericPackageDescription
-  lookupVersion = fmap snd . listToMaybe . reverse . DB.toAscList
+  -- No version is specified, pick latest one
+  lookupVersion m | [] <- version  = fmap snd . listToMaybe $ DB.toDescList m
+  lookupVersion m = DB.lookup (DB.makeVersion version) m
 
 readFileMay :: String -> IO (Maybe String)
 readFileMay file = do
