@@ -108,7 +108,7 @@ instance Pretty Derivation where
       [ attr "pname"   $ doubleQuotes $ disp (packageName _pkgid)
       , attr "version" $ doubleQuotes $ disp (packageVersion _pkgid)
       , sourceAttr _src
-      , onlyIf (_subpath /= ".") $ attr "postUnpack" postUnpack
+      , onlyIf (_subpath /= "." && isRemotePackage _src) $ attr "postUnpack" postUnpack
       , onlyIf (_revision > 0) $ attr "revision" $ doubleQuotes $ int _revision
       , onlyIf (not (null _editedCabalFile) && _revision > 0) $ attr "editedCabalFile" $ string _editedCabalFile
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
@@ -143,6 +143,7 @@ instance Pretty Derivation where
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
+      isRemotePackage (DerivationSource{..}) = isHackagePackage || derivKind /= ""
       sourceAttr (DerivationSource{..})
         | isHackagePackage = attr "sha256" $ string derivHash
         | derivKind /= "" = vcat
@@ -154,6 +155,7 @@ instance Pretty Derivation where
              ]
            , rbrace <> semi
            ]
+        | _subpath /= "" = attr "src" . text $ if "./" `isPrefixOf` _subpath then _subpath else "./" ++ _subpath
         | otherwise = attr "src" $ text derivUrl
 
       postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"
