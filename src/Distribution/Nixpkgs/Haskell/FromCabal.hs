@@ -3,9 +3,8 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal
   ( HaskellResolver, NixpkgsResolver
-  , fromGenericPackageDescription , fromPackageDescription
-  )
-  where
+  , fromGenericPackageDescription , finalizeGenericPackageDescription , fromPackageDescription
+  ) where
 
 import Control.Lens
 import Data.Maybe
@@ -35,30 +34,34 @@ import Language.Nix
 type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
-fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo ->  FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
+fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
 fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
   fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
     where
-      -- We have to call the Cabal finalizer several times with different resolver
-      -- functions, and this convenience function makes our code shorter.
-      finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
-      finalize resolver = finalizePD flags requestedComponents resolver arch compiler constraints genDesc
+      (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc
 
-      requestedComponents :: ComponentRequestedSpec
-      requestedComponents = defaultComponentRequestedSpec
-                            { testsRequested      = True
-                            , benchmarksRequested = True
-                            }
+finalizeGenericPackageDescription :: HaskellResolver -> Platform -> CompilerInfo ->  FlagAssignment -> [Constraint] -> GenericPackageDescription -> (PackageDescription, [Dependency])
+finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc =
+  let
+    -- We have to call the Cabal finalizer several times with different resolver
+    -- functions, and this convenience function makes our code shorter.
+    finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
+    finalize resolver = finalizePD flags requestedComponents resolver arch compiler constraints genDesc
 
-      descr :: PackageDescription; missingDeps :: [Dependency]
-      (descr,missingDeps) = case finalize jailbrokenResolver of
-                              Left m -> case finalize (const True) of
-                                          Left _      -> error ("Cabal cannot finalize " ++ display (packageId genDesc))
-                                          Right (d,_) -> (d,m)
-                              Right (d,_)  -> (d,[])
+    requestedComponents :: ComponentRequestedSpec
+    requestedComponents = defaultComponentRequestedSpec
+                          { testsRequested      = True
+                          , benchmarksRequested = True
+                          }
 
-      jailbrokenResolver :: HaskellResolver
-      jailbrokenResolver (Dependency pkg _) = haskellResolver (Dependency pkg anyVersion)
+    jailbrokenResolver :: HaskellResolver
+    jailbrokenResolver (Dependency pkg _) = haskellResolver (Dependency pkg anyVersion)
+
+  in case finalize jailbrokenResolver of
+    Left m -> case finalize (const True) of
+                Left _      -> error ("Cabal cannot finalize " ++ display (packageId genDesc))
+                Right (d,_) -> (d,m)
+    Right (d,_)  -> (d,[])
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
 fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ nullDerivation
