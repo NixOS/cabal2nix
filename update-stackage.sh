@@ -22,6 +22,7 @@ sed -r \
     -e '/ cabal2nix /d' \
     -e '/ cabal-install /d' \
     -e '/ distribution-nixpkgs /d' \
+    -e '/ git-annex /d' \
     -e '/ hindent /d' \
     -e '/ hledger/d' \
     -e '/ hoogle /d' \
