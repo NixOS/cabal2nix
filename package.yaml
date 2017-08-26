@@ -1,5 +1,5 @@
 name:           cabal2nix
-version:        "2.4.1"
+version:        "2.5"
 synopsis:       Convert Cabal files into Nix build instructions.
 author:
   - Peter Simons
