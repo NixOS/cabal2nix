@@ -235,7 +235,7 @@ xmonadPostInstall = unlines
 agdaPostInstall :: String
 agdaPostInstall = unlines
   [ "postInstall = ''"
-  , "  $out/bin/agda -c --no-main $(find $out/share -name Primitive.agda)"
+  , "  $out/bin/agda -c --no-main $(find $data/share -name Primitive.agda)"
   , "  $out/bin/agda-mode compile"
   , "'';"
   ]
@@ -243,7 +243,7 @@ agdaPostInstall = unlines
 agda25PostInstall :: String
 agda25PostInstall = unlines
   [ "postInstall = ''"
-  , "  files=(\"$out/share/\"*\"-ghc-\"*\"/Agda-\"*\"/lib/prim/Agda/\"{Primitive.agda,Builtin\"/\"*.agda})"
+  , "  files=(\"$data/share/ghc-\"*\"/\"*\"-ghc-\"*\"/Agda-\"*\"/lib/prim/Agda/\"{Primitive.agda,Builtin\"/\"*.agda})"
   -- Separate loops to avoid internal error
   , "  for f in \"''${files[@]}\" ; do"
   , "    $out/bin/agda $f"
