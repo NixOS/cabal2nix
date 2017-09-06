@@ -84,7 +84,6 @@ hooks =
   , ("http-conduit", set doCheck False)         -- attempts to access the network
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
   , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
-  , ("jsaddle", set (dependencies . haskell . contains (bind "self.ghcjs-base")) False)
   , ("js-jquery", set doCheck False)            -- attempts to access the network
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
