@@ -1,6 +1,7 @@
 # ignore build Cabal build files
 
 /.cabal-sandbox
+/.ghc.environment.*
 /Setup
 /Setup.hi
 /Setup.o
