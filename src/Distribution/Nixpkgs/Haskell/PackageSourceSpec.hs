@@ -28,25 +28,26 @@ import System.IO ( hPutStrLn, stderr, hPutStr )
 
 data Package = Package
   { pkgSource :: DerivationSource
+  , pkgRunHpack :: Bool
   , pkgCabal :: Cabal.GenericPackageDescription
   }
   deriving (Show)
 
 getPackage :: Maybe String -> Source -> IO Package
 getPackage optHackageDB source = do
-  (derivSource, pkgDesc) <- fetchOrFromDB optHackageDB source
-  flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
+  (derivSource, runHpack, pkgDesc) <- fetchOrFromDB optHackageDB source
+  (\s -> Package s runHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
-fetchOrFromDB :: Maybe String -> Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
+fetchOrFromDB :: Maybe String -> Source -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
 fetchOrFromDB optHackageDB src
-  | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,) Nothing) . fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+  | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,,) Nothing False) . fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
   | otherwise                             = do
     r <- fetch (\dir -> cabalFromPath (dir </> sourceCabalDir src)) src
     case r of
       Nothing ->
         hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
-      Just (derivSource, (externalSource, pkgDesc)) -> do
-        return (derivSource <$ guard externalSource, pkgDesc)
+      Just (derivSource, (externalSource, (runHpack, pkgDesc))) -> do
+        return (derivSource <$ guard externalSource, runHpack, pkgDesc)
 
 fromDB :: Maybe String -> String -> IO Cabal.GenericPackageDescription
 fromDB optHackageDB pkg = do
@@ -125,21 +126,21 @@ showPackageIdentifier pkgDesc = name ++ "-" ++ display version where
   name = Cabal.unPackageName (Cabal.packageName pkgId)
   version = Cabal.packageVersion pkgId
 
-cabalFromPath :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+cabalFromPath :: FilePath -> MaybeT IO (Bool, (Bool, Cabal.GenericPackageDescription))
 cabalFromPath path = do
   d <- liftIO $ doesDirectoryExist path
   (,) d <$> if d
     then cabalFromDirectory  path
-    else cabalFromFile False path
+    else (,) False <$> cabalFromFile False path
 
-cabalFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
+cabalFromDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 cabalFromDirectory dir = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
     [] -> do
       liftIO $ hPutStrLn stderr "*** found zero cabal files. Trying hpack..."
-      hpackFromDirectory dir
-    [cabalFile] -> cabalFromFile True cabalFile
+      (,) True <$> hpackFromDirectory dir
+    [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
     _       -> liftIO $ hPutStrLn stderr ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.") >> exitFailure
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
@@ -150,8 +151,8 @@ hpackFromDirectory dir = do
   mPackage <- liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-    Right (_, pkg) -> do
-      let buf = LBS8.pack $ Hpack.renderPackage Hpack.defaultRenderSettings 0 [] [] pkg
+    Right (_, pkg') -> do
+      let buf = LBS8.pack $ Hpack.renderPackage Hpack.defaultRenderSettings 0 [] [] pkg'
           hash = printSHA256 (digest (digestByName "sha256") buf)
       case parsePackage' buf of
         Left msg -> liftIO $ hPutStrLn stderr ("*** cannot parse hpack output: " ++ msg) >> exitFailure

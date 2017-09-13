@@ -36,6 +36,7 @@ data Options = Options
   , optMaintainer :: [String]
 --, optPlatform :: [String]       -- TODO: fix command line handling of platforms
   , optHaddock :: Bool
+  , optHpack :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
   , optRevision :: Maybe String
@@ -60,6 +61,7 @@ options = Options
           <*> many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
 --        <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
           <*> flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
+          <*> switch (long "hpack" <> help "run hpack before configuring this package")
           <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
           <*> optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
@@ -136,6 +138,7 @@ cabal2nix' args = do
               & src .~ pkgSource pkg
               & subpath .~ (fromMaybe "." optSubpath)
               & runHaddock .~ optHaddock
+              & runHpack .~ (optHpack || pkgRunHpack pkg)
               & jailbreak .~ optJailbreak
               & hyperlinkSource .~ optHyperlinkSource
               & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)

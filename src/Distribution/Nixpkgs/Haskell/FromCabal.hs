@@ -79,6 +79,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     & configureFlags .~ mempty
     & cabalFlags .~ flags
     & runHaddock .~ maybe True (not . null . exposedModules) library
+    & runHpack .~ False
     & jailbreak .~ False
     & doCheck .~ True
     & testTarget .~ mempty

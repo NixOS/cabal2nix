@@ -6,7 +6,7 @@
 module Distribution.Nixpkgs.Haskell.Derivation
   ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
-  , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
+  , cabalFlags, runHaddock, runHpack, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
   )
@@ -59,6 +59,7 @@ data Derivation = MkDerivation
   , _editedCabalFile            :: String
   , _enableSeparateDataOutput   :: Bool
   , _metaSection                :: Meta
+  , _runHpack                   :: Bool
   }
   deriving (Show, Eq, Generic)
 
@@ -90,6 +91,7 @@ nullDerivation = MkDerivation
   , _editedCabalFile = error "undefined Derivation.editedCabalFile"
   , _enableSeparateDataOutput = error "undefined Derivation.enableSeparateDataOutput"
   , _metaSection = error "undefined Derivation.metaSection"
+  , _runHpack = error "undefined Derivation.runHpack"
   }
 
 makeLenses ''Derivation
@@ -130,6 +132,7 @@ instance Pretty Derivation where
       , boolattr "hyperlinkSource" (not _hyperlinkSource) _hyperlinkSource
       , onlyIf (not (null _phaseOverrides)) $ vcat ((map text . lines) _phaseOverrides)
       , pPrint _metaSection
+      , onlyIf _runHpack $ attr "preConfigure" $ string "${hpack}/bin/hpack"
       ]
     , rbrace
     ]
@@ -138,6 +141,7 @@ instance Pretty Derivation where
       inputs = Set.unions [ Set.map (view (localName . ident)) _extraFunctionArgs
                           , setOf (dependencies . each . folded . localName . ident) drv
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
+                          , if _runHpack then Set.singleton "hpack" else Set.empty
                           ]
 
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- _cabalFlags ]
