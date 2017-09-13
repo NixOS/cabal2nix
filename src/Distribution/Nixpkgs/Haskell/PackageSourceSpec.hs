@@ -19,6 +19,8 @@ import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.Text ( simpleParse, display )
 import OpenSSL.Digest ( digest, digestByName )
+import qualified Hpack.Run as Hpack
+import qualified Hpack.Config as Hpack
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
@@ -134,11 +136,27 @@ cabalFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromDirectory dir = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
+    [] -> do
+      liftIO $ hPutStrLn stderr "*** found zero cabal files. Trying hpack..."
+      hpackFromDirectory dir
     [cabalFile] -> cabalFromFile True cabalFile
-    _       -> liftIO $ hPutStrLn stderr ("*** found zero or more than one cabal file (" ++ show cabals ++ "). Exiting.") >> exitFailure
+    _       -> liftIO $ hPutStrLn stderr ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.") >> exitFailure
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
+
+hpackFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
+hpackFromDirectory dir = do
+  mPackage <- liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
+  case mPackage of
+    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
+    Right (_, pkg) -> do
+      let buf = LBS8.pack $ Hpack.renderPackage Hpack.defaultRenderSettings 0 [] [] pkg
+          hash = printSHA256 (digest (digestByName "sha256") buf)
+      case parsePackage' buf of
+        Left msg -> liftIO $ hPutStrLn stderr ("*** cannot parse hpack output: " ++ msg) >> exitFailure
+        Right pkg -> MaybeT $ return $ Just $ pkg { packageDescription = (packageDescription pkg) {
+                customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg) } }
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =

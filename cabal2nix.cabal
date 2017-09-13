@@ -101,6 +101,7 @@ library
     , filepath
     , hackage-db
     , hopenssl >= 2
+    , hpack
     , language-nix
     , lens
     , optparse-applicative
@@ -149,6 +150,7 @@ executable cabal2nix
     , filepath
     , hackage-db
     , hopenssl >= 2
+    , hpack
     , language-nix
     , lens
     , optparse-applicative
@@ -181,6 +183,7 @@ executable hackage2nix
     , filepath
     , hackage-db
     , hopenssl >= 2
+    , hpack
     , language-nix
     , lens
     , optparse-applicative
@@ -220,6 +223,7 @@ test-suite doctests
     , filepath
     , hackage-db
     , hopenssl >= 2
+    , hpack
     , language-nix
     , lens
     , optparse-applicative
