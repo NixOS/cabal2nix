@@ -101,6 +101,7 @@ dependencies:
   - split
   - text
   - transformers
+  - utf8-string
   - yaml
 
 library:

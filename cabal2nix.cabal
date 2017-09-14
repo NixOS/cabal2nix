@@ -110,6 +110,7 @@ library
     , split
     , text
     , transformers
+    , utf8-string
     , yaml
   exposed-modules:
       Cabal2nix
@@ -159,6 +160,7 @@ executable cabal2nix
     , split
     , text
     , transformers
+    , utf8-string
     , yaml
     , cabal2nix
   other-modules:
@@ -192,6 +194,7 @@ executable hackage2nix
     , split
     , text
     , transformers
+    , utf8-string
     , yaml
     , cabal2nix
     , monad-par
@@ -232,6 +235,7 @@ test-suite doctests
     , split
     , text
     , transformers
+    , utf8-string
     , yaml
     , doctest
   default-language: Haskell2010
