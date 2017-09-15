@@ -134,6 +134,7 @@ libNixName "sndfile"                            = return "libsndfile"
 libNixName "sodium"                             = return "libsodium"
 libNixName "sqlite3"                            = return "sqlite"
 libNixName "ssl"                                = return "openssl"
+libNixName "statgrab"                           = return "libstatgrab"
 libNixName "stdc++"                             = [] -- What is that?
 libNixName "stdc++.dll"                         = [] -- What is that?
 libNixName "systemd-journal"                    = return "systemd"
