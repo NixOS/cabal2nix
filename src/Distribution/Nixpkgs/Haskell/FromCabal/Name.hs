@@ -81,6 +81,8 @@ libNixName "ImageMagick"                        = return "imagemagick"
 libNixName "Imlib2"                             = return "imlib2"
 libNixName "iw"                                 = return "wirelesstools"
 libNixName "jack"                               = return "libjack2"
+libNixName "javascriptcoregtk-3.0"              = return "webkitgtk24x-gtk3"     -- These are the old APIs, of which 2.4 is the last provider, so map directly to that.
+libNixName "javascriptcoregtk-4.0"              = return "webkitgtk"    -- This is the current API, so let it reference an alias for the latest version.
 libNixName "jpeg"                               = return "libjpeg"
 libNixName "jvm"                                = return "jdk"
 libNixName "lapack"                             = return "liblapack"
@@ -135,22 +137,17 @@ libNixName "ssl"                                = return "openssl"
 libNixName "stdc++"                             = [] -- What is that?
 libNixName "stdc++.dll"                         = [] -- What is that?
 libNixName "systemd-journal"                    = return "systemd"
-libNixName "taglib_c"                           = return "taglib"
 libNixName "tag_c"                              = return "taglib"
+libNixName "taglib_c"                           = return "taglib"
 libNixName "udev"                               = return "systemd";
 libNixName "uuid"                               = return "libossp_uuid";
 libNixName "wayland-client"                     = return "wayland"
 libNixName "wayland-cursor"                     = return "wayland"
 libNixName "wayland-egl"                        = return "mesa"
 libNixName "wayland-server"                     = return "wayland"
--- These are the old APIs, of which 2.4 is the last provider, so map directly to that
-libNixName "javascriptcoregtk-3.0"              = return "webkitgtk24x-gtk3"
-libNixName "webkitgtk-3.0"                      = return "webkitgtk24x-gtk3"
--- This is the current API, so let it reference an alias for the latest version
-libNixName "javascriptcoregtk-4.0"              = return "webkitgtk"
-libNixName "webkit2gtk-4.0"                     = return "webkitgtk"
--- This package doesn't actually exist in nixpkgs at present
-libNixName "webkit2gtk-web-extension-4.0"       = return "webkitgtk-web-extension"
+libNixName "webkit2gtk-4.0"                     = return "webkitgtk"    -- This is the current API, so let it reference an alias for the latest version.
+libNixName "webkit2gtk-web-extension-4.0"       = return "webkitgtk-web-extension"  -- This package doesn't actually exist in nixpkgs at present.
+libNixName "webkitgtk-3.0"                      = return "webkitgtk24x-gtk3"     -- These are the old APIs, of which 2.4 is the last provider, so map directly to that
 libNixName "X11"                                = return "libX11"
 libNixName "xau"                                = return "libXau"
 libNixName "Xcursor"                            = return "libXcursor"
