@@ -79,6 +79,7 @@ executable show-package-versions
   main-is: show-package-versions.hs
   hs-source-dirs:
       example
+  other-extensions: CPP
   build-depends:
       base >= 3 && < 5
     , Cabal

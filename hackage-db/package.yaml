@@ -68,3 +68,5 @@ executables:
     source-dirs:        example
     dependencies:
       - hackage-db
+    other-extensions:
+      - CPP
