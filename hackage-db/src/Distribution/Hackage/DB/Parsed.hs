@@ -27,10 +27,7 @@ import Distribution.Version
 
 type HackageDB = Map PackageName PackageData
 
-data PackageData = PackageData { preferredVersions :: !VersionRange
-                               , versions          :: !(Map Version VersionData)
-                               }
-  deriving (Show, Eq, Generic)
+type PackageData = Map Version VersionData
 
 data VersionData = VersionData { cabalFile :: !GenericPackageDescription
                                , tarballHashes :: !(Map String String)
@@ -47,12 +44,13 @@ parseDB :: U.HackageDB -> HackageDB
 parseDB = Map.mapWithKey parsePackageData
 
 parsePackageData :: PackageName -> U.PackageData -> PackageData
-parsePackageData pn (U.PackageData pv vs) =
+parsePackageData pn (U.PackageData pv vs') =
   mapException (\e -> HackageDBPackageName pn (e :: SomeException)) $
-    PackageData vr (Map.mapWithKey (parseVersionData pn) vs)
-      where
-        Dependency _ vr | BS.null pv = Dependency pn anyVersion
-                        | otherwise  = parseText "preferred version range" (toString pv)
+    Map.mapWithKey (parseVersionData pn) $
+      Map.filterWithKey (\v _ -> v `withinRange` vr) vs'
+  where
+    Dependency _ vr | BS.null pv = Dependency pn anyVersion
+                    | otherwise  = parseText "preferred version range" (toString pv)
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
 parseVersionData pn v (U.VersionData cf m) =
