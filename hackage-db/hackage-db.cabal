@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:                   hackage-db
-version:                2
+version:                2.0
 license:                BSD3
 license-file:           LICENSE
 tested-with:            GHC > 7.8 && < 8.3
@@ -95,4 +95,16 @@ executable show-meta-data
     , hackage-db
     , bytestring
     , utf8-string
+  default-language: Haskell2010
+
+executable show-package-versions
+  main-is: show-package-versions.hs
+  hs-source-dirs:
+      example
+  ghc-options: -Wall
+  build-depends:
+      base >= 3 && < 5
+    , Cabal
+    , containers
+    , hackage-db
   default-language: Haskell2010

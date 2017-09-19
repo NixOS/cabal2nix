@@ -1,5 +1,5 @@
 name:         hackage-db
-version:      "2"
+version:      "2.0"
 synopsis:     Access Hackage's package database via Data.Map
 category:     Distribution
 author:       Peter Simons, Alexander Altman, Ben James
@@ -93,3 +93,9 @@ executables:
       - hackage-db
       - bytestring
       - utf8-string
+
+  show-package-versions:
+    main:               show-package-versions.hs
+    source-dirs:        example
+    dependencies:
+      - hackage-db
