@@ -17,6 +17,7 @@ import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
+import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP (pkg)
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( mkFlagName, FlagAssignment )
@@ -120,6 +121,10 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
   cabal2nix =<< getArgs
 
+hpackOverrides :: Derivation -> Derivation
+hpackOverrides = over phaseOverrides (++ "preConfigure = \"${hpack}/bin/hpack;\";")
+               . set (libraryDepends . pkgconfig . contains (PP.pkg "hpack")) True
+
 cabal2nix' :: [String] -> IO (Either Doc Derivation)
 cabal2nix' args = do
   Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
@@ -127,8 +132,10 @@ cabal2nix' args = do
   pkg <- getPackage optHpack optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
 
   let
+      withHpackOverrides :: Derivation -> Derivation
+      withHpackOverrides = if pkgRanHpack pkg then hpackOverrides else id
       deriv :: Derivation
-      deriv = fromGenericPackageDescription (const True)
+      deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
                                             (\i -> Just (binding # (i, path # [i])))
                                             optSystem
                                             (unknownCompilerInfo optCompiler NoAbiTag)
@@ -138,7 +145,6 @@ cabal2nix' args = do
               & src .~ pkgSource pkg
               & subpath .~ (fromMaybe "." optSubpath)
               & runHaddock .~ optHaddock
-              & runHpack .~ pkgRanHpack pkg
               & jailbreak .~ optJailbreak
               & hyperlinkSource .~ optHyperlinkSource
               & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)

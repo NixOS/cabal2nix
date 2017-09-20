@@ -17,7 +17,7 @@ import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal.License
 import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
-import Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
+import Distribution.Nixpkgs.Haskell.FromCabal.PostProcess (postProcess)
 import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
@@ -79,7 +79,6 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     & configureFlags .~ mempty
     & cabalFlags .~ flags
     & runHaddock .~ maybe True (not . null . exposedModules) library
-    & runHpack .~ False
     & jailbreak .~ False
     & doCheck .~ True
     & testTarget .~ mempty

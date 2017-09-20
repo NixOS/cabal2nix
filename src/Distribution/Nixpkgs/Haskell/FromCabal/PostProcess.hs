@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess, pkg ) where
 
 import Control.Lens
 import Data.List.Split
