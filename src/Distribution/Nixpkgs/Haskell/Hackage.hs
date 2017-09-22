@@ -1,33 +1,44 @@
-module Distribution.Nixpkgs.Haskell.Hackage ( readHashedHackage, readHashedHackage', module Distribution.Hackage.DB ) where
+module Distribution.Nixpkgs.Haskell.Hackage
+  ( HackageDB, PackageData, VersionData(..)
+  , hackageTarball, readTarball
+  ) where
 
-import Data.ByteString.Lazy ( ByteString )
-import Distribution.Hackage.DB
-import qualified Distribution.Hackage.DB.Parsed as Unparsed ( parsePackage )
-import qualified Distribution.Hackage.DB.Unparsed as Unparsed
+import Data.Map as Map
+import qualified Distribution.Hackage.DB.Parsed as P
+import Distribution.Hackage.DB.Path
+import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Nixpkgs.Hashes
-import OpenSSL.Digest ( digest, digestByName )
+import Distribution.Package
+import Distribution.PackageDescription
+import Distribution.Version
+import OpenSSL.Digest
+import Data.Time
 
--- | A variant of 'readHackage' that adds the SHA256 digest of the
--- original Cabal file to the parsed 'GenericPackageDescription'. That
--- hash is required to build packages with an "edited" cabal file,
--- because Nix needs to download the edited file and patch it into the
--- original tarball.
+type HackageDB = Map PackageName PackageData
 
-readHashedHackage :: IO Hackage
-readHashedHackage = hackagePath >>= readHashedHackage'
+type PackageData = Map Version VersionData
 
-readHashedHackage' :: FilePath -> IO Hackage
-readHashedHackage' = fmap parseUnparsedHackage . Unparsed.readHackage'
+data VersionData = VersionData
+  { cabalFile :: !GenericPackageDescription
+  , cabalFileSha256 :: !String
+  , tarballSha256 :: !(Maybe String)
+  }
+  deriving (Show)
+
+readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
+readTarball ts p = do
+  dbu <- U.readTarball ts p
+  let dbp = P.parseDB dbu
+  return (mapWithKey (parsePackageData dbu) dbp)
+
+parsePackageData :: U.HackageDB -> PackageName -> P.PackageData -> PackageData
+parsePackageData dbu pn pd = mapWithKey (parseVersionData (dbu ! pn)) pd
+
+parseVersionData :: U.PackageData -> Version -> P.VersionData -> VersionData
+parseVersionData pdu v vd = VersionData
+                            { cabalFile = P.cabalFile vd
+                            , cabalFileSha256 = printSHA256 (digest (digestByName "sha256") file)
+                            , tarballSha256 = Map.lookup "sha256" (P.tarballHashes vd)
+                            }
   where
-    parseUnparsedHackage :: Unparsed.Hackage -> Hackage
-    parseUnparsedHackage = mapWithKey (mapWithKey . parsePackage)
-
-    parsePackage :: String -> Version -> ByteString -> GenericPackageDescription
-    parsePackage name version buf =
-      let pkg = Unparsed.parsePackage name version buf
-          hash = printSHA256 (digest (digestByName "sha256") buf)
-      in
-       pkg { packageDescription = (packageDescription pkg) {
-                customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg)
-                }
-           }
+    file = U.cabalFile (U.versions pdu ! v)

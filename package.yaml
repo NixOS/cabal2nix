@@ -90,7 +90,7 @@ dependencies:
   - directory
   - distribution-nixpkgs >= 1.1
   - filepath
-  - hackage-db
+  - hackage-db > 2
   - hopenssl >= 2
   - language-nix
   - lens
@@ -99,6 +99,7 @@ dependencies:
   - process
   - split
   - text
+  - time
   - transformers
   - yaml
 

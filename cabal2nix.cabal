@@ -99,7 +99,7 @@ library
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , language-nix
     , lens
@@ -108,6 +108,7 @@ library
     , process
     , split
     , text
+    , time
     , transformers
     , yaml
   exposed-modules:
@@ -147,7 +148,7 @@ executable cabal2nix
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , language-nix
     , lens
@@ -156,6 +157,7 @@ executable cabal2nix
     , process
     , split
     , text
+    , time
     , transformers
     , yaml
     , cabal2nix
@@ -179,7 +181,7 @@ executable hackage2nix
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , language-nix
     , lens
@@ -188,6 +190,7 @@ executable hackage2nix
     , process
     , split
     , text
+    , time
     , transformers
     , yaml
     , cabal2nix
@@ -218,7 +221,7 @@ test-suite doctests
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , language-nix
     , lens
@@ -227,6 +230,7 @@ test-suite doctests
     , process
     , split
     , text
+    , time
     , transformers
     , yaml
     , doctest
