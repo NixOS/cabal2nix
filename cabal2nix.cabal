@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           cabal2nix
-version:        2.5
+version:        2.6
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
                 .
@@ -99,7 +99,7 @@ library
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , hpack
     , language-nix
@@ -109,6 +109,7 @@ library
     , process
     , split
     , text
+    , time
     , transformers
     , utf8-string
     , yaml
@@ -149,7 +150,7 @@ executable cabal2nix
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , hpack
     , language-nix
@@ -159,6 +160,7 @@ executable cabal2nix
     , process
     , split
     , text
+    , time
     , transformers
     , utf8-string
     , yaml
@@ -183,7 +185,7 @@ executable hackage2nix
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , hpack
     , language-nix
@@ -193,6 +195,7 @@ executable hackage2nix
     , process
     , split
     , text
+    , time
     , transformers
     , utf8-string
     , yaml
@@ -224,7 +227,7 @@ test-suite doctests
     , directory
     , distribution-nixpkgs >= 1.1
     , filepath
-    , hackage-db
+    , hackage-db > 2
     , hopenssl >= 2
     , hpack
     , language-nix
@@ -234,6 +237,7 @@ test-suite doctests
     , process
     , split
     , text
+    , time
     , transformers
     , utf8-string
     , yaml

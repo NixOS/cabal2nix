@@ -156,7 +156,7 @@ cabal2nix' args = do
 
       shell :: Doc
       shell = vcat
-              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\" }:"
+              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\", doBenchmark ? false }:"
               , text ""
               , text "let"
               , text ""
@@ -168,7 +168,9 @@ cabal2nix' args = do
               , text "                       then pkgs.haskellPackages"
               , text "                       else pkgs.haskell.packages.${compiler};"
               , text ""
-              , text "  drv = haskellPackages.callPackage f {};"
+              , text "  variant = if doBenchmark then pkgs.haskell.lib.doBenchmark else pkgs.lib.id;"
+              , text ""
+              , text "  drv = variant (haskellPackages.callPackage f {});"
               , text ""
               , text "in"
               , text ""

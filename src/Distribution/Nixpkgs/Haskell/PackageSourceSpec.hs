@@ -9,19 +9,20 @@ import Control.Monad.Trans.Maybe
 import qualified Data.ByteString.Lazy.Char8 as LBS8
 import qualified Data.ByteString.Lazy.UTF8 as UTF8
 import Data.List ( isSuffixOf, isPrefixOf )
+import qualified Data.Map as DB
 import Data.Maybe
-import Distribution.Hackage.DB.Parsed
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
-import qualified Distribution.Version as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
+import Distribution.PackageDescription.Parse as Cabal
 import Distribution.Text ( simpleParse, display )
-import OpenSSL.Digest ( digest, digestByName )
+import Distribution.Version
 import qualified Hpack.Run as Hpack
 import qualified Hpack.Config as Hpack
+import OpenSSL.Digest ( digestString, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
@@ -35,43 +36,49 @@ data Package = Package
   deriving (Show)
 
 getPackage :: Bool -- ^ Whether hpack should regenerate the cabal file
-           -> Maybe String -> Source -> IO Package
+           -> Maybe FilePath -> Source -> IO Package
 getPackage optHpack optHackageDB source = do
   (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optHackageDB source
   (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
 fetchOrFromDB :: Bool -- ^ Whether hpack should regenerate the cabal file
-              -> Maybe String -> Source -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
+              -> Maybe FilePath -> Source -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
 fetchOrFromDB optHpack optHackageDB src
-  | "cabal://" `isPrefixOf` sourceUrl src = fmap ((,,) Nothing False) . fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+  | "cabal://" `isPrefixOf` sourceUrl src = fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
   | otherwise                             = do
     r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
-      Nothing ->
-        hPutStrLn stderr "*** failed to fetch source. Does the URL exist?" >> exitFailure
+      Nothing -> fail "Failed to fetch source. Does the URL exist?"
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) -> do
         return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
 
-fromDB :: Maybe String -> String -> IO Cabal.GenericPackageDescription
+fromDB :: Maybe FilePath -> String -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
 fromDB optHackageDB pkg = do
-  pkgDesc <- (lookupVersion <=< DB.lookup name) <$> maybe DB.readHashedHackage DB.readHashedHackage' optHackageDB
-  case pkgDesc of
-    Just r -> return r
-    Nothing -> hPutStrLn stderr "*** no such package in the cabal database (did you run cabal update?). " >> exitFailure
+  dbPath <- maybe DB.hackageTarball return optHackageDB
+  db <- DB.readTarball Nothing dbPath
+  vd <- maybe unknownPackageError return (DB.lookup name db >>= lookupVersion)
+  let ds = case DB.tarballSha256 vd of
+             Nothing -> Nothing
+             Just hash -> Just (DerivationSource "url" url "" hash)
+  return (ds, setCabalFileHash (DB.cabalFileSha256 vd) (DB.cabalFile vd))
  where
   pkgId :: Cabal.PackageIdentifier
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
-  name = Cabal.unPackageName (Cabal.packageName pkgId)
+  name = Cabal.packageName pkgId
 
-  version :: [Int]
-  version = Cabal.versionNumbers $ Cabal.packageVersion pkgId
+  unknownPackageError = fail "No such package in the cabal database. Did you run cabal update?"
 
-  lookupVersion :: DB.Map DB.Version Cabal.GenericPackageDescription -> Maybe Cabal.GenericPackageDescription
+  url = "mirror://hackage/" ++ display pkgId ++ ".tar.gz"
+
+  version :: Version
+  version = Cabal.packageVersion pkgId
+
+  lookupVersion :: DB.Map Version DB.VersionData -> Maybe DB.VersionData
   -- No version is specified, pick latest one
-  lookupVersion m | [] <- version  = fmap snd . listToMaybe $ DB.toDescList m
-  lookupVersion m = DB.lookup (DB.makeVersion version) m
+  lookupVersion m | version == nullVersion  = fmap snd (listToMaybe (DB.toDescList m))
+  lookupVersion m                           = DB.lookup version m
 
-readFileMay :: String -> IO (Maybe String)
+readFileMay :: FilePath -> IO (Maybe String)
 readFileMay file = do
   e <- doesFileExist file
   if e
@@ -85,7 +92,7 @@ hashCachePath pid = do
   createDirectoryIfMissing True cacheDir
   return $ cacheDir </> pid <.> "sha256"
 
-sourceFromHackage :: Hash -> String -> String -> IO DerivationSource
+sourceFromHackage :: Hash -> String -> FilePath -> IO DerivationSource
 sourceFromHackage optHash pkgId cabalDir = do
   cacheFile <- hashCachePath pkgId
   cachedHash <-
@@ -149,7 +156,7 @@ cabalFromDirectory False dir = do
       liftIO $ hPutStrLn stderr "*** found zero cabal files. Trying hpack..."
       hpackDirectory dir
     [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
-    _       -> liftIO $ hPutStrLn stderr ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.") >> exitFailure
+    _       -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
@@ -181,13 +188,16 @@ cabalFromFile failHard file =
   -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
   -- the reading of the file, so we will always catch the expression here.
   MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
-    buf <- LBS8.readFile file
-    let hash = printSHA256 (digest (digestByName "sha256") buf)
-    case parsePackage' buf of
-      Left msg    -> if failHard
-                     then fail ("*** cannot parse " ++ show file ++ ": " ++ msg)
-                     else return Nothing
-      Right pkg -> do return $ Just $ pkg { packageDescription = (packageDescription pkg) {
-                                               customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg)
-                                            }
-                                          }
+    buf <- readFile file
+    let hash = printSHA256 (digestString (digestByName "sha256") buf)
+    case parseGenericPackageDescription buf of
+      ParseFailed perr -> if failHard
+                             then fail ("cannot parse " ++ show file ++ ": " ++ show perr)
+                             else return Nothing
+      ParseOk _ pkg    -> return $ Just $ setCabalFileHash hash pkg
+
+setCabalFileHash :: String -> GenericPackageDescription -> GenericPackageDescription
+setCabalFileHash sha256 gpd = gpd { packageDescription = (packageDescription gpd) {
+                                      customFieldsPD = ("X-Cabal-File-Hash", sha256) : customFieldsPD (packageDescription gpd)
+                                    }
+                                  }
