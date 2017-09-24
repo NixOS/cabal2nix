@@ -92,6 +92,7 @@ dependencies:
   - filepath
   - hackage-db > 2
   - hopenssl >= 2
+  - hpack
   - language-nix
   - lens
   - optparse-applicative

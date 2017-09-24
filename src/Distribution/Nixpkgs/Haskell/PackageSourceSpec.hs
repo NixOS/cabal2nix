@@ -18,6 +18,8 @@ import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Parse as Cabal
 import Distribution.Text ( simpleParse, display )
 import Distribution.Version
+import qualified Hpack.Run as Hpack
+import qualified Hpack.Config as Hpack
 import OpenSSL.Digest ( digestString, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
@@ -25,25 +27,30 @@ import System.FilePath ( (</>), (<.>) )
 import System.IO ( hPutStrLn, stderr, hPutStr )
 
 data Package = Package
-  { pkgSource :: DerivationSource
-  , pkgCabal :: Cabal.GenericPackageDescription
+  { pkgSource   :: DerivationSource
+  , pkgRanHpack :: Bool -- ^ If hpack generated a new cabal file
+  , pkgCabal    :: Cabal.GenericPackageDescription
   }
   deriving (Show)
 
-getPackage :: Maybe FilePath -> Source -> IO Package
-getPackage optHackageDB source = do
-  (derivSource, pkgDesc) <- fetchOrFromDB optHackageDB source
-  flip Package pkgDesc <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
+getPackage :: Bool -- ^ Whether hpack should regenerate the cabal file
+           -> Maybe FilePath -> Source -> IO Package
+getPackage optHpack optHackageDB source = do
+  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optHackageDB source
+  (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
-fetchOrFromDB :: Maybe FilePath -> Source -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
-fetchOrFromDB optHackageDB src
-  | "cabal://" `isPrefixOf` sourceUrl src = fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+fetchOrFromDB :: Bool -- ^ Whether hpack should regenerate the cabal file
+              -> Maybe FilePath -> Source -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
+fetchOrFromDB optHpack optHackageDB src
+  | "cabal://" `isPrefixOf` sourceUrl src = do
+      (msrc, pkgDesc) <- fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+      return (msrc, False, pkgDesc)
   | otherwise                             = do
-    r <- fetch (\dir -> cabalFromPath (dir </> sourceCabalDir src)) src
+    r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
       Nothing -> fail "Failed to fetch source. Does the URL exist?"
-      Just (derivSource, (externalSource, pkgDesc)) -> do
-        return (derivSource <$ guard externalSource, pkgDesc)
+      Just (derivSource, (externalSource, ranHpack, pkgDesc)) -> do
+        return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
 
 fromDB :: Maybe FilePath -> String -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
 fromDB optHackageDB pkg = do
@@ -129,22 +136,45 @@ showPackageIdentifier pkgDesc = name ++ "-" ++ display version where
   name = Cabal.unPackageName (Cabal.packageName pkgId)
   version = Cabal.packageVersion pkgId
 
-cabalFromPath :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
-cabalFromPath path = do
+cabalFromPath :: Bool -- ^ Whether hpack should regenerate the cabal file
+              -> FilePath -> MaybeT IO (Bool, Bool, Cabal.GenericPackageDescription)
+cabalFromPath optHpack path = do
   d <- liftIO $ doesDirectoryExist path
-  (,) d <$> if d
-    then cabalFromDirectory  path
-    else cabalFromFile False path
+  if d
+  then do
+    (ranHpack, pkg) <- cabalFromDirectory optHpack path
+    return (d, ranHpack, pkg)
+  else (,,) d False <$> cabalFromFile False path
 
-cabalFromDirectory :: FilePath -> MaybeT IO Cabal.GenericPackageDescription
-cabalFromDirectory dir = do
+cabalFromDirectory :: Bool -- ^ Whether hpack should regenerate the cabal file
+                   -> FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+cabalFromDirectory True dir = hpackDirectory dir
+cabalFromDirectory False dir = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
-    [cabalFile] -> cabalFromFile True cabalFile
-    _       -> liftIO $ fail ("Found zero or more than one cabal files: " ++ show cabals ++ ". Exiting.")
+    [] -> do
+      liftIO $ hPutStrLn stderr "*** found zero cabal files. Trying hpack..."
+      hpackDirectory dir
+    [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
+    _       -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
+
+hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+hpackDirectory dir = do
+  mPackage <- liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
+  case mPackage of
+    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
+    Right (_, pkg') -> do
+      let hpackOutput = Hpack.renderPackage Hpack.defaultRenderSettings 2 [] [] pkg'
+          hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
+      case parseGenericPackageDescription hpackOutput of
+        ParseFailed perr -> liftIO $ do
+          hPutStrLn stderr $ "*** cannot parse hpack output: " ++ show perr
+          hPutStrLn stderr $ "*** hpack output:\n" ++ hpackOutput
+          fail "*** Exiting."
+        ParseOk _ pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =
