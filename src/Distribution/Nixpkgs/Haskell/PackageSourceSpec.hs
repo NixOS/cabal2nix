@@ -6,8 +6,6 @@ import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
-import qualified Data.ByteString.Lazy.Char8 as LBS8
-import qualified Data.ByteString.Lazy.UTF8 as UTF8
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
@@ -44,7 +42,9 @@ getPackage optHpack optHackageDB source = do
 fetchOrFromDB :: Bool -- ^ Whether hpack should regenerate the cabal file
               -> Maybe FilePath -> Source -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
 fetchOrFromDB optHpack optHackageDB src
-  | "cabal://" `isPrefixOf` sourceUrl src = fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+  | "cabal://" `isPrefixOf` sourceUrl src = do
+      (msrc, pkgDesc) <- fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+      return (msrc, False, pkgDesc)
   | otherwise                             = do
     r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
@@ -168,18 +168,13 @@ hpackDirectory dir = do
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
     Right (_, pkg') -> do
       let hpackOutput = Hpack.renderPackage Hpack.defaultRenderSettings 2 [] [] pkg'
-          buf = UTF8.fromString hpackOutput
-          hash = printSHA256 $ digest (digestByName "sha256") buf
-      case parsePackage' buf of
-        Left msg -> liftIO $ do
-          hPutStrLn stderr $ "*** cannot parse hpack output: " ++ msg
+          hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
+      case parseGenericPackageDescription hpackOutput of
+        ParseFailed perr -> liftIO $ do
+          hPutStrLn stderr $ "*** cannot parse hpack output: " ++ show perr
           hPutStrLn stderr $ "*** hpack output:\n" ++ hpackOutput
-          hPutStrLn stderr "*** Exiting."
-          exitFailure
-        Right pkg -> MaybeT $ return $ Just $ (,) True $ pkg
-          { packageDescription = (packageDescription pkg)
-            { customFieldsPD = ("X-Cabal-File-Hash", hash) : customFieldsPD (packageDescription pkg)
-          } }
+          fail "*** Exiting."
+        ParseOk _ pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =

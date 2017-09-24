@@ -122,8 +122,8 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
   cabal2nix =<< getArgs
 
 hpackOverrides :: Derivation -> Derivation
-hpackOverrides = over phaseOverrides (++ "preConfigure = \"${hpack}/bin/hpack;\";")
-               . set (libraryDepends . pkgconfig . contains (PP.pkg "hpack")) True
+hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
+               . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
 cabal2nix' :: [String] -> IO (Either Doc Derivation)
 cabal2nix' args = do
