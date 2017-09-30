@@ -69,6 +69,9 @@ instance NFData AbiTag
 instance IsString Version where
   fromString = text2isString "Version"
 
+instance IsString VersionRange where
+  fromString = text2isString "VersionRange"
+
 instance IsString PackageIdentifier where
   fromString = text2isString "PackageIdentifier"
 

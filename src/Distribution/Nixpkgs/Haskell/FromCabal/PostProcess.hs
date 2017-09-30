@@ -61,6 +61,7 @@ hooks =
   , ("gi-pangocairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("git-annex", gitAnnexHook)
+  , ("git-annex >= 6.20170925", set doCheck False)      -- new version of git-annex require their test suite to be run inside of a git checkout
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
