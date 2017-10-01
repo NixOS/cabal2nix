@@ -71,6 +71,7 @@ hooks =
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts", set doCheck False)
+  , ("hspec-core >= 2.4.4", hspecCoreOverrides)
   , ("hfsevents", hfseventsOverrides)
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
@@ -298,3 +299,6 @@ opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
                 . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
                 . set (configureFlags . contains "--with-gcc=${stdenv.cc}/bin/c++") True
                 . set (configureFlags . contains "--with-ld=${stdenv.cc}/bin/c++") True
+
+hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
+hspecCoreOverrides = set phaseOverrides "testTarget = \"--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\";"
