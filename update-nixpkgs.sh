@@ -30,9 +30,9 @@ done
 hackage=$(git rev-parse --verify HEAD)
 cd ..
 
-cabal -v0 new-build hackage2nix
-exe=( dist-newstyle/build/$(uname -m)-$(uname -s | tr '[:upper:]' '[:lower:]')/ghc-$(ghc --numeric-version)/cabal2nix-*/build/hackage2nix/hackage2nix )
-$exe --nixpkgs="$PWD/nixpkgs" +RTS -M4G -RTS
+# This command needs a recent development version of cabal-install. I don't
+# think this works properly in verson 2.0.0.0 already.
+cabal -v0 new-run hackage2nix -- --nixpkgs="$PWD/nixpkgs" +RTS -M4G -RTS
 
 cd nixpkgs
 git add pkgs/development/haskell-modules
