@@ -75,7 +75,7 @@ hooks =
   , ("hfsevents", hfseventsOverrides)
   , ("HFuse", set phaseOverrides hfusePreConfigure)
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
-  , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e 's@/usr/@/dont/hardcode/paths/@'\";")
+  , ("hmatrix", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e '/\\/usr\\//D'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
   , ("hoogle", set testTarget "--test-option=--no-net")
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
