@@ -12,6 +12,7 @@ import Data.Maybe ( fromMaybe )
 import Data.Monoid ( (<>) )
 import qualified Data.Set as Set
 import Data.String
+import Data.Time
 import qualified Distribution.Compat.ReadP as P
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
@@ -52,6 +53,7 @@ data Options = Options
   , optCompiler :: CompilerId
   , optSystem :: Platform
   , optSubpath :: Maybe FilePath
+  , optHackageSnapshot :: Maybe UTCTime
   , optUrl :: String
   }
   deriving (Show)
@@ -77,7 +79,16 @@ options = Options
           <*> option (readP parse) (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith display)
           <*> option (readP parsePlatform) (long "system" <> help "target system to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
+          <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, example '09.08.2012 10:54 AM'"))
           <*> strArgument (metavar "URI")
+
+-- | A parser for the date. Minutes seem to be a good fit if the change is on Hackage is maybe once or twice a month.
+-- Example: parseTime defaultTimeLocale "%d.%m.%Y %l:%M %p" "09.08.2012 10:54 AM" :: Maybe UTCTime
+utcTimeReader :: ReadM UTCTime
+utcTimeReader = eitherReader $ \arg ->
+    case parseTimeM True defaultTimeLocale "%d.%m.%Y %l:%M %p" arg of
+        Nothing      -> Left ("Cannot parse date: " ++ arg)
+        Just utcTime -> Right utcTime
 
 readP :: P.ReadP a a -> ReadM a
 readP p = eitherReader $ \s -> case [ r' | (r',"") <- P.readP_to_S p s ] of
@@ -129,7 +140,7 @@ cabal2nix' :: [String] -> IO (Either Doc Derivation)
 cabal2nix' args = do
   Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
 
-  pkg <- getPackage optHpack optHackageDb $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+  pkg <- getPackage optHpack optHackageDb optHackageSnapshot $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
 
   let
       withHpackOverrides :: Derivation -> Derivation
