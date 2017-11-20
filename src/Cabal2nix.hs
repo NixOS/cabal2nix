@@ -79,15 +79,15 @@ options = Options
           <*> option (readP parse) (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith display)
           <*> option (readP parsePlatform) (long "system" <> help "target system to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
-          <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, example '09.08.2012 10:54 AM'"))
+          <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
           <*> strArgument (metavar "URI")
 
--- | A parser for the date. Minutes seem to be a good fit if the change is on Hackage is maybe once or twice a month.
--- Example: parseTime defaultTimeLocale "%d.%m.%Y %l:%M %p" "09.08.2012 10:54 AM" :: Maybe UTCTime
+-- | A parser for the date. Hackage updates happen maybe once or twice a month.
+-- Example: parseTime defaultTimeLocale "%FT%T%QZ" "2017-11-20T12:18:35Z" :: Maybe UTCTime
 utcTimeReader :: ReadM UTCTime
 utcTimeReader = eitherReader $ \arg ->
-    case parseTimeM True defaultTimeLocale "%d.%m.%Y %l:%M %p" arg of
-        Nothing      -> Left ("Cannot parse date: " ++ arg)
+    case parseTimeM True defaultTimeLocale "%FT%T%QZ" arg of
+        Nothing      -> Left $ "Cannot parse date, ISO format used ('2017-11-20T12:18:35Z'): " ++ arg
         Just utcTime -> Right utcTime
 
 readP :: P.ReadP a a -> ReadM a
