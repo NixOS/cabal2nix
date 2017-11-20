@@ -27,7 +27,6 @@ sed -r \
     -e '/ hledger/d' \
     -e '/ hoogle /d' \
     -e '/ hopenssl /d' \
-    -e '/ hpack /d' \
     -e '/ language-nix /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
