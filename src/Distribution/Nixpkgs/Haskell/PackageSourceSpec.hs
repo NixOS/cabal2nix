@@ -9,6 +9,7 @@ import Control.Monad.Trans.Maybe
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
+import Data.Time
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
@@ -33,17 +34,29 @@ data Package = Package
   }
   deriving (Show)
 
-getPackage :: Bool -- ^ Whether hpack should regenerate the cabal file
-           -> Maybe FilePath -> Source -> IO Package
-getPackage optHpack optHackageDB source = do
-  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optHackageDB source
+getPackage :: Bool
+           -- ^ Whether hpack should regenerate the cabal file.
+           -> Maybe FilePath
+           -- ^ The path to the Hackage database.
+           -> Maybe UTCTime
+           -- ^ If we have hackage-snapshot time.
+           -> Source
+           -> IO Package
+getPackage optHpack optHackageDB optHackageSnapshot source = do
+  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optHackageDB optHackageSnapshot source
   (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
-fetchOrFromDB :: Bool -- ^ Whether hpack should regenerate the cabal file
-              -> Maybe FilePath -> Source -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
-fetchOrFromDB optHpack optHackageDB src
+fetchOrFromDB :: Bool
+              -- ^ Whether hpack should regenerate the cabal file
+              -> Maybe FilePath
+              -- ^ The path to the Hackage database.
+              -> Maybe UTCTime
+              -- ^ If we have hackage-snapshot time.
+              -> Source
+              -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
+fetchOrFromDB optHpack optHackageDB optHackageSnapshot src
   | "cabal://" `isPrefixOf` sourceUrl src = do
-      (msrc, pkgDesc) <- fromDB optHackageDB . drop (length "cabal://") $ sourceUrl src
+      (msrc, pkgDesc) <- fromDB optHackageDB optHackageSnapshot . drop (length "cabal://") $ sourceUrl src
       return (msrc, False, pkgDesc)
   | otherwise                             = do
     r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
@@ -52,10 +65,13 @@ fetchOrFromDB optHpack optHackageDB src
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) -> do
         return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
 
-fromDB :: Maybe FilePath -> String -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
-fromDB optHackageDB pkg = do
+fromDB :: Maybe FilePath
+       -> Maybe UTCTime
+       -> String
+       -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
+fromDB optHackageDB optHackageSnapshot pkg = do
   dbPath <- maybe DB.hackageTarball return optHackageDB
-  db <- DB.readTarball Nothing dbPath
+  db <- DB.readTarball optHackageSnapshot dbPath
   vd <- maybe unknownPackageError return (DB.lookup name db >>= lookupVersion)
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
