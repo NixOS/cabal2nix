@@ -2,13 +2,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Cabal2nix
-  ( main, cabal2nix, cabal2nix'
+  ( main, cabal2nix, cabal2nix', cabal2nixWithDB
   )
   where
 
 import Control.Exception ( bracket )
 import Control.Lens
-import Data.Maybe ( fromMaybe )
+import Control.Monad ( when )
+import Data.Maybe ( fromMaybe, isJust )
 import Data.Monoid ( (<>) )
 import qualified Data.Set as Set
 import Data.String
@@ -29,9 +30,10 @@ import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix ( version )
 import System.Environment ( getArgs )
-import System.IO ( hFlush, stdout, stderr )
+import System.IO ( hFlush, hPutStrLn, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
+import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 
 data Options = Options
   { optSha256 :: Maybe String
@@ -138,10 +140,22 @@ hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
 
 cabal2nix' :: [String] -> IO (Either Doc Derivation)
 cabal2nix' args = do
-  Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
+  opts@Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
 
   pkg <- getPackage optHpack optHackageDb optHackageSnapshot $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+  processPackage opts pkg
 
+cabal2nixWithDB :: DB.HackageDB -> [String] -> IO (Either Doc Derivation)
+cabal2nixWithDB db args = do
+  opts@Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
+  when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
+  when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
+
+  pkg <- getPackage' optHpack db $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+  processPackage opts pkg
+
+processPackage :: Options -> Package -> IO (Either Doc Derivation)
+processPackage Options{..} pkg = do
   let
       withHpackOverrides :: Derivation -> Derivation
       withHpackOverrides = if pkgRanHpack pkg then hpackOverrides else id
