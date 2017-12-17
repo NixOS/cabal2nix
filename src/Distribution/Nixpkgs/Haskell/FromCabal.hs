@@ -24,6 +24,7 @@ import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
 import Distribution.Types.PkgconfigDependency as Cabal
+import Distribution.Types.UnqualComponentName as Cabal
 import Distribution.PackageDescription.Configuration as Cabal
 import Distribution.Types.ComponentRequestedSpec as Cabal
 import Distribution.System
@@ -124,9 +125,13 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     resolveInHackageThenNixpkgs i | haskellResolver (Dependency (mkPackageName (i^.ident)) anyVersion) = resolveInHackage i
                                   | otherwise = resolveInNixpkgs i
 
+    internalLibNames :: [PackageName]
+    internalLibNames = fmap unqualComponentNameToPackageName . catMaybes
+                     $ libName <$> subLibraries
+
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends ]
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends, not (x `elem` internalLibNames) ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
       & tool .~ Set.fromList [ resolveInHackageThenNixpkgs y | LegacyExeDependency x _ <- buildTools, y <- buildToolNixName x ]
