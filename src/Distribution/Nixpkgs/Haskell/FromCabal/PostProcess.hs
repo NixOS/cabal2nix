@@ -79,7 +79,8 @@ hooks =
   , ("holy-project", set doCheck False)         -- attempts to access the network
   , ("hoogle", set testTarget "--test-option=--no-net")
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
-  , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
+  , ("hslua < 0.9.3", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
+  , ("hslua >= 0.9.3", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_3")))
   , ("http-client-openssl >= 0.2.0.1", set doCheck False) -- attempts to access the network
   , ("http-client", set doCheck False)          -- attempts to access the network
   , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
