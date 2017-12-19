@@ -12,6 +12,7 @@ configureCabalFlags :: PackageIdentifier -> FlagAssignment
 configureCabalFlags (PackageIdentifier name version)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "arithmoi"           = [disable "llvm"]
+ | name == "cassava"            = [disable "bytestring--lt-0_10_4"]
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
  | name == "diagrams-builder"   = [enable "cairo", enable "svg", enable "ps", enable "rasterific"]
  | name == "folds"              = [disable "test-hlint"]
