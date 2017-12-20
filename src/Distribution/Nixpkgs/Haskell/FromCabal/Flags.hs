@@ -29,7 +29,7 @@ configureCabalFlags (PackageIdentifier name version)
                                   , enable "s3"
                                   , enable "tahoe"
                                   , enable "tdfa"
-                                  , ("testsuite", version `withinRange` "< 6.20170925")
+                                  , ("testsuite", version `withinRange` "< 6.20170925 || >= 6.20171214")
                                   , enable "torrentparser"
                                   , enable "webapp"
                                   , enable "webapp-secure"
