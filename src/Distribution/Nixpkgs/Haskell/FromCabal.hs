@@ -22,6 +22,7 @@ import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
+import Distribution.Types.ExeDependency as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
 import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
@@ -72,7 +73,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
     & isLibrary .~ isJust library
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
-    & libraryDepends .~ maybe mempty (convertBuildInfo . libBuildInfo) library
+    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
     & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
     & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
     & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
@@ -126,18 +127,15 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
                                   | otherwise = resolveInNixpkgs i
 
     internalLibNames :: [PackageName]
-    internalLibNames = fmap unqualComponentNameToPackageName . catMaybes
-                     $ libName <$> subLibraries
-
-    internalLibDeps :: [Dependency]
-    internalLibDeps = targetBuildDepends . libBuildInfo =<< subLibraries
+    internalLibNames = fmap unqualComponentNameToPackageName . catMaybes $ libName <$> subLibraries
 
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends ++ internalLibDeps, not (x `elem` internalLibNames) ]
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends, not (x `elem` internalLibNames) ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
-      & tool .~ Set.fromList [ resolveInHackageThenNixpkgs y | LegacyExeDependency x _ <- buildTools, y <- buildToolNixName x ]
+      & tool .~ Set.fromList (map resolveInHackageThenNixpkgs . concatMap buildToolNixName
+              $ [ unPackageName x | ExeDependency x _ _ <- buildToolDepends ] ++ [ x | LegacyExeDependency x _ <- buildTools ])
 
     convertSetupBuildInfo :: Cabal.SetupBuildInfo -> Nix.BuildInfo
     convertSetupBuildInfo bi = mempty
