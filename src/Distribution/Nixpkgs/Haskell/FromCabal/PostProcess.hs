@@ -61,7 +61,7 @@ hooks =
   , ("gi-pangocairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("git-annex", gitAnnexHook)
-  , ("git-annex >= 6.20170925", set doCheck False)      -- new version of git-annex require their test suite to be run inside of a git checkout
+  , ("git-annex >= 6.20170925 && < 6.20171214", set doCheck False)      -- some versions of git-annex require their test suite to be run inside of a git checkout
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
@@ -79,7 +79,8 @@ hooks =
   , ("holy-project", set doCheck False)         -- attempts to access the network
   , ("hoogle", set testTarget "--test-option=--no-net")
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
-  , ("hslua", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
+  , ("hslua < 0.9.3", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_1")))
+  , ("hslua >= 0.9.3", over (libraryDepends . each) (replace (pkg "lua") (pkg "lua5_3")))
   , ("http-client-openssl >= 0.2.0.1", set doCheck False) -- attempts to access the network
   , ("http-client", set doCheck False)          -- attempts to access the network
   , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
