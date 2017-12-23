@@ -66,7 +66,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     Right (d,_)  -> (d,[])
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (PackageDescription {..}) = normalize $ postProcess $ nullDerivation
+fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -131,7 +131,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Packag
 
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends, not (x `elem` internalLibNames) ]
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends, x `notElem` internalLibNames ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
       & tool .~ Set.fromList (map resolveInHackageThenNixpkgs . concatMap buildToolNixName
