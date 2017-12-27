@@ -94,7 +94,7 @@ fromDB hackageDB pkg = do
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
   name = Cabal.packageName pkgId
 
-  unknownPackageError = fail "No such package in the cabal database. Did you run cabal update?"
+  unknownPackageError = fail $ "No such package " ++ display pkgId ++ " in the cabal database. Did you run cabal update?"
 
   url = "mirror://hackage/" ++ display pkgId ++ ".tar.gz"
 
