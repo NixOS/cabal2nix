@@ -15,6 +15,7 @@ sed -r \
     -e 's|^ +|  - |' \
     -e 's|,$||' \
     -e '/installed$/d' \
+    -e '/^$/d' \
     -i "$tmpfile"
 
 # Drop restrictions on some tools where we always want the latest version.
