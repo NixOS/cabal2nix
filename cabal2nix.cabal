@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d8202a64b33d8fbb627b568af818cd121aecd00f917af6b899cf9b07c48fa55a
+-- hash: 2360cd846729c1f3286c1d6482a68739be820cd444469dfb88242c08f31ca628
 
 name:           cabal2nix
 version:        2.7.1
@@ -81,7 +81,7 @@ author:         Peter Simons,
 maintainer:     Peter Simons <simons@cryp.to>
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC > 7.10 && < 8.3
+tested-with:    GHC > 8.2 && < 8.3
 build-type:     Custom
 cabal-version:  >= 1.24
 
