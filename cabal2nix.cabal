@@ -1,9 +1,11 @@
--- This file has been generated from package.yaml by hpack version 0.18.1.
+-- This file has been generated from package.yaml by hpack version 0.21.2.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: d8202a64b33d8fbb627b568af818cd121aecd00f917af6b899cf9b07c48fa55a
 
 name:           cabal2nix
-version:        2.7
+version:        2.7.1
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
                 .
@@ -17,10 +19,13 @@ author:         Peter Simons,
                 Benno Fünfstück,
                 Mateusz Kowalczyk,
                 Michael Alan Dorman,
+                Tom Smalley,
                 Mathijs Kwik,
                 Shea Levy,
                 Dmitry Malikov,
                 Eric Seidel,
+                Jacob Mitchell,
+                Graham Christensen,
                 Hamish Mackenzie,
                 Nikolay Amiantov,
                 Aycan iRiCAN,
@@ -32,32 +37,42 @@ author:         Peter Simons,
                 Tom Hunger,
                 William Casarin,
                 koral,
+                ksaric,
                 Adam Vogt,
                 Alexey Shmalko,
                 Corey O'Connor,
                 Cray Elliott,
+                David Johnson,
+                Dmitry Bushev,
+                Domen Kožar,
                 Felix Kunzmann,
                 Gabriel Ebner,
                 Gergely Risko,
-                Jacob Mitchell,
                 Joachim Fasting,
                 John Albietz,
                 John Chee,
                 Jussi Maki,
+                Lisanna Dettwyler,
                 Mark Laws,
                 Mark Wotton,
+                Matthew Pickering,
                 Matthew Stewart,
                 Matvey Aksenov,
+                Nicholas Clarke,
                 Nicolas Rolland,
                 Oliver Charles,
                 Pascal Wittmann,
                 Patrick John Wheeler,
+                Phil de Joux,
+                Piotr Bogdan,
                 Profpatsch,
                 Raymond Gauthier,
                 Renzo Carbonara,
                 Rodney Lorrimar,
                 Sibi,
+                Sukant Hajra,
                 Tanner Doshier,
+                Vaibhav Sagar,
                 Viktar Basharymau,
                 danbst,
                 karsten gebbert,
@@ -68,7 +83,7 @@ license:        BSD3
 license-file:   LICENSE
 tested-with:    GHC > 7.10 && < 8.3
 build-type:     Custom
-cabal-version:  >= 1.10
+cabal-version:  >= 1.24
 
 extra-source-files:
     README.md
@@ -79,9 +94,9 @@ source-repository head
 
 custom-setup
   setup-depends:
-      base >= 4 && <5
-    , Cabal
-    , cabal-doctest >= 1 && <1.1
+      Cabal
+    , base >=4 && <5
+    , cabal-doctest >=1 && <1.1
 
 library
   hs-source-dirs:
@@ -89,23 +104,23 @@ library
   other-extensions: CPP DeriveGeneric FlexibleInstances MultiParamTypeClasses OverloadedStrings RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell
   ghc-options: -Wall
   build-depends:
-      aeson
+      Cabal >2
+    , aeson
     , ansi-wl-pprint
-    , base < 5
+    , base <5
     , bytestring
-    , Cabal > 2
     , containers
-    , deepseq >= 1.4
+    , deepseq >=1.4
     , directory
-    , distribution-nixpkgs >= 1.1
+    , distribution-nixpkgs >=1.1
     , filepath
-    , hackage-db > 2
-    , hopenssl >= 2
+    , hackage-db >2
+    , hopenssl >=2
     , hpack
     , language-nix
     , lens
     , optparse-applicative
-    , pretty >= 1.1.2
+    , pretty >=1.1.2
     , process
     , split
     , text
@@ -139,30 +154,30 @@ executable cabal2nix
       cabal2nix
   ghc-options: -Wall
   build-depends:
-      aeson
+      Cabal >2
+    , aeson
     , ansi-wl-pprint
-    , base < 5
+    , base <5
     , bytestring
-    , Cabal > 2
+    , cabal2nix
     , containers
-    , deepseq >= 1.4
+    , deepseq >=1.4
     , directory
-    , distribution-nixpkgs >= 1.1
+    , distribution-nixpkgs >=1.1
     , filepath
-    , hackage-db > 2
-    , hopenssl >= 2
+    , hackage-db >2
+    , hopenssl >=2
     , hpack
     , language-nix
     , lens
     , optparse-applicative
-    , pretty >= 1.1.2
+    , pretty >=1.1.2
     , process
     , split
     , text
     , time
     , transformers
     , yaml
-    , cabal2nix
   other-modules:
       Paths_cabal2nix
   default-language: Haskell2010
@@ -173,35 +188,34 @@ executable hackage2nix
       hackage2nix
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
+      Cabal >2
+    , aeson
     , ansi-wl-pprint
-    , base < 5
+    , base <5
     , bytestring
-    , Cabal > 2
+    , cabal2nix
     , containers
-    , deepseq >= 1.4
+    , deepseq >=1.4
     , directory
-    , distribution-nixpkgs >= 1.1
+    , distribution-nixpkgs >=1.1
     , filepath
-    , hackage-db > 2
-    , hopenssl >= 2
+    , hackage-db >2
+    , hopenssl >=2
     , hpack
     , language-nix
     , lens
+    , monad-par
+    , monad-par-extras
+    , mtl
     , optparse-applicative
-    , pretty >= 1.1.2
+    , pretty >=1.1.2
     , process
     , split
     , text
     , time
     , transformers
-    , yaml
-    , cabal2nix
-    , monad-par
-    , monad-par-extras
-    , mtl
-    , time
     , utf8-string
+    , yaml
   other-modules:
       Paths_cabal2nix
       HackageGit
@@ -210,32 +224,34 @@ executable hackage2nix
 test-suite doctests
   type: exitcode-stdio-1.0
   main-is: doctests.hs
+  other-modules:
+      Paths_cabal2nix
   hs-source-dirs:
       test
   ghc-options: -Wall -threaded
   build-depends:
-      aeson
+      Cabal >2
+    , aeson
     , ansi-wl-pprint
-    , base < 5
+    , base <5
     , bytestring
-    , Cabal > 2
     , containers
-    , deepseq >= 1.4
+    , deepseq >=1.4
     , directory
-    , distribution-nixpkgs >= 1.1
+    , distribution-nixpkgs >=1.1
+    , doctest
     , filepath
-    , hackage-db > 2
-    , hopenssl >= 2
+    , hackage-db >2
+    , hopenssl >=2
     , hpack
     , language-nix
     , lens
     , optparse-applicative
-    , pretty >= 1.1.2
+    , pretty >=1.1.2
     , process
     , split
     , text
     , time
     , transformers
     , yaml
-    , doctest
   default-language: Haskell2010
