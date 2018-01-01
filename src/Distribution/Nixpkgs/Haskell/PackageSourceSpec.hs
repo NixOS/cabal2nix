@@ -43,12 +43,11 @@ getPackage :: Bool
            -> Source
            -> IO Package
 getPackage optHpack optHackageDB optHackageSnapshot source = do
-  hackageDB <- loadHackageDB optHackageDB optHackageSnapshot
-  getPackage' optHpack hackageDB source
+  getPackage' optHpack (loadHackageDB optHackageDB optHackageSnapshot) source
 
 getPackage' :: Bool
             -- ^ Whether hpack should regenerate the cabal file.
-            -> DB.HackageDB
+            -> IO DB.HackageDB
             -> Source
             -> IO Package
 getPackage' optHpack hackageDB source = do
@@ -57,7 +56,7 @@ getPackage' optHpack hackageDB source = do
 
 fetchOrFromDB :: Bool
               -- ^ Whether hpack should regenerate the cabal file
-              -> DB.HackageDB
+              -> IO DB.HackageDB
               -> Source
               -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
 fetchOrFromDB optHpack hackageDB src
@@ -80,10 +79,11 @@ loadHackageDB optHackageDB optHackageSnapshot = do
   dbPath <- maybe DB.hackageTarball return optHackageDB
   DB.readTarball optHackageSnapshot dbPath
 
-fromDB :: DB.HackageDB
+fromDB :: IO DB.HackageDB
        -> String
        -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
-fromDB hackageDB pkg = do
+fromDB hackageDBIO pkg = do
+  hackageDB <- hackageDBIO
   vd <- maybe unknownPackageError return (DB.lookup name hackageDB >>= lookupVersion)
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
