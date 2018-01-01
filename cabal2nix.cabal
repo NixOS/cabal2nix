@@ -2,10 +2,10 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2360cd846729c1f3286c1d6482a68739be820cd444469dfb88242c08f31ca628
+-- hash: 92f9b21ea7d805cee72dd61ac36b18711504bee1d8e06b4dbffb9ade7fab4378
 
 name:           cabal2nix
-version:        2.7.1
+version:        2.7.2
 synopsis:       Convert Cabal files into Nix build instructions.
 description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
                 .
