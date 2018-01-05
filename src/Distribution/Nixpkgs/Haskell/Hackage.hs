@@ -28,8 +28,7 @@ data VersionData = VersionData
 readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
 readTarball ts p = do
   dbu <- U.readTarball ts p
-  let dbp = P.parseDB dbu
-  return (mapWithKey (parsePackageData dbu) dbp)
+  return (mapWithKey (parsePackageData dbu) dbu)
 
 parsePackageData :: U.HackageDB -> PackageName -> P.PackageData -> PackageData
 parsePackageData dbu pn pd = mapWithKey (parseVersionData (dbu ! pn)) pd
