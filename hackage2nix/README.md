@@ -21,8 +21,7 @@ Replace `git@github.com:NixOS/nixpkgs.git` with a fork you have access to.
 git clone git@github.com:NixOS/cabal2nix.git
 cd cabal2nix
 git clone git@github.com:NixOS/nixpkgs.git
-git clone git@github.com:commercialhaskell/all-cabal-hashes.git
-mv all-cabal-hashes hackage
+git clone git@github.com:commercialhaskell/all-cabal-hashes.git --branch hackage hackage
 cabal install
 ```
 
