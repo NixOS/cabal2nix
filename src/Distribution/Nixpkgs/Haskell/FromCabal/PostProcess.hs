@@ -126,7 +126,7 @@ hooks =
   , ("Win32-shortcut", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Windows)))
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("wxc", wxcHook)
-  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender"])))
+  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender","pkgs.xorg.libXScrnSaver"])))
   , ("xmonad", set phaseOverrides xmonadPostInstall)
   , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (bind "self.zip") (pkg "zip")))
   , ("zip-archive >= 0.3.1", set (testDepends . tool . contains (pkg "zip")) True)  -- https://github.com/jgm/zip-archive/issues/35
