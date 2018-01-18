@@ -19,10 +19,14 @@ import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
+import Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalizeCabalFlags )
+import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP (pkg)
+import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
 import Distribution.PackageDescription ( mkFlagName, FlagAssignment )
+import Distribution.Package ( packageId )
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
 import Distribution.Text
@@ -33,7 +37,6 @@ import System.Environment ( getArgs )
 import System.IO ( hFlush, hPutStrLn, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
-import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 
 data Options = Options
   { optSha256 :: Maybe String
@@ -159,12 +162,17 @@ processPackage Options{..} pkg = do
   let
       withHpackOverrides :: Derivation -> Derivation
       withHpackOverrides = if pkgRanHpack pkg then hpackOverrides else id
+
+      flags :: FlagAssignment
+      flags = normalizeCabalFlags $
+                configureCabalFlags (packageId (pkgCabal pkg)) ++ readFlagList optFlags
+
       deriv :: Derivation
       deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
                                             (\i -> Just (binding # (i, path # [i])))
                                             optSystem
                                             (unknownCompilerInfo optCompiler NoAbiTag)
-                                            (readFlagList optFlags)
+                                            flags
                                             []
                                             (pkgCabal pkg)
               & src .~ pkgSource pkg
