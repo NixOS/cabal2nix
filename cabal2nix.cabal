@@ -185,29 +185,5 @@ test-suite doctests
   hs-source-dirs:
       test
   ghc-options: -Wall -threaded
-  build-depends:
-      Cabal >2
-    , aeson
-    , ansi-wl-pprint
-    , base <5
-    , bytestring
-    , containers
-    , deepseq >=1.4
-    , directory
-    , distribution-nixpkgs >=1.1
-    , doctest
-    , filepath
-    , hackage-db >2
-    , hopenssl >=2
-    , hpack
-    , language-nix
-    , lens
-    , optparse-applicative
-    , pretty >=1.1.2
-    , process
-    , split
-    , text
-    , time
-    , transformers
-    , yaml
+  build-depends: base, doctest
   default-language: Haskell2010
