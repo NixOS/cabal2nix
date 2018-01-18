@@ -47,14 +47,16 @@ quote ('"':cs)    = '\\' : '"' : quote cs
 quote (c:cs)      = c : quote cs
 quote []          = []
 
--- | When a flag is specified multiple times, the first occurrence counts. This
--- is counter-intuitive, IMHO, but it's how cabal does it. Flag names are
--- spelled in all lowercase.
+-- | When a flag is specified multiple times, the last occurrence counts. Flag
+-- names are spelled all lowercase.
 --
 -- >>> normalizeCabalFlags [(mkFlagName "foo", True), (mkFlagName "FOO", True), (mkFlagName "Foo", False)]
--- [(FlagName "foo",True)]
+-- [(FlagName "foo",False)]
 
 normalizeCabalFlags :: FlagAssignment -> FlagAssignment
-normalizeCabalFlags flags' = nubBy ((==) `on` fst) (sortBy (compare `on` fst) flags)
-  where
-    flags = [ (mkFlagName (lowercase (unFlagName n)), b) | (n, b) <- flags' ]
+normalizeCabalFlags flags =
+  sortBy (compare `on` fst) $
+    reverse $
+      nubBy ((==) `on` fst) $
+        reverse $
+          [ (mkFlagName (lowercase (unFlagName n)), b) | (n, b) <- flags ]
