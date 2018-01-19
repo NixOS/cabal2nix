@@ -9,7 +9,7 @@ author:         Peter Simons
 maintainer:     simons@cryp.to
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC > 7 && < 8.1
+tested-with:    GHC > 7 && < 8.3
 build-type:     Simple
 cabal-version:  >= 1.10
 
