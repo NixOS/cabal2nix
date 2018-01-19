@@ -1,7 +1,3 @@
--- This file has been generated from package.yaml by hpack version 0.17.0.
---
--- see: https://github.com/sol/hpack
-
 name:           language-nix
 version:        2.1.0.1
 synopsis:       Data types and useful functions to represent and manipulate the Nix language.
