@@ -33,7 +33,7 @@ normalizeMeta :: Meta -> Meta
 normalizeMeta meta = meta
   & description %~ normalizeSynopsis
   & platforms %~ Set.intersection allKnownPlatforms
-  & hydraPlatforms %~ Set.intersection (meta^.platforms)
+  & hydraPlatforms %~ (if meta^.broken then const Set.empty else Set.intersection (meta^.platforms))
 
 normalizeSynopsis :: String -> String
 normalizeSynopsis desc
