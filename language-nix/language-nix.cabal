@@ -38,20 +38,3 @@ library
   other-modules:
       Paths_language_nix
   default-language: Haskell2010
-
-test-suite spec
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
-  hs-source-dirs:
-      test
-  ghc-options: -Wall
-  build-depends:
-      base < 5
-    , base-compat
-    , Cabal
-    , deepseq
-    , lens
-    , pretty
-    , QuickCheck
-    , doctest
-  default-language: Haskell2010
