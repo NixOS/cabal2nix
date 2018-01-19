@@ -42,8 +42,8 @@ getPackage :: Bool
            -- ^ If we have hackage-snapshot time.
            -> Source
            -> IO Package
-getPackage optHpack optHackageDB optHackageSnapshot source = do
-  getPackage' optHpack (loadHackageDB optHackageDB optHackageSnapshot) source
+getPackage optHpack optHackageDB optHackageSnapshot =
+  getPackage' optHpack (loadHackageDB optHackageDB optHackageSnapshot)
 
 getPackage' :: Bool
             -- ^ Whether hpack should regenerate the cabal file.
@@ -67,7 +67,7 @@ fetchOrFromDB optHpack hackageDB src
     r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
       Nothing -> fail "Failed to fetch source. Does the URL exist?"
-      Just (derivSource, (externalSource, ranHpack, pkgDesc)) -> do
+      Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
         return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
 
 loadHackageDB :: Maybe FilePath

@@ -102,7 +102,7 @@ instance Package Derivation where
 instance NFData Derivation
 
 instance Pretty Derivation where
-  pPrint drv@(MkDerivation {..}) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ disp (packageName _pkgid)
@@ -143,7 +143,7 @@ instance Pretty Derivation where
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
-      sourceAttr (DerivationSource{..})
+      sourceAttr DerivationSource {..}
         | isHackagePackage = attr "sha256" $ string derivHash
         | derivKind /= "" = vcat
            [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace

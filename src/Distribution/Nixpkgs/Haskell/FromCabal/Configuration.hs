@@ -97,7 +97,7 @@ readConfiguration path =
   decodeFile path >>= maybe (fail ("invalid config file at " ++ show path)) assertConsistency
 
 assertConsistency :: Monad m => Configuration -> m Configuration
-assertConsistency cfg@(Configuration {..}) = do
+assertConsistency cfg@Configuration {..} = do
   let report msg = fail ("*** configuration error: " ++ msg)
 
       maintainedPackages = Set.unions (Map.elems packageMaintainers)

@@ -58,5 +58,5 @@ normalizeCabalFlags flags =
   sortBy (compare `on` fst) $
     reverse $
       nubBy ((==) `on` fst) $
-        reverse $
+        reverse
           [ (mkFlagName (lowercase (unFlagName n)), b) | (n, b) <- flags ]

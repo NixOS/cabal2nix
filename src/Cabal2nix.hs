@@ -35,7 +35,7 @@ import Options.Applicative
 import Paths_cabal2nix ( version )
 import System.Environment ( getArgs )
 import System.IO ( hFlush, hPutStrLn, stdout, stderr )
-import qualified Text.PrettyPrint.ANSI.Leijen as P2 hiding ( (<$>), (<>) )
+import qualified Text.PrettyPrint.ANSI.Leijen as P2
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
 
 data Options = Options
@@ -176,7 +176,7 @@ processPackage Options{..} pkg = do
                                             []
                                             (pkgCabal pkg)
               & src .~ pkgSource pkg
-              & subpath .~ (fromMaybe "." optSubpath)
+              & subpath .~ fromMaybe "." optSubpath
               & runHaddock .~ optHaddock
               & jailbreak .~ optJailbreak
               & hyperlinkSource .~ optHyperlinkSource
