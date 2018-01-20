@@ -20,12 +20,13 @@ sed -r \
 
 # Drop restrictions on some tools where we always want the latest version.
 sed -r \
-    -e '/ cabal2nix /d' \
     -e '/ cabal-install /d' \
+    -e '/ cabal2nix /d' \
     -e '/ distribution-nixpkgs /d' \
     -e '/ git-annex /d' \
     -e '/ hindent /d' \
     -e '/ hledger/d' \
+    -e '/ hlint /d' \
     -e '/ hoogle /d' \
     -e '/ hopenssl /d' \
     -e '/ language-nix /d' \
