@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Internal.OrphanInstances ( ) where
