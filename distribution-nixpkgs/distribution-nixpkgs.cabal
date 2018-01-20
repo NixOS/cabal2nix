@@ -8,9 +8,9 @@ bug-reports:    https://github.com/peti/distribution-nixpkgs/issues
 maintainer:     Peter Simons <simons@cryp.to>
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC > 7.10 && < 8.3
 build-type:     Simple
 cabal-version:  >= 1.10
+tested-with:    GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2
 
 source-repository head
   type: git
