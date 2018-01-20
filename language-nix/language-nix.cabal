@@ -1,6 +1,6 @@
 name:           language-nix
 version:        2.1.0.1
-synopsis:       Data types and useful functions to represent and manipulate the Nix language.
+synopsis:       Data types and functions to represent the Nix language
 description:    Data types and useful functions to represent and manipulate the Nix language.
 category:       Distribution, Language, Nix
 homepage:       https://github.com/peti/language-nix#readme
