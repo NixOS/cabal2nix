@@ -175,6 +175,7 @@ libNixName x                                    = return (guessNixIdentifier x)
 buildToolNixName :: String -> [Identifier]
 buildToolNixName ""                             = return (error "buildToolNixName: invalid empty dependency name")
 buildToolNixName "cabal"                        = return "cabal-install"
+buildToolNixName "fltk-config"                  = return "fltk"
 buildToolNixName "ghc"                          = []
 buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
@@ -182,9 +183,9 @@ buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
 buildToolNixName "hsc2hs"                       = []
 buildToolNixName "nix-build"                    = return "nix"
 buildToolNixName "nix-env"                      = return "nix"
+buildToolNixName "nix-hash"                     = return "nix"
 buildToolNixName "nix-instantiate"              = return "nix"
 buildToolNixName "nix-store"                    = return "nix"
-buildToolNixName "fltk-config"                  = return "fltk"
 buildToolNixName x                              = return (fromString x)
 
 -- | Helper function to extract the package name from a String that may or may
