@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
@@ -192,18 +191,10 @@ handleIO = Exception.handle
 
 hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 hpackDirectory dir = do
-#if MIN_VERSION_hpack(0,22,0)
   mPackage <- liftIO $ Hpack.readPackageConfig "" $ dir </> "package.yaml"
-#else
-  mPackage <- liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
-#endif
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-#if MIN_VERSION_hpack(0,22,0)
     Right (pkg', _) -> do
-#else
-    Right (_, pkg') -> do
-#endif
       let hpackOutput = Hpack.renderPackage Hpack.defaultRenderSettings 2 [] [] pkg'
           hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
       case parseGenericPackageDescription hpackOutput of
