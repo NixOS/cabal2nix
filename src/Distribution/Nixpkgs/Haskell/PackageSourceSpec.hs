@@ -191,10 +191,10 @@ handleIO = Exception.handle
 
 hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 hpackDirectory dir = do
-  mPackage <- liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
+  mPackage <- liftIO $ Hpack.readPackageConfig "" $ dir </> "package.yaml"
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-    Right (_, pkg') -> do
+    Right (pkg', _) -> do
       let hpackOutput = Hpack.renderPackage Hpack.defaultRenderSettings 2 [] [] pkg'
           hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
       case parseGenericPackageDescription hpackOutput of
