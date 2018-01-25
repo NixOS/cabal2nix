@@ -56,10 +56,17 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
                           , benchmarksRequested = True
                           }
 
-    jailbrokenResolver :: HaskellResolver
-    jailbrokenResolver (Dependency pkg _) = haskellResolver (Dependency pkg anyVersion)
+    jailbroken :: HaskellResolver -> HaskellResolver
+    jailbroken resolver (Dependency pkg _) = resolver (Dependency pkg anyVersion)
 
-  in case finalize jailbrokenResolver of
+    withInternalLibs :: HaskellResolver -> HaskellResolver
+    withInternalLibs resolver d = depPkgName d `elem` internalNames || resolver d
+
+    internalNames :: [PackageName]
+    internalNames =    [ unqualComponentNameToPackageName n | (n,_) <- condSubLibraries genDesc ]
+                    ++ [ unqualComponentNameToPackageName n | Just n <- libName <$> subLibraries (packageDescription genDesc) ]
+
+  in case finalize (jailbroken (withInternalLibs haskellResolver)) of
     Left m -> case finalize (const True) of
                 Left _      -> error ("Cabal cannot finalize " ++ display (packageId genDesc))
                 Right (d,_) -> (d,m)
