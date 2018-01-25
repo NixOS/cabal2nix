@@ -1,9 +1,6 @@
 name:           cabal2nix
-version:        2.8
+version:        2.8.1
 synopsis:       Convert Cabal files into Nix build instructions.
-description:    Convert Cabal files into Nix build instructions. Users of Nix can install the latest version by running:
-                .
-                > nix-env -i cabal2nix
 category:       Distribution, Nix
 stability:      stable
 homepage:       https://github.com/nixos/cabal2nix#readme
@@ -78,6 +75,12 @@ license-file:   LICENSE
 tested-with:    GHC == 8.2.2
 build-type:     Simple
 cabal-version:  1.24
+
+description:
+  Convert Cabal files into Nix build instructions. Users of Nix can install the
+  latest version by running:
+  .
+  > nix-env -i cabal2nix
 
 extra-source-files:
     README.md
