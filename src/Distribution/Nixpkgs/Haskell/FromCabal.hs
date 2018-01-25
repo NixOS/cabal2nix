@@ -22,14 +22,14 @@ import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
+import Distribution.PackageDescription.Configuration as Cabal
+import Distribution.System
+import Distribution.Text ( display )
+import Distribution.Types.ComponentRequestedSpec as Cabal
 import Distribution.Types.ExeDependency as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
 import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
-import Distribution.PackageDescription.Configuration as Cabal
-import Distribution.Types.ComponentRequestedSpec as Cabal
-import Distribution.System
-import Distribution.Text ( display )
 import Distribution.Version
 import Language.Nix
 
@@ -42,7 +42,7 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
     where
       (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc
 
-finalizeGenericPackageDescription :: HaskellResolver -> Platform -> CompilerInfo ->  FlagAssignment -> [Constraint] -> GenericPackageDescription -> (PackageDescription, [Dependency])
+finalizeGenericPackageDescription :: HaskellResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> (PackageDescription, [Dependency])
 finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc =
   let
     -- We have to call the Cabal finalizer several times with different resolver
