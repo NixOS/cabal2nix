@@ -18,6 +18,7 @@ import Distribution.Nixpkgs.Haskell.FromCabal.License
 import Distribution.Nixpkgs.Haskell.FromCabal.Name
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
 import Distribution.Nixpkgs.Haskell.FromCabal.PostProcess (postProcess)
+import qualified Distribution.Nixpkgs.License as Nix
 import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
 import Distribution.PackageDescription
@@ -104,14 +105,17 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & metaSection .~ ( Nix.nullMeta
                      & Nix.homepage .~ homepage
                      & Nix.description .~ synopsis
-                     & Nix.license .~ fromCabalLicense license
+                     & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nix.allKnownPlatforms
-                     & Nix.hydraPlatforms .~ Nix.allKnownPlatforms
+                     & Nix.hydraPlatforms .~ (if nixLicense == Nix.Known "stdenv.lib.licenses.unfree" then Set.empty else Nix.allKnownPlatforms)
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
                      )
   where
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
+
+    nixLicense :: Nix.License
+    nixLicense = fromCabalLicense license
 
     resolveInHackage :: Identifier -> Binding
     resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i
