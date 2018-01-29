@@ -89,6 +89,7 @@ hooks =
   , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
   , ("js-jquery", set doCheck False)            -- attempts to access the network
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
+  , ("libxml", set (configureFlags . contains "--extra-include-dir=${libxml2.dev}/include/libxml2") True)
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (bind "self.only-buildable-on-windows")) False)
