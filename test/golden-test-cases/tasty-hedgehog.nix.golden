@@ -1,0 +1,18 @@
+{ mkDerivation, base, fetchurl, hedgehog, tagged, tasty
+, tasty-expected-failure
+}:
+mkDerivation {
+  pname = "tasty-hedgehog";
+  version = "0.1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base hedgehog tagged tasty ];
+  testHaskellDepends = [
+    base hedgehog tasty tasty-expected-failure
+  ];
+  homepage = "https://github.com/qfpl/tasty-hedghog";
+  description = "Integrates the hedgehog testing library with the tasty testing framework";
+  license = stdenv.lib.licenses.bsd3;
+}

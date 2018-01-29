@@ -1,0 +1,16 @@
+{ mkDerivation, base, directory, fetchurl, filepath, ghc, ghc-paths
+, syb
+}:
+mkDerivation {
+  pname = "ghc-syb-utils";
+  version = "0.2.3.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ghc syb ];
+  testHaskellDepends = [ base directory filepath ghc ghc-paths ];
+  homepage = "http://github.com/nominolo/ghc-syb";
+  description = "Scrap Your Boilerplate utilities for the GHC API";
+  license = stdenv.lib.licenses.bsd3;
+}

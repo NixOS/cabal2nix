@@ -1,0 +1,153 @@
+name:                dotenv
+version:             0.5.2.1
+synopsis:            Loads environment variables from dotenv files
+homepage:            https://github.com/stackbuilders/dotenv-hs
+description:
+  .
+  In most applications,
+  <http://12factor.net/config configuration should be separated from code>.
+  While it usually works well to keep configuration in the
+  environment, there are cases where you may want to store
+  configuration in a file outside of version control.
+  .
+  "Dotenv" files have become popular for storing configuration,
+  especially in development and test environments. In
+  <https://github.com/bkeepers/dotenv Ruby>,
+  <https://github.com/theskumar/python-dotenv Python> and
+  <https://www.npmjs.com/package/dotenv Javascript> there are libraries
+  to facilitate loading of configuration options from configuration
+  files. This library loads configuration to environment variables for
+  programs written in Haskell.
+  .
+  To use, call `loadFile` from your application:
+  .
+  > import Configuration.Dotenv
+  > loadFile False "/my/dotenvfile"
+  .
+  This package also includes an executable that can be used
+  to inspect the results of applying one or more Dotenv files
+  to the environment, or for invoking your executables with
+  an environment after one or more Dotenv files is applied.
+  .
+  See the <https://github.com/stackbuilders/dotenv-hs Github>
+  page for more information on this package.
+license:             MIT
+license-file:        LICENSE
+author:              Justin Leitgeb
+maintainer:          hackage@stackbuilders.com
+copyright:           2015-2017 Stack Builders Inc.
+category:            Configuration
+build-type:          Simple
+extra-source-files:    spec/fixtures/.dotenv
+                     , CHANGELOG.md
+                     , README.md
+cabal-version:       >=1.10
+bug-reports:         https://github.com/stackbuilders/dotenv-hs/issues
+
+data-dir: spec/fixtures/
+data-files:
+  .dotenv
+  .dotenv.example
+  .scheme.yml
+
+flag dev
+  description:        Turn on development settings.
+  manual:             True
+  default:            False
+
+executable dotenv
+  main-is:             Main.hs
+  build-depends:         base >=4.7 && <5.0
+                       , base-compat >= 0.4
+                       , dotenv
+                       , optparse-applicative >=0.11 && < 0.15
+                       , megaparsec >= 6.0 && < 7.0
+                       , process >= 1.4.3.0
+                       , text
+                       , transformers >=0.4 && < 0.6
+                       , yaml
+  other-modules: Paths_dotenv
+
+  hs-source-dirs:      app
+  if flag(dev)
+    ghc-options:      -Wall -Werror
+  else
+    ghc-options:      -O2 -Wall
+  default-language:    Haskell2010
+
+library
+  exposed-modules:      Configuration.Dotenv
+                      , Configuration.Dotenv.Parse
+                      , Configuration.Dotenv.ParsedVariable
+                      , Configuration.Dotenv.Text
+                      , Configuration.Dotenv.Types
+                      , Configuration.Dotenv.Scheme
+                      , Configuration.Dotenv.Scheme.Helpers
+                      , Configuration.Dotenv.Scheme.Parser
+                      , Configuration.Dotenv.Scheme.Types
+
+  build-depends:         base >=4.7 && <5.0
+                       , base-compat >= 0.4
+                       , directory
+                       , megaparsec >= 6.0 && < 7.0
+                       , process >= 1.4.3.0
+                       , text
+                       , transformers >=0.4 && < 0.6
+                       , exceptions >= 0.8 && < 0.9
+                       , yaml
+
+  if !impl(ghc >= 7.10)
+    build-depends:      void         == 0.7.*
+
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+  if flag(dev)
+    ghc-options:      -Wall -Werror
+  else
+    ghc-options:      -O2 -Wall
+  default-language:    Haskell2010
+
+test-suite dotenv-test
+  type: exitcode-stdio-1.0
+  hs-source-dirs: spec, src
+  main-is: Spec.hs
+  other-modules:         Configuration.DotenvSpec
+                       , Configuration.Dotenv.TextSpec
+                       , Configuration.Dotenv.ParseSpec
+                       , Configuration.Dotenv
+                       , Configuration.Dotenv.Text
+                       , Configuration.Dotenv.Types
+                       , Configuration.Dotenv.Parse
+                       , Configuration.Dotenv.ParsedVariable
+                       , Configuration.Dotenv.SchemeSpec
+                       , Configuration.Dotenv.Scheme.ParseSpec
+                       , Configuration.Dotenv.Scheme
+                       , Configuration.Dotenv.Scheme.Helpers
+                       , Configuration.Dotenv.Scheme.Parser
+                       , Configuration.Dotenv.Scheme.Types
+
+  build-depends:       base >=4.7 && <5.0
+                     , base-compat >= 0.4
+                     , dotenv
+                     , directory
+                     , megaparsec >= 6.0 && < 7.0
+                     , hspec
+                     , process >= 1.4.3.0
+                     , text
+                     , transformers >=0.4 && < 0.6
+                     , exceptions >= 0.8 && < 0.9
+                     , hspec-megaparsec >= 1.0 && < 2.0
+                     , yaml
+
+  if !impl(ghc >= 7.10)
+    build-depends:      void         == 0.7.*
+
+  if flag(dev)
+    ghc-options:      -Wall -Werror
+  else
+    ghc-options:      -O2 -Wall
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: git@github.com:stackbuilders/dotenv-hs.git

@@ -1,0 +1,17 @@
+{ mkDerivation, base, fetchurl, foldl, numhask, protolude, tdigest
+, vector, vector-algorithms
+}:
+mkDerivation {
+  pname = "online";
+  version = "0.2.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base foldl numhask protolude tdigest vector vector-algorithms
+  ];
+  homepage = "https://github.com/tonyday567/online";
+  description = "online statistics";
+  license = stdenv.lib.licenses.bsd3;
+}

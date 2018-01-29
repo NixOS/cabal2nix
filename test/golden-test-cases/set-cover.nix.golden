@@ -1,0 +1,19 @@
+{ mkDerivation, base, containers, enummapset, fetchurl, psqueues
+, utility-ht
+}:
+mkDerivation {
+  pname = "set-cover";
+  version = "0.0.8";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base containers enummapset psqueues utility-ht
+  ];
+  homepage = "http://hub.darcs.net/thielema/set-cover/";
+  description = "Solve exact set cover problems like Sudoku, 8 Queens, Soma Cube, Tetris Cube";
+  license = stdenv.lib.licenses.bsd3;
+}

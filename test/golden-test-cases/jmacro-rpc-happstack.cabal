@@ -1,0 +1,29 @@
+Name:                jmacro-rpc-happstack
+Version:             0.3.2
+Homepage:            http://hub.darcs.net/gershomb/jmacro-rpc
+License:             BSD3
+License-file:        LICENSE
+Author:              Gershom Bazerman
+Maintainer:          gershomb@gmail.com
+Category:            Network, Web
+Build-type:          Simple
+Cabal-version:       >=1.6
+Synopsis:            Happstack backend for jmacro-rpc
+Description:         Provides functions for serving jmacro-rpc json rpcs and panels from Happstack.
+
+Library
+  Exposed-modules: Network.JMacroRPC.Happstack
+
+  Build-depends: base >= 4, base < 7, bytestring > 0.9, jmacro > 0.6, happstack-server > 6, jmacro-rpc >= 0.2, mtl >= 2, containers >= 0.4, aeson >= 0.6, blaze-html >= 0.5
+
+  ghc-options: -Wall
+
+  -- Modules not exported by this package.
+  -- Other-modules:
+
+  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
+  -- Build-tools:
+
+source-repository head
+  type:      darcs
+  location:  http://hub.darcs.net/gershomb/jmacro-rpc

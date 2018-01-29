@@ -1,0 +1,28 @@
+{ mkDerivation, ansi-terminal, base, cmdargs, containers, directory
+, extra, fetchurl, filepath, fsnotify, process, tasty, tasty-hunit
+, terminal-size, time, unix
+}:
+mkDerivation {
+  pname = "ghcid";
+  version = "0.6.8";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base cmdargs directory extra filepath process time unix
+  ];
+  executableHaskellDepends = [
+    ansi-terminal base cmdargs containers directory extra filepath
+    fsnotify process terminal-size time unix
+  ];
+  testHaskellDepends = [
+    ansi-terminal base cmdargs containers directory extra filepath
+    fsnotify process tasty tasty-hunit terminal-size time unix
+  ];
+  homepage = "https://github.com/ndmitchell/ghcid#readme";
+  description = "GHCi based bare bones IDE";
+  license = stdenv.lib.licenses.bsd3;
+}

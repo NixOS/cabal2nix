@@ -1,0 +1,15 @@
+{ mkDerivation, base, fetchurl, QuickCheck, template-haskell }:
+mkDerivation {
+  pname = "FenwickTree";
+  version = "0.1.2.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [ base QuickCheck template-haskell ];
+  testHaskellDepends = [ base QuickCheck template-haskell ];
+  homepage = "https://github.com/mgajda/FenwickTree";
+  description = "Data structure for fast query and update of cumulative sums";
+  license = stdenv.lib.licenses.bsd3;
+}

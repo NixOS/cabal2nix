@@ -1,0 +1,18 @@
+{ mkDerivation, aeson, base, blaze-html, bytestring, containers
+, fetchurl, happstack-server, jmacro, jmacro-rpc, mtl
+}:
+mkDerivation {
+  pname = "jmacro-rpc-happstack";
+  version = "0.3.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base blaze-html bytestring containers happstack-server jmacro
+    jmacro-rpc mtl
+  ];
+  homepage = "http://hub.darcs.net/gershomb/jmacro-rpc";
+  description = "Happstack backend for jmacro-rpc";
+  license = stdenv.lib.licenses.bsd3;
+}

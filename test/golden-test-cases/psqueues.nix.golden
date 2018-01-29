@@ -1,0 +1,25 @@
+{ mkDerivation, array, base, containers, criterion, deepseq
+, fetchurl, fingertree-psqueue, ghc-prim, hashable, HUnit, mtl
+, PSQueue, QuickCheck, random, tagged, test-framework
+, test-framework-hunit, test-framework-quickcheck2
+, unordered-containers
+}:
+mkDerivation {
+  pname = "psqueues";
+  version = "0.2.4.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base deepseq ghc-prim hashable ];
+  testHaskellDepends = [
+    array base deepseq ghc-prim hashable HUnit QuickCheck tagged
+    test-framework test-framework-hunit test-framework-quickcheck2
+  ];
+  benchmarkHaskellDepends = [
+    base containers criterion deepseq fingertree-psqueue ghc-prim
+    hashable mtl PSQueue random unordered-containers
+  ];
+  description = "Pure priority search queues";
+  license = stdenv.lib.licenses.bsd3;
+}

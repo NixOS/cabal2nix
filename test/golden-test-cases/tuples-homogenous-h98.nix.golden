@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl }:
+mkDerivation {
+  pname = "tuples-homogenous-h98";
+  version = "0.1.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  homepage = "https://github.com/ppetr/tuples-homogenous-h98";
+  description = "Wrappers for n-ary tuples with Traversable and Applicative/Monad instances";
+  license = stdenv.lib.licenses.bsd3;
+}

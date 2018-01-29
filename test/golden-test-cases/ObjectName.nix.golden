@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, transformers }:
+mkDerivation {
+  pname = "ObjectName";
+  version = "1.1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base transformers ];
+  homepage = "https://github.com/svenpanne/ObjectName";
+  description = "Explicitly handled object names";
+  license = stdenv.lib.licenses.bsd3;
+}

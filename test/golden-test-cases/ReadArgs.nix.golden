@@ -1,0 +1,17 @@
+{ mkDerivation, base, fetchurl, hspec, system-filepath, text }:
+mkDerivation {
+  pname = "ReadArgs";
+  version = "1.2.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base system-filepath text ];
+  executableHaskellDepends = [ base system-filepath text ];
+  testHaskellDepends = [ base hspec system-filepath text ];
+  homepage = "http://github.com/rampion/ReadArgs";
+  description = "Simple command line argument parsing";
+  license = stdenv.lib.licenses.bsd3;
+}

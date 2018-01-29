@@ -1,0 +1,63 @@
+name: genvalidity-hspec-aeson
+version: 0.1.0.1
+cabal-version: >=1.10
+build-type: Simple
+license: MIT
+license-file: LICENSE
+copyright: Copyright: (c) 2016 Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+homepage: http://cs-syd.eu
+synopsis: Standard spec's for aeson-related instances
+description:
+    Standard spec's for aeson-related Instances
+category: Testing
+author: Tom Sydney Kerckhove
+
+source-repository head
+    type: git
+    location: https://github.com/NorfairKing/validity
+
+library
+    exposed-modules:
+        Test.Validity.Aeson
+    build-depends:
+        base >=4.9 && <=5,
+        genvalidity-hspec >=0.5 && <0.6,
+        genvalidity >=0.4 && <0.5,
+        hspec -any,
+        aeson >=0.11 && <1.3,
+        QuickCheck -any,
+        deepseq >=1.4 && <1.5,
+        bytestring -any
+    default-language: Haskell2010
+    hs-source-dirs: src/
+    ghc-options: -Wall
+
+test-suite genvalidity-hspec-aeson-doctests
+    type: exitcode-stdio-1.0
+    main-is: DocTest.hs
+    build-depends:
+        base -any,
+        doctest >=0.11 && <0.12,
+        genvalidity-hspec-aeson -any
+    default-language: Haskell2010
+    hs-source-dirs: test
+    ghc-options: -threaded
+test-suite genvalidity-hspec-aeson-test
+    type: exitcode-stdio-1.0
+    main-is: Spec.hs
+    build-depends:
+        aeson -any,
+        base -any,
+        genvalidity -any,
+        genvalidity-aeson -any,
+        genvalidity-hspec -any,
+        genvalidity-hspec-aeson -any,
+        genvalidity-text -any,
+        hspec -any,
+        text -any
+    default-language: Haskell2010
+    hs-source-dirs: test/
+    other-modules:
+        Test.Validity.AesonSpec
+    ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall

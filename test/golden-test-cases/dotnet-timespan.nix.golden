@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl }:
+mkDerivation {
+  pname = "dotnet-timespan";
+  version = "0.0.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  homepage = "http://github.com/YoEight/dotnet-timespan";
+  description = ".NET TimeSpan";
+  license = stdenv.lib.licenses.bsd3;
+}

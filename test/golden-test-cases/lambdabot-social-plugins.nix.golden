@@ -1,0 +1,17 @@
+{ mkDerivation, base, binary, bytestring, containers, fetchurl
+, lambdabot-core, mtl, split, time
+}:
+mkDerivation {
+  pname = "lambdabot-social-plugins";
+  version = "5.1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base binary bytestring containers lambdabot-core mtl split time
+  ];
+  homepage = "https://wiki.haskell.org/Lambdabot";
+  description = "Social plugins for Lambdabot";
+  license = "GPL";
+}

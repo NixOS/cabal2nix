@@ -1,0 +1,28 @@
+{ mkDerivation, aeson, base, basic-prelude, bytestring, containers
+, directory, fetchurl, hspec, http-api-data, http-client
+, http-client-tls, lens, microlens, microlens-th, mtl, network-uri
+, servant, servant-client, text, transformers
+}:
+mkDerivation {
+  pname = "giphy-api";
+  version = "0.5.2.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    aeson base containers http-api-data http-client http-client-tls
+    microlens microlens-th mtl network-uri servant servant-client text
+    transformers
+  ];
+  executableHaskellDepends = [ base network-uri text ];
+  testHaskellDepends = [
+    aeson base basic-prelude bytestring containers directory hspec lens
+    network-uri text
+  ];
+  homepage = "http://github.com/passy/giphy-api#readme";
+  description = "Giphy HTTP API wrapper and CLI search tool";
+  license = stdenv.lib.licenses.bsd3;
+}

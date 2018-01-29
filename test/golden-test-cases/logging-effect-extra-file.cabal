@@ -1,0 +1,63 @@
+-- This file has been generated from package.yaml by hpack version 0.17.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           logging-effect-extra-file
+version:        1.1.1
+synopsis:       TH splices to augment log messages with file info
+description:    TH splices to augment log messages with file info.
+category:       Other
+homepage:       https://github.com/jship/logging-effect-extra#readme
+bug-reports:    https://github.com/jship/logging-effect-extra/issues
+author:         Jason Shipman
+maintainer:     Jason Shipman
+license:        MIT
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    CHANGELOG.md
+    LICENSE.md
+    package.yaml
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/jship/logging-effect-extra
+
+library
+  hs-source-dirs:
+      library
+  ghc-options: -Wall
+  build-depends:
+      base >=4.8 && <4.11
+    , logging-effect >= 1.1.0 && <1.3
+    , wl-pprint-text >=1.1.0.4 && <1.2
+    , template-haskell
+  exposed-modules:
+      Control.Monad.Log.Extra.File
+  default-language: Haskell2010
+
+executable log-file
+  main-is: log-file.hs
+  hs-source-dirs:
+      executable
+  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.8 && <4.11
+    , logging-effect >= 1.1.0 && <1.3
+    , wl-pprint-text >=1.1.0.4 && <1.2
+    , logging-effect-extra-file
+  default-language: Haskell2010
+
+executable log-file-and-severity
+  main-is: log-file-and-severity.hs
+  hs-source-dirs:
+      executable
+  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.8 && <4.11
+    , logging-effect >= 1.1.0 && <1.3
+    , wl-pprint-text >=1.1.0.4 && <1.2
+    , logging-effect-extra-file
+  default-language: Haskell2010

@@ -1,0 +1,33 @@
+Name:                hsx-jmacro
+Version:             7.3.8
+Synopsis:            hsp+jmacro support
+Description:         HSP allows for the use of literal XML in Haskell program text. JMacro allows for the use of javascript-syntax for generating javascript in Haskell. This library makes it easy to embed JMacro generated javascript in HSX templates.
+Homepage:            http://www.happstack.com/
+License:             BSD3
+License-file:        LICENSE
+Author:              Jeremy Shaw
+Maintainer:          jeremy@n-heptane.com
+Stability:           Provisional
+Category:            Web
+Build-type:          Simple
+Cabal-version:       >=1.6
+tested-with:         GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
+Extra-source-files:  example.hs,
+                     example2.hs,
+                     README.md
+
+source-repository head
+  type: git
+  location: https://github.com/Happstack/hsx-jmacro.git
+
+Library
+  Exposed-modules:   HSP.JMacro
+                     HSP.JMacroT
+
+  Build-depends:
+                     base            > 4      && <5,
+                     hsp            >= 0.9    && < 0.11,
+                     jmacro         >= 0.6    && < 0.7,
+                     mtl            >= 2.0    && < 2.3,
+                     wl-pprint-text == 1.1.*,
+                     text           >= 0.11 && < 1.3

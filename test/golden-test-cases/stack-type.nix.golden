@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, transformers }:
+mkDerivation {
+  pname = "stack-type";
+  version = "0.1.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base transformers ];
+  homepage = "https://github.com/aiya000/hs-stack-type";
+  description = "The basic stack type";
+  license = stdenv.lib.licenses.mit;
+}

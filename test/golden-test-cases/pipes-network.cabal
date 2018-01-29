@@ -1,0 +1,51 @@
+name:               pipes-network
+version:            0.6.4.1
+license:            BSD3
+license-file:       LICENSE
+copyright:          Copyright (c) Renzo Carbonara 2012-2016, Paolo Capriotti 2012-2012.
+author:             Renzo Carbonara
+maintainer:         renzocarbonaraλgmail.com
+stability:          Experimental
+tested-with:        GHC == 8.0.1
+homepage:           https://github.com/k0001/pipes-network
+bug-reports:        https://github.com/k0001/pipes-network/issues
+category:           Pipes, Network
+build-type:         Simple
+synopsis:           Use network sockets together with the pipes library.
+cabal-version:      >=1.8
+extra-source-files: README.md PEOPLE changelog.md
+description:
+  Use network sockets together with the @pipes@ library.
+  .
+  This package is organized using the following namespaces:
+  .
+  * "Pipes.Network.TCP" exports pipes and utilities for using TCP connections in
+  a streaming fashion.
+  .
+  * "Pipes.Network.TCP.Safe" subsumes "Pipes.Network.TCP", exporting pipes and
+  functions that allow you to safely establish new TCP connections within a
+  pipeline using the @pipes-safe@ facilities. You only need to use this module
+  if you want to safely acquire and release operating system resources within a
+  pipeline.
+  .
+  See the @changelog@ file in the source distribution to learn about any
+  important changes between version.
+
+source-repository head
+    type: git
+    location: git://github.com/k0001/pipes-network.git
+
+library
+    hs-source-dirs: src
+    build-depends:
+        base           (==4.*),
+        bytestring     (>=0.9.2.1),
+        network,
+        network-simple (>=0.4.0.1 && <0.5),
+        pipes          (>=4.0 && <4.3),
+        pipes-safe     (>=2.1 && <2.3),
+        transformers   (>=0.2 && <0.6)
+    exposed-modules:
+        Pipes.Network.TCP
+        Pipes.Network.TCP.Safe
+    ghc-options: -Wall -O2

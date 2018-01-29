@@ -1,0 +1,20 @@
+{ mkDerivation, base, containers, directory, fetchurl, hspec, HUnit
+, mtl, parsec, text
+}:
+mkDerivation {
+  pname = "app-settings";
+  version = "0.2.0.11";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers directory mtl parsec text
+  ];
+  testHaskellDepends = [
+    base containers directory hspec HUnit mtl parsec text
+  ];
+  homepage = "https://github.com/emmanueltouzery/app-settings";
+  description = "A library to manage application settings (INI file-like)";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,84 @@
+name:
+  attoparsec-time
+version:
+  1
+synopsis:
+  Attoparsec parsers of time
+description:
+  A collection of Attoparsec parsers for the \"time\" library
+category:
+  Attoparsec, Parsers, Time
+homepage:
+  https://github.com/nikita-volkov/attoparsec-time 
+bug-reports:
+  https://github.com/nikita-volkov/attoparsec-time/issues 
+author:
+  Nikita Volkov <nikita.y.volkov@mail.ru>
+maintainer:
+  Nikita Volkov <nikita.y.volkov@mail.ru>
+copyright:
+  (c) 2017, Nikita Volkov
+license:
+  MIT
+license-file:
+  LICENSE
+build-type:
+  Custom
+cabal-version:
+  >=1.10
+
+source-repository head
+  type:
+    git
+  location:
+    git://github.com/nikita-volkov/attoparsec-time.git
+
+custom-setup
+  setup-depends:
+    base, Cabal, cabal-doctest >=1.0.2 && <1.1
+
+library
+  hs-source-dirs:
+    library
+  default-extensions:
+    Arrows, BangPatterns, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, ParallelListComp, QuasiQuotes, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TemplateHaskell, TupleSections, TypeFamilies, TypeOperators, UnboxedTuples
+  default-language:
+    Haskell2010
+  exposed-modules:
+    Attoparsec.Time.ByteString
+    Attoparsec.Time.Text
+  other-modules:
+    Attoparsec.Time.Prelude
+    Attoparsec.Time.Validation
+    Attoparsec.Time.Pure
+  build-depends:
+    -- 
+    attoparsec >=0.13 && <0.15,
+    --
+    time >=1.4 && <2,
+    scientific ==0.3.*,
+    text >=1 && <2,
+    bytestring ==0.10.*,
+    --
+    base-prelude <2,
+    base >=4.7 && <5
+
+test-suite doctests
+  type:
+    exitcode-stdio-1.0
+  hs-source-dirs:
+    doctests
+  main-is:
+    Main.hs
+  ghc-options:
+    -threaded
+    "-with-rtsopts=-N"
+    -funbox-strict-fields
+  default-language:
+    Haskell2010
+  build-depends:
+    doctest ==0.13.*,
+    directory >=1.2 && <2,
+    filepath >=1.4 && <2,
+    base-prelude <2,
+    base <5

@@ -1,0 +1,16 @@
+{ mkDerivation, ansi-terminal, base, fetchurl, haskell-lexer }:
+mkDerivation {
+  pname = "colorize-haskell";
+  version = "1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ ansi-terminal base haskell-lexer ];
+  executableHaskellDepends = [ ansi-terminal base haskell-lexer ];
+  homepage = "http://github.com/yav/colorize-haskell";
+  description = "Highligt Haskell source";
+  license = stdenv.lib.licenses.bsd3;
+}

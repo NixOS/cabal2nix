@@ -1,0 +1,29 @@
+Name:                reform-blaze
+Version:             0.2.4.3
+Synopsis:            Add support for using blaze-html with Reform
+Description:         Reform is a library for building and validating forms using applicative functors. This package add support for using reform with blaze-html.
+Homepage:            http://www.happstack.com/
+License:             BSD3
+License-file:        LICENSE
+Author:              Jeremy Shaw
+Maintainer:          jeremy@n-heptane.com
+Copyright:           2012 Jeremy Shaw, SeeReason Partners LLC
+Category:            Web
+Build-type:          Simple
+Cabal-version:       >=1.6
+tested-with:         GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3
+
+source-repository head
+    type:     git
+    location: https://github.com/Happstack/reform-blaze.git
+
+Library
+  Exposed-modules:   Text.Reform.Blaze.Common
+                     Text.Reform.Blaze.String
+                     Text.Reform.Blaze.Text
+
+  Build-depends:     base         >4.5 && <5,
+                     blaze-markup >= 0.5 && < 0.9,
+                     blaze-html   >= 0.5 && < 0.10,
+                     reform       == 0.2.*,
+                     text         >= 0.11 && < 1.3

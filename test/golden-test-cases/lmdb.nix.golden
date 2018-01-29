@@ -1,0 +1,14 @@
+{ mkDerivation, array, base, fetchurl, lmdb }:
+mkDerivation {
+  pname = "lmdb";
+  version = "0.2.5";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ array base ];
+  librarySystemDepends = [ lmdb ];
+  homepage = "http://github.com/dmbarbour/haskell-lmdb";
+  description = "Lightning MDB bindings";
+  license = stdenv.lib.licenses.bsd2;
+}

@@ -1,0 +1,14 @@
+{ mkDerivation, base, fetchurl, time }:
+mkDerivation {
+  pname = "io-machine";
+  version = "0.2.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base time ];
+  testHaskellDepends = [ base ];
+  homepage = "https://github.com/YoshikuniJujo/io-machine#readme";
+  description = "Easy I/O model to learn IO monad";
+  license = stdenv.lib.licenses.bsd3;
+}

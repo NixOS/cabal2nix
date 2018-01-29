@@ -1,0 +1,52 @@
+name:                openexr-write
+version:             0.1.0.1
+synopsis:            Library for writing images in OpenEXR HDR file format.
+description:         OpenEXR allows to store pixels as floating point numbers and thus can capture high dynamic range.
+homepage:            https://github.com/pavolzetor/openexr-write#readme
+license:             GPL-3
+license-file:        LICENSE
+author:              Pavol Klacansky
+maintainer:          pavol@klacansky.com
+copyright:           2017 Pavol Klacansky
+category:            Graphics
+build-type:          Simple
+extra-source-files:  .gitignore
+                     .travis.yml
+                     CHANGELOG.md
+                     README.md
+                     stack.yaml
+                     test/generate.cpp
+                     test/images/red_1x1_no_compression.exr
+                     test/images/red_1x1_zips_compression.exr
+                     test/images/red_1x1_zip_compression.exr
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Graphics.OpenEXR
+  build-depends:       base >= 4.8 && < 5
+                     , binary
+                     , bytestring
+                     , data-binary-ieee754
+                     , deepseq
+                     , split
+                     , vector
+                     , vector-split
+                     , zlib
+  default-language:    Haskell2010
+
+test-suite spec
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base >= 4.8 && < 5
+                     , bytestring
+                     , directory
+                     , hspec
+                     , openexr-write
+                     , vector
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/pavolzetor/openexr-write

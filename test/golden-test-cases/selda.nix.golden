@@ -1,0 +1,18 @@
+{ mkDerivation, base, bytestring, exceptions, fetchurl, hashable
+, mtl, psqueues, text, time, unordered-containers
+}:
+mkDerivation {
+  pname = "selda";
+  version = "0.1.11.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base bytestring exceptions hashable mtl psqueues text time
+    unordered-containers
+  ];
+  homepage = "https://selda.link";
+  description = "Type-safe, high-level EDSL for interacting with relational databases";
+  license = stdenv.lib.licenses.mit;
+}

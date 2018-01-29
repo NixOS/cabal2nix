@@ -1,0 +1,23 @@
+{ mkDerivation, aeson, base, bytestring, deepseq, doctest, fetchurl
+, genvalidity, genvalidity-aeson, genvalidity-hspec
+, genvalidity-text, hspec, QuickCheck, text
+}:
+mkDerivation {
+  pname = "genvalidity-hspec-aeson";
+  version = "0.1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base bytestring deepseq genvalidity genvalidity-hspec hspec
+    QuickCheck
+  ];
+  testHaskellDepends = [
+    aeson base doctest genvalidity genvalidity-aeson genvalidity-hspec
+    genvalidity-text hspec text
+  ];
+  homepage = "http://cs-syd.eu";
+  description = "Standard spec's for aeson-related instances";
+  license = stdenv.lib.licenses.mit;
+}

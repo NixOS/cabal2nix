@@ -1,0 +1,23 @@
+{ mkDerivation, aeson, attoparsec, base, base-compat, bytestring
+, cmdargs, fetchurl, scientific, text, unordered-containers, vector
+}:
+mkDerivation {
+  pname = "aeson-pretty";
+  version = "0.8.5";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    aeson base base-compat bytestring scientific text
+    unordered-containers vector
+  ];
+  executableHaskellDepends = [
+    aeson attoparsec base bytestring cmdargs
+  ];
+  homepage = "http://github.com/informatikr/aeson-pretty";
+  description = "JSON pretty-printing library and command-line tool";
+  license = stdenv.lib.licenses.bsd3;
+}

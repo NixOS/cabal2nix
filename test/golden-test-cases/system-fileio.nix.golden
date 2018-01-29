@@ -1,0 +1,21 @@
+{ mkDerivation, base, bytestring, chell, fetchurl, system-filepath
+, temporary, text, time, transformers, unix
+}:
+mkDerivation {
+  pname = "system-fileio";
+  version = "0.3.16.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base bytestring system-filepath text time unix
+  ];
+  testHaskellDepends = [
+    base bytestring chell system-filepath temporary text time
+    transformers unix
+  ];
+  homepage = "https://github.com/fpco/haskell-filesystem";
+  description = "Consistent filesystem interaction across GHC versions (deprecated)";
+  license = stdenv.lib.licenses.mit;
+}

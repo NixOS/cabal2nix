@@ -1,0 +1,12 @@
+{ mkDerivation, base, fetchurl, vector }:
+mkDerivation {
+  pname = "polynomials-bernstein";
+  version = "1.1.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base vector ];
+  description = "A solver for systems of polynomial equations in bernstein form";
+  license = "GPL";
+}

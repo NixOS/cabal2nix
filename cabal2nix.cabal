@@ -83,7 +83,9 @@ description:
   > nix-env -i cabal2nix
 
 extra-source-files:
-    README.md
+  README.md
+  test/golden-test-cases/*.cabal
+  test/golden-test-cases/*.nix.golden
 
 source-repository head
   type: git
@@ -173,3 +175,19 @@ executable hackage2nix
       Paths_cabal2nix
       HackageGit
   default-language: Haskell2010
+
+test-suite regression-test
+  type:                 exitcode-stdio-1.0
+  main-is:              Main.hs
+  hs-source-dirs:       test
+  build-depends:        base
+                      , Cabal > 2
+                      , cabal2nix
+                      , filepath
+                      , language-nix
+                      , lens
+                      , pretty
+                      , tasty
+                      , tasty-golden
+  ghc-options:          -Wall
+  default-language:     Haskell2010

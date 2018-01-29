@@ -1,0 +1,66 @@
+name:                tce-conf
+version:             1.3
+cabal-version:       >= 1.10
+build-type:          Simple
+license:             BSD3
+license-file:        LICENSE
+copyright:           2015-2016 Dino Morelli
+author:              Dino Morelli
+maintainer:          Dino Morelli <dino@ui3.info>
+stability:           experimental
+homepage:            http://hub.darcs.net/dino/tce-conf
+synopsis:            Very simple config file reading
+description:         This package contains modules for runtime reading of very simple config files of the `key=value` style or as a Haskell data structure to be deserialized with `Read`. The modules support files with blank lines and simple single-line comments, but nothing else.
+category:            Configuration
+tested-with:         GHC >= 8.0.1
+extra-source-files:  changelog.md
+                     doc/dev/notes
+                     README.md
+                     resources/*.conf
+                     stack.yaml
+                     TODO.md
+                     util/gentags.sh
+                     util/prefs/boring
+
+source-repository    head
+   type:             darcs
+   location:         http://hub.darcs.net/dino/tce-conf
+
+library
+   exposed-modules:  TCE.Data.KVConf
+                     TCE.Data.ReadConf
+   hs-source-dirs:   src
+   build-depends:    base >= 3 && < 5,
+                     containers
+   ghc-options:      -Wall
+   default-language: Haskell2010
+
+test-suite           test-hsmisc
+   type:             exitcode-stdio-1.0
+   main-is:          test-hsmisc.hs
+   hs-source-dirs:   src testsuite
+   build-depends:    base >= 3 && < 5,
+                     containers,
+                     HUnit
+   ghc-options:      -Wall
+   other-modules:    KVConf
+                     ReadConf
+                     TCE.Data.KVConf
+                     TCE.Data.ReadConf
+   default-language: Haskell2010
+
+executable KVConf-example
+   hs-source-dirs:   app
+   main-is:          KVConf-example.hs
+   build-depends:      base >= 3 && < 5
+                     , containers
+                     , tce-conf
+   default-language: Haskell2010
+
+executable ReadConf-example
+   hs-source-dirs:   app
+   main-is:          ReadConf-example.hs
+   build-depends:      base >= 3 && < 5
+                     , containers
+                     , tce-conf
+   default-language: Haskell2010

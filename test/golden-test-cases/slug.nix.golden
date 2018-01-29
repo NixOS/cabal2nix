@@ -1,0 +1,21 @@
+{ mkDerivation, aeson, base, exceptions, fetchurl, hspec
+, http-api-data, path-pieces, persistent, QuickCheck, text
+}:
+mkDerivation {
+  pname = "slug";
+  version = "0.1.7";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base exceptions http-api-data path-pieces persistent
+    QuickCheck text
+  ];
+  testHaskellDepends = [
+    base exceptions hspec http-api-data path-pieces QuickCheck text
+  ];
+  homepage = "https://github.com/mrkkrp/slug";
+  description = "Type-safe slugs for Yesod ecosystem";
+  license = stdenv.lib.licenses.bsd3;
+}

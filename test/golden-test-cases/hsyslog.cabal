@@ -1,0 +1,77 @@
+name:           hsyslog
+version:        5.0.1
+cabal-version:  >= 1.10
+build-type:     Custom
+license:        BSD3
+license-file:   LICENSE
+copyright:      Copyright (c) 2004-2017 by Peter Simons
+author:         Peter Simons, John Lato, Jonathan Childress
+maintainer:     Peter Simons <simons@cryp.to>
+homepage:       http://github.com/peti/hsyslog
+bug-reports:    http://github.com/peti/hsyslog/issues
+synopsis:       FFI interface to syslog(3) from POSIX.1-2001
+category:       Foreign
+tested-with:    GHC > 7.6 && < 8.3
+
+extra-source-files:
+  c-bits/simple-syslog.c
+  c-bits/make-log-mask.c
+
+description:
+  A Haskell interface to @syslog(3)@ as specified in
+  <http://pubs.opengroup.org/onlinepubs/9699919799/functions/syslog.html POSIX.1-2008>.
+  The entire public API lives in "System.Posix.Syslog". There is a set of exposed
+  modules available underneath that one, which contain various implementation details
+  that may be useful to other developers who want to implement syslog-related
+  functionality. /Users/ of @syslog@, however, do not need them.
+  .
+  An example program that demonstrates how to use this library is available in the
+  <https://github.com/peti/hsyslog/blob/master/example/Main.hs examples> directory of
+  this package.
+
+custom-setup
+  setup-depends: base >= 4 && <5,
+                 Cabal,
+                 cabal-doctest >= 1 && <1.1
+
+source-repository head
+  type:     git
+  location: git://github.com/peti/hsyslog.git
+
+Flag install-examples
+  Description:   Build and install example programs.
+  Default:       False
+
+library
+  exposed-modules:  System.Posix.Syslog
+                    System.Posix.Syslog.Facility
+                    System.Posix.Syslog.Functions
+                    System.Posix.Syslog.LogMask
+                    System.Posix.Syslog.Options
+                    System.Posix.Syslog.Priority
+  build-depends:    base >= 4.6 && < 5
+  other-extensions: ForeignFunctionInterface, DeriveGeneric
+  hs-source-dirs:   src
+  c-sources:        c-bits/simple-syslog.c
+                    c-bits/make-log-mask.c
+  default-language: Haskell2010
+  build-tools:      hsc2hs
+
+test-suite doctests
+  type:             exitcode-stdio-1.0
+  main-is:          doctests.hs
+  hs-source-dirs:   test
+  build-depends:    hsyslog, base, doctest
+  ghc-options:      -threaded
+  default-language: Haskell2010
+
+executable hsyslog-example
+  main-is:            Main.hs
+  hs-source-dirs:     example
+  if flag(install-examples)
+    buildable:        True
+    build-depends:    base, hsyslog, bytestring
+    other-extensions: TypeSynonymInstances, FlexibleInstances
+  else
+    buildable:        False
+  default-language:   Haskell2010

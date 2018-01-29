@@ -1,0 +1,28 @@
+name:                attoparsec-expr
+version:             0.1.1.2
+description:         Port of parsec's expression parser to attoparsec.
+synopsis:            Port of parsec's expression parser to attoparsec.
+category:            Text, Parsing
+license:             BSD3
+license-file:        LICENSE
+author:              Daan Leijen, Paolo Martini
+maintainer:          Silk <code@silk.co>
+build-type:          Simple
+cabal-version:       >= 1.6
+
+extra-source-files:
+  CHANGELOG.md
+  LICENSE
+  README.md
+
+source-repository head
+  type:              git
+  location:          https://github.com/silkapp/attoparsec-expr
+
+library
+  ghc-options:       -Wall
+  hs-source-dirs:    src
+  exposed-modules:   Data.Attoparsec.Expr
+  Build-Depends:
+      base == 4.*
+    , attoparsec >= 0.10 && < 0.14

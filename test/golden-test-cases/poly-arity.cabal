@@ -1,0 +1,23 @@
+Name:                   poly-arity
+Version:                0.1.0
+Author:                 Athan Clark <athan.clark@gmail.com>
+Maintainer:             Athan Clark <athan.clark@gmail.com>
+License:                BSD3
+License-File:           LICENSE
+Synopsis:               Tools for working with functions of undetermined arity
+-- Description:
+Cabal-Version:          >= 1.10
+Build-Type:             Simple
+Category:               Data, Functions
+
+Library
+  Default-Language:     Haskell2010
+  HS-Source-Dirs:       src
+  GHC-Options:          -Wall
+  Exposed-Modules:      Data.Function.Poly
+  Build-Depends:        base >= 4.6 && < 5
+                      , constraints
+
+Source-Repository head
+  Type:                 git
+  Location:             https://github.com/athanclark/poly-arity.git

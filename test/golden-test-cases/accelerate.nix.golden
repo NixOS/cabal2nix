@@ -1,0 +1,21 @@
+{ mkDerivation, ansi-wl-pprint, base, base-orphans, containers
+, deepseq, directory, exceptions, fclabels, fetchurl, filepath
+, ghc-prim, hashable, hashtables, mtl, template-haskell, time
+, transformers, unique, unix, unordered-containers
+}:
+mkDerivation {
+  pname = "accelerate";
+  version = "1.1.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    ansi-wl-pprint base base-orphans containers deepseq directory
+    exceptions fclabels filepath ghc-prim hashable hashtables mtl
+    template-haskell time transformers unique unix unordered-containers
+  ];
+  homepage = "https://github.com/AccelerateHS/accelerate/";
+  description = "An embedded language for accelerated array processing";
+  license = stdenv.lib.licenses.bsd3;
+}

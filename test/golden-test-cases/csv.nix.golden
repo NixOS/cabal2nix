@@ -1,0 +1,12 @@
+{ mkDerivation, base, fetchurl, filepath, parsec }:
+mkDerivation {
+  pname = "csv";
+  version = "0.1.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base filepath parsec ];
+  description = "CSV loader and dumper";
+  license = stdenv.lib.licenses.mit;
+}

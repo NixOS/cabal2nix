@@ -1,0 +1,12 @@
+{ mkDerivation, base, fetchurl }:
+mkDerivation {
+  pname = "bindings-uname";
+  version = "0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  description = "Low-level binding to POSIX uname(3)";
+  license = stdenv.lib.licenses.publicDomain;
+}

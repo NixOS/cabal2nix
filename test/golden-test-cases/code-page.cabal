@@ -1,0 +1,60 @@
+name:                code-page
+version:             0.1.3
+synopsis:            Windows code page library for Haskell
+description:         This library provides two modules:
+                     .
+                     * "System.IO.CodePage": a cross-platform module that exports
+                     functions which adjust code pages on Windows, and do nothing
+                     on other operating systems.
+                     .
+                     * "System.Win32.CodePage": On Windows, this exports functions
+                     for getting, setting, and analyzing code pages. On other
+                     operating systems, this module exports nothing.
+homepage:            https://github.com/RyanGlScott/code-page
+bug-reports:         https://github.com/RyanGlScott/code-page/issues
+license:             BSD3
+license-file:        LICENSE
+author:              Ryan Scott
+maintainer:          Ryan Scott <ryan.gl.scott@gmail.com>
+stability:           Provisional
+copyright:           (C) 2016-2017 Ryan Scott
+category:            System
+build-type:          Simple
+extra-source-files:  CHANGELOG.md, README.md, include/*.h
+cabal-version:       >=1.10
+tested-with:         GHC == 7.0.4
+                   , GHC == 7.2.2
+                   , GHC == 7.4.2
+                   , GHC == 7.6.3
+                   , GHC == 7.8.4
+                   , GHC == 7.10.3
+                   , GHC == 8.0.2
+
+source-repository head
+  type:                git
+  location:            https://github.com/RyanGlScott/code-page
+
+library
+  exposed-modules:     System.IO.CodePage
+                       System.Win32.CodePage
+  build-depends:       base >= 4.3 && < 5
+  build-tools:         hsc2hs
+  if os(windows)
+    include-dirs:      include
+    includes:          windows_cconv.h
+    cpp-options:       "-DWINDOWS"
+    build-depends:     Win32
+
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+
+test-suite tests
+  type:                exitcode-stdio-1.0
+  main-is:             Tests.hs
+
+  build-depends:       base      >= 4.3 && < 5
+                     , code-page
+
+  hs-source-dirs:      tests
+  default-language:    Haskell2010

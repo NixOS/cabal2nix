@@ -1,0 +1,131 @@
+Name: MissingH
+Version: 1.4.0.1
+License: BSD3
+Maintainer: John Goerzen <jgoerzen@complete.org>
+Author: John Goerzen
+Copyright: Copyright (c) 2004-2016 John Goerzen
+license-file: LICENSE
+extra-source-files: LICENSE,
+                    announcements/0.10.0.txt,
+                    announcements/0.8.0.txt,
+                    announcements/0.9.0.txt,
+                    testsrc/gzfiles/empty.gz,
+                    testsrc/gzfiles/t1.gz,
+                    testsrc/gzfiles/t1bad.gz,
+                    testsrc/gzfiles/t2.gz,
+                    testsrc/gzfiles/zeros.gz,
+                    testsrc/mime.types.test,
+                    3rd-party-licenses/BSD,
+                    3rd-party-licenses/LGPL-2.1,
+                    Makefile,
+                    TODO,
+                    examples/simplegrep.hs,
+                    examples/test2.hs,
+                    examples/test3.hs,
+                    pending/Gopher.hs,
+                    pending/Maildir.disabled,
+                    pending/Tar.newhs,
+                    pending/Tar/HeaderParser.newhs,
+                    tolgpl,
+                    winbuild.bat,
+                    wintest.bat
+homepage: http://software.complete.org/missingh
+Category: Unclassified
+synopsis: Large utility library
+Description:  MissingH is a library of all sorts of utility functions for
+ Haskell programmers.  It is written in pure Haskell and thus should
+ be extremely portable and easy to use.
+Stability: Beta
+Build-Type: Simple
+Cabal-Version: >=1.8
+
+Library
+ Hs-Source-Dirs: src
+ Exposed-Modules:
+  Data.String.Utils, System.IO.Utils, System.IO.Binary, Data.List.Utils,
+  System.Daemon,
+  Text.ParserCombinators.Parsec.Utils,
+  Network.Email.Mailbox,
+  Control.Concurrent.Thread.Utils,
+  Network.Email.Sendmail,
+    Data.CSV,
+  System.Cmd.Utils,
+  Data.BinPacking,
+  Data.Progress.Tracker,
+  Data.Progress.Meter,
+  Data.Quantity,
+  Data.Map.Utils, System.Path, System.Path.NameManip,
+    System.Path.WildMatch, System.Path.Glob,
+  System.Time.Utils,
+  Network.Utils,
+  Network.SocketServer,
+  Data.Either.Utils,
+  Data.Maybe.Utils,
+  Data.Tuple.Utils,
+  Data.Bits.Utils,
+  Data.Hash.CRC32.GZip,
+   Data.Hash.MD5, Data.Hash.MD5.Zord64_HARD,
+  Data.Compression.Inflate,
+  System.FileArchive.GZip,
+  System.IO.HVFS,
+    System.IO.HVFS.Combinators,
+    System.IO.HVFS.InstanceHelpers,
+    System.IO.HVFS.Utils,
+  System.IO.HVIO, System.IO.StatCompat, System.IO.WindowsCompat,
+    System.IO.PlafCompat, System.Posix.Consts,
+  System.Debian, System.Debian.ControlParser,
+  Data.MIME.Types,
+  System.Console.GetOpt.Utils
+
+ Extensions: ExistentialQuantification, OverlappingInstances,
+   UndecidableInstances, CPP, Rank2Types,
+   MultiParamTypeClasses, FlexibleInstances, FlexibleContexts,
+   ScopedTypeVariables
+
+ Build-Depends: network, parsec, base,
+               mtl, HUnit, regex-compat,
+               filepath,
+               hslogger,
+               base >= 4.5, base < 5, directory, random, process, old-time,
+                           containers, old-locale, array, time
+ If ! os(windows)
+   Build-Depends: unix
+
+test-suite runtests
+  type:           exitcode-stdio-1.0
+
+  Build-Depends: network, parsec, base,
+               mtl, HUnit, regex-compat,
+               errorcall-eq-instance,
+               filepath,
+               hslogger,
+               base >= 4.5, base < 5, directory, random, process, old-time,
+                         containers, old-locale, array, time
+  If ! os(windows)
+   Build-Depends: unix
+  Build-Depends: testpack, QuickCheck, HUnit
+
+  Main-Is: runtests.hs
+  HS-Source-Dirs: testsrc, ., src
+  Other-Modules: Bitstest,
+    CRC32GZIPtest,
+    Eithertest,
+    GZiptest,
+    Globtest,
+    HVFStest,
+    HVIOtest,
+    IOtest,
+    Listtest,
+    MIMETypestest,
+    Maptest,
+    Pathtest,
+    ProgressTrackertest,
+    Str.CSVtest,
+    Strtest,
+    Tests,
+    Timetest,
+    WildMatchtest
+  Extensions: ExistentialQuantification, OverlappingInstances,
+    UndecidableInstances, CPP, Rank2Types,
+    MultiParamTypeClasses, FlexibleInstances, FlexibleContexts,
+    ScopedTypeVariables

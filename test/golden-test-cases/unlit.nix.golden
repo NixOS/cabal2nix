@@ -1,0 +1,15 @@
+{ mkDerivation, base, directory, fetchurl, text }:
+mkDerivation {
+  pname = "unlit";
+  version = "0.4.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base directory text ];
+  executableHaskellDepends = [ base directory text ];
+  description = "Tool to convert literate code between styles or to code";
+  license = stdenv.lib.licenses.bsd3;
+}

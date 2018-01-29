@@ -1,0 +1,33 @@
+name:		readline
+version:	1.0.3.0
+license:	GPL
+license-file:	LICENSE
+maintainer:	libraries@haskell.org
+category:       Console
+synopsis:	An interface to the GNU readline library
+description:
+		More information on readline can be found at
+		http:\/\/www.gnu.org\/directory\/readline.html.
+extra-source-files:
+		aclocal.m4 configure.ac configure config.mk.in
+		readline.buildinfo.in include/HsReadlineConfig.h.in
+extra-tmp-files:
+		config.log config.status autom4te.cache config.mk
+		readline.buildinfo
+build-type: Configure
+cabal-version: >=1.2
+
+flag split-base
+
+library
+  exposed-modules:
+                System.Console.Readline
+                System.Console.SimpleLineEditor
+  if flag(split-base)
+    build-depends:	base >= 3 && < 5, process
+  else
+    build-depends:	base < 3
+  include-dirs: 	include
+  includes:	HsReadline.h
+  install-includes:	HsReadline.h HsReadlineConfig.h
+  c-sources:	HsReadline_cbits.c

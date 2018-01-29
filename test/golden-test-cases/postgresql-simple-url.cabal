@@ -1,0 +1,43 @@
+name:                postgresql-simple-url
+version:             0.2.0.0
+synopsis:            Parse postgres:// url into ConnectInfo
+description:
+  The 'Database.PostgreSQL.Simple.URL' module in this package exports
+  two helper functions 'parseDatabaseUrl' and 'urlToConnectInfo'.
+homepage:            https://github.com/futurice/postgresql-simple-url
+license:             MIT
+license-file:        LICENSE
+author:              Oleg Grenrus
+maintainer:          Oleg Grenrus <oleg.grenrus@iki.fi>
+copyright:           Copyright © 2014 Futurice OY, Oleg Grenrus
+stability:           experimental
+category:            Game
+build-type:          Simple
+extra-source-files:  README.md, CHANGELOG.md
+cabal-version:       >=1.10
+
+source-repository head
+  type: git
+  location: https://github.com/futurice/postgresql-simple-url
+
+library
+  exposed-modules:     Database.PostgreSQL.Simple.URL
+  build-depends:       base               >=4.6 && <4.10,
+                       split              >=0.2 && <0.3,
+                       network-uri        >=2.6 && <2.7,
+                       postgresql-simple  >=0.4 && <0.6
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+  default-language:    Haskell2010
+
+test-suite test
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      tests
+  main-is:             Tests.hs
+  ghc-options:         -Wall
+  build-depends:       base               >=4.6  && <4.10,
+                       tasty              >=0.10 && <0.12,
+                       tasty-quickcheck   >=0.8  && <0.9,
+                       postgresql-simple  >=0.4 && <0.6,
+                       postgresql-simple-url

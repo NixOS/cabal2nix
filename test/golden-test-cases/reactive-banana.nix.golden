@@ -1,0 +1,23 @@
+{ mkDerivation, base, containers, fetchurl, hashable, HUnit, pqueue
+, psqueues, test-framework, test-framework-hunit, transformers
+, unordered-containers, vault
+}:
+mkDerivation {
+  pname = "reactive-banana";
+  version = "1.1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers hashable pqueue transformers unordered-containers
+    vault
+  ];
+  testHaskellDepends = [
+    base containers hashable HUnit pqueue psqueues test-framework
+    test-framework-hunit transformers unordered-containers vault
+  ];
+  homepage = "http://wiki.haskell.org/Reactive-banana";
+  description = "Library for functional reactive programming (FRP)";
+  license = stdenv.lib.licenses.bsd3;
+}

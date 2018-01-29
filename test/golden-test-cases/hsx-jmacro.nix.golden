@@ -1,0 +1,17 @@
+{ mkDerivation, base, fetchurl, hsp, jmacro, mtl, text
+, wl-pprint-text
+}:
+mkDerivation {
+  pname = "hsx-jmacro";
+  version = "7.3.8";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base hsp jmacro mtl text wl-pprint-text
+  ];
+  homepage = "http://www.happstack.com/";
+  description = "hsp+jmacro support";
+  license = stdenv.lib.licenses.bsd3;
+}

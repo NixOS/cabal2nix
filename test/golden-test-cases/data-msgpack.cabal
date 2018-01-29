@@ -1,0 +1,114 @@
+name:                 data-msgpack
+version:              0.0.10
+synopsis:             A Haskell implementation of MessagePack
+homepage:             http://msgpack.org/
+license:              BSD3
+license-file:         LICENSE
+author:               Hideyuki Tanaka
+maintainer:           Iphigenia Df <iphydf@gmail.com>
+copyright:            Copyright (c) 2009-2016, Hideyuki Tanaka
+category:             Data
+stability:            Experimental
+cabal-version:        >= 1.10
+build-type:           Simple
+description:
+  A Haskell implementation of MessagePack <http://msgpack.org/>
+  .
+  This is a fork of msgpack-haskell <https://github.com/msgpack/msgpack-haskell>,
+  since the original author is unreachable. This fork incorporates a number of
+  bugfixes and is actively being developed.
+
+source-repository head
+  type:             git
+  location:         https://github.com/TokTok/hs-msgpack.git
+
+library
+  default-language: Haskell2010
+  hs-source-dirs:
+      src
+  ghc-options:
+      -Wall
+      -fno-warn-unused-imports
+  exposed-modules:
+      Data.MessagePack
+      Data.MessagePack.Option
+      Data.MessagePack.Result
+  other-modules:
+      Data.MessagePack.Assoc
+      Data.MessagePack.Class
+      Data.MessagePack.Generic
+      Data.MessagePack.Get
+      Data.MessagePack.Instances
+      Data.MessagePack.Object
+      Data.MessagePack.Put
+  build-depends:
+      base < 5
+    , QuickCheck
+    , binary >= 0.7.0.0
+    , bytestring
+    , containers
+    , data-binary-ieee754
+    , deepseq
+    , hashable
+    , text
+    , unordered-containers
+    , vector
+    , void
+
+executable msgpack-parser
+  default-language: Haskell2010
+  hs-source-dirs:
+      tools
+  ghc-options:
+      -Wall
+      -fno-warn-unused-imports
+  build-depends:
+      base < 5
+    , bytestring
+    , groom
+    , data-msgpack
+  main-is: msgpack-parser.hs
+
+test-suite testsuite
+  type: exitcode-stdio-1.0
+  default-language: Haskell2010
+  hs-source-dirs: test
+  main-is: testsuite.hs
+  other-modules:
+      Data.MessagePack.OptionSpec
+      Data.MessagePack.ResultSpec
+      Data.MessagePackSpec
+  ghc-options:
+      -Wall
+      -fno-warn-unused-imports
+  build-depends:
+      base < 5
+    , QuickCheck
+    , bytestring
+    , containers
+    , data-msgpack
+    , hashable
+    , hspec
+    , text
+    , unordered-containers
+    , vector
+    , void
+
+benchmark benchmark
+  type: exitcode-stdio-1.0
+  default-language: Haskell2010
+  hs-source-dirs: bench
+  main-is: benchmark.hs
+  other-modules:
+      Data.MessagePack.IntBench
+      Data.MessagePackBench
+  ghc-options:
+      -Wall
+      -fno-warn-unused-imports
+  build-depends:
+      base < 5
+    , QuickCheck
+    , bytestring
+    , criterion
+    , data-msgpack
+    , deepseq

@@ -1,0 +1,23 @@
+{ mkDerivation, base, bytestring, containers, dhall, fetchurl
+, neat-interpolation, optparse-generic, shell-escape, text
+, text-format, trifecta, vector
+}:
+mkDerivation {
+  pname = "dhall-bash";
+  version = "1.0.6";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base bytestring containers dhall neat-interpolation shell-escape
+    text text-format vector
+  ];
+  executableHaskellDepends = [
+    base bytestring dhall optparse-generic text trifecta
+  ];
+  description = "Compile Dhall to Bash";
+  license = stdenv.lib.licenses.bsd3;
+}

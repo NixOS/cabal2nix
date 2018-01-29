@@ -1,0 +1,19 @@
+{ mkDerivation, base, fetchurl, lens, linear, QuickCheck
+, semigroupoids, semigroups, vector
+}:
+mkDerivation {
+  pname = "active";
+  version = "0.2.0.13";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base lens linear semigroupoids semigroups vector
+  ];
+  testHaskellDepends = [
+    base lens linear QuickCheck semigroupoids semigroups vector
+  ];
+  description = "Abstractions for animation";
+  license = stdenv.lib.licenses.bsd3;
+}

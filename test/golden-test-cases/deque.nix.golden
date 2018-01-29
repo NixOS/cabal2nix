@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl }:
+mkDerivation {
+  pname = "deque";
+  version = "0.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  homepage = "https://github.com/nikita-volkov/deque";
+  description = "Double-ended queue";
+  license = stdenv.lib.licenses.mit;
+}

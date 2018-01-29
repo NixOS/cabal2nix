@@ -1,0 +1,14 @@
+{ mkDerivation, base, fetchurl, filepath, process }:
+mkDerivation {
+  pname = "funcmp";
+  version = "1.8";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [ base filepath process ];
+  homepage = "http://savannah.nongnu.org/projects/funcmp/";
+  description = "Functional MetaPost";
+  license = stdenv.lib.licenses.gpl3;
+}

@@ -1,0 +1,21 @@
+{ mkDerivation, attoparsec, attoparsec-binary, base, bytestring
+, criterion, fetchurl, hspec, HUnit, storable-record
+, unordered-containers, vector, vector-th-unbox
+}:
+mkDerivation {
+  pname = "netpbm";
+  version = "1.0.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    attoparsec attoparsec-binary base bytestring storable-record
+    unordered-containers vector vector-th-unbox
+  ];
+  testHaskellDepends = [ base bytestring hspec HUnit vector ];
+  benchmarkHaskellDepends = [ base bytestring criterion ];
+  homepage = "https://github.com/nh2/haskell-netpbm";
+  description = "Loading PBM, PGM, PPM image files";
+  license = stdenv.lib.licenses.mit;
+}

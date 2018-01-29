@@ -1,0 +1,18 @@
+{ mkDerivation, base, bytestring, fetchurl, network, network-simple
+, pipes, pipes-safe, transformers
+}:
+mkDerivation {
+  pname = "pipes-network";
+  version = "0.6.4.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base bytestring network network-simple pipes pipes-safe
+    transformers
+  ];
+  homepage = "https://github.com/k0001/pipes-network";
+  description = "Use network sockets together with the pipes library";
+  license = stdenv.lib.licenses.bsd3;
+}

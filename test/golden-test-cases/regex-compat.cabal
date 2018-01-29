@@ -1,0 +1,36 @@
+Name:                   regex-compat
+Version:                0.95.1
+Cabal-Version:          >=1.2
+License:                BSD3
+License-File:           LICENSE
+Copyright:              Copyright (c) 2006, Christopher Kuklewicz
+Author:                 Christopher Kuklewicz
+Maintainer:             TextRegexLazy@personal.mightyreason.com
+Stability:              Seems to work, passes a few tests
+Homepage:               http://sourceforge.net/projects/lazy-regex
+Package-URL:            http://darcs.haskell.org/packages/regex-unstable/regex-compat/
+Synopsis:               Replaces/Enhances Text.Regex
+Description:            One module layer over regex-posix to replace Text.Regex
+Category:               Text
+Tested-With:            GHC
+Build-Type:		Simple
+flag newBase
+  description: Choose base >= 4
+  default: True
+flag splitBase
+  description: Choose the new smaller, split-up base package.
+  default: True
+library
+  if flag(newBase)
+      Build-Depends:      base >= 4 && < 5, regex-base >= 0.93, regex-posix >= 0.95.1, array
+  else
+    if flag(splitBase)
+      Build-Depends:      base >= 3.0, regex-base >= 0.93, regex-posix >= 0.95.1, array
+    else
+      Build-Depends:      base < 3.0,  regex-base >= 0.93, regex-posix >= 0.95.1
+  Exposed-Modules:        Text.Regex
+  Buildable:              True
+  Extensions:             MultiParamTypeClasses, FunctionalDependencies
+  GHC-Options:            -Wall -O2
+  -- GHC-Options:            -Wall -Werror -O2
+  -- GHC-Options:            -Wall -ddump-minimal-imports

@@ -1,0 +1,35 @@
+name:                stripe-haskell
+version:             2.2.3
+synopsis:            Stripe API for Haskell
+license:             MIT
+license-file:        LICENSE
+author:              David Johnson, Jeremy Shaw
+maintainer:          djohnson.m@gmail.com
+copyright:           Copyright (c) 2016 David M. Johnson, Jeremy Shaw
+homepage:            https://github.com/dmjio/stripe
+bug-reports:         https://github.com/dmjio/stripe/issues
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+Description:         For usage information please consult README.md
+
+extra-source-files:
+   README.md
+
+library
+  hs-source-dirs:      src src-http-streams
+  build-depends:       base                >= 4   && < 5,
+                       stripe-core         >= 2.0 && < 2.3,
+                       stripe-http-streams >= 2.0 && < 2.3
+
+  default-language:    Haskell2010
+  exposed-modules:
+                       Web.Stripe
+                       Web.Stripe.Client.Stripe
+
+  ghc-options:        -Wall
+
+source-repository head
+  type:     git
+  location: git://github.com/dmjio/stripe.git
+  subdir: stripe

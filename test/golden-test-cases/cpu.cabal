@@ -1,0 +1,81 @@
+Name:                cpu
+Version:             0.1.2
+Description:         
+    Lowlevel cpu routines to get basic properties of the cpu platform, like endianness and architecture.
+License:             BSD3
+License-file:        LICENSE
+Copyright:           Vincent Hanquez <vincent@snarc.org>
+Author:              Vincent Hanquez <vincent@snarc.org>
+Maintainer:          Vincent Hanquez <vincent@snarc.org>
+Synopsis:            Cpu information and properties helpers.
+Build-Type:          Simple
+Category:            Data
+stability:           experimental
+Cabal-Version:       >=1.8
+Homepage:            http://github.com/vincenthz/hs-cpu
+data-files:          README.md
+Extra-source-files:  cbits/endian.c
+
+Flag executable
+  Description:       Build the executable
+  Default:           False
+
+Library
+  Build-Depends:     base >= 3 && < 5
+  Exposed-modules:   System.Cpuid
+                     System.Endian
+                     System.Arch
+  ghc-options:       -Wall
+
+  if impl(ghc < 7.8)
+    C-sources:   cbits/endian.c
+
+  if arch(i386)
+    Cpp-options: -DARCH_X86
+  if arch(x86_64)
+    Cpp-options: -DARCH_X86_64
+  if arch(ppc)
+    Cpp-options: -DARCH_PPC
+  if arch(ppc64)
+    Cpp-options: -DARCH_PPC64
+  if arch(sparc)
+    Cpp-options: -DARCH_SPARC
+  if arch(arm)
+    Cpp-options: -DARCH_ARM
+  if arch(mips)
+    Cpp-options: -DARCH_MIPS
+  if arch(sh)
+    Cpp-options: -DARCH_SH
+  if arch(ia64)
+    Cpp-options: -DARCH_IA64
+  if arch(s390)
+    Cpp-options: -DARCH_S390
+  if arch(alpha)
+    Cpp-options: -DARCH_ALPHA
+  if arch(hppa)
+    Cpp-options: -DARCH_HPPA
+  if arch(rs6000)
+    Cpp-options: -DARCH_RS6000
+  if arch(m68k)
+    Cpp-options: -DARCH_M68K
+  if arch(vax)
+    Cpp-options: -DARCH_VAX
+
+  if arch(i386) || arch(x86_64)
+    C-sources:   cbits/cpuid.c
+
+executable           cpuid
+  hs-source-dirs:    cpuid
+  Main-is:           Cpuid.hs
+  if flag(executable)
+    Buildable:       True
+    Build-Depends:   base >= 3 && < 5
+                   , cpu
+                   , bytestring
+  else
+    Buildable:       False
+  ghc-options:       -Wall -fno-warn-orphans -fno-warn-missing-signatures
+
+source-repository head
+  type: git
+  location: git://github.com/vincenthz/hs-cpu

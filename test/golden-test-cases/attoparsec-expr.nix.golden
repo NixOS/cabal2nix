@@ -1,0 +1,12 @@
+{ mkDerivation, attoparsec, base, fetchurl }:
+mkDerivation {
+  pname = "attoparsec-expr";
+  version = "0.1.1.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ attoparsec base ];
+  description = "Port of parsec's expression parser to attoparsec";
+  license = stdenv.lib.licenses.bsd3;
+}

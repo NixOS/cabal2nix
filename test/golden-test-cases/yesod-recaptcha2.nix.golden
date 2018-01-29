@@ -1,0 +1,17 @@
+{ mkDerivation, base, classy-prelude-yesod, fetchurl, http-conduit
+, yesod-auth
+}:
+mkDerivation {
+  pname = "yesod-recaptcha2";
+  version = "0.2.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base classy-prelude-yesod http-conduit yesod-auth
+  ];
+  homepage = "https://github.com/ncaq/yesod-recaptcha2#readme";
+  description = "yesod recaptcha2";
+  license = stdenv.lib.licenses.mit;
+}

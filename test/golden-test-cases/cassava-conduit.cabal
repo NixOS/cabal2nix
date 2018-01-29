@@ -1,0 +1,79 @@
+name:               cassava-conduit
+version:            0.4.0.1
+license:            BSD3
+license-file:       etc/LICENCE.md
+author:             Dom De Re
+maintainer:         Dom De Re
+copyright:          Copyright (C) 2014-2017 Dom De Re
+synopsis:           Conduit interface for cassava package
+category:           Data
+description:        Conduit interface for cassava package
+                    .
+                    PRs welcome.
+homepage:           https://github.com/domdere/cassava-conduit
+bug-reports:        https://github.com/domdere/cassava-conduit/issues
+cabal-version:      >= 1.18
+build-type:         Simple
+tested-with:        GHC == 7.10.1
+                ,   GHC == 7.10.2
+extra-source-files: README.md
+                ,   CHANGELOG.md
+
+source-repository       head
+    type:               git
+    location:           https://github.com/domdere/cassava-conduit
+
+flag                    small_base
+    description:        Choose the new, split-up base package.
+
+library
+    default-language:   Haskell2010
+
+    build-depends:      base < 5 && >= 4
+                    ,   containers
+                    ,   array
+                    ,   bifunctors              >= 4.2           && < 6
+                    ,   bytestring              == 0.10.*
+                    ,   cassava                 == 0.5.*
+                    ,   conduit                 == 1.2.*
+                    ,   conduit-extra           == 1.2.*
+                    ,   mtl                     == 2.2.*
+                    ,   text                    == 1.2.*
+
+    ghc-options:        -Wall
+
+    hs-source-dirs:     src
+
+    exposed-modules:    Data.Csv.Conduit
+
+    other-modules:      LocalPrelude
+
+    default-extensions: NoImplicitPrelude
+
+test-suite              quickcheck
+    default-language:   Haskell2010
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    hs-source-dirs:     quickcheck
+    other-modules:      Test.Arbitrary
+                        Test.Data.Csv.Conduit
+
+    build-depends:      base                >= 4 && < 5
+                      , bytestring          == 0.10.*
+                      , cassava             == 0.5.*
+                      , conduit             == 1.2.*
+                      , conduit-extra       == 1.2.*
+                      , QuickCheck          == 2.10.*
+                      , text                == 1.2.*
+                      , cassava-conduit
+
+benchmark               benchmarks
+    default-language:   Haskell2010
+    type:               exitcode-stdio-1.0
+    hs-source-dirs:     benchmarks
+    main-is:            Main.hs
+    ghc-options:        -O2 -rtsopts
+
+    build-depends:      base > 4 && <= 5
+                    ,   cassava-conduit
+                    ,   criterion >= 0.8

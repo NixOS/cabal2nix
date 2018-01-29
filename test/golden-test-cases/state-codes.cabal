@@ -1,0 +1,60 @@
+name:                state-codes
+version:             0.1.3
+synopsis:            ISO 3166-2:US state codes and i18n names
+description:         This package provides the ISO 3166-2:US state codes and i18n names
+homepage:            https://github.com/acamino/state-codes#README
+license:             MIT
+license-file:        LICENSE
+author:              Agustin Camino
+maintainer:          agustin.camino@gmail.com
+copyright:           2017 Agustin Camino
+category:            Data
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+
+flag dev
+  description:        Turn on development settings
+  manual:             True
+  default:            False
+
+
+source-repository head
+  type:      git
+  location:  https://github.com/acamino/state-codes.git
+
+
+library
+  hs-source-dirs:   src
+  build-depends:
+      base                 >= 4.7  && < 5
+    , text
+    , aeson
+    , shakespeare
+  if flag(dev)
+    ghc-options:       -Wall -Werror
+  else
+    ghc-options:       -O2 -Wall
+  other-modules:    Data.StateCodes.ISO31662US
+  exposed-modules:  Data.StateCodes
+  default-language: Haskell2010
+
+test-suite state-codes-test
+  main-is:          Spec.hs
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  other-modules:    Data.StateCodesSpec
+
+  build-depends:    base                   >= 4.7   && < 5.0
+                  , aeson
+                  , hspec
+                  , QuickCheck
+                  , state-codes
+                  , text
+
+  if flag(dev)
+    ghc-options:       -Wall -Werror
+  else
+    ghc-options:       -O2 -Wall
+  default-language: Haskell2010

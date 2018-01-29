@@ -1,0 +1,15 @@
+{ mkDerivation, base, deepseq, fetchurl, transformers }:
+mkDerivation {
+  pname = "explicit-exception";
+  version = "0.1.9";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base deepseq transformers ];
+  homepage = "http://www.haskell.org/haskellwiki/Exception";
+  description = "Exceptions which are explicit in the type signature";
+  license = stdenv.lib.licenses.bsd3;
+}

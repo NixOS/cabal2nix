@@ -1,0 +1,68 @@
+Name:                   regex-pcre
+-- Keep the Version below in sync with ./Text/Regex/PCRE.hs value getVersion_Text_Regex_PCRE :: Version
+Version:                0.94.4
+Cabal-Version:          >=1.2.3
+License:                BSD3
+License-File:           LICENSE
+Copyright:              Copyright (c) 2006, Christopher Kuklewicz
+Author:                 Christopher Kuklewicz
+Maintainer:             TextRegexLazy@personal.mightyreason.com
+Stability:              Seems to work, passes a few tests
+Homepage:               http://hackage.haskell.org/package/regex-pcre
+Package-URL:            http://code.haskell.org/regex-pcre/
+Synopsis:               Replaces/Enhances Text.Regex
+Description:            The PCRE backend to accompany regex-base, see www.pcre.org
+Category:               Text
+Tested-With:            GHC
+Build-Type:             Simple
+flag newBase
+  description: Choose base >= 4
+  default: True
+flag splitBase
+  description: Choose the new smaller, split-up base package.
+  default: True
+library
+  if flag(newBase)
+    Build-Depends: base >= 4 && < 5, regex-base >= 0.93, array, containers, bytestring
+    -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe in
+    --  ./Text/Regex/Posix/ByteString.hs and  ./Text/Regex/Posix/ByteString/Lazy.hs
+    CPP-Options: "-DSPLIT_BASE=1"
+    Extensions:    MultiParamTypeClasses, FunctionalDependencies, CPP, ForeignFunctionInterface, ScopedTypeVariables, GeneralizedNewtypeDeriving, FlexibleContexts, TypeSynonymInstances, FlexibleInstances
+  else
+    if flag(splitBase)
+      Build-Depends: base >= 3.0, regex-base >= 0.93, array, containers, bytestring
+      -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe in
+      --  ./Text/Regex/Posix/ByteString.hs and  ./Text/Regex/Posix/ByteString/Lazy.hs
+      CPP-Options: "-DSPLIT_BASE=1"
+      Extensions:    MultiParamTypeClasses, FunctionalDependencies, CPP, ForeignFunctionInterface, ScopedTypeVariables, GeneralizedNewtypeDeriving, FlexibleContexts, TypeSynonymInstances, FlexibleInstances
+    else
+      Build-Depends: base < 3.0, regex-base >= 0.93
+      Extensions:    MultiParamTypeClasses, FunctionalDependencies, CPP
+  Exposed-Modules:        Text.Regex.PCRE
+                          Text.Regex.PCRE.Wrap
+                          Text.Regex.PCRE.String
+                          Text.Regex.PCRE.Sequence
+                          Text.Regex.PCRE.ByteString
+                          Text.Regex.PCRE.ByteString.Lazy
+  Buildable:              True
+  -- Other-Modules:
+  -- HS-Source-Dirs:         "."
+  -- The CPP is for using -DSPLIT_BASE=1 to get Data.ByteString.Base|Unsafe
+  -- And the CPP is for using -DHAVE_PCRE_H to get the local posix library
+  -- GHC-Options:            -Wall -Werror -O2
+  GHC-Options:            -Wall -O2
+  -- GHC-Options:            -Wall -ddump-minimal-imports
+  -- GHC-Prof-Options:
+  -- Hugs-Options:
+  -- NHC-Options:
+  -- C-Sources:
+  -- Includes:
+  -- LD-Options:
+  -- Frameworks:
+  -- The only reason to NOT define -DHAVE_PCRE_H is if you are on
+  -- a plotform without a regex library but want to compile this package
+  -- anyway.  The resulting regex-posix will exist, but throw errors.
+  CC-Options:             -DHAVE_PCRE_H
+  Extra-Libraries:        pcre
+  --Include-Dirs:           /opt/local/include
+  --Extra-Lib-Dirs:         /opt/local/lib

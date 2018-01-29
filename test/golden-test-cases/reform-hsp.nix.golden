@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, hsp, hsx2hs, reform, text }:
+mkDerivation {
+  pname = "reform-hsp";
+  version = "0.2.7.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base hsp hsx2hs reform text ];
+  homepage = "http://www.happstack.com/";
+  description = "Add support for using HSP with Reform";
+  license = stdenv.lib.licenses.bsd3;
+}

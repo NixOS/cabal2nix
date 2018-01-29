@@ -1,0 +1,24 @@
+{ mkDerivation, aeson, base, bytestring, eventful-core
+, eventful-sql-common, eventful-test-helpers, fetchurl, hspec
+, HUnit, mtl, persistent, persistent-sqlite, text, uuid
+}:
+mkDerivation {
+  pname = "eventful-sqlite";
+  version = "0.2.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base bytestring eventful-core eventful-sql-common mtl
+    persistent text uuid
+  ];
+  testHaskellDepends = [
+    aeson base bytestring eventful-core eventful-sql-common
+    eventful-test-helpers hspec HUnit mtl persistent persistent-sqlite
+    text uuid
+  ];
+  homepage = "https://github.com/jdreaver/eventful#readme";
+  description = "SQLite implementations for eventful";
+  license = stdenv.lib.licenses.mit;
+}

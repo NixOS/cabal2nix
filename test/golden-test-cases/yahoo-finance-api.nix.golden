@@ -1,0 +1,23 @@
+{ mkDerivation, aeson, base, doctest, either, fetchurl, Glob, hspec
+, http-api-data, http-client, http-client-tls, mtl, safe, servant
+, servant-client, text, time, transformers, vector
+}:
+mkDerivation {
+  pname = "yahoo-finance-api";
+  version = "0.2.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base either http-api-data http-client mtl servant
+    servant-client text time transformers vector
+  ];
+  testHaskellDepends = [
+    base doctest either Glob hspec http-client http-client-tls mtl safe
+    servant servant-client
+  ];
+  homepage = "https://github.com/cdepillabout/yahoo-finance-api";
+  description = "Read quotes from Yahoo Finance API";
+  license = stdenv.lib.licenses.bsd3;
+}

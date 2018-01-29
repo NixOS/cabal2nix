@@ -1,0 +1,32 @@
+name:          fixed
+category:      Numeric
+version:       0.2.1.1
+license:       BSD3
+cabal-version: >= 1.8
+license-file:  LICENSE
+author:        Edward A. Kmett
+maintainer:    Edward A. Kmett <ekmett@gmail.com>
+stability:     provisional
+homepage:      http://github.com/ekmett/fixed
+bug-reports:   http://github.com/ekmett/fixed/issues
+copyright:     Copyright (C) 2014 Edward A. Kmett
+build-type:    Simple
+tested-with:   GHC == 7.8.3
+synopsis:      Signed 15.16 precision fixed point arithmetic
+description:   Signed 15.16 precision fixed point arithmetic
+
+extra-source-files:
+  .travis.yml
+  .gitignore
+  README.markdown
+  CHANGELOG.markdown
+
+source-repository head
+  type: git
+  location: git://github.com/ekmett/fixed.git
+
+library
+  hs-source-dirs: src
+  build-depends: base >= 4.7 && < 5
+  ghc-options: -Wall -fwarn-tabs -O2
+  exposed-modules: Numeric.Fixed

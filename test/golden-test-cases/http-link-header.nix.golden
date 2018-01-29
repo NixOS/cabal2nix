@@ -1,0 +1,25 @@
+{ mkDerivation, attoparsec, base, bytestring, bytestring-conversion
+, criterion, directory, errors, fetchurl, hspec, hspec-attoparsec
+, http-api-data, network-uri, QuickCheck, text, transformers
+}:
+mkDerivation {
+  pname = "http-link-header";
+  version = "1.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    attoparsec base bytestring bytestring-conversion errors
+    http-api-data network-uri text
+  ];
+  testHaskellDepends = [
+    base hspec hspec-attoparsec QuickCheck text
+  ];
+  benchmarkHaskellDepends = [
+    base criterion directory network-uri text transformers
+  ];
+  homepage = "https://github.com/myfreeweb/http-link-header";
+  description = "A parser and writer for the HTTP Link header as specified in RFC 5988 \"Web Linking\"";
+  license = stdenv.lib.licenses.publicDomain;
+}

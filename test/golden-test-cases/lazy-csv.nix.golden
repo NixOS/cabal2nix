@@ -1,0 +1,16 @@
+{ mkDerivation, base, bytestring, fetchurl }:
+mkDerivation {
+  pname = "lazy-csv";
+  version = "0.5.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base bytestring ];
+  executableHaskellDepends = [ base bytestring ];
+  homepage = "http://code.haskell.org/lazy-csv";
+  description = "Efficient lazy parsers for CSV (comma-separated values)";
+  license = stdenv.lib.licenses.bsd3;
+}

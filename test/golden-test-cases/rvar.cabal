@@ -1,0 +1,59 @@
+name:                   rvar
+version:                0.2.0.3
+stability:              stable
+
+cabal-version:          >= 1.6
+build-type:             Simple
+
+author:                 James Cook <mokus@deepbondi.net>
+maintainer:             James Cook <mokus@deepbondi.net>
+license:                PublicDomain
+homepage:               https://github.com/mokus0/random-fu
+
+category:               Math
+synopsis:               Random Variables
+description:            Random number generation based on modeling random 
+                        variables by an abstract type ('RVar') which can be
+                        composed and manipulated monadically and sampled in
+                        either monadic or \"pure\" styles.
+                        .
+                        The primary purpose of this library is to support 
+                        defining and sampling a wide variety of high quality
+                        random variables.  Quality is prioritized over speed,
+                        but performance is an important goal too.
+                        .
+                        In my testing, I have found it capable of speed 
+                        comparable to other Haskell libraries, but still
+                        a fair bit slower than straight C implementations of 
+                        the same algorithms.
+                        .
+                        Changes in 0.2.0.1:  Version bump for transformers
+                        dependency.
+
+tested-with:            GHC == 6.8.3, GHC == 6.10.4, GHC == 6.12.3,
+                        GHC == 7.0.4, GHC == 7.2.1, GHC == 7.2.2, 
+                        GHC == 7.4.1-rc1
+
+source-repository head
+  type:                 git
+  location:             https://github.com/mokus0/random-fu.git
+  subdir:               rvar
+
+Flag mtl2
+    Description:        mtl-2 has State, etc., as "type" rather than "newtype"
+
+Library
+  ghc-options:          -Wall
+  hs-source-dirs:       src
+  exposed-modules:      Data.RVar
+
+  if flag(mtl2)
+    build-depends:      mtl == 2.*
+    cpp-options:        -DMTL2
+  else
+    build-depends:      mtl == 1.1.*
+  
+  build-depends:        base            >= 3 && <5,
+                        MonadPrompt     == 1.0.*,
+                        random-source   == 0.3.*,
+                        transformers    >= 0.2 && < 0.6

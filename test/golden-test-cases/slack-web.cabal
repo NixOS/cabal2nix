@@ -1,0 +1,97 @@
+name: slack-web
+version: 0.2.0.1
+
+build-type: Simple
+cabal-version: >= 1.21
+
+license: MIT
+license-file: LICENSE.md
+
+copyright: 2017 Juan Pedro Villa Isaza
+author: Juan Pedro Villa Isaza <jpvillaisaza@gmail.com>
+maintainer: Juan Pedro Villa Isaza <jpvillaisaza@gmail.com>
+
+homepage: https://github.com/jpvillaisaza/slack-web
+bug-reports: https://github.com/jpvillaisaza/slack-web/issues
+
+synopsis: Bindings for the Slack web API
+description: Haskell bindings for the Slack web API.
+
+category: Web
+
+tested-with: GHC == 8.0.2
+
+extra-source-files:
+  CHANGELOG.md
+  README.md
+
+
+library
+  hs-source-dirs:
+      src
+  exposed-modules:
+      Web.Slack
+      Web.Slack.Api
+      Web.Slack.Auth
+      Web.Slack.Channel
+      Web.Slack.Chat
+      Web.Slack.Common
+      Web.Slack.Group
+      Web.Slack.Im
+      Web.Slack.MessageParser
+      Web.Slack.User
+  other-modules:
+      Web.Slack.Types
+      Web.Slack.Util
+  build-depends:
+      aeson >= 1.0 && < 1.3
+    , base >= 4.9 && < 4.11
+    , containers
+    , http-api-data >= 0.3 && < 0.4
+    , http-client >= 0.5 && < 0.6
+    , http-client-tls >= 0.3 && < 0.4
+    , servant >= 0.9 && < 0.12
+    , servant-client >= 0.9 && < 0.12
+    , text >= 1.2 && < 1.3
+    , transformers
+    , mtl
+    , time
+    , errors
+    , megaparsec
+  default-language:
+      Haskell2010
+  ghc-options:
+      -Wall
+
+-- the test suite doesn't depend on slack-web
+-- but rather has the src as an extra source directory.
+-- that allows us to refer to non exported modules from tests.
+test-suite tests
+  main-is:
+      Spec.hs
+  hs-source-dirs:
+      src, tests
+  type:
+      exitcode-stdio-1.0
+  other-modules:
+      Web.Slack.MessageParser
+      Web.Slack.MessageParserSpec
+      Web.Slack.Types
+  build-depends:
+      base >= 4.9 && < 4.11
+    , containers
+    , aeson
+    , errors
+    , hspec
+    , http-api-data
+    , text
+    , time
+    , megaparsec
+  default-language:
+    Haskell2010
+  ghc-options:
+       -Wall
+
+source-repository head
+  type: git
+  location: https://github.com/jpvillaisaza/slack-web

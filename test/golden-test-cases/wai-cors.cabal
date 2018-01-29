@@ -1,0 +1,168 @@
+-- ------------------------------------------------------ --
+-- Copyright © 2015-2017 Lars Kuhtz <lakuhtz@gmail.com>
+-- Copyright © 2014 AlephCloud Systems, Inc.
+-- ------------------------------------------------------ --
+
+Name: wai-cors
+Version: 0.2.6
+Synopsis: CORS for WAI
+
+Description:
+    This package provides an implemenation of
+    Cross-Origin resource sharing (CORS) for
+    <http://hackage.haskell.org/package/wai Wai>
+    that aims to be compliant with <http://www.w3.org/TR/cors>.
+
+Homepage: https://github.com/larskuhtz/wai-cors
+Bug-reports: https://github.com/larskuhtz/wai-cors/issues
+License: MIT
+License-file: LICENSE
+Author: Lars Kuhtz <lakuhtz@gmail.com>
+Maintainer: Lars Kuhtz <lakuhtz@gmail.com>
+Copyright:
+    (c) 2015-2017 Lars Kuhtz <lakuhtz@gmail.com>,
+    (c) 2014 AlephCloud Systems, Inc.
+Category: HTTP, Network, Web, Yesod
+Build-type: Simple
+Cabal-version: >= 1.14.0
+tested-with: GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.1, GHC == 8.2.2
+
+data-files:
+    README.md
+    CHANGELOG.md
+    test/index.html
+    test/phantomjs.js
+    examples/Scotty.hs
+    examples/Wai.hs
+    examples/ServantWai.hs
+
+source-repository head
+    type: git
+    location: https://github.com/larskuhtz/wai-cors
+    branch: master
+
+source-repository this
+    type: git
+    location: https://github.com/larskuhtz/wai-cors
+    tag: 0.2.6
+
+flag transformers-3
+    description: use transformers<0.3 (this is set automatically)
+    default: False
+    manual: False
+
+flag wai-1
+    description: use version wai<2 (this is set automatically)
+    default: False
+    manual: False
+
+flag wai-2
+    description: use version wai<3 (this is set automatically)
+    default: False
+    manual: False
+
+Library
+    default-language: Haskell2010
+    hs-source-dirs: src
+
+    exposed-modules:
+        Network.Wai.Middleware.Cors
+
+    build-depends:
+        attoparsec >= 0.10.4.0,
+        base == 4.*,
+        base-unicode-symbols >= 0.2.2.3,
+        bytestring >= 0.10.0.2,
+        case-insensitive >= 1.0.0.1,
+        http-types >= 0.8.0
+
+    if flag(wai-1) && !flag(wai-2)
+        build-depends:
+            wai < 2.0,
+            resourcet >= 0.4,
+            transformers < 0.4
+    if flag(wai-2)
+        build-depends:
+            wai < 3.0 && >= 2.0
+    if !flag(wai-1) && !flag(wai-2)
+        build-depends:
+            wai >= 3.0
+
+    if flag(transformers-3)
+        build-depends:
+            mtl >= 2.1,
+            transformers >= 0.3 && < 0.4,
+            transformers-compat >= 0.3
+    else
+        build-depends:
+            mtl >= 2.2,
+            transformers >= 0.4,
+            wai >= 2
+
+    ghc-options: -Wall
+
+Test-Suite phantomjs
+    type: exitcode-stdio-1.0
+    default-language: Haskell2010
+    main-is: PhantomJS.hs
+    hs-source-dirs: test
+
+    other-modules:
+        Server
+
+    build-depends:
+        base == 4.*,
+        base-unicode-symbols >= 0.2,
+        directory >= 1.2,
+        filepath >= 1.4,
+        http-types >= 0.8,
+        network >= 2.6,
+        process >= 1.2,
+        text >= 1.2,
+        wai-cors
+
+    if impl(ghc < 7.8)
+        build-depends:
+            filepath < 1.4.1.2
+
+    -- We only build the tests suite with the more recent versions of wai and ghc.
+    -- Cabal fails to resolves the old dependencies otherwise.
+    if flag (wai-1) || flag (wai-2) || impl(ghc < 7.10)
+        buildable: False
+    else
+        build-depends:
+            wai-websockets >= 3.0,
+            warp >= 3.0,
+            wai >= 3.0,
+            websockets >= 0.9
+
+    ghc-options: -threaded -Wall -with-rtsopts=-N
+
+Test-Suite unit-tests
+    type: exitcode-stdio-1.0
+    default-language: Haskell2010
+    main-is: UnitTests.hs
+    hs-source-dirs: test
+
+    build-depends:
+        base == 4.*,
+        base-unicode-symbols >= 0.2,
+        http-types >= 0.8,
+        tasty >= 0.10,
+        tasty-hunit >= 0.9,
+        wai-cors
+
+    -- We only build the tests suite with the more recent versions of wai and ghc.
+    -- Cabal fails to resolves the old dependencies otherwise.
+    if flag (wai-1) || flag (wai-2) || impl(ghc < 7.10)
+        buildable: False
+    else
+        build-depends:
+            wai-extra >= 3.0,
+            wai-websockets >= 3.0,
+            warp >= 3.0,
+            wai >= 3.0,
+            websockets >= 0.9
+
+    ghc-options: -threaded -Wall -with-rtsopts=-N
+

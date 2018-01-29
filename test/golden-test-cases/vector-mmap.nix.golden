@@ -1,0 +1,16 @@
+{ mkDerivation, base, fetchurl, mmap, primitive, QuickCheck
+, temporary, vector
+}:
+mkDerivation {
+  pname = "vector-mmap";
+  version = "0.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base mmap primitive vector ];
+  testHaskellDepends = [ base QuickCheck temporary vector ];
+  homepage = "http://github.com/pumpkin/vector-mmap";
+  description = "Memory map immutable and mutable vectors";
+  license = stdenv.lib.licenses.bsd3;
+}

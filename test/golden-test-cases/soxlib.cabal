@@ -1,0 +1,70 @@
+Name:             soxlib
+Version:          0.0.3
+License:          BSD3
+License-File:     LICENSE
+Author:           Henning Thielemann <haskell@henning-thielemann.de>
+Maintainer:       Henning Thielemann <haskell@henning-thielemann.de>
+Homepage:         http://www.haskell.org/haskellwiki/Sox
+Category:         Sound
+Synopsis:         Write, read, convert audio signals using libsox
+Description:
+   This is an FFI binding to @libsox@ of the Sox (Sound Exchanger) project
+   <http://sox.sourceforge.net/>.
+   It lets write, read and convert audio signals
+   in various formats, resolutions, and numbers of channels.
+   .
+   The package @sox@ has similar functionality
+   but calls the @sox@ shell command.
+Tested-With:       GHC==6.12.3, GHC==7.4.1
+Cabal-Version:     >=1.8
+Build-Type:        Simple
+Extra-Source-Files:
+  src/Sound/SoxLib/Template.h
+
+Source-Repository this
+  Tag:         0.0.3
+  Type:        darcs
+  Location:    http://hub.darcs.net/thielema/soxlib/
+
+Source-Repository head
+  Type:        darcs
+  Location:    http://hub.darcs.net/thielema/soxlib/
+
+Flag buildExamples
+  description: Build example executables
+  default:     False
+
+Library
+  Build-Depends:
+    sample-frame >=0.0.1 && <0.1,
+    storablevector >=0.2.10 && <0.3,
+    bytestring >=0.9 && <0.11,
+    explicit-exception >=0.1.3 && < 0.2,
+    -- that's the way to get compatibility between GHC 6.10 and 6.12
+    extensible-exceptions >=0.1.1 && <0.2,
+    transformers >=0.2 && <0.6,
+    containers >=0.1 && <0.6,
+    utility-ht >=0.0.5 && <0.1,
+    base >=4 && <5
+
+  GHC-Options: -Wall
+  Hs-Source-Dirs: src
+  Include-Dirs: src
+
+  Exposed-Modules:
+    Sound.SoxLib
+  Other-Modules:
+    Sound.SoxLib.FFI
+
+  PkgConfig-Depends: sox >=14.3 && <14.5
+
+Executable soxlib-demo
+  Main-Is: demo/Demo.hs
+  If flag(buildExamples)
+    Build-Depends:
+      soxlib,
+      storablevector,
+      base >=4 && <5
+  Else
+    Buildable: False
+  GHC-Options: -Wall

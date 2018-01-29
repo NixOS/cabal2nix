@@ -1,0 +1,43 @@
+Name:                   quickcheck-combinators
+Version:                0.0.2
+Author:                 Athan Clark <athan.clark@gmail.com>
+Maintainer:             Athan Clark <athan.clark@gmail.com>
+License:                BSD3
+License-File:           LICENSE
+Synopsis:               Simple type-level combinators for augmenting
+                        QuickCheck instances.
+Category:               Testing
+Description:
+  Simply wrap the type you want to generate (assuming it satisfies
+  all the necessary constraints) to refine the terms generated:
+  .
+  @
+    &#123;-&#35; LANGUAGE DataKinds &#35;-&#125;
+    &#13; 
+    import Data.Set (Set)
+    import Test.QuickCheck
+    import Test.QuickCheck.Instances
+    import GHC.TypeLits
+    &#13;
+    instance Arbitrary LinearEquation where
+    &#32;&#32;arbitrary = do
+    &#32;&#32;&#32;&#32;vars <- arbitrary :: Gen (AtLeast 3 Set String)
+    &#32;&#32;&#32;&#32;&#45;&#45; ...
+  @
+  .
+Cabal-Version:          >= 1.10
+Build-Type:             Simple
+Extra-Source-Files:     ChangeLog.md
+                        
+Library
+  Default-Language:     Haskell2010
+  HS-Source-Dirs:       src
+  GHC-Options:          -Wall
+  Exposed-Modules:      Test.QuickCheck.Combinators
+  Build-Depends:        base >= 4.8 && < 5
+                      , QuickCheck
+                      , unfoldable-restricted >= 0.0.1
+
+Source-Repository head
+  Type:                 git
+  Location:             git@github.com:athanclark/quickcheck-combinators.git

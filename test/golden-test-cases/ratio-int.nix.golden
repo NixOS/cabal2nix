@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl }:
+mkDerivation {
+  pname = "ratio-int";
+  version = "0.1.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  homepage = "https://github.com/RaphaelJ/ratio-int";
+  description = "Fast specialisation of Data.Ratio for Int.";
+  license = stdenv.lib.licenses.bsd3;
+}

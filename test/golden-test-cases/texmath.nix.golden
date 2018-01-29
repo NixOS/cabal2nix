@@ -1,0 +1,25 @@
+{ mkDerivation, base, bytestring, containers, directory, fetchurl
+, filepath, mtl, network-uri, pandoc-types, parsec, process, split
+, syb, temporary, text, utf8-string, xml
+}:
+mkDerivation {
+  pname = "texmath";
+  version = "0.10.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base containers mtl pandoc-types parsec syb xml
+  ];
+  executableHaskellDepends = [ network-uri ];
+  testHaskellDepends = [
+    base bytestring directory filepath process split temporary text
+    utf8-string xml
+  ];
+  homepage = "http://github.com/jgm/texmath";
+  description = "Conversion between formats used to represent mathematics";
+  license = "GPL";
+}

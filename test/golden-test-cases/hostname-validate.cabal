@@ -1,0 +1,20 @@
+name:                hostname-validate
+version:             1.0.0
+synopsis:            Validate hostnames e.g. localhost or foo.co.uk.
+description:         Validate hostnames e.g. localhost or foo.co.uk. See also RFC 1123, RFC 952, and RFC 1035.
+license:             BSD3
+license-file:        LICENSE
+author:              Chris Done
+maintainer:          chrisdone@gmail.com
+copyright:           2013 Chris Done
+category:            Network
+build-type:          Simple
+cabal-version:       >=1.8
+
+library
+  hs-source-dirs:    src/
+  exposed-modules:   Text.Hostname
+  build-depends:     base >= 4 && < 5,
+                     bytestring,
+                     attoparsec
+  ghc-options:       -O2

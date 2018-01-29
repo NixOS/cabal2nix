@@ -1,0 +1,25 @@
+{ mkDerivation, array, base, containers, directory
+, errorcall-eq-instance, fetchurl, filepath, hslogger, HUnit, mtl
+, network, old-locale, old-time, parsec, process, QuickCheck
+, random, regex-compat, testpack, time, unix
+}:
+mkDerivation {
+  pname = "MissingH";
+  version = "1.4.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    array base containers directory filepath hslogger HUnit mtl network
+    old-locale old-time parsec process random regex-compat time unix
+  ];
+  testHaskellDepends = [
+    array base containers directory errorcall-eq-instance filepath
+    hslogger HUnit mtl network old-locale old-time parsec process
+    QuickCheck random regex-compat testpack time unix
+  ];
+  homepage = "http://software.complete.org/missingh";
+  description = "Large utility library";
+  license = stdenv.lib.licenses.bsd3;
+}

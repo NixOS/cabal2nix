@@ -1,0 +1,54 @@
+Name:                bbdb
+Version:             0.8
+Synopsis:            Ability to read, write, and modify BBDB files
+Description:         BBDB (http://savannah.nongnu.org/projects/bbdb/) is a
+                     contact management utility that can be used with
+                     emacs.  It stores its data internally as a lisp
+                     expression.  This module parses the lisp and
+                     provides some convenience functions to get at and
+                     manipulate the data all from within Haskell.  See
+                     the hackage docs for usage and examples.
+
+Homepage:            https://github.com/henrylaxen/bbdb
+License:             GPL-3
+License-file:        LICENSE
+Author:              Henry Laxen
+Copyright:           Henry Laxen
+Maintainer:          nadine.and.henry@pobox.com
+Stability:           stable
+Bug-reports:         mailto:nadine.and.henry@pobox.com
+Category:            Database
+Build-type:          Simple
+Extra-source-files:  changelog.md
+                     LICENSE
+                     README.md
+                     test/sampleData.txt
+                     
+Cabal-version:       >=1.10
+
+Library
+  Exposed-modules:     Database.BBDB
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+  default-language:    Haskell2010
+  default-extensions:  FlexibleInstances,
+                       MultiParamTypeClasses,
+                       OverloadedStrings
+  Build-depends:
+                base >= 3 && <= 5,
+                parsec >= 3
+
+Test-Suite bbdb-tests
+  Type:                exitcode-stdio-1.0
+  Main-is:             Spec.hs
+  hs-source-dirs:      src,test
+  Other-modules:       Database.BBDB,
+                       BBDBSpec
+  default-language:    Haskell2010
+  default-extensions:  FlexibleInstances,
+                       MultiParamTypeClasses,
+                       OverloadedStrings
+  Build-depends:
+                base >= 3 && <= 5,
+                hspec,
+                parsec >= 3

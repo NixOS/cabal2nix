@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, gogol-core }:
+mkDerivation {
+  pname = "gogol-datastore";
+  version = "0.3.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base gogol-core ];
+  homepage = "https://github.com/brendanhay/gogol";
+  description = "Google Cloud Datastore SDK";
+  license = "unknown";
+}

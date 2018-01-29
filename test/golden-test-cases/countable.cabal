@@ -1,0 +1,78 @@
+cabal-version:  >=1.14
+name:           countable
+version:        1.0
+x-follows-version-policy:
+license:        BSD3
+license-file:   LICENSE
+copyright:      Ashley Yakeley <ashley@semantic.org>
+author:         Ashley Yakeley <ashley@semantic.org>
+maintainer:     Ashley Yakeley <ashley@semantic.org>
+homepage:       https://github.com/AshleyYakeley/countable
+bug-reports:    https://github.com/AshleyYakeley/countable/issues
+synopsis:       Countable, Searchable, Finite, Empty classes
+description:
+    * @class Countable@, for countable types
+    .
+    * @class AtLeastOneCountable@, for countable types that have at least one value
+    .
+    * @class InfiniteCountable@, for infinite countable types
+    .
+    * @class Searchable@, for types that can be searched over. This turns out to include some infinite types, see <http://math.andrej.com/2007/09/28/seemingly-impossible-functional-programs/>.
+    .
+    * @class Finite@, for finite types
+    .
+    * @class Empty@, for empty types
+    .
+    * @data Nothing@, an empty type
+    .
+    Some orphan instances:
+    .
+    * @(Searchable a,Eq b) => Eq (a -> b)@ / /
+    .
+    * @(Finite t) => Foldable ((->) t)@ / /
+    .
+    * @(Finite a) => Traversable ((->) a)@ / /
+    .
+    * @(Show a,Finite a,Show b) => Show (a -> b)@ / /
+category:       Data
+build-type:     Simple
+
+library
+    hs-source-dirs: src
+    default-language: Haskell2010
+    default-extensions:
+        ExistentialQuantification
+        EmptyCase
+    build-depends:
+        base >= 4.8 && < 5
+    exposed-modules:
+        Data.Expression
+        Data.Searchable
+        Data.Countable
+        Data.Empty
+    ghc-options: -Wall
+
+test-suite tests
+    type: exitcode-stdio-1.0
+    hs-source-dirs: test
+    default-language: Haskell2010
+    default-extensions:
+        ExistentialQuantification
+        EmptyCase
+        GeneralizedNewtypeDeriving
+        ScopedTypeVariables
+    build-depends:
+        base >= 4.8 && < 5,
+        countable,
+        bytestring,
+        silently,
+        tasty,
+        tasty-hunit,
+        tasty-golden
+    main-is: Count.hs
+    other-modules:
+        Show
+        TypeName
+        Three
+        Golden
+    ghc-options: -Wall

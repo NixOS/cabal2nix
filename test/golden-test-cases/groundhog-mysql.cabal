@@ -1,0 +1,32 @@
+name:            groundhog-mysql
+version:         0.8
+license:         BSD3
+license-file:    LICENSE
+author:          Boris Lykah <lykahb@gmail.com>
+maintainer:      Boris Lykah <lykahb@gmail.com>
+synopsis:        MySQL backend for the groundhog library.
+description:     This package uses mysql-simple and mysql
+category:        Database
+stability:       Stable
+cabal-version:   >= 1.6
+build-type:      Simple
+
+extra-source-files:
+    changelog
+
+library
+    build-depends:   base                     >= 4         && < 5
+                   , mysql-simple             >= 0.2.2.3   && < 0.5
+                   , mysql                    >= 0.1.1.3   && < 0.2
+                   , bytestring               >= 0.9
+                   , transformers             >= 0.2.1     && < 0.6
+                   , groundhog                >= 0.8       && < 0.9
+                   , monad-control            >= 0.3       && < 1.1
+                   , monad-logger             >= 0.3       && < 0.4
+                   , containers               >= 0.2
+                   , text                     >= 0.8
+                   , resource-pool            >= 0.2.1
+                   , time                     >= 1.1
+                   , resourcet                >= 1.1.2
+    exposed-modules: Database.Groundhog.MySQL
+    ghc-options:     -Wall -fno-warn-unused-do-bind

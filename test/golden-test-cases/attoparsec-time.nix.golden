@@ -1,0 +1,22 @@
+{ mkDerivation, attoparsec, base, base-prelude, bytestring, Cabal
+, cabal-doctest, directory, doctest, fetchurl, filepath, scientific
+, text, time
+}:
+mkDerivation {
+  pname = "attoparsec-time";
+  version = "1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [
+    attoparsec base base-prelude bytestring scientific text time
+  ];
+  testHaskellDepends = [
+    base base-prelude directory doctest filepath
+  ];
+  homepage = "https://github.com/nikita-volkov/attoparsec-time";
+  description = "Attoparsec parsers of time";
+  license = stdenv.lib.licenses.mit;
+}

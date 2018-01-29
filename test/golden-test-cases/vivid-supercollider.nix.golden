@@ -1,0 +1,20 @@
+{ mkDerivation, base, binary, bytestring, cereal, fetchurl
+, microspec, QuickCheck, split, utf8-string, vivid-osc
+}:
+mkDerivation {
+  pname = "vivid-supercollider";
+  version = "0.3.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base binary bytestring cereal split utf8-string vivid-osc
+  ];
+  testHaskellDepends = [
+    base binary bytestring cereal microspec QuickCheck utf8-string
+    vivid-osc
+  ];
+  description = "Implementation of SuperCollider server specifications";
+  license = "GPL";
+}

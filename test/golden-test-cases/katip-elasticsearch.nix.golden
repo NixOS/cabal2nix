@@ -1,0 +1,33 @@
+{ mkDerivation, aeson, async, base, bloodhound, bytestring
+, containers, criterion, deepseq, enclosed-exceptions, exceptions
+, fetchurl, http-client, http-types, katip, lens, lens-aeson
+, quickcheck-instances, random, retry, scientific, stm, stm-chans
+, tagged, tasty, tasty-hunit, tasty-quickcheck, text, time
+, transformers, unordered-containers, uuid, vector
+}:
+mkDerivation {
+  pname = "katip-elasticsearch";
+  version = "0.4.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson async base bloodhound bytestring enclosed-exceptions
+    exceptions http-client http-types katip retry scientific stm
+    stm-chans text time transformers unordered-containers uuid
+  ];
+  testHaskellDepends = [
+    aeson base bloodhound bytestring containers http-client http-types
+    katip lens lens-aeson quickcheck-instances scientific stm tagged
+    tasty tasty-hunit tasty-quickcheck text time transformers
+    unordered-containers vector
+  ];
+  benchmarkHaskellDepends = [
+    aeson base bloodhound criterion deepseq random text
+    unordered-containers uuid
+  ];
+  homepage = "https://github.com/Soostone/katip";
+  description = "ElasticSearch scribe for the Katip logging framework";
+  license = stdenv.lib.licenses.bsd3;
+}

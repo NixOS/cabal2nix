@@ -1,0 +1,16 @@
+{ mkDerivation, base, fetchurl, transformers
+, writer-cps-transformers
+}:
+mkDerivation {
+  pname = "transformers-lift";
+  version = "0.2.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base transformers writer-cps-transformers
+  ];
+  description = "Ad-hoc type classes for lifting";
+  license = stdenv.lib.licenses.bsd3;
+}

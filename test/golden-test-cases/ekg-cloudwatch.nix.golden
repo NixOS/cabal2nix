@@ -1,0 +1,19 @@
+{ mkDerivation, amazonka, amazonka-cloudwatch, amazonka-core, base
+, bytestring, ekg-core, fetchurl, lens, resourcet, semigroups, text
+, time, unordered-containers
+}:
+mkDerivation {
+  pname = "ekg-cloudwatch";
+  version = "0.0.1.6";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    amazonka amazonka-cloudwatch amazonka-core base bytestring ekg-core
+    lens resourcet semigroups text time unordered-containers
+  ];
+  homepage = "https://github.com/sellerlabs/ekg-cloudwatch#readme";
+  description = "An ekg backend for Amazon Cloudwatch";
+  license = stdenv.lib.licenses.bsd3;
+}

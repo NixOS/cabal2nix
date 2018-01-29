@@ -1,0 +1,118 @@
+name:                aeson-diff
+version:             1.1.0.4
+synopsis:            Extract and apply patches to JSON documents.
+description:
+  .
+  This is a small library for working with changes to JSON documents. It
+  includes a library and two command-line executables in the style of the
+  diff(1) and patch(1) commands available on many systems.
+  .
+homepage:            https://github.com/thsutton/aeson-diff
+license:             BSD3
+license-file:        LICENSE
+author:              Thomas Sutton
+maintainer:          me@thomas-sutton.id.au
+copyright:           (c) 2015 Thomas Sutton and others.
+category:            JSON, Web, Algorithms
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+                   , CHANGELOG.md
+                   , stack.yaml
+                   , test/data/rfc6902/*.json
+                   , test/data/rfc6902/*.txt
+                   , test/data/cases/*.json
+                   , test/data/cases/*.txt
+
+source-repository     HEAD
+  type: git
+  location: https://github.com/thsutton/aeson-diff
+
+library
+  default-language:    Haskell2010
+  hs-source-dirs:      lib
+  exposed-modules:     Data.Aeson.Diff
+                     , Data.Aeson.Patch
+                     , Data.Aeson.Pointer
+  build-depends:       base >=4.5 && <4.11
+                     , aeson
+                     , bytestring >= 0.10
+                     , edit-distance-vector
+                     , hashable
+                     , mtl
+                     , scientific
+                     , text
+                     , unordered-containers
+                     , vector
+
+executable             json-diff
+  default-language:    Haskell2010
+  hs-source-dirs:      src
+  main-is:             diff.hs
+  build-depends:       base
+                     , aeson
+                     , aeson-diff
+                     , bytestring
+                     , optparse-applicative
+                     , text
+
+executable             json-patch
+  default-language:    Haskell2010
+  hs-source-dirs:      src
+  main-is:             patch.hs
+  build-depends:       base
+                     , aeson
+                     , aeson-diff
+                     , bytestring
+                     , optparse-applicative
+
+test-suite             properties
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             properties.hs
+  build-depends:       base
+                     , QuickCheck
+                     , aeson
+                     , aeson-diff
+                     , bytestring
+                     , quickcheck-instances
+                     , text
+                     , unordered-containers
+                     , vector
+
+test-suite             examples
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             examples.hs
+  build-depends:       base
+                     , Glob
+                     , QuickCheck
+                     , aeson
+                     , aeson-diff
+                     , bytestring
+                     , directory
+                     , filepath
+                     , quickcheck-instances
+                     , text
+                     , unordered-containers
+                     , vector
+
+test-suite doctests
+  default-language:    Haskell2010
+  hs-source-dirs:      test
+  type:                exitcode-stdio-1.0
+  ghc-options:         -threaded
+  main-is:             doctests.hs
+  build-depends:       base
+                     , QuickCheck
+                     , doctest >= 0.9
+
+test-suite             hlint-check
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             hlint-check.hs
+  build-depends:       base
+                     , hlint

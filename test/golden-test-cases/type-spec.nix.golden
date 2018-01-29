@@ -1,0 +1,14 @@
+{ mkDerivation, base, fetchurl, pretty }:
+mkDerivation {
+  pname = "type-spec";
+  version = "0.3.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base pretty ];
+  testHaskellDepends = [ base ];
+  homepage = "https://github.com/sheyll/type-spec#readme";
+  description = "Type Level Specification by Example";
+  license = stdenv.lib.licenses.bsd3;
+}

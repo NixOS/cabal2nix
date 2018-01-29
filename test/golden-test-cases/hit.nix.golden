@@ -1,0 +1,28 @@
+{ mkDerivation, attoparsec, base, byteable, bytedump, bytestring
+, containers, cryptohash, fetchurl, hourglass, mtl, parsec
+, patience, random, system-fileio, system-filepath, tasty
+, tasty-quickcheck, unix-compat, utf8-string, vector, zlib
+, zlib-bindings
+}:
+mkDerivation {
+  pname = "hit";
+  version = "0.6.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [
+    attoparsec base byteable bytestring containers cryptohash hourglass
+    mtl parsec patience random system-fileio system-filepath
+    unix-compat utf8-string vector zlib zlib-bindings
+  ];
+  testHaskellDepends = [
+    base bytedump bytestring hourglass tasty tasty-quickcheck
+  ];
+  homepage = "http://github.com/vincenthz/hit";
+  description = "Git operations in haskell";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,15 @@
+Name:		prettyclass
+Version:	1.0.0.0
+License:	BSD3
+Author:		Lennart Augustsson
+Maintainer:	Lennart Augustsson
+Category:	Text
+Synopsis:	Pretty printing class similar to Show.
+Stability:      experimental
+Build-type:	Simple
+Description:	Pretty printing class similar to Show, based on the HughesPJ
+                pretty printing library.  Provides the pretty printing class
+                and instances for the Prelude types.
+Hs-Source-Dirs: src
+Build-Depends:	base, pretty
+Exposed-modules:	Text.PrettyPrint.HughesPJClass

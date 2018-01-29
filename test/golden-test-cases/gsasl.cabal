@@ -1,0 +1,38 @@
+name: gsasl
+version: 0.3.6
+license: GPL-3
+license-file: license.txt
+author: John Millikin <john@john-millikin.com>
+maintainer: John Millikin <john@john-millikin.com>
+build-type: Simple
+cabal-version: >= 1.6
+category: Network
+stability: experimental
+homepage: https://john-millikin.com/software/haskell-gsasl/
+bug-reports: mailto:jmillikin@gmail.com
+
+synopsis: Bindings for GNU libgsasl
+description:
+
+source-repository head
+  type: git
+  location: https://john-millikin.com/code/haskell-gsasl/
+
+source-repository this
+  type: git
+  location: https://john-millikin.com/code/haskell-gsasl/
+  tag: haskell-gsasl_0.3.6
+
+library
+  ghc-options: -Wall -O2
+  hs-source-dirs: lib
+  c-sources: cbits/hsgsasl-shim.c
+
+  build-depends:
+      base >= 4.0 && < 5.0
+    , transformers >= 0.2
+    , bytestring >= 0.9
+
+  pkgconfig-depends: libgsasl >= 1.1
+
+  exposed-modules: Network.Protocol.SASL.GNU

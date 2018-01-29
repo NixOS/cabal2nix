@@ -1,0 +1,22 @@
+{ mkDerivation, base, blaze-html, bytestring, containers
+, data-default, deepseq, fetchurl, mtl, syb, text, uniplate
+, xss-sanitize
+}:
+mkDerivation {
+  pname = "cheapskate";
+  version = "0.1.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base blaze-html containers data-default deepseq mtl syb text
+    uniplate xss-sanitize
+  ];
+  executableHaskellDepends = [ base blaze-html bytestring text ];
+  homepage = "http://github.com/jgm/cheapskate";
+  description = "Experimental markdown processor";
+  license = stdenv.lib.licenses.bsd3;
+}

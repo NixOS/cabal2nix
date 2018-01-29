@@ -1,0 +1,19 @@
+{ mkDerivation, base, directory, enclosed-exceptions, fetchurl
+, http-types, lifted-base, process, temporary, text, wai
+, yesod-core
+}:
+mkDerivation {
+  pname = "yesod-gitrepo";
+  version = "0.2.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base directory enclosed-exceptions http-types lifted-base process
+    temporary text wai yesod-core
+  ];
+  homepage = "https://github.com/snoyberg/yesod-gitrepo";
+  description = "Host content provided by a Git repo";
+  license = stdenv.lib.licenses.mit;
+}

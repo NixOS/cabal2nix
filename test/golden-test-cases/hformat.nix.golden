@@ -1,0 +1,18 @@
+{ mkDerivation, ansi-terminal, base, base-unicode-symbols, fetchurl
+, hspec, text
+}:
+mkDerivation {
+  pname = "hformat";
+  version = "0.3.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    ansi-terminal base base-unicode-symbols text
+  ];
+  testHaskellDepends = [ base base-unicode-symbols hspec text ];
+  homepage = "http://github.com/mvoidex/hformat";
+  description = "Simple Haskell formatting";
+  license = stdenv.lib.licenses.bsd3;
+}

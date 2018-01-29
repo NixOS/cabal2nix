@@ -1,0 +1,31 @@
+Name:                   harp
+Version:                0.4.3
+License:                BSD3
+License-File:           LICENSE
+Author:                 Niklas Broberg
+Maintainer:             David Fox <dsf@seereason.com>
+
+Stability:              Experimental
+Category:               Language
+Synopsis:               HaRP allows pattern-matching with regular expressions
+Description:            HaRP, or Haskell Regular Patterns, is a Haskell extension
+                        that extends the normal pattern matching facility with
+                        the power of regular expressions. This expressive power
+                        is highly useful in a wide range of areas, including text parsing
+                        and XML processing. Regular expression patterns in HaRP work over
+                        ordinary Haskell lists ([]) of arbitrary type. We have implemented
+                        HaRP as a pre-processor to ordinary Haskell.
+                        .
+                        For details on usage, please see the website.
+Homepage:               https://github.com/seereason/harp
+Build-Type:             Simple
+tested-with:            GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.2, GHC==8.0.1
+Cabal-Version:           >= 1.8
+
+source-repository head
+    type:     git
+    location: https://github.com/seereason/harp.git
+
+Library
+    Build-Depends:          base < 4.11
+    Exposed-modules:        Harp.Match

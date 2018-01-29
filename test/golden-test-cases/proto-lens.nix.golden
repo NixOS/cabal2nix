@@ -1,0 +1,19 @@
+{ mkDerivation, attoparsec, base, bytestring, containers
+, data-default-class, fetchurl, lens-family, parsec, pretty, text
+, transformers, void
+}:
+mkDerivation {
+  pname = "proto-lens";
+  version = "0.2.2.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    attoparsec base bytestring containers data-default-class
+    lens-family parsec pretty text transformers void
+  ];
+  homepage = "https://github.com/google/proto-lens";
+  description = "A lens-based implementation of protocol buffers in Haskell";
+  license = stdenv.lib.licenses.bsd3;
+}

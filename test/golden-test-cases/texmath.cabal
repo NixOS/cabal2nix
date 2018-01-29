@@ -1,0 +1,156 @@
+Name:                texmath
+Version:             0.10.1
+Cabal-Version:       >= 1.10
+Build-type:          Simple
+Synopsis:            Conversion between formats used to represent mathematics.
+Description:         The texmath library provides functions to read and
+                     write TeX math, presentation MathML, and OMML (Office
+                     Math Markup Language, used in Microsoft Office).
+                     Support is also included for converting math formats
+                     to Gnu eqn and to pandoc's native format (allowing
+                     conversion, via pandoc, to a variety of different
+                     markup formats).  The TeX reader supports basic LaTeX
+                     and AMS extensions, and it can parse and apply LaTeX
+                     macros.  (See <http://johnmacfarlane.net/texmath here>
+                     for a live demo of bidirectional conversion between LaTeX
+                     and MathML.)
+                     .
+                     The package also includes several utility modules which
+                     may be useful for anyone looking to manipulate either
+                     TeX math or MathML.  For example, a copy of the MathML
+                     operator dictionary is included.
+                     .
+                     Use the @executable@ flag to install a standalone
+                     executable, @texmath@, that by default reads a LaTeX
+                     formula from @stdin@ and writes MathML to @stdout@.
+                     With flags all the functionality exposed by
+                     'Text.TeXMath' can be accessed through this executable.
+                     (Use the @--help@ flag for a description of all
+                     functionality)
+                     .
+                     The @texmath@ executable can also be used as a CGI
+                     script, when renamed as @texmath-cgi@.
+                     It will expect query parameters for @from@, @to@,
+                     @input@, and optionally @inline@, and return a JSON
+                     object with either @error@ and a message or
+                     @success@ and the converted result.
+
+Category:            Text
+Stability:           Experimental
+License:             GPL
+License-File:        LICENSE
+Author:              John MacFarlane, Matthew Pickering
+Maintainer:          jgm@berkeley.edu
+Homepage:            http://github.com/jgm/texmath
+Extra-source-files:  README.markdown
+                     changelog
+                     man/texmath.1.md
+                     man/Makefile
+                     man/man1/texmath.1
+                     cgi/texmath.html
+                     tests/src/*.mml
+                     tests/src/*.tex
+                     tests/src/*.omml
+                     tests/readers/mml/*.native
+                     tests/readers/mml/*.error
+                     tests/readers/tex/*.native
+                     tests/readers/omml/*.native
+                     tests/writers/*.mml
+                     tests/writers/*.tex
+                     tests/writers/*.omml
+                     tests/writers/*.eqn
+                     lib/totexmath/unicodetotex.hs
+                     lib/totexmath/unimathsymbols.txt
+                     lib/totexmath/Makefile
+                     lib/mmldict/unicode.xml
+                     lib/mmldict/operatorDictionary.xsl
+                     lib/mmldict/generateMMLDict.hs
+                     lib/mmldict/Makefile
+                     lib/tounicode/mkUnicodeTable.hs
+                     lib/tounicode/UnicodeData.txt
+                     lib/tounicode/Makefile
+                     lib/toascii/Data.txt
+                     lib/toascii/generate-cbits.hs
+                     lib/toascii/Makefile
+
+Source-repository head
+  type:              git
+  location:          git://github.com/jgm/texmath.git
+
+Flag executable
+  description:       Compile test executable.
+  default:           False
+
+Flag network-uri
+  description: Get Network.URI from the network-uri package
+  default: True
+
+Library
+    Build-depends:       xml, parsec >= 3, containers,
+                         pandoc-types >= 1.12.3.3 && < 1.18, mtl
+    if impl(ghc >= 6.10)
+      Build-depends: base >= 4.5 && < 5, syb
+    else
+      Build-depends: base >= 3 && < 4
+    Exposed-modules:     Text.TeXMath,
+                         Text.TeXMath.Types,
+                         Text.TeXMath.TeX,
+                         Text.TeXMath.Readers.TeX,
+                         Text.TeXMath.Readers.TeX.Macros,
+                         Text.TeXMath.Readers.MathML,
+                         Text.TeXMath.Readers.MathML.MMLDict,
+                         Text.TeXMath.Readers.MathML.EntityMap,
+                         Text.TeXMath.Readers.OMML,
+                         Text.TeXMath.Writers.MathML,
+                         Text.TeXMath.Writers.OMML,
+                         Text.TeXMath.Writers.Pandoc,
+                         Text.TeXMath.Writers.TeX,
+                         Text.TeXMath.Writers.Eqn,
+                         Text.TeXMath.Unicode.ToUnicode,
+                         Text.TeXMath.Unicode.ToTeX,
+                         Text.TeXMath.Unicode.ToASCII,
+                         Text.TeXMath.Unicode.Fonts
+    Other-modules:       Text.TeXMath.Compat,
+                         Text.TeXMath.Shared,
+                         Paths_texmath
+    if impl(ghc >= 6.12)
+      Ghc-Options:     -Wall -fno-warn-unused-do-bind
+    else
+      Ghc-Options:     -Wall
+    Ghc-Prof-Options:  -fprof-auto-exported
+    Default-Language:    Haskell2010
+    Hs-Source-Dirs:    src
+    c-sources: cbits/valToASCII.c
+            cbits/keyToASCII.c
+
+Executable texmath
+    Default-Language:    Haskell2010
+    Main-is:             texmath.hs
+    Other-Modules:       Paths_texmath
+    Hs-Source-Dirs:      extra
+    if impl(ghc >= 6.12)
+      Ghc-Options:     -Wall -fno-warn-unused-do-bind
+    else
+      Ghc-Options:     -Wall
+    Ghc-Prof-Options:  -fprof-auto-exported
+    if flag(executable)
+      Buildable:         True
+      Build-Depends:     base >= 4.5 && < 5, texmath, xml,
+                         pandoc-types >= 1.12.3.3 && < 1.18,
+                         split, aeson, bytestring, text
+    else
+      Buildable:         False
+    if flag(network-uri)
+      Build-Depends:     network-uri >= 2.6
+    else
+      Build-Depends:     network < 2.6
+
+Test-Suite test-texmath
+    Type:                exitcode-stdio-1.0
+    Main-Is:             test-texmath.hs
+    Hs-Source-Dirs:      tests
+    Build-Depends:       base >= 4.2 && < 5, process, directory, filepath,
+                         texmath, xml, utf8-string, bytestring, process,
+                         temporary, text, split
+    Default-Language:    Haskell2010
+    Ghc-Options:         -Wall

@@ -1,0 +1,24 @@
+name:                simple-smt
+version:             0.7.1
+synopsis:            A simple way to interact with an SMT solver process.
+description:         A simple way to interact with an SMT solver process.
+license:             BSD3
+license-file:        LICENSE
+author:              Iavor S. Diatchki
+maintainer:          iavor.diatchki@gmail.com
+category:            Math
+build-type:          Simple
+cabal-version:       >=1.10
+
+extra-source-files:  CHANGES
+
+library
+  exposed-modules:     SimpleSMT
+  other-extensions:    Safe, RecordWildCards
+  build-depends:       base >=4.7 && <10,
+                       process
+  default-language:    Haskell2010
+
+source-repository head
+  type: git
+  location: https://github.com/yav/simple-smt

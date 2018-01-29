@@ -1,0 +1,26 @@
+{ mkDerivation, base, binary, bytestring, containers, directory
+, fetchurl, filepath, FontyFruity, JuicyPixels, lens, linear, mtl
+, optparse-applicative, primitive, Rasterific, scientific, svg-tree
+, text, transformers, vector
+}:
+mkDerivation {
+  pname = "rasterific-svg";
+  version = "0.3.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base binary bytestring containers directory filepath FontyFruity
+    JuicyPixels lens linear mtl primitive Rasterific scientific
+    svg-tree text transformers vector
+  ];
+  executableHaskellDepends = [
+    base bytestring directory filepath FontyFruity JuicyPixels
+    optparse-applicative Rasterific svg-tree
+  ];
+  description = "SVG renderer based on Rasterific";
+  license = stdenv.lib.licenses.bsd3;
+}

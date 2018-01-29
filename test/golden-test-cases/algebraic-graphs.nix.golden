@@ -1,0 +1,17 @@
+{ mkDerivation, array, base, containers, criterion, extra, fetchurl
+, QuickCheck
+}:
+mkDerivation {
+  pname = "algebraic-graphs";
+  version = "0.0.5";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ array base containers ];
+  testHaskellDepends = [ base containers extra QuickCheck ];
+  benchmarkHaskellDepends = [ base containers criterion ];
+  homepage = "https://github.com/snowleopard/alga";
+  description = "A library for algebraic graph construction and transformation";
+  license = stdenv.lib.licenses.mit;
+}

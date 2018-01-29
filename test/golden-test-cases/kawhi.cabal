@@ -1,0 +1,66 @@
+name: kawhi
+version: 0.3.0
+synopsis: stats.NBA.com library
+description: Functions and types for interacting with stats.NBA.com
+homepage: https://github.com/thunky-monk/kawhi
+license: MIT
+license-file: LICENSE
+author: Aaron Taylor
+maintainer: aaron@hamsterdam.co
+category: API
+build-type: Simple
+cabal-version: >=1.10
+extra-source-files:
+  README.md
+  guide.md
+  stack.yaml
+  changelog.md
+
+library
+  hs-source-dirs: library
+  exposed-modules:
+    Control.Monad.Http
+    Data.NBA.Stats
+  other-modules:
+  build-depends:
+    base >= 4.8 && < 5,
+    aeson >= 1.0,
+    bytestring >= 0.10,
+    exceptions >= 0.8,
+    http-conduit >= 2.2,
+    http-client >= 0.5.1,
+    http-types >= 0.9,
+    mtl >= 2.2,
+    safe >= 0.3,
+    scientific >= 0.3,
+    text >= 1.2
+  ghc-options: -Wall
+  default-language: Haskell2010
+
+test-suite tests
+  type: exitcode-stdio-1.0
+  hs-source-dirs: tests
+  main-is: Tests.hs
+  other-modules: Data.NBA.Stats.Tests
+  build-depends:
+    base >= 4.8 && < 5,
+    kawhi >= 0.0,
+    aeson >= 1.0,
+    bytestring >= 0.10,
+    exceptions >= 0.8,
+    http-client >= 0.4.30,
+    http-types >= 0.9,
+    mtl >= 2.2,
+    scientific >= 0.3,
+    smallcheck >= 1.1,
+    tasty >= 0.11,
+    tasty-hunit >= 0.9,
+    tasty-quickcheck >= 0.8,
+    tasty-smallcheck >= 0.8,
+    text >= 1.2
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+
+source-repository head
+  type: git
+  location: https://github.com/thunky-monk/kawhi

@@ -1,0 +1,60 @@
+name:                weigh
+version:             0.0.7
+synopsis:            Measure allocations of a Haskell functions/values
+description:         Please see README.md
+homepage:            https://github.com/fpco/weigh#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Chris Done
+maintainer:          chrisdone@fpcomplete.com
+copyright:           FP Complete
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+                     CHANGELOG
+cabal-version:       >=1.10
+
+flag weigh-maps
+  manual: True
+  default: False
+  description: Weigh maps.
+
+library
+  hs-source-dirs:      src
+  ghc-options:         -Wall -O2
+  exposed-modules:     Weigh
+  other-modules:       Weigh.GHCStats
+  build-depends:       base >= 4.7 && < 5
+                     , process
+                     , deepseq
+                     , mtl
+                     , split
+                     , template-haskell
+                     , temporary
+  default-language:    Haskell2010
+
+test-suite weigh-test
+  default-language:    Haskell2010
+  type: exitcode-stdio-1.0
+  hs-source-dirs: src/test
+  ghc-options: -O2
+  main-is: Main.hs
+  build-depends: base
+               , weigh
+               , deepseq
+
+test-suite weigh-maps
+  if !flag(weigh-maps)
+    buildable: False
+  default-language:    Haskell2010
+  type: exitcode-stdio-1.0
+  hs-source-dirs: src/test
+  ghc-options: -O2
+  main-is: Maps.hs
+  build-depends: base
+               , weigh
+               , deepseq
+               , containers
+               , unordered-containers
+               , bytestring-trie
+               , random

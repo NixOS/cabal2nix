@@ -1,0 +1,40 @@
+name:                api-field-json-th
+version:             0.1.0.2
+synopsis:            option of aeson's deriveJSON 
+description:         Utils for using aeson's deriveJSON with lens's makeFields
+homepage:            https://github.com/nakaji-dayo/api-field-json-th
+license:             BSD3
+license-file:        LICENSE
+author:              Daishi Nakajima
+maintainer:          nakaji.dayo@gmail.com
+copyright:           2016 Daishi Nakajima
+category:            Utils
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Data.Aeson.APIFieldJsonTH
+  build-depends:       base >= 4.7 && < 5
+                     , text
+                     , aeson
+                     , lens
+                     , split
+                     , template-haskell
+  default-language:    Haskell2010
+
+test-suite api-field-json-th-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , api-field-json-th
+                     , HUnit
+                     , aeson
+                     , lens
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/nakaji-dayo/api-field-json-th

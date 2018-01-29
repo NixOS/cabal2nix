@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, gogol-core }:
+mkDerivation {
+  pname = "gogol-firebase-rules";
+  version = "0.3.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base gogol-core ];
+  homepage = "https://github.com/brendanhay/gogol";
+  description = "Google Firebase Rules SDK";
+  license = "unknown";
+}

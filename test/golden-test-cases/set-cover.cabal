@@ -1,0 +1,253 @@
+Name:             set-cover
+Version:          0.0.8
+License:          BSD3
+License-File:     LICENSE
+Author:           Henning Thielemann, Helmut Podhaisky
+Maintainer:       Henning Thielemann <haskell@henning-thielemann.de>
+Homepage:         http://hub.darcs.net/thielema/set-cover/
+Category:         Math, Algorithms
+Synopsis:         Solve exact set cover problems like Sudoku, 8 Queens, Soma Cube, Tetris Cube
+Description:
+  Solver for exact set cover problems.
+  Included examples:
+  Sudoku, Nonogram, 8 Queens, Domino tiling, Mastermind,
+  Soma Cube, Tetris Cube, Cube of L's, Logika's Baumeister puzzle.
+  The generic algorithm allows to choose between
+  slow but flexible @Set@ from @containers@ package
+  and fast but cumbersome bitvectors.
+  .
+  For getting familiar with the package
+  I propose to study the Queen8 example along with "Math.SetCover.Exact".
+  .
+  Build examples with @cabal install -fbuildExamples@.
+  .
+  The package needs only Haskell 98.
+Tested-With:      GHC==7.4.2, GHC==7.6.3, GHC==7.8.2
+Cabal-Version:    >=1.8
+Build-Type:       Simple
+Extra-Source-Files: Changes.md
+
+Flag buildExamples
+  description: Build example executables
+  default:     False
+
+Source-Repository this
+  Tag:         0.0.8
+  Type:        darcs
+  Location:    http://hub.darcs.net/thielema/set-cover/
+
+Source-Repository head
+  Type:        darcs
+  Location:    http://hub.darcs.net/thielema/set-cover/
+
+Library
+  Build-Depends:
+    psqueues >=0.2 && <0.3,
+    enummapset >=0.1 && <0.6,
+    containers >=0.4 && <0.6,
+    utility-ht >=0.0.12 && <0.1,
+    base >=4 && <5
+
+  GHC-Options:      -Wall
+  Hs-Source-Dirs:   src
+  Exposed-Modules:
+    Math.SetCover.Bit
+    Math.SetCover.BitMap
+    Math.SetCover.BitSet
+    Math.SetCover.BitPosition
+    Math.SetCover.Queue
+    Math.SetCover.Exact
+    Math.SetCover.Exact.Priority
+    Math.SetCover.Cuboid
+  Other-Modules:
+    Math.SetCover.IntSet
+    Math.SetCover.BitPriorityQueue
+    Math.SetCover.EnumMap
+    Math.SetCover.Queue.Set
+    Math.SetCover.Queue.Map
+    Math.SetCover.Queue.Bit
+    Math.SetCover.Queue.BitPriorityQueue
+
+Executable tetris-cube
+  If flag(buildExamples)
+    Build-Depends:
+      haha >=0.3.1 && <0.4,
+      pooled-io >=0.0 && <0.1,
+      set-cover,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: TetrisCube.hs
+  Other-Modules:
+    Utility
+
+Executable soma-cube
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: Soma.hs
+
+Executable queen8
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      containers,
+      array >=0.1 && <0.6,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: Queen8.hs
+
+Executable sudoku-setcover
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      containers,
+      array >=0.1 && <0.6,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: Sudoku.hs
+
+Executable lcube
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      pooled-io >=0.0 && <0.1,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: LCube.hs
+  Other-Modules:
+    Utility
+
+Executable baumeister
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: Baumeister.hs
+  Other-Modules:
+    Utility
+
+Executable lonpos-pyramid
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: LonposPyramid.hs
+  Other-Modules:
+    Utility
+
+Executable alphametics
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      non-empty >=0.2 && <0.4,
+      transformers >=0.2 && <0.6,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: Alphametics.hs
+
+Executable domino
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      unicode >=0.0 && <0.1,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall -rtsopts -threaded
+  Hs-Source-Dirs: example
+  Main-Is: Domino.hs
+
+Executable nonogram
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      non-empty >=0.2 && <0.4,
+      psqueues,
+      enummapset,
+      containers,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall
+  Hs-Source-Dirs: example
+  Main-Is: Nonogram.hs
+  Other-Modules:
+    Nonogram.Example
+    Nonogram.Encoding.Combinatoric
+    Nonogram.Encoding.BlackWhite
+    Nonogram.Encoding.Plug
+    Nonogram.Encoding.Naive
+    Nonogram.Base
+
+Executable mastermind
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      random >=1.0 && <1.2,
+      transformers >=0.2 && <0.6,
+      containers,
+      array >=0.1 && <0.6,
+      utility-ht,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall
+  Hs-Source-Dirs: example
+  Main-Is: Mastermind.hs
+
+Executable pangram
+  If flag(buildExamples)
+    Build-Depends:
+      set-cover,
+      containers,
+      base
+  Else
+    Buildable: False
+  GHC-Options:    -Wall
+  Hs-Source-Dirs: example
+  Main-Is: Pangram.hs

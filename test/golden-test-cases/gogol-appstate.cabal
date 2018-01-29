@@ -1,0 +1,50 @@
+name:                  gogol-appstate
+version:               0.3.0
+synopsis:              Google App State SDK.
+homepage:              https://github.com/brendanhay/gogol
+bug-reports:           https://github.com/brendanhay/gogol/issues
+license:               OtherLicense
+license-file:          LICENSE
+author:                Brendan Hay
+maintainer:            Brendan Hay <brendan.g.hay@gmail.com>
+copyright:             Copyright (c) 2015-2016 Brendan Hay
+category:              Network, Google, Cloud
+build-type:            Simple
+cabal-version:         >= 1.10
+extra-source-files:    README.md src/.gitkeep
+
+description:
+    The Google App State API.
+    .
+    /Warning:/ This is an experimental prototype/preview release which is still
+    under exploratory development and not intended for public use, caveat emptor!
+    .
+    This library is compatible with version @v1@
+    of the API.
+
+source-repository head
+    type:     git
+    location: git://github.com/brendanhay/gogol.git
+
+library
+    default-language:  Haskell2010
+    hs-source-dirs:    src gen
+
+    ghc-options:       -Wall
+
+    exposed-modules:
+          Network.Google.AppState
+        , Network.Google.AppState.Types
+        , Network.Google.Resource.AppState.States.Clear
+        , Network.Google.Resource.AppState.States.Delete
+        , Network.Google.Resource.AppState.States.Get
+        , Network.Google.Resource.AppState.States.List
+        , Network.Google.Resource.AppState.States.Update
+
+    other-modules:
+          Network.Google.AppState.Types.Product
+        , Network.Google.AppState.Types.Sum
+
+    build-depends:
+          gogol-core == 0.3.0.*
+        , base       >= 4.7 && < 5

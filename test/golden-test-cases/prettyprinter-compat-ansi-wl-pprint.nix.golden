@@ -1,0 +1,17 @@
+{ mkDerivation, base, fetchurl, prettyprinter
+, prettyprinter-ansi-terminal, text
+}:
+mkDerivation {
+  pname = "prettyprinter-compat-ansi-wl-pprint";
+  version = "1.0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base prettyprinter prettyprinter-ansi-terminal text
+  ];
+  homepage = "http://github.com/quchen/prettyprinter";
+  description = "Drop-in compatibility package to migrate from »ansi-wl-pprint« to »prettyprinter«";
+  license = stdenv.lib.licenses.bsd2;
+}

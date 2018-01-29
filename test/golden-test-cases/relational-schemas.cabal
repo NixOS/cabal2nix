@@ -1,0 +1,100 @@
+name:                relational-schemas
+version:             0.1.6.1
+synopsis:            RDBMSs' schema templates for relational-query
+description:         This package contains some RDBMSs' schema structure definitions.
+                     Supported RDBMS schemas are below:
+                     - IBM DB2
+                     - PostgreSQL
+                     - Microsoft SQLServer
+                     - SQLite3
+                     - Oracle
+                     - MySQL
+homepage:            http://khibino.github.io/haskell-relational-record/
+license:             BSD3
+license-file:        LICENSE
+author:              Kei Hibino, Shohei Murayama, Shohei Yasutake, Sho KURODA
+maintainer:          ex8k.hibino@gmail.com, shohei.murayama@gmail.com, amutake.s@gmail.com, krdlab@gmail.com
+copyright:           Copyright (c) 2013-2017 Kei Hibino, Shohei Murayama, Shohei Yasutake, Sho KURODA
+category:            Database
+build-type:          Simple
+cabal-version:       >=1.10
+tested-with:           GHC == 8.2.1
+                     , GHC == 8.0.1, GHC == 8.0.2
+                     , GHC == 7.10.1, GHC == 7.10.2, GHC == 7.10.3
+                     , GHC == 7.8.1, GHC == 7.8.2, GHC == 7.8.3, GHC == 7.8.4
+                     , GHC == 7.6.1, GHC == 7.6.2, GHC == 7.6.3
+                     , GHC == 7.4.1, GHC == 7.4.2
+extra-source-files:  ChangeLog.md
+
+library
+  exposed-modules:
+                       Database.Relational.Schema.DB2Syscat.Columns
+                       Database.Relational.Schema.IBMDB2
+
+                       Database.Relational.Schema.PgCatalog.PgAttribute
+                       Database.Relational.Schema.PgCatalog.PgType
+                       Database.Relational.Schema.PostgreSQL
+
+                       Database.Relational.Schema.SQLServerSyscat.Columns
+                       Database.Relational.Schema.SQLServerSyscat.Types
+                       Database.Relational.Schema.SQLServer
+
+                       Database.Relational.Schema.SQLite3Syscat.IndexInfo
+                       Database.Relational.Schema.SQLite3Syscat.IndexList
+                       Database.Relational.Schema.SQLite3Syscat.TableInfo
+                       Database.Relational.Schema.SQLite3
+
+                       Database.Relational.Schema.OracleDataDictionary.TabColumns
+                       Database.Relational.Schema.Oracle
+
+                       Database.Relational.Schema.MySQLInfo.Columns
+                       Database.Relational.Schema.MySQL
+
+                       Database.Relational.Schema.DB2Syscat.Config
+                       Database.Relational.Schema.PgCatalog.Config
+                       Database.Relational.Schema.SQLServerSyscat.Config
+                       Database.Relational.Schema.SQLite3Syscat.Config
+                       Database.Relational.Schema.OracleDataDictionary.Config
+                       Database.Relational.Schema.MySQLInfo.Config
+
+  other-modules:
+                       Database.Relational.Schema.DB2Syscat.Tabconst
+                       Database.Relational.Schema.DB2Syscat.Keycoluse
+
+                       Database.Relational.Schema.PgCatalog.PgConstraint
+                       Database.Relational.Schema.PgCatalog.PgNamespace
+                       Database.Relational.Schema.PgCatalog.PgClass
+
+                       Database.Relational.Schema.SQLServerSyscat.IndexColumns
+                       Database.Relational.Schema.SQLServerSyscat.Indexes
+
+                       Database.Relational.Schema.OracleDataDictionary.ConsColumns
+                       Database.Relational.Schema.OracleDataDictionary.Constraints
+
+                       Database.Relational.Schema.MySQLInfo.KeyColumnUsage
+                       Database.Relational.Schema.MySQLInfo.TableConstraints
+
+  build-depends:         base <5
+                       , template-haskell
+                       , containers
+                       , time
+                       , bytestring
+
+                       , relational-query >= 0.11
+
+  if impl(ghc == 7.4.*)
+    build-depends:        ghc-prim == 0.2.*
+
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+
+  default-language:     Haskell2010
+
+
+source-repository head
+  type:       git
+  location:   https://github.com/khibino/haskell-relational-record
+
+source-repository head
+  type:       mercurial
+  location:   https://bitbucket.org/khibino/haskell-relational-record

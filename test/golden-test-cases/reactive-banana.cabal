@@ -1,0 +1,88 @@
+Name:                reactive-banana
+Version:             1.1.0.1
+Synopsis:            Library for functional reactive programming (FRP).
+Description:
+    Reactive-banana is a library for Functional Reactive Programming (FRP).
+    .
+    FRP offers an elegant and concise way to express interactive programs such as graphical user interfaces, animations, computer music or robot controllers. It promises to avoid the spaghetti code that is all too common in traditional approaches to GUI programming.
+    .
+    See the project homepage <http://wiki.haskell.org/Reactive-banana>
+    for more detailed documentation and examples.
+    .
+    /Stability forecast./
+    This is a stable library, though minor API changes are still likely.
+    It features an efficient, push-driven implementation
+    and has seen some optimization work.
+    .
+    /API guide./
+    Start with the "Reactive.Banana" module.
+
+Homepage:            http://wiki.haskell.org/Reactive-banana
+License:             BSD3
+License-file:        LICENSE
+Author:              Heinrich Apfelmus
+Maintainer:          Heinrich Apfelmus <apfelmus quantentunnel de>
+Category:            FRP
+Cabal-version:       >= 1.16
+Build-type:          Simple
+
+extra-source-files:     CHANGELOG.md,
+                        doc/examples/*.hs,
+                        src/Reactive/Banana/Test.hs,
+                        src/Reactive/Banana/Test/Plumbing.hs
+extra-doc-files:        doc/*.png
+
+Source-repository head
+    type:               git
+    location:           git://github.com/HeinrichApfelmus/reactive-banana.git
+    subdir:             reactive-banana/
+
+Library
+    default-language:   Haskell98
+    hs-source-dirs:     src
+
+    build-depends:      base >= 4.2 && < 5,
+                        containers >= 0.5 && < 0.6,
+                        transformers >= 0.2 && < 0.6,
+                        vault == 0.3.*,
+                        unordered-containers >= 0.2.1.0 && < 0.3,
+                        hashable >= 1.1 && < 1.3,
+                        pqueue >= 1.0 && < 1.4
+
+    exposed-modules:
+                        Control.Event.Handler,
+                        Reactive.Banana,
+                        Reactive.Banana.Combinators,
+                        Reactive.Banana.Frameworks,
+                        Reactive.Banana.Model,
+                        Reactive.Banana.Prim,
+                        Reactive.Banana.Prim.Cached
+    
+    other-modules:
+                        Control.Monad.Trans.ReaderWriterIO,
+                        Control.Monad.Trans.RWSIO,
+                        Reactive.Banana.Internal.Combinators,
+                        Reactive.Banana.Prim.Combinators,
+                        Reactive.Banana.Prim.Compile,
+                        Reactive.Banana.Prim.Dependencies,
+                        Reactive.Banana.Prim.Evaluation,
+                        Reactive.Banana.Prim.Graph,
+                        Reactive.Banana.Prim.IO,
+                        Reactive.Banana.Prim.OrderedBag,
+                        Reactive.Banana.Prim.Plumbing,
+                        Reactive.Banana.Prim.Test,
+                        Reactive.Banana.Prim.Types,
+                        Reactive.Banana.Prim.Util,
+                        Reactive.Banana.Types
+
+Test-Suite tests
+    default-language:   Haskell98
+    type:               exitcode-stdio-1.0
+    hs-source-dirs:     src
+    main-is:            Reactive/Banana/Test.hs
+    build-depends:      base >= 4.2 && < 5,
+                        HUnit >= 1.2 && < 2,
+                        test-framework >= 0.6 && < 0.9,
+                        test-framework-hunit >= 0.2 && < 0.4,
+                        reactive-banana, vault, containers, transformers,
+                        unordered-containers, hashable, psqueues, pqueue

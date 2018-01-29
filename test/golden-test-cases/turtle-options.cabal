@@ -1,0 +1,56 @@
+name:                turtle-options
+version:             0.1.0.4
+synopsis:            Collection of command line options and parsers for these options
+description:         Please see README.md
+homepage:            https://github.com/elaye/turtle-options#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Elie Genard
+maintainer:          elaye@users.noreply.github.com
+copyright:           2016 Elie Genard
+category:            Utils
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Turtle.Options.Scale
+                     , Turtle.Options.Percentage
+                     , Turtle.Options.Quality
+                     , Turtle.Options.Timecode
+                     , Turtle.Options.Parsers
+  build-depends:       base >= 4.7 && < 5
+                     , parsec
+                     , text
+                     , optional-args
+                     , turtle
+  default-language:    Haskell2010
+
+executable example
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , turtle
+                     , turtle-options
+  default-language:    Haskell2010
+
+test-suite turtle-options-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , turtle-options
+                     , HUnit
+                     , parsec
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  other-modules:       Scale.Tests
+                     , Quality.Tests
+                     , Percentage.Tests
+                     , Timecode.Tests
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/elaye/turtle-options

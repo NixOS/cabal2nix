@@ -1,0 +1,53 @@
+Name:                broadcast-chan
+Version:             0.1.1
+
+Homepage:            https://github.com/merijn/broadcast-chan
+Bug-Reports:         https://github.com/merijn/broadcast-chan/issues
+
+Author:              Merijn Verstraaten
+Maintainer:          Merijn Verstraaten <merijn@inconsistent.nl>
+Copyright:           Copyright © 2014 Merijn Verstraaten
+
+License:             BSD3
+License-File:        LICENSE
+
+Category:            System
+Cabal-Version:       >= 1.10
+Build-Type:          Simple
+Tested-With:         GHC == 7.8.3
+
+Synopsis:            Broadcast channel type that avoids 0 reader space leaks.
+
+Description:
+    A variation of "Control.Concurrent.Chan" from base, which allows to the
+    easy creation of broadcast channels without the space-leaks that may arise
+    from using 'Control.Concurrent.Chan.dupChan'.
+
+    The 'Control.Concurrent.Chan.Chan' type from "Control.Concurrent.Chan"
+    consists of both a read and write end. This presents a problem when one
+    wants to have a broadcast channel that, at times, has zero listeners. To
+    write to a 'Control.Concurrent.Chan.Chan' there must always be a read end
+    and this read end will hold ALL messages alive until read.
+
+    The simple solution applied in this module is to separate read and write
+    ends. As a result, any messages written to the write end can be immediately
+    garbage collected if there are no active read ends, avoding space leaks.
+
+Library
+  Default-Language:     Haskell2010
+  GHC-Options:          -Wall -fno-warn-unused-do-bind
+  Exposed-Modules:      Control.Concurrent.BroadcastChan
+
+  Build-Depends:        base >= 4 && < 5
+
+Source-Repository head
+  Type:     git
+  Location: ssh://github.com:merijn/broadcast-chan.git
+
+Source-Repository head
+  Type:     mercurial
+  Location: git+ssh://github.com:merijn/broadcast-chan.git
+
+Source-Repository head
+  Type:     mercurial
+  Location: https://bitbucket.org/merijnv/broadcast-chan

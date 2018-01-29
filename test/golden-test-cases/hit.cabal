@@ -1,0 +1,125 @@
+Name:                hit
+Version:             0.6.3
+Synopsis:            Git operations in haskell
+Description:
+    .
+    An haskell implementation of git storage operations, allowing users
+    to manipulate git repositories (read and write).
+    .
+    This implementation is fully interoperable with the main C implementation.
+    .
+    This is stricly only manipulating the git store (what's inside the .git directory),
+    and doesn't do anything with the index or your working directory files.
+    .
+License:             BSD3
+License-file:        LICENSE
+Copyright:           Vincent Hanquez <vincent@snarc.org>
+Author:              Vincent Hanquez <vincent@snarc.org>
+Maintainer:          Vincent Hanquez <vincent@snarc.org>
+Category:            Development
+Stability:           experimental
+Build-Type:          Simple
+Homepage:            http://github.com/vincenthz/hit
+Cabal-Version:       >=1.8
+data-files:          README.md
+extra-source-files:  Tests/*.hs
+
+Flag executable
+  Description:       Build the executable
+  Default:           False
+
+Flag debug
+  Description:       Add some debugging options
+  Default:           False
+
+Library
+  Build-Depends:     base >= 4 && < 5
+                   , mtl
+                   , bytestring >= 0.9
+                   , byteable
+                   , attoparsec >= 0.10.1
+                   , parsec     >= 3
+                   , containers
+                   , system-filepath
+                   , system-fileio
+                   , cryptohash
+                   , vector
+                   , random
+                   , zlib
+                   , zlib-bindings >= 0.1 && < 0.2
+                   , hourglass >= 0.2
+                   , unix-compat
+                   , utf8-string
+                   , patience
+  Exposed-modules:   Data.Git
+                     Data.Git.Types
+                     Data.Git.Storage
+                     Data.Git.Storage.PackIndex
+                     Data.Git.Storage.Pack
+                     Data.Git.Storage.Object
+                     Data.Git.Storage.Loose
+                     Data.Git.Named
+                     Data.Git.Delta
+                     Data.Git.Ref
+                     Data.Git.Revision
+                     Data.Git.Repository
+                     Data.Git.Diff
+  Other-modules:     Data.Git.Internal
+                     Data.Git.Config
+                     Data.Git.Storage.FileReader
+                     Data.Git.Storage.FileWriter
+                     Data.Git.Storage.CacheFile
+                     Data.Git.Path
+                     Data.Git.WorkTree
+  ghc-options:       -Wall -fno-warn-missing-signatures
+
+Executable           Hit
+  Main-Is:           Hit.hs
+  hs-source-dirs:    Hit
+  ghc-options:       -Wall -fno-warn-orphans -fno-warn-missing-signatures
+  if flag(debug)
+    ghc-options:     -rtsopts -auto-all -caf-all
+  if flag(executable)
+    Build-depends:   base >= 4 && < 5
+                   , mtl
+                   , containers
+                   , hashable >= 1.2
+                   , hashtables
+                   , bytestring
+                   , attoparsec >= 0.10.1
+                   , parsec     >= 3
+                   , filepath
+                   , directory
+                   , hit
+                   , hourglass
+                   , patience
+    Buildable: True
+  else
+    Buildable: False
+
+Test-Suite test-unit
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    Tests
+  Main-Is:           Tests.hs
+  Build-depends:     base >= 3 && < 7
+                   , bytestring
+                   , tasty
+                   , tasty-quickcheck
+                   , hourglass
+                   , hit
+
+Test-Suite test-repository
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    Tests
+  Main-Is:           Repo.hs
+  Build-depends:     base >= 3 && < 7
+                   , bytestring
+                   , tasty
+                   , tasty-quickcheck
+                   , hourglass
+                   , bytedump >= 1.0
+                   , hit
+
+source-repository head
+  type: git
+  location: git://github.com/vincenthz/hit

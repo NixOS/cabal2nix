@@ -1,0 +1,142 @@
+name:          algebraic-graphs
+version:       0.0.5
+synopsis:      A library for algebraic graph construction and transformation
+license:       MIT
+license-file:  LICENSE
+author:        Andrey Mokhov <andrey.mokhov@gmail.com>, github: @snowleopard
+maintainer:    Andrey Mokhov <andrey.mokhov@gmail.com>, github: @snowleopard
+copyright:     Andrey Mokhov, 2016-2017
+homepage:      https://github.com/snowleopard/alga
+category:      Algebra, Algorithms, Data Structures, Graphs
+build-type:    Simple
+cabal-version: >=1.18
+tested-with:   GHC==8.0.2
+stability:     experimental
+description:
+    <https://github.com/snowleopard/alga Alga> is a library for algebraic construction and
+    manipulation of graphs in Haskell. See <https://github.com/snowleopard/alga-paper this paper>
+    for the motivation behind the library, the underlying theory and implementation details.
+    .
+    The top-level module
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph.html Algebra.Graph>
+    defines the core data type
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph.html#t:Graph Graph>,
+    which is a deep embedding of four graph construction primitives /empty/,
+    /vertex/, /overlay/ and /connect/. More conventional graph representations can be found in
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph-AdjacencyMap.html Algebra.Graph.AdjacencyMap>
+    and
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph-Relation.html Algebra.Graph.Relation>.
+    .
+    The type classes defined in
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph-Class.html Algebra.Graph.Class>
+    and
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph-HigherKinded-Class.html Algebra.Graph.HigherKinded.Class>
+    can be used for polymorphic graph construction and manipulation. Also see
+    <http://hackage.haskell.org/package/algebraic-graphs/docs/Algebra-Graph-Fold.html Algebra.Graph.Fold>
+    that defines the Boehm-Berarducci encoding of algebraic graphs and provides additional
+    flexibility for polymorphic graph manipulation.
+    .
+    This is an experimental library and the API will be unstable until version 1.0.0. Please
+    consider contributing to the on-going
+    <https://github.com/snowleopard/alga/issues discussions on the library API>.
+
+extra-doc-files:
+    CHANGES.md
+    README.md
+
+source-repository head
+    type:     git
+    location: https://github.com/snowleopard/alga.git
+
+library
+    hs-source-dirs:     src
+    exposed-modules:    Algebra.Graph,
+                        Algebra.Graph.AdjacencyMap,
+                        Algebra.Graph.AdjacencyMap.Internal,
+                        Algebra.Graph.Class,
+                        Algebra.Graph.Export,
+                        Algebra.Graph.Export.Dot,
+                        Algebra.Graph.Fold,
+                        Algebra.Graph.HigherKinded.Class,
+                        Algebra.Graph.IntAdjacencyMap,
+                        Algebra.Graph.IntAdjacencyMap.Internal,
+                        Algebra.Graph.Relation,
+                        Algebra.Graph.Relation.Internal,
+                        Algebra.Graph.Relation.InternalDerived,
+                        Algebra.Graph.Relation.Preorder,
+                        Algebra.Graph.Relation.Reflexive,
+                        Algebra.Graph.Relation.Symmetric,
+                        Algebra.Graph.Relation.Transitive
+    build-depends:      array      >= 0.5 && < 0.8,
+                        base       >= 4.9 && < 5,
+                        containers >= 0.5 && < 0.8
+    default-language:   Haskell2010
+    default-extensions: FlexibleContexts
+                        GeneralizedNewtypeDeriving
+                        ScopedTypeVariables
+                        TupleSections
+                        TypeFamilies
+    other-extensions:   DeriveFoldable
+                        DeriveFunctor
+                        DeriveTraversable
+                        OverloadedStrings
+                        RecordWildCards
+    GHC-options:        -Wall
+                        -Wcompat
+                        -Wincomplete-record-updates
+                        -Wincomplete-uni-patterns
+                        -Wredundant-constraints
+
+test-suite test-alga
+    hs-source-dirs:     test
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    other-modules:      Algebra.Graph.Test,
+                        Algebra.Graph.Test.API,
+                        Algebra.Graph.Test.AdjacencyMap,
+                        Algebra.Graph.Test.Arbitrary,
+                        Algebra.Graph.Test.Export,
+                        Algebra.Graph.Test.Fold,
+                        Algebra.Graph.Test.Generic,
+                        Algebra.Graph.Test.Graph,
+                        Algebra.Graph.Test.IntAdjacencyMap,
+                        Algebra.Graph.Test.Relation
+    build-depends:      algebraic-graphs,
+                        base       >= 4.9,
+                        containers >= 0.5,
+                        extra      >= 1.5,
+                        QuickCheck >= 2.9
+    default-language:   Haskell2010
+    GHC-options:        -O2
+                        -Wall
+                        -Wcompat
+                        -Wincomplete-record-updates
+                        -Wincomplete-uni-patterns
+                        -Wredundant-constraints
+    default-extensions: FlexibleContexts
+                        GeneralizedNewtypeDeriving
+                        TypeFamilies
+                        ScopedTypeVariables
+    other-extensions:   ConstrainedClassMethods
+                        ConstraintKinds
+                        RankNTypes
+                        ViewPatterns
+
+benchmark benchmark-alga
+    hs-source-dirs:     bench
+    type:               exitcode-stdio-1.0
+    main-is:            Bench.hs
+    build-depends:      algebraic-graphs,
+                        base       >= 4.9,
+                        containers >= 0.5,
+                        criterion  >= 1.1
+    default-language:   Haskell2010
+    GHC-options:        -O2
+                        -Wall
+                        -Wcompat
+                        -Wincomplete-record-updates
+                        -Wincomplete-uni-patterns
+                        -Wredundant-constraints
+    default-extensions: FlexibleContexts
+                        TypeFamilies
+                        ScopedTypeVariables

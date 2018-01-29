@@ -1,0 +1,42 @@
+name:                diagrams-solve
+version:             0.1.1
+synopsis:            Pure Haskell solver routines used by diagrams
+description:         Pure Haskell solver routines used by the diagrams
+                     project.  Currently includes finding real roots
+                     of low-degree (n < 5) polynomials, and solving
+                     tridiagonal and cyclic tridiagonal linear
+                     systems.
+homepage:            http://projects.haskell.org/diagrams
+license:             BSD3
+license-file:        LICENSE
+author:              various
+maintainer:          diagrams-discuss@googlegroups.com
+category:            Math
+build-type:          Simple
+extra-source-files:  README.markdown, CHANGES.markdown
+cabal-version:       >=1.10
+Tested-with:         GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1, GHC == 8.2.1
+Source-repository head
+  type:     git
+  location: http://github.com/diagrams/diagrams-solve.git
+
+library
+  exposed-modules:     Diagrams.Solve.Polynomial,
+                       Diagrams.Solve.Tridiagonal
+  build-depends:       base >=4.5 && < 4.11
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+
+test-suite tests
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  -- other-modules: Instances
+  hs-source-dirs: tests
+  default-language:    Haskell2010
+  build-depends:       base >= 4.2 && < 4.11,
+                       tasty >= 0.10 && < 0.12,
+                       tasty-hunit >= 0.9.2 && < 0.10,
+                       tasty-quickcheck >= 0.8 && < 0.9,
+                       deepseq >= 1.3 && < 1.5,
+                       diagrams-solve
+

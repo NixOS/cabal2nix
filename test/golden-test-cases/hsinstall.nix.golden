@@ -1,0 +1,16 @@
+{ mkDerivation, base, directory, fetchurl, filepath }:
+mkDerivation {
+  pname = "hsinstall";
+  version = "1.6";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [ base directory filepath ];
+  executableHaskellDepends = [ base directory filepath ];
+  description = "Install Haskell software";
+  license = stdenv.lib.licenses.isc;
+}

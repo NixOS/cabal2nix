@@ -1,0 +1,342 @@
+Name:                hOpenPGP
+Version:             2.5.5
+Synopsis:            native Haskell implementation of OpenPGP (RFC4880)
+Description:         native Haskell implementation of OpenPGP (RFC4880), plus Camellia (RFC5581)
+Homepage:            http://floss.scru.org/hOpenPGP/
+License:             MIT
+License-file:        LICENSE
+Author:              Clint Adams
+Maintainer:          Clint Adams <clint@debian.org>
+Copyright:           2012-2016  Clint Adams
+Category:            Codec, Data
+Build-type:          Simple
+Extra-source-files: tests/suite.hs
+  , tests/data/000001-006.public_key
+  , tests/data/000002-013.user_id
+  , tests/data/000003-002.sig
+  , tests/data/000004-012.ring_trust
+  , tests/data/000005-002.sig
+  , tests/data/000006-012.ring_trust
+  , tests/data/000007-002.sig
+  , tests/data/000008-012.ring_trust
+  , tests/data/000009-002.sig
+  , tests/data/000010-012.ring_trust
+  , tests/data/000011-002.sig
+  , tests/data/000012-012.ring_trust
+  , tests/data/000013-014.public_subkey
+  , tests/data/000014-002.sig
+  , tests/data/000015-012.ring_trust
+  , tests/data/000016-006.public_key
+  , tests/data/000017-002.sig
+  , tests/data/000018-012.ring_trust
+  , tests/data/000019-013.user_id
+  , tests/data/000020-002.sig
+  , tests/data/000021-012.ring_trust
+  , tests/data/000022-002.sig
+  , tests/data/000023-012.ring_trust
+  , tests/data/000024-014.public_subkey
+  , tests/data/000025-002.sig
+  , tests/data/000026-012.ring_trust
+  , tests/data/000027-006.public_key
+  , tests/data/000028-002.sig
+  , tests/data/000029-012.ring_trust
+  , tests/data/000030-013.user_id
+  , tests/data/000031-002.sig
+  , tests/data/000032-012.ring_trust
+  , tests/data/000033-002.sig
+  , tests/data/000034-012.ring_trust
+  , tests/data/000035-006.public_key
+  , tests/data/000036-013.user_id
+  , tests/data/000037-002.sig
+  , tests/data/000038-012.ring_trust
+  , tests/data/000039-002.sig
+  , tests/data/000040-012.ring_trust
+  , tests/data/000041-017.attribute
+  , tests/data/000042-002.sig
+  , tests/data/000043-012.ring_trust
+  , tests/data/000044-014.public_subkey
+  , tests/data/000045-002.sig
+  , tests/data/000046-012.ring_trust
+  , tests/data/000047-005.secret_key
+  , tests/data/000048-013.user_id
+  , tests/data/000049-002.sig
+  , tests/data/000050-012.ring_trust
+  , tests/data/000051-007.secret_subkey
+  , tests/data/000052-002.sig
+  , tests/data/000053-012.ring_trust
+  , tests/data/000054-005.secret_key
+  , tests/data/000055-002.sig
+  , tests/data/000056-012.ring_trust
+  , tests/data/000057-013.user_id
+  , tests/data/000058-002.sig
+  , tests/data/000059-012.ring_trust
+  , tests/data/000060-007.secret_subkey
+  , tests/data/000061-002.sig
+  , tests/data/000062-012.ring_trust
+  , tests/data/000063-005.secret_key
+  , tests/data/000064-002.sig
+  , tests/data/000065-012.ring_trust
+  , tests/data/000066-013.user_id
+  , tests/data/000067-002.sig
+  , tests/data/000068-012.ring_trust
+  , tests/data/000069-005.secret_key
+  , tests/data/000070-013.user_id
+  , tests/data/000071-002.sig
+  , tests/data/000072-012.ring_trust
+  , tests/data/000073-017.attribute
+  , tests/data/000074-002.sig
+  , tests/data/000075-012.ring_trust
+  , tests/data/000076-007.secret_subkey
+  , tests/data/000077-002.sig
+  , tests/data/000078-012.ring_trust
+  , tests/data/pubring.gpg
+  , tests/data/secring.gpg
+  , tests/data/compressedsig.gpg
+  , tests/data/msg1.asc
+  , tests/data/uncompressed-ops-rsa.gpg
+  , tests/data/uncompressed-ops-dsa.gpg
+  , tests/data/uncompressed-ops-dsa-sha384.txt.gpg
+  , tests/data/encryption.gpg
+  , tests/data/compressedsig-zlib.gpg
+  , tests/data/compressedsig-bzip2.gpg
+  , tests/data/onepass_sig
+  , tests/data/simple.seckey
+  , tests/data/minimized.gpg
+  , tests/data/subkey.gpg
+  , tests/data/signing-subkey.gpg
+  , tests/data/uat.gpg
+  , tests/data/prikey-rev.gpg
+  , tests/data/subkey-rev.gpg
+  , tests/data/6F87040E.pubkey
+  , tests/data/6F87040E-cr.pubkey
+  , tests/data/v3.key
+  , tests/data/primary-binding.gpg
+  , tests/data/pki-password.txt
+  , tests/data/symmetric-password.txt
+  , tests/data/encryption-sym-aes256-s2k0.gpg
+  , tests/data/encryption-sym-aes128-s2k0.gpg
+  , tests/data/encryption-sym-aes128.gpg
+  , tests/data/encryption-sym-aes256.gpg
+  , tests/data/encryption-sym-3des-s2k0.gpg
+  , tests/data/encryption-sym-3des.gpg
+  , tests/data/encryption-sym-aes192-s2k0.gpg
+  , tests/data/encryption-sym-aes192.gpg
+  , tests/data/encryption-sym-blowfish-s2k0.gpg
+  , tests/data/encryption-sym-blowfish.gpg
+  , tests/data/encryption-sym-twofish-s2k0.gpg
+  , tests/data/encryption-sym-twofish.gpg
+  , tests/data/encryption-sym-cast5-mdc-s2k0.gpg
+  , tests/data/encryption-sym-cast5-mdc.gpg
+  , tests/data/encryption-sym-blowfish-mdc-s2k0.gpg
+  , tests/data/encryption-sym-blowfish-mdc.gpg
+  , tests/data/encryption-sym-3des-mdc-s2k0.gpg
+  , tests/data/encryption-sym-3des-mdc.gpg
+  , tests/data/encryption-sym-cast5.gpg
+  , tests/data/encryption-sym-cast5-s2k0.gpg
+  , tests/data/encryption-sym-camellia128.gpg
+  , tests/data/encryption-sym-camellia128-s2k0.gpg
+  , tests/data/encryption-sym-camellia192.gpg
+  , tests/data/encryption-sym-camellia256.gpg
+  , tests/data/16bitcksum.seckey
+  , tests/data/aes256-sha512.seckey
+  , tests/data/unencrypted.seckey
+  , tests/data/v3-genericcert.sig
+  , tests/data/revoked.pubkey
+  , tests/data/expired.pubkey
+  , tests/data/sigs-with-regexes
+  , tests/data/gnu-dummy-s2k-101-secret-key.gpg
+  , tests/data/anibal-ed25519.gpg
+
+Cabal-version:       >= 1.10
+
+flag network-uri
+   description: Get Network.URI from the network-uri package
+   default: True
+
+Library
+  Exposed-modules:     Codec.Encryption.OpenPGP.Types
+                     , Codec.Encryption.OpenPGP.CFB
+                     , Codec.Encryption.OpenPGP.Compression
+                     , Codec.Encryption.OpenPGP.Expirations
+                     , Codec.Encryption.OpenPGP.Fingerprint
+                     , Codec.Encryption.OpenPGP.KeyInfo
+                     , Codec.Encryption.OpenPGP.KeyringParser
+                     , Codec.Encryption.OpenPGP.KeySelection
+                     , Codec.Encryption.OpenPGP.Ontology
+                     , Codec.Encryption.OpenPGP.S2K
+                     , Codec.Encryption.OpenPGP.SecretKey
+                     , Codec.Encryption.OpenPGP.Serialize
+                     , Codec.Encryption.OpenPGP.Signatures
+                     , Data.Conduit.OpenPGP.Compression
+                     , Data.Conduit.OpenPGP.Decrypt
+                     , Data.Conduit.OpenPGP.Filter
+                     , Data.Conduit.OpenPGP.Keyring
+                     , Data.Conduit.OpenPGP.Keyring.Instances
+                     , Data.Conduit.OpenPGP.Verify
+  Other-Modules: Codec.Encryption.OpenPGP.Internal
+               , Codec.Encryption.OpenPGP.Internal.CryptoCipherTypes
+               , Codec.Encryption.OpenPGP.Internal.Cryptonite
+               , Codec.Encryption.OpenPGP.Internal.HOBlockCipher
+               , Codec.Encryption.OpenPGP.SerializeForSigs
+               , Codec.Encryption.OpenPGP.Types.Internal.Base
+               , Codec.Encryption.OpenPGP.Types.Internal.CryptoniteNewtypes
+               , Codec.Encryption.OpenPGP.Types.Internal.PacketClass
+               , Codec.Encryption.OpenPGP.Types.Internal.PKITypes
+               , Codec.Encryption.OpenPGP.Types.Internal.Pkt
+               , Codec.Encryption.OpenPGP.Types.Internal.TK
+               , Codec.Encryption.OpenPGP.BlockCipher
+  Build-depends: aeson
+               , attoparsec
+               , base                  > 4       && < 5
+               , base16-bytestring
+               , base64-bytestring
+               , bifunctors
+               , byteable
+               , bytestring
+               , bzlib
+               , binary                >= 0.6.4.0
+               , binary-conduit
+               , conduit               >= 0.5    && < 1.3
+               , conduit-extra         >= 1.1
+               , containers
+               , cryptonite            >= 0.5
+               , crypto-cipher-types
+               , data-default-class
+               , errors
+               , hashable
+               , incremental-parser
+               , ixset-typed
+               , lens                  >= 3.0
+               , memory
+               , monad-loops
+               , nettle
+               , newtype
+               , openpgp-asciiarmor                 >= 0.1
+               , resourcet              > 0.4
+               , securemem
+               , semigroups
+               , split
+               , text
+               , time                               >= 1.1
+               , time-locale-compat
+               , transformers
+               , unordered-containers
+               , wl-pprint-extras
+               , zlib
+  if flag(network-uri)
+    build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    build-depends: network-uri < 2.6, network < 2.6
+  default-language: Haskell2010
+
+
+Test-Suite tests
+  type:       exitcode-stdio-1.0
+  main-is:    tests/suite.hs
+  other-modules: Codec.Encryption.OpenPGP.Arbitrary
+  Ghc-options: -Wall -with-rtsopts=-K1K
+  Build-depends: hOpenPGP
+               , aeson
+               , attoparsec
+               , base                  > 4       && < 5
+               , base16-bytestring
+               , bifunctors
+               , byteable
+               , bytestring
+               , bzlib
+               , binary                >= 0.6.4.0
+               , binary-conduit
+               , conduit
+               , conduit-extra
+               , containers
+               , cryptonite            >= 0.5
+               , crypto-cipher-types
+               , data-default-class
+               , errors
+               , hashable
+               , incremental-parser
+               , ixset-typed
+               , lens                  >= 3.0
+               , memory
+               , monad-loops
+               , nettle
+               , newtype
+               , securemem
+               , semigroups
+               , split
+               , text
+               , time                               >= 1.1
+               , time-locale-compat
+               , transformers
+               , unordered-containers
+               , wl-pprint-extras
+               , zlib
+               , tasty
+               , tasty-hunit
+               , tasty-quickcheck
+               , QuickCheck
+               , quickcheck-instances
+               , resourcet              > 0.4
+  if flag(network-uri)
+    build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    build-depends: network-uri < 2.6, network < 2.6
+  default-language: Haskell2010
+
+Benchmark benchmark
+  type:       exitcode-stdio-1.0
+  main-is:    bench/mark.hs
+  Ghc-options: -Wall
+  Build-depends: hOpenPGP
+               , aeson
+               , base                  > 4       && < 5
+               , base16-bytestring
+               , base64-bytestring
+               , bifunctors
+               , byteable
+               , bytestring
+               , bzlib
+               , binary                >= 0.6.4.0
+               , binary-conduit
+               , conduit               >= 0.5    && < 1.3
+               , conduit-extra         >= 1.1
+               , containers
+               , cryptonite            >= 0.5
+               , crypto-cipher-types
+               , data-default-class
+               , errors
+               , hashable
+               , incremental-parser
+               , ixset-typed
+               , lens                  >= 3.0
+               , memory
+               , monad-loops
+               , nettle
+               , newtype
+               , openpgp-asciiarmor                 >= 0.1
+               , resourcet              > 0.4
+               , securemem
+               , semigroups
+               , split
+               , text
+               , time                               >= 1.1
+               , time-locale-compat
+               , transformers
+               , unordered-containers
+               , wl-pprint-extras
+               , zlib
+               , criterion             > 0.8
+  if flag(network-uri)
+    build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    build-depends: network-uri < 2.6, network < 2.6
+  default-language: Haskell2010
+
+source-repository head
+  type:     git
+  location: git://git.debian.org/users/clint/hOpenPGP.git
+
+source-repository this
+  type:     git
+  location: git://git.debian.org/users/clint/hOpenPGP.git
+  tag:      v2.5.5

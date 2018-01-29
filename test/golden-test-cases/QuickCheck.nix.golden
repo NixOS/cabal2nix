@@ -1,0 +1,19 @@
+{ mkDerivation, base, containers, deepseq, fetchurl, random
+, template-haskell, tf-random, transformers
+}:
+mkDerivation {
+  pname = "QuickCheck";
+  version = "2.10.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers deepseq random template-haskell tf-random
+    transformers
+  ];
+  testHaskellDepends = [ base ];
+  homepage = "https://github.com/nick8325/quickcheck";
+  description = "Automatic testing of Haskell programs";
+  license = stdenv.lib.licenses.bsd3;
+}

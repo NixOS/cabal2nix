@@ -1,0 +1,59 @@
+----------------------------------------------------------------
+-- wren gayle romano <wren@community.haskell.org>   ~ 2015.05.30
+----------------------------------------------------------------
+
+-- By and large Cabal >=1.2 is fine; but >= 1.6 gives tested-with:
+-- and source-repository:.
+Cabal-Version:  >= 1.6
+Build-Type:     Simple
+
+Name:           prelude-safeenum
+Version:        0.1.1.2
+Stability:      provisional
+Homepage:       http://code.haskell.org/~wren/
+Author:         wren gayle romano
+Maintainer:     wren@community.haskell.org
+Copyright:      Copyright (c) 2012--2015 wren gayle romano
+License:        BSD3
+License-File:   LICENSE
+
+Category:       Prelude
+Synopsis:
+    A redefinition of the Prelude's Enum class in order to render it safe.
+Description:
+    A redefinition of the Prelude's Enum class in order to render
+    it safe. That is, the Haskell Language Report defines pred,
+    succ, fromEnum, and toEnum to be partial functions when the
+    type is Bounded, but this is unacceptable. We define a new
+    type-class hierarchy for enumeration which is safe and also
+    generalizes to cover types which can only be enumerated in one
+    direction.
+
+Tested-With:
+    GHC ==6.12.1, GHC ==7.6.1, GHC ==7.8.0
+Extra-source-files:
+    AUTHORS, README, CHANGELOG
+Source-Repository head
+    Type:     darcs
+    Location: http://community.haskell.org/~wren/prelude-safeenum
+
+----------------------------------------------------------------
+Flag base4
+    Default:     True
+    Description: base-4.0 emits "Prelude deprecated" messages in
+                 order to get people to be explicit about which
+                 version of base they use.
+----------------------------------------------------------------
+Library
+    Hs-Source-Dirs:    src
+    Exposed-Modules:   Prelude.SafeEnum
+                     , Data.Number.CalkinWilf
+    
+    -- I think this is all that needs doing to get rid of the warnings?
+    if flag(base4)
+        Build-Depends: base >= 4 && < 5
+    else
+        Build-Depends: base < 4
+
+----------------------------------------------------------------
+----------------------------------------------------------- fin.

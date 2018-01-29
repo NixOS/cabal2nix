@@ -1,0 +1,118 @@
+name:           text-icu
+version:        0.7.0.1
+synopsis:       Bindings to the ICU library
+homepage:       https://github.com/bos/text-icu
+bug-reports:    https://github.com/bos/text-icu/issues
+description:
+  Haskell bindings to the International Components for Unicode (ICU)
+  libraries.  These libraries provide robust and full-featured Unicode
+  services on a wide variety of platforms.
+  .
+  Features include:
+  .
+  * Both pure and impure bindings, to allow for fine control over efficiency
+    and ease of use.
+  .
+  * Breaking of strings on character, word, sentence, and line boundaries.
+  .
+  * Access to the Unicode Character Database (UCD) of character metadata.
+  .
+  * String collation functions, for locales where the conventions for
+    lexicographic ordering differ from the simple numeric ordering of
+    character codes.
+  .
+  * Character set conversion functions, allowing conversion between
+    Unicode and over 220 character encodings.
+  .
+  * Unicode normalization.  (When implementations keep strings in a
+    normalized form, they can be assured that equivalent strings have a
+    unique binary representation.)
+  .
+  * Regular expression search and replace.
+maintainer:     Bryan O'Sullivan <bos@serpentine.com>
+copyright:      2009-2014 Bryan O'Sullivan
+category:       Data, Text
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+  README.markdown
+  benchmarks/Breaker.hs
+  changelog.md
+  include/hs_text_icu.h
+
+library
+  default-language:  Haskell98
+  build-depends:
+    base >= 4 && < 5,
+    bytestring,
+    deepseq,
+    text >= 0.9.1.0
+
+  exposed-modules:
+      Data.Text.ICU
+      Data.Text.ICU.Break
+      Data.Text.ICU.Char
+      Data.Text.ICU.Collate
+      Data.Text.ICU.Convert
+      Data.Text.ICU.Error
+      Data.Text.ICU.Normalize
+      Data.Text.ICU.Regex
+      Data.Text.ICU.Types
+  other-modules:
+      Data.Text.ICU.Break.Pure
+      Data.Text.ICU.Break.Types
+      Data.Text.ICU.Collate.Internal
+      Data.Text.ICU.Collate.Pure
+      Data.Text.ICU.Convert.Internal
+      Data.Text.ICU.Error.Internal
+      Data.Text.ICU.Internal
+      Data.Text.ICU.Iterator
+      Data.Text.ICU.Normalize.Internal
+      Data.Text.ICU.Regex.Internal
+      Data.Text.ICU.Regex.Pure
+      Data.Text.ICU.Text
+  c-sources: cbits/text_icu.c
+  include-dirs: include
+  extra-libraries: icuuc
+  if os(mingw32)
+    extra-libraries: icuin icudt
+  else
+    extra-libraries: icui18n icudata
+
+  ghc-options: -Wall -fwarn-tabs
+
+test-suite tests
+  default-language: Haskell98
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   tests
+  main-is:          Tests.hs
+  other-modules:    Properties QuickCheckUtils
+
+  ghc-options:
+    -Wall -threaded -O0 -rtsopts
+
+  build-depends:
+    HUnit >= 1.2,
+    QuickCheck >= 2.4,
+    array,
+    base >= 4 && < 5,
+    bytestring,
+    deepseq,
+    directory,
+    ghc-prim,
+    random,
+    test-framework >= 0.4,
+    test-framework-hunit >= 0.2,
+    test-framework-quickcheck2 >= 0.2,
+    text,
+    text-icu
+
+source-repository head
+  type:     git
+  location: https://github.com/bos/text-icu
+
+source-repository head
+  type:     mercurial
+  location: https://bitbucket.org/bos/text-icu

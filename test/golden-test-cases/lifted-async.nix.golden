@@ -1,0 +1,23 @@
+{ mkDerivation, async, base, constraints, criterion, deepseq
+, fetchurl, HUnit, lifted-base, monad-control, mtl, tasty
+, tasty-hunit, tasty-th, transformers-base
+}:
+mkDerivation {
+  pname = "lifted-async";
+  version = "0.9.3.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    async base constraints lifted-base monad-control transformers-base
+  ];
+  testHaskellDepends = [
+    async base HUnit lifted-base monad-control mtl tasty tasty-hunit
+    tasty-th
+  ];
+  benchmarkHaskellDepends = [ async base criterion deepseq ];
+  homepage = "https://github.com/maoe/lifted-async";
+  description = "Run lifted IO operations asynchronously and wait for their results";
+  license = stdenv.lib.licenses.bsd3;
+}

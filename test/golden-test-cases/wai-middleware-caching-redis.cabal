@@ -1,0 +1,40 @@
+name:                wai-middleware-caching-redis
+version:             0.2.0.0
+synopsis:            Cache Wai Middleware using Redis backend
+description:         Please see README.md
+homepage:            http://github.com/yogsototh/wai-middleware-caching/tree/master/wai-middleware-caching-redis#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Yann Esposito
+maintainer:          yann.esposito@gmail.com
+copyright:           Yann Esposito © 2015
+category:            Web
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Network.Wai.Middleware.RedisCache
+  build-depends:       base >= 4.7 && < 5
+                     , wai-middleware-caching
+                     , hedis >= 0.6
+                     , blaze-builder
+                     , bytestring
+                     , text
+                     , http-types
+                     , wai >= 3.0
+  default-language:    Haskell2010
+
+test-suite wai-middleware-caching-redis-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , wai-middleware-caching-redis
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/yogsototh/wai-middleware-caching

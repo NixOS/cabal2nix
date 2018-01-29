@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, template-haskell }:
+mkDerivation {
+  pname = "partial-isomorphisms";
+  version = "0.2.2.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base template-haskell ];
+  homepage = "http://www.informatik.uni-marburg.de/~rendel/unparse";
+  description = "Partial isomorphisms";
+  license = stdenv.lib.licenses.bsd3;
+}

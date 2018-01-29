@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, mtl, process, strict }:
+mkDerivation {
+  pname = "Hclip";
+  version = "3.0.0.4";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base mtl process strict ];
+  homepage = "https://github.com/jetho/Hclip";
+  description = "A small cross-platform library for reading and modifying the system clipboard";
+  license = stdenv.lib.licenses.bsd3;
+}

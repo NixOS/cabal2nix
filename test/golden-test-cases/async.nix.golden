@@ -1,0 +1,18 @@
+{ mkDerivation, base, fetchurl, HUnit, stm, test-framework
+, test-framework-hunit
+}:
+mkDerivation {
+  pname = "async";
+  version = "2.1.1.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base stm ];
+  testHaskellDepends = [
+    base HUnit test-framework test-framework-hunit
+  ];
+  homepage = "https://github.com/simonmar/async";
+  description = "Run IO operations asynchronously and wait for their results";
+  license = stdenv.lib.licenses.bsd3;
+}

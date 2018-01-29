@@ -1,0 +1,36 @@
+Name:         lazy-csv
+Version:      0.5.1
+License:      BSD3
+License-file: LICENCE-BSD3
+Copyright:    Malcolm Wallace, Ian Lynagh, and Well Typed LLP
+Author:       Malcolm Wallace <malcolm.wallace@me.com>,
+              Ian Lynagh <igloo@earth.li>
+Maintainer:   Malcolm Wallace <malcolm.wallace@me.com>
+Synopsis:     Efficient lazy parsers for CSV (comma-separated values).
+Description:  The CSV format is defined by RFC 4180.
+              These efficient lazy parsers (String and ByteString variants)
+	      can report all CSV formatting errors, whilst also
+	      returning all the valid data, so the user can choose
+	      whether to continue, to show warnings, or to halt on
+	      error.  Valid fields retain information about their
+	      original location in the input, so a secondary parser from
+	      textual fields to typed values can give intelligent error
+	      messages.
+Category:     Text
+Cabal-Version: >= 1.6
+Build-Type:   Simple
+Homepage:     http://code.haskell.org/lazy-csv
+Extra-source-files: index.html changelog.html
+Source-repository head
+  type:       darcs
+  location:   http://code.haskell.org/lazy-csv
+
+library
+  Build-Depends:   base < 5, bytestring
+  Exposed-Modules: Text.CSV.Lazy.String
+                   Text.CSV.Lazy.ByteString
+
+executable csvSelect
+  build-depends:   base < 5, bytestring
+  main-is:         csvSelect.hs
+  other-modules:   Text.CSV.Lazy.ByteString

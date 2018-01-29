@@ -1,0 +1,19 @@
+{ mkDerivation, aeson, base, fetchurl, validity
+, validity-scientific, validity-text, validity-unordered-containers
+, validity-vector
+}:
+mkDerivation {
+  pname = "validity-aeson";
+  version = "0.1.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base validity validity-scientific validity-text
+    validity-unordered-containers validity-vector
+  ];
+  homepage = "https://github.com/NorfairKing/validity#readme";
+  description = "Validity instances for aeson";
+  license = stdenv.lib.licenses.mit;
+}

@@ -1,0 +1,18 @@
+{ mkDerivation, attoparsec, base, fetchurl, haskell-src-meta
+, template-haskell, text, th-lift-instances
+}:
+mkDerivation {
+  pname = "QuasiText";
+  version = "0.1.2.6";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    attoparsec base haskell-src-meta template-haskell text
+    th-lift-instances
+  ];
+  homepage = "https://github.com/mikeplus64/QuasiText";
+  description = "A QuasiQuoter for Text";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,17 @@
+{ mkDerivation, base, containers, fetchurl, hashable
+, unordered-containers, vector
+}:
+mkDerivation {
+  pname = "functor-classes-compat";
+  version = "1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers hashable unordered-containers vector
+  ];
+  homepage = "https://github.com/phadej/functor-classes-compat#readme";
+  description = "Data.Functor.Classes instances for core packages";
+  license = stdenv.lib.licenses.bsd3;
+}

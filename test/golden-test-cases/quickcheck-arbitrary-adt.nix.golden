@@ -1,0 +1,18 @@
+{ mkDerivation, base, fetchurl, hspec, lens, QuickCheck
+, template-haskell, transformers
+}:
+mkDerivation {
+  pname = "quickcheck-arbitrary-adt";
+  version = "0.2.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base QuickCheck ];
+  testHaskellDepends = [
+    base hspec lens QuickCheck template-haskell transformers
+  ];
+  homepage = "https://github.com/plow-technologies/quickcheck-arbitrary-adt#readme";
+  description = "Generic typeclasses for generating arbitrary ADTs";
+  license = stdenv.lib.licenses.bsd3;
+}

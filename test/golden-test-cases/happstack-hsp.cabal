@@ -1,0 +1,37 @@
+Name:                happstack-hsp
+Version:             7.3.7.3
+Synopsis:            Support for using HSP templates in Happstack
+Description:         Happstack is a web application framework. HSP is an XML templating solution. This package makes it easy to use HSP templates with Happstack.
+Homepage:            http://www.happstack.com/
+License:             BSD3
+License-file:        LICENSE
+Author:              Jeremy Shaw
+Maintainer:          Happstack team <happs@googlegroups.com>
+Copyright:           2011-2015 Jeremy Shaw
+Category:            Web, Happstack
+Build-type:          Simple
+Cabal-version:       >=1.6
+tested-with:         GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
+
+source-repository head
+    type:     git
+    location: https://github.com/Happstack/happstack-hsp.git
+
+Library
+  Hs-source-dirs:      src
+
+  Exposed-modules:     Happstack.Server.HSP.HTML
+                       Happstack.Server.XMLGenT
+                       HSP.ServerPartT
+                       HSP.Google.Analytics
+
+  Build-depends:       base             >= 3.0 && < 5.0,
+                       bytestring       >= 0.9 && < 0.11,
+                       happstack-server >= 6.0 && < 7.6,
+                       harp             >= 0.4 && < 0.5,
+                       hsp              >= 0.9.2 && < 0.11,
+                       hsx2hs           >= 0.13.0 && < 0.15,
+                       mtl              >= 1.1 && < 2.3,
+                       utf8-string      >= 0.3 && < 1.1,
+                       syb              >= 0.3 && < 0.8,
+                       text             >= 0.10 && < 1.3

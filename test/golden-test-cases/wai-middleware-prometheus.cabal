@@ -1,0 +1,46 @@
+name:                wai-middleware-prometheus
+version:             0.3.0
+synopsis:
+    WAI middlware for exposing http://prometheus.io metrics.
+description:
+    WAI middlware for exposing http://prometheus.io metrics.
+homepage:            https://github.com/fimad/prometheus-haskell
+license:             Apache-2.0
+license-file:        LICENSE
+author:              Will Coster
+maintainer:          willcoster@gmail.com
+copyright:           2015 Will Coster
+category:            Network
+build-type:          Simple
+cabal-version:       >=1.10
+
+source-repository head
+  type:     git
+  location: https://github.com/fimad/prometheus-haskell
+
+library
+  hs-source-dirs:      src/
+  default-language:    Haskell2010
+  exposed-modules:
+      Network.Wai.Middleware.Prometheus
+  build-depends:
+      base               >=4.7 && <5
+    , bytestring         >=0.9
+    , clock
+    , data-default
+    , http-types
+    , prometheus-client
+    , text               >=0.11
+    , wai                >=3.0
+  ghc-options: -Wall
+
+test-suite doctest
+  type:                 exitcode-stdio-1.0
+  default-language:     Haskell2010
+  hs-source-dirs:       tests
+  ghc-options:          -Wall
+  main-is:              doctest.hs
+  build-depends:
+      base               >=4.7 && <5
+    , doctest
+    , prometheus-client

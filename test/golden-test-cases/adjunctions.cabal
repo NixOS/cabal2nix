@@ -1,0 +1,72 @@
+name:          adjunctions
+category:      Data Structures, Adjunctions
+version:       4.3
+license:       BSD3
+cabal-version: >= 1.6
+license-file:  LICENSE
+author:        Edward A. Kmett
+maintainer:    Edward A. Kmett <ekmett@gmail.com>
+stability:     provisional
+homepage:      http://github.com/ekmett/adjunctions/
+bug-reports:   http://github.com/ekmett/adjunctions/issues
+copyright:     Copyright (C) 2011-2014 Edward A. Kmett
+synopsis:      Adjunctions and representable functors
+description:   Adjunctions and representable functors
+build-type:    Simple
+extra-source-files:
+  .ghci
+  .gitignore
+  .travis.yml
+  .vim.custom
+  travis/cabal-apt-install
+  travis/config
+  HLint.hs
+  CHANGELOG.markdown
+  README.markdown
+
+source-repository head
+  type: git
+  location: git://github.com/ekmett/adjunctions.git
+
+library
+  hs-source-dirs: src
+
+  other-extensions:
+    CPP
+    FunctionalDependencies
+    FlexibleContexts
+    MultiParamTypeClasses
+    Rank2Types
+    UndecidableInstances
+
+  build-depends:
+    array               >= 0.3.0.2 && < 0.7,
+    base                >= 4       && < 5,
+    comonad             >= 4       && < 6,
+    containers          >= 0.3     && < 0.6,
+    contravariant       >= 1       && < 2,
+    distributive        >= 0.4     && < 1,
+    free                >= 4       && < 5,
+    mtl                 >= 2.0.1   && < 2.3,
+    profunctors         >= 4       && < 6,
+    tagged              >= 0.7     && < 1,
+    semigroupoids       >= 4       && < 6,
+    semigroups          >= 0.11    && < 1,
+    transformers        >= 0.2     && < 0.6,
+    transformers-compat >= 0.3     && < 1,
+    void                >= 0.5.5.1 && < 1
+
+  exposed-modules:
+    Control.Comonad.Representable.Store
+    Control.Comonad.Trans.Adjoint
+    Control.Monad.Representable.Reader
+    Control.Monad.Representable.State
+    Control.Monad.Trans.Adjoint
+    Control.Monad.Trans.Contravariant.Adjoint
+    Control.Monad.Trans.Conts
+    Data.Functor.Adjunction
+    Data.Functor.Contravariant.Adjunction
+    Data.Functor.Contravariant.Rep
+    Data.Functor.Rep
+
+  ghc-options: -Wall

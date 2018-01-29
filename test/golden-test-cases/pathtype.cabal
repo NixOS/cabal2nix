@@ -1,0 +1,150 @@
+Name:                pathtype
+Version:             0.8
+Synopsis:            Type-safe replacement for System.FilePath etc
+Description:
+  This package provides type-safe access to filepath manipulations.
+  .
+  "System.Path" is designed to be used instead of "System.FilePath".
+  (It is intended to provide versions of functions from that
+  module which have equivalent functionality but are more typesafe).
+  "System.Path.Directory" is a companion module
+  providing a type-safe alternative to "System.Directory".
+  .
+  The heart of this package is the @'Path' ar fd@ abstract type
+  which represents file and directory paths.
+  The idea is that there are two type parameters -
+  the first should be 'Abs' or 'Rel', and the second 'File' or 'Dir'.
+  A number of type synonyms are provided for common types:
+  .
+  > type Path.AbsFile = Path Abs File
+  > type Path.RelFile = Path Rel File
+  > type Path.AbsDir  = Path Abs Dir
+  > type Path.RelDir  = Path Rel Dir
+  >
+  > type Path.Abs  fd = Path Abs fd
+  > type Path.Rel  fd = Path Rel fd
+  > type Path.File ar = Path ar File
+  > type Path.Dir  ar = Path ar Dir
+  .
+  The type of the 'combine' (aka '</>') function gives the idea:
+  .
+  > (</>) :: Path.Dir ar -> Path.Rel fd -> Path ar fd
+  .
+  Together this enables us to give more meaningful types
+  to a lot of the functions,
+  and (hopefully) catch a bunch more errors at compile time.
+  .
+  For more details see the README.md file.
+  .
+  Related packages:
+  .
+  * @filepath@: The API of Neil Mitchell's "System.FilePath" module
+    (and properties satisfied) heavily influenced our package.
+  .
+  * @path@: Provides a wrapper type around 'FilePath'
+    and maps to functions from @filepath@ package.
+    This warrants consistency with @filepath@ functions.
+    Requires Template Haskell.
+  .
+  * @data-filepath@:
+    Requires 'Typeable' and Template Haskell.
+Stability:           experimental
+License:             BSD3
+Category:            System
+License-file:        LICENSE
+Author:              Ben Moseley, Ben Millwood, Henning Thielemann
+Maintainer:          haskell@henning-thielemann.de, ben@moseley.name
+HomePage:            http://hub.darcs.net/thielema/pathtype/
+Build-Type:          Simple
+Cabal-Version:       >=1.8
+Extra-Source-Files:
+  CHANGELOG
+  README.md
+  test/TestTemplate.hs
+  posix/System/Path/Host.hs
+  windows/System/Path/Host.hs
+  directory/pre-1.2/System/Path/ModificationTime.hs
+  directory/post-incl-1.2/System/Path/ModificationTime.hs
+
+Source-Repository head
+  Type:     darcs
+  Location: http://hub.darcs.net/thielema/pathtype/
+
+Source-Repository this
+  Tag:      0.8
+  Type:     darcs
+  Location: http://hub.darcs.net/thielema/pathtype/
+
+Flag old-time
+  Description: Build with directory < 1.2 and old-time
+  Default:     True
+
+Flag buildTools
+  Description: Build tool for updating test module
+  Default:     False
+
+Library
+  Build-Depends:
+    utility-ht >=0.0.11 && <0.1,
+    QuickCheck >= 2.1.0.1 && < 3,
+    deepseq >= 1.3 && <1.5,
+    time >= 1.0 && < 2,
+    transformers >=0.3 && <0.6,
+    tagged >=0.7 && <0.9,
+    base >= 4 && < 5
+
+  If flag(old-time)
+    Build-Depends: directory >= 1 && < 1.2, old-time >= 1.0 && < 2
+    Hs-Source-Dirs: directory/pre-1.2
+  Else
+    Build-Depends: directory >= 1.2 && < 2
+    Hs-Source-Dirs: directory/post-incl-1.2
+
+  Hs-Source-Dirs: src
+  If os(windows)
+    Hs-Source-Dirs: windows
+  Else
+    Hs-Source-Dirs: posix
+  Exposed-Modules:
+    System.Path
+    System.Path.Generic
+    System.Path.Directory
+    System.Path.IO
+    System.Path.Posix
+    System.Path.Windows
+    System.Path.Part
+    System.Path.PartClass
+  Other-Modules:
+    System.Path.Host
+    System.Path.Internal
+    System.Path.Internal.Part
+    System.Path.Internal.PartClass
+    System.Path.RegularExpression
+    System.Path.ModificationTime
+
+  GHC-Options: -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-unused-do-bind
+
+Test-Suite test
+  Type: exitcode-stdio-1.0
+  Main-Is: Test.hs
+  Other-Modules: TestResult
+  Hs-Source-Dirs: test
+
+  Build-Depends:
+    pathtype,
+    random >=1.0 && <1.2,
+    base
+
+  GHC-Options: -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-unused-do-bind
+
+Executable create-pathtype-test
+  If flag(buildTools)
+    Build-Depends:
+      utility-ht >=0.0.12 && <0.1,
+      base
+  Else
+    Buildable: False
+  Main-Is: CreateTest.hs
+  Hs-Source-Dirs: tool
+
+  GHC-Options: -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-unused-do-bind

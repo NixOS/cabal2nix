@@ -1,0 +1,12 @@
+{ mkDerivation, base, bytestring, fetchurl }:
+mkDerivation {
+  pname = "iconv";
+  version = "0.4.1.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base bytestring ];
+  description = "String encoding conversion";
+  license = stdenv.lib.licenses.bsd3;
+}

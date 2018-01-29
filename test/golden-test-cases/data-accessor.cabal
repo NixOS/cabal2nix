@@ -1,0 +1,128 @@
+Name:             data-accessor
+Version:          0.2.2.7
+License:          BSD3
+License-File:     LICENSE
+Author:           Henning Thielemann <haskell@henning-thielemann.de>, Luke Palmer <lrpalmer@gmail.com>
+Maintainer:       Henning Thielemann <haskell@henning-thielemann.de>
+Homepage:         http://www.haskell.org/haskellwiki/Record_access
+Category:         Data
+-- Default-Language: Haskell98
+Cabal-Version:    >=1.6
+Build-Type:       Simple
+Tested-With:      GHC==6.4.1, GHC==6.8.2, GHC==6.10.4, GHC==6.12.3
+Tested-With:      GHC==7.0.1, GHC==7.2.1, GHC==7.4.1, GHC==7.6.3
+Tested-With:      JHC==0.7.3
+Synopsis:         Utilities for accessing and manipulating fields of records
+Description:
+  In Haskell 98 the name of a record field
+  is automatically also the name of a function which gets the value
+  of the according field.
+  E.g. if we have
+  .
+    data Pair a b = Pair {first :: a, second :: b}
+  .
+  then
+  .
+  > first  :: Pair a b -> a
+  > second :: Pair a b -> b
+  .
+  However for setting or modifying a field value
+  we need to use some syntactic sugar, which is often clumsy.
+  .
+    modifyFirst :: (a -> a) -> (Pair a b -> Pair a b)
+    modifyFirst f r\@(Pair {first=a}) = r{first = f a}
+  .
+  With this package you can define record field accessors
+  which allow setting, getting and modifying values easily.
+  The package clearly demonstrates the power of the functional approach:
+  You can combine accessors of a record and sub-records,
+  to make the access look like the fields of the sub-record belong to the main record.
+  .
+  Example:
+  .
+  > *Data.Accessor.Example> (first^:second^=10) (('b',7),"hallo")
+  > (('b',10),"hallo")
+  .
+  You can easily manipulate record fields in a 'Control.Monad.State.State' monad,
+  you can easily code 'Show' instances that use the Accessor syntax
+  and you can parse binary streams into records.
+  See @Data.Accessor.Example@ for demonstration of all features.
+  .
+  It would be great if in revised Haskell versions the names of record fields
+  are automatically 'Data.Accessor.Accessor's
+  rather than plain @get@ functions.
+  For now, the package @data-accessor-template@ provides Template Haskell functions
+  for automated generation of 'Data.Acesssor.Accessor's.
+  See also the other @data-accessor@ packages
+  that provide an Accessor interface to other data types.
+  The package @enumset@ provides accessors to bit-packed records.
+  .
+  For similar packages see @lenses@ and @fclabel@.
+  A related concept are editors
+  <http://conal.net/blog/posts/semantic-editor-combinators/>.
+  Editors only consist of a modify method
+  (and @modify@ applied to a 'const' function is a @set@ function).
+  This way, they can modify all function values of a function at once,
+  whereas an accessor can only change a single function value,
+  say, it can change @f 0 = 1@ to @f 0 = 2@.
+  This way, editors can even change the type of a record or a function.
+  An Arrow instance can be defined for editors,
+  but for accessors only a Category instance is possible ('(.)' method).
+  The reason is the @arr@ method of the @Arrow@ class,
+  that conflicts with the two-way nature (set and get) of accessors.
+
+Extra-Source-Files:
+  RegExp
+  src-3/Data/Accessor/Private.hs
+  src-4/Data/Accessor/Private.hs
+
+Source-Repository this
+  Tag:         0.2.2.7
+  Type:        darcs
+  Location:    http://code.haskell.org/data-accessor/core/
+
+Source-Repository head
+  Type:        darcs
+  Location:    http://code.haskell.org/data-accessor/core/
+
+Flag category
+  description: Check whether Arrow class is split into Arrow and Category.
+
+Flag splitBase
+  description: Choose the smaller, split-up base package from version 2 on.
+
+Library
+  Build-Depends:
+    transformers >=0.2 && <0.6
+  If flag(splitBase)
+    Build-Depends:
+      array >=0.1 && <0.6,
+      containers >=0.1 && <0.6
+    If flag(category)
+      Hs-Source-Dirs: src-4
+      Build-Depends: base >= 4 && <5
+    Else
+      Hs-Source-Dirs: src-3
+      Build-Depends: base >= 2 && <4
+  Else
+    Hs-Source-Dirs: src-3
+    Build-Depends:
+      base >= 1 && <2
+    If impl(jhc)
+      Build-Depends:
+        containers >=0.1 && <0.6
+
+  GHC-Options:      -Wall
+  Hs-Source-Dirs:   src
+  Exposed-Modules:
+    Data.Accessor
+    Data.Accessor.Basic
+    Data.Accessor.Container
+    Data.Accessor.Show
+    Data.Accessor.Tuple
+    Data.Accessor.BinaryRead
+    Data.Accessor.MonadState
+  Other-Modules:
+    Data.Accessor.Example
+    Data.Accessor.Private
+    Data.Accessor.MonadStatePrivate

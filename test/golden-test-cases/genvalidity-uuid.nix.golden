@@ -1,0 +1,20 @@
+{ mkDerivation, base, fetchurl, genvalidity, genvalidity-hspec
+, hspec, QuickCheck, uuid, validity, validity-uuid
+}:
+mkDerivation {
+  pname = "genvalidity-uuid";
+  version = "0.0.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base genvalidity QuickCheck uuid validity validity-uuid
+  ];
+  testHaskellDepends = [
+    base genvalidity genvalidity-hspec hspec QuickCheck uuid
+  ];
+  homepage = "https://github.com/NorfairKing/validity#readme";
+  description = "GenValidity support for UUID";
+  license = stdenv.lib.licenses.mit;
+}

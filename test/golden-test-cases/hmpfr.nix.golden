@@ -1,0 +1,15 @@
+{ mkDerivation, base, fetchurl, integer-gmp, mpfr }:
+mkDerivation {
+  pname = "hmpfr";
+  version = "0.4.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [ base integer-gmp ];
+  librarySystemDepends = [ mpfr ];
+  homepage = "https://github.com/michalkonecny/hmpfr";
+  description = "Haskell binding to the MPFR library";
+  license = stdenv.lib.licenses.bsd3;
+}

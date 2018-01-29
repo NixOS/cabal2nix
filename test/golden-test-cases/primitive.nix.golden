@@ -1,0 +1,14 @@
+{ mkDerivation, base, fetchurl, ghc-prim, transformers }:
+mkDerivation {
+  pname = "primitive";
+  version = "0.6.2.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ghc-prim transformers ];
+  testHaskellDepends = [ base ghc-prim ];
+  homepage = "https://github.com/haskell/primitive";
+  description = "Primitive memory-related operations";
+  license = stdenv.lib.licenses.bsd3;
+}

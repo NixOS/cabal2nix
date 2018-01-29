@@ -1,0 +1,12 @@
+{ mkDerivation, base, deepseq, fetchurl }:
+mkDerivation {
+  pname = "Only";
+  version = "0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base deepseq ];
+  description = "The 1-tuple type or single-value \"collection\"";
+  license = stdenv.lib.licenses.bsd3;
+}

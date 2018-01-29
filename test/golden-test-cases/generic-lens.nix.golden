@@ -1,0 +1,19 @@
+{ mkDerivation, base, criterion, deepseq, doctest, fetchurl
+, inspection-testing, lens, profunctors, QuickCheck, tagged
+}:
+mkDerivation {
+  pname = "generic-lens";
+  version = "0.5.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base profunctors tagged ];
+  testHaskellDepends = [ base doctest inspection-testing lens ];
+  benchmarkHaskellDepends = [
+    base criterion deepseq lens QuickCheck
+  ];
+  homepage = "https://github.com/kcsongor/generic-lens";
+  description = "Generic data-structure operations exposed as lenses";
+  license = stdenv.lib.licenses.bsd3;
+}

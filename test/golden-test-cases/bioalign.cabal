@@ -1,0 +1,23 @@
+Name:                bioalign
+Version:             0.0.5
+Synopsis:            Data structures and helper functions for calculating alignments
+Description:         Data structures and helper functions for calculating alignments
+Homepage:	     https://patch-tag.com/r/dfornika/biophd/home
+License:             GPL
+License-file:        LICENSE
+Cabal-Version:       >=1.6
+Author:              Dan Fornika <dfornika@gmail.com>
+Maintainer:          dfornika@gmail.com
+Stability:	     Provisional
+Category:	     Bioinformatics
+Build-Type:          Simple
+
+Library
+  Build-depends:     base >= 2 && < 5, biocore, bytestring
+  Exposed-modules:   Bio.Alignment.AlignData
+  Hs-source-dirs:    src
+
+source-Repository    head
+  type:		     darcs
+  location:	     http://www.patch-tag.com/r/dfornika/bioalign
+

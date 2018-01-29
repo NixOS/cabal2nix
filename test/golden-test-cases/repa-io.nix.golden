@@ -1,0 +1,17 @@
+{ mkDerivation, base, binary, bmp, bytestring, fetchurl, old-time
+, repa, vector
+}:
+mkDerivation {
+  pname = "repa-io";
+  version = "3.4.1.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base binary bmp bytestring old-time repa vector
+  ];
+  homepage = "http://repa.ouroborus.net";
+  description = "Read and write Repa arrays in various formats";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,41 @@
+name:                tasty-hedgehog
+version:             0.1.0.1
+license:             BSD3
+license-file:        LICENSE
+author:              Dave Laing
+maintainer:          dave.laing.80@gmail.com
+copyright:           Copyright (c) 2017, Commonwealth Scientific and Industrial Research Organisation (CSIRO) ABN 41 687 119 230.
+description:         Integrates the hedgehog testing library with the tasty testing framework.
+category:            Testing
+synopsis:            Integrates the hedgehog testing library with the tasty testing framework.
+homepage:            https://github.com/qfpl/tasty-hedghog
+bug-reports:         https://github.com/qfpl/tasty-hedgehog/issues
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+cabal-version:       >=1.10
+
+source-repository   head
+  type:             git
+  location:         git@github.com:qfpl/tasty-hedgehog.git
+
+library
+  exposed-modules:     Test.Tasty.Hedgehog
+  build-depends:       base >= 4.8 && <4.11
+                     , tagged >= 0.8 && < 0.9
+                     , tasty >= 0.11 && < 0.12
+                     , hedgehog >= 0.5 && < 0.6
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+  default-language:    Haskell2010
+
+test-suite tasty-hedgehog-tests
+  type:                exitcode-stdio-1.0
+  main-is:             Main.hs
+  hs-source-dirs:      test
+  build-depends:       base >= 4.8 && <4.11
+                     , tasty >= 0.11 && < 0.12
+                     , tasty-expected-failure >= 0.11 && < 0.12
+                     , hedgehog >= 0.5 && < 0.6
+                     , tasty-hedgehog
+  ghc-options:         -Wall
+  default-language:    Haskell2010

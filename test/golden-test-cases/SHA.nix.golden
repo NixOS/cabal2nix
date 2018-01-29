@@ -1,0 +1,21 @@
+{ mkDerivation, array, base, binary, bytestring, directory
+, fetchurl, QuickCheck, test-framework, test-framework-quickcheck2
+}:
+mkDerivation {
+  pname = "SHA";
+  version = "1.6.4.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ array base binary bytestring ];
+  executableHaskellDepends = [ base bytestring directory ];
+  testHaskellDepends = [
+    array base binary bytestring QuickCheck test-framework
+    test-framework-quickcheck2
+  ];
+  description = "Implementations of the SHA suite of message digest functions";
+  license = stdenv.lib.licenses.bsd3;
+}

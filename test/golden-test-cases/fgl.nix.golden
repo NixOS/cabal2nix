@@ -1,0 +1,18 @@
+{ mkDerivation, array, base, containers, deepseq, fetchurl, hspec
+, microbench, QuickCheck, transformers
+}:
+mkDerivation {
+  pname = "fgl";
+  version = "5.5.4.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    array base containers deepseq transformers
+  ];
+  testHaskellDepends = [ base containers hspec QuickCheck ];
+  benchmarkHaskellDepends = [ base deepseq microbench ];
+  description = "Martin Erwig's Functional Graph Library";
+  license = stdenv.lib.licenses.bsd3;
+}

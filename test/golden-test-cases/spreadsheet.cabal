@@ -1,0 +1,108 @@
+Name:             spreadsheet
+Version:          0.1.3.7
+License:          BSD3
+License-File:     LICENSE
+Author:           Henning Thielemann <haskell@henning-thielemann.de>
+Maintainer:       Henning Thielemann <haskell@henning-thielemann.de>
+Homepage:         http://www.haskell.org/haskellwiki/Spreadsheet
+Category:         Data, Text
+Synopsis:         Read and write spreadsheets from and to CSV files in a lazy way
+Description:
+  Read and write spreadsheets from and to files
+  containing comma separated values (CSV) in a lazy way.
+  Reading from other source than plain 'String's could be easily added.
+  .
+  If you install this package by
+  .
+  > cabal install -fbuildExamples
+  .
+  then the example programs @csvreplace@ and @csvextract@
+  are compiled and installed, too.
+  The program @csvreplace@ fills a template text using data from a CSV file.
+  For similar (non-Haskell) programs see @cut@, @csvfix@, @csvtool@.
+  The program @csvextract@ is the inverse of @csvreplace@.
+  .
+  Related packages:
+  .
+  * @csv@: strict parser
+  .
+  * <http://www.xoltar.org/languages/haskell.html>,
+    <http://www.xoltar.org/languages/haskell/CSV.hs>: strict parser
+  .
+  * @lazy-csv@: lazy @String@ and @ByteString@ parser
+  .
+  * @cassava@: high-level CSV parser that treats rows as records,
+    parses ByteStrings and is biased towards UTF-8 encoding.
+Tested-With:       GHC==7.4.2, GHC==7.8.4
+Cabal-Version:     >=1.8
+Build-Type:        Simple
+Extra-Source-Files:
+  README.md
+
+Source-Repository head
+  Type:     darcs
+  Location: http://code.haskell.org/~thielema/spreadsheet/
+
+Source-Repository this
+  Tag:      0.1.3.7
+  Type:     darcs
+  Location: http://code.haskell.org/~thielema/spreadsheet/
+
+Flag buildExamples
+  description: Build example executables
+  default:     False
+
+Flag splitBase
+  description: Choose the new smaller, split-up base package.
+
+Library
+  Build-Depends:
+    utility-ht >=0.0.2 && <0.1,
+    transformers >=0.2 && <0.6,
+    explicit-exception >=0.1 && <0.2
+  If flag(splitBase)
+    Build-Depends: base >= 2 && <5
+  Else
+    Build-Depends: base >= 1.0 && < 2
+
+  GHC-Options:      -Wall
+  Hs-Source-Dirs:   src
+  Exposed-Modules:
+    Data.Spreadsheet
+  Other-Modules:
+    Data.Spreadsheet.Parser
+    Data.Spreadsheet.CharSource
+
+Executable csvreplace
+  If flag(buildExamples)
+    Build-Depends:
+      spreadsheet,
+      optparse-applicative >=0.12 && <0.15,
+      utility-ht,
+      explicit-exception,
+      base
+  Else
+    Buildable:      False
+  GHC-Options:      -Wall
+  Hs-Source-Dirs:   example
+  Main-Is: CSVReplace.hs
+  Other-Modules:
+    CSVReplace.Option
+    Option
+
+Executable csvextract
+  If flag(buildExamples)
+    Build-Depends:
+      spreadsheet,
+      optparse-applicative >=0.12 && <0.15,
+      containers >=0.4.2 && <0.6,
+      utility-ht,
+      base
+  Else
+    Buildable:      False
+  GHC-Options:      -Wall
+  Hs-Source-Dirs:   example
+  Main-Is: CSVExtract.hs
+  Other-Modules:
+    CSVExtract.Option
+    Option

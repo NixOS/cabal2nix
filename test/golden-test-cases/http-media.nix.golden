@@ -1,0 +1,22 @@
+{ mkDerivation, base, bytestring, case-insensitive, containers
+, fetchurl, QuickCheck, test-framework, test-framework-quickcheck2
+, utf8-string
+}:
+mkDerivation {
+  pname = "http-media";
+  version = "0.7.1.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base bytestring case-insensitive containers utf8-string
+  ];
+  testHaskellDepends = [
+    base bytestring case-insensitive containers QuickCheck
+    test-framework test-framework-quickcheck2 utf8-string
+  ];
+  homepage = "https://github.com/zmthy/http-media";
+  description = "Processing HTTP Content-Type and Accept headers";
+  license = stdenv.lib.licenses.mit;
+}

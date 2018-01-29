@@ -1,0 +1,34 @@
+name:                rawstring-qm
+version:             0.2.3.0
+cabal-version:       >=1.10
+synopsis:            Simple raw string quotation and dictionary interpolation
+description:         Supply a couple of usefull QuasiQuotes so we can use functions to lookup values
+                     It has quasiquotes for Strings, Text and Builders
+homepage:            https://github.com/tolysz/rawstring-qm
+license:             BSD3
+license-file:        LICENSE
+author:              Marcin Tolysz
+maintainer:          tolysz@gmail.com
+copyright:           (c)2014-16 Marcin Tolysz
+category:            Text
+build-type:          Simple
+extra-source-files:  CHANGES
+
+Source-Repository head
+  type: git
+  location: https://github.com/tolysz/rawstring-qm.git
+
+library
+      exposed-modules: Data.String.QM
+                     , Data.Text.ToText
+                     , Data.Text.ToTextBuilder
+      
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       base >4.6 && <5
+               ,       text
+               ,       template-haskell
+               ,       bytestring
+
+  hs-source-dirs:      src
+  default-language:    Haskell2010

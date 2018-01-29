@@ -1,0 +1,22 @@
+{ mkDerivation, base, bytestring, cereal, containers, deepseq
+, fetchurl, QuickCheck, test-framework, test-framework-quickcheck2
+, test-framework-th
+}:
+mkDerivation {
+  pname = "messagepack";
+  version = "0.5.4";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base bytestring cereal containers deepseq
+  ];
+  testHaskellDepends = [
+    base bytestring cereal containers QuickCheck test-framework
+    test-framework-quickcheck2 test-framework-th
+  ];
+  homepage = "https://github.com/rodrigosetti/messagepack";
+  description = "Serialize instance for Message Pack Object";
+  license = stdenv.lib.licenses.mit;
+}

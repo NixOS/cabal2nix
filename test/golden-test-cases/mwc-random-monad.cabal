@@ -1,0 +1,41 @@
+Name:                mwc-random-monad
+Version:             0.7.3.1
+License:             BSD3
+License-file:        LICENSE
+Author:              Alexey Khudyakov <alexey.skladnoy@gmail.com>
+Maintainer:          Alexey Khudyakov <alexey.skladnoy@gmail.com>
+bug-reports:         https://github.com/Shimuuar/mwc-random-monad/issues
+Category:            Math, Statistics
+Build-type:          Simple
+Cabal-version:       >=1.6
+Synopsis:            Monadic interface for mwc-random
+Description:         
+  Simple monadic interface for mwc-random.
+extra-source-files:
+  ChangeLog
+
+Library
+  build-depends:
+    base         >= 3 && < 5,
+    transformers >= 0.3,
+    primitive,
+    monad-primitive,
+    vector     >= 0.7,
+    mwc-random >= 0.13.3.0
+  Exposed-modules:
+    System.Random.MWC.Monad
+    System.Random.MWC.Distributions.Monad
+    System.Random.MWC.CondensedTable.Monad
+  if impl(GHC > 7.2.2)
+    Ghc-options:     -fsimpl-tick-factor=500
+  Ghc-options:       -O2 -Wall
+  Ghc-prof-options:  -auto-all
+
+source-repository head
+  type:     mercurial
+  location: http://bitbucket.org/Shimuuar/mwc-random-monad
+
+source-repository head
+  type:     git
+  location: git://github.com/Shimuuar/mwc-random-monad
+

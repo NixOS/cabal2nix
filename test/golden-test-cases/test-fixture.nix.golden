@@ -1,0 +1,22 @@
+{ mkDerivation, base, data-default-class, exceptions, fetchurl
+, haskell-src-exts, haskell-src-meta, hspec, hspec-discover, mtl
+, template-haskell, th-orphans, transformers
+}:
+mkDerivation {
+  pname = "test-fixture";
+  version = "0.5.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base data-default-class exceptions haskell-src-exts
+    haskell-src-meta mtl template-haskell th-orphans
+  ];
+  testHaskellDepends = [
+    base hspec hspec-discover mtl template-haskell transformers
+  ];
+  homepage = "http://github.com/cjdev/test-fixture#readme";
+  description = "Test monadic side-effects";
+  license = stdenv.lib.licenses.bsd3;
+}

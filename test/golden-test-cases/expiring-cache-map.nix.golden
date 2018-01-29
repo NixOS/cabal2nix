@@ -1,0 +1,20 @@
+{ mkDerivation, base, bytestring, containers, fetchurl, hashable
+, time, unordered-containers
+}:
+mkDerivation {
+  pname = "expiring-cache-map";
+  version = "0.0.6.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers hashable unordered-containers
+  ];
+  testHaskellDepends = [
+    base bytestring containers hashable time unordered-containers
+  ];
+  homepage = "https://github.com/elblake/expiring-cache-map";
+  description = "General purpose simple caching";
+  license = stdenv.lib.licenses.bsd3;
+}

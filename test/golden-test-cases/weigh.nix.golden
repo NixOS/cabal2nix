@@ -1,0 +1,21 @@
+{ mkDerivation, base, bytestring-trie, containers, deepseq
+, fetchurl, mtl, process, random, split, template-haskell
+, temporary, unordered-containers
+}:
+mkDerivation {
+  pname = "weigh";
+  version = "0.0.7";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base deepseq mtl process split template-haskell temporary
+  ];
+  testHaskellDepends = [
+    base bytestring-trie containers deepseq random unordered-containers
+  ];
+  homepage = "https://github.com/fpco/weigh#readme";
+  description = "Measure allocations of a Haskell functions/values";
+  license = stdenv.lib.licenses.bsd3;
+}

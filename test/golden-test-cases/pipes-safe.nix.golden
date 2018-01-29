@@ -1,0 +1,18 @@
+{ mkDerivation, base, containers, exceptions, fetchurl
+, monad-control, mtl, pipes, primitive, transformers
+, transformers-base
+}:
+mkDerivation {
+  pname = "pipes-safe";
+  version = "2.2.6";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers exceptions monad-control mtl pipes primitive
+    transformers transformers-base
+  ];
+  description = "Safety for the pipes ecosystem";
+  license = stdenv.lib.licenses.bsd3;
+}

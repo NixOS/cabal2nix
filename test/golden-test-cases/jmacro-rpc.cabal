@@ -1,0 +1,26 @@
+Name:                jmacro-rpc
+Version:             0.3.2
+Homepage:            http://hub.darcs.net/gershomb/jmacro
+License:             BSD3
+License-file:        LICENSE
+Author:              Gershom Bazerman
+Maintainer:          gershomb@gmail.com
+Category:            Network, Web
+Build-type:          Simple
+Cabal-version:       >=1.6
+
+Synopsis:            JSON-RPC clients and servers using JMacro, and evented client-server Reactive Programming.
+
+Description:         Base jmacro-rpc package. Provides server-independent functions.
+
+Library
+  Exposed-modules: Network.JMacroRPC.Base,
+                   Network.JMacroRPC.Panels
+
+  Build-depends: base >= 4, base < 7, jmacro > 0.6, text > 0.11, containers >= 0.4, bytestring >= 0.9.1, vector >= 0.8, attoparsec > 0.10, aeson >= 0.6, mtl > 2, unordered-containers > 0.1.4, split >= 0.2, blaze-html >= 0.4, contravariant >= 0.1, scientific > 0.3
+
+  ghc-options: -Wall
+
+source-repository head
+  type:      darcs
+  location:  http://hub.darcs.net/gershomb/jmacro

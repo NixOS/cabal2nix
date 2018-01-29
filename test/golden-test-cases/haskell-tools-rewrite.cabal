@@ -1,0 +1,64 @@
+name:                haskell-tools-rewrite
+version:             1.0.0.3
+synopsis:            Facilities for generating new parts of the Haskell-Tools AST
+description:         Contains utility functions to generate parts of the Haskell-Tools AST. Generates these elements to be compatible with the source annotations that are already present on the AST. The package is divided into modules based on which language elements can the given module generate. This packages should be used during the transformations to generate parts of the new AST.
+homepage:            https://github.com/haskell-tools/haskell-tools
+license:             BSD3
+license-file:        LICENSE
+author:              Boldizsar Nemeth
+maintainer:          nboldi@elte.hu
+category:            Language
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Language.Haskell.Tools.Rewrite
+                     , Language.Haskell.Tools.Rewrite.ElementTypes
+                     , Language.Haskell.Tools.Rewrite.Create
+                     , Language.Haskell.Tools.Rewrite.Match
+                     , Language.Haskell.Tools.Rewrite.Create.Modules
+                     , Language.Haskell.Tools.Rewrite.Create.Decls
+                     , Language.Haskell.Tools.Rewrite.Create.Binds
+                     , Language.Haskell.Tools.Rewrite.Create.Types
+                     , Language.Haskell.Tools.Rewrite.Create.Kinds
+                     , Language.Haskell.Tools.Rewrite.Create.Exprs
+                     , Language.Haskell.Tools.Rewrite.Create.Literals
+                     , Language.Haskell.Tools.Rewrite.Create.Stmts
+                     , Language.Haskell.Tools.Rewrite.Create.Patterns
+                     , Language.Haskell.Tools.Rewrite.Create.Names
+                     , Language.Haskell.Tools.Rewrite.Create.TH
+                     , Language.Haskell.Tools.Rewrite.Match.Modules
+                     , Language.Haskell.Tools.Rewrite.Match.Decls
+                     , Language.Haskell.Tools.Rewrite.Match.Binds
+                     , Language.Haskell.Tools.Rewrite.Match.Types
+                     , Language.Haskell.Tools.Rewrite.Match.Kinds
+                     , Language.Haskell.Tools.Rewrite.Match.Exprs
+                     , Language.Haskell.Tools.Rewrite.Match.Literals
+                     , Language.Haskell.Tools.Rewrite.Match.Stmts
+                     , Language.Haskell.Tools.Rewrite.Match.Patterns
+                     , Language.Haskell.Tools.Rewrite.Match.Names
+                     , Language.Haskell.Tools.Rewrite.Match.TH
+  other-modules:       Language.Haskell.Tools.Rewrite.Create.Utils
+  build-depends:       base                      >= 4.10  && < 4.11
+                     , mtl                       >= 2.2  && < 2.3
+                     , containers                >= 0.5  && < 0.6
+                     , references                >= 0.3  && < 0.4
+                     , ghc                       >= 8.2  && < 8.3
+                     , haskell-tools-ast         >= 1.0  && < 1.1
+                     , haskell-tools-prettyprint >= 1.0  && < 1.1
+  default-language:    Haskell2010
+
+test-suite haskell-tools-rewrite-tests
+  type:                exitcode-stdio-1.0
+  ghc-options:         -with-rtsopts=-M2g
+  hs-source-dirs:      test
+  main-is:             Main.hs
+  build-depends:       base                      >= 4.10 && < 4.11
+                     , tasty                     >= 0.11 && < 0.13
+                     , tasty-hunit               >= 0.9 && < 0.11
+                     , directory                 >= 1.2 && < 1.4
+                     , filepath                  >= 1.4 && < 2.0
+                     , haskell-tools-ast         >= 1.0 && < 1.1
+                     , haskell-tools-prettyprint >= 1.0 && < 1.1
+                     , haskell-tools-rewrite
+  default-language:    Haskell2010

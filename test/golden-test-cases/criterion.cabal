@@ -1,0 +1,218 @@
+name:           criterion
+version:        1.2.6.0
+synopsis:       Robust, reliable performance measurement and analysis
+license:        BSD3
+license-file:   LICENSE
+author:         Bryan O'Sullivan <bos@serpentine.com>
+maintainer:     Bryan O'Sullivan <bos@serpentine.com>
+copyright:      2009-2016 Bryan O'Sullivan and others
+category:       Development, Performance, Testing, Benchmarking
+homepage:       http://www.serpentine.com/criterion
+bug-reports:    https://github.com/bos/criterion/issues
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+  README.markdown
+  changelog.md
+  examples/*.cabal
+  examples/*.hs
+  examples/*.html
+tested-with:
+  GHC==7.4.2,
+  GHC==7.6.3,
+  GHC==7.8.4,
+  GHC==7.10.3,
+  GHC==8.0.2,
+  GHC==8.2.2
+
+data-files:
+  templates/*.css
+  templates/*.tpl
+  templates/js/jquery.criterion.js
+
+description:
+  This library provides a powerful but simple way to measure software
+  performance.  It provides both a framework for executing and
+  analysing benchmarks and a set of driver functions that makes it
+  easy to build and run benchmarks, and to analyse their results.
+  .
+  The fastest way to get started is to read the
+  <http://www.serpentine.com/criterion/tutorial.html online tutorial>,
+  followed by the documentation and examples in the "Criterion.Main"
+  module.
+  .
+  For examples of the kinds of reports that criterion generates, see
+  <http://www.serpentine.com/criterion the home page>.
+
+flag fast
+  description: compile without optimizations
+  default: False
+  manual: True
+
+flag embed-data-files
+  description: Embed the data files in the binary for a relocatable executable.
+               (Warning: This will increase the executable size significantly.)
+  default: False
+  manual: True
+
+library
+  exposed-modules:
+    Criterion
+    Criterion.Analysis
+    Criterion.IO
+    Criterion.IO.Printf
+    Criterion.Internal
+    Criterion.Main
+    Criterion.Main.Options
+    Criterion.Measurement
+    Criterion.Monad
+    Criterion.Report
+    Criterion.Types
+
+  other-modules:
+    Criterion.Monad.Internal
+    Criterion.Types.Internal
+
+  c-sources: cbits/cycles.c
+  if os(darwin)
+    c-sources: cbits/time-osx.c
+  else {
+    if os(windows)
+      c-sources: cbits/time-windows.c
+    else
+      c-sources: cbits/time-posix.c
+  }
+
+  other-modules:
+    Paths_criterion
+
+  build-depends:
+    aeson >= 0.8,
+    ansi-wl-pprint >= 0.6.7.2,
+    base >= 4.5 && < 5,
+    base-compat >= 0.9,
+    binary >= 0.5.1.0,
+    bytestring >= 0.9 && < 1.0,
+    cassava >= 0.3.0.0,
+    code-page,
+    containers,
+    deepseq >= 1.1.0.0,
+    directory,
+    exceptions >= 0.8.2 && < 0.9,
+    filepath,
+    Glob >= 0.7.2,
+    microstache >= 1.0.1 && < 1.1,
+    js-flot,
+    js-jquery,
+    mtl >= 2,
+    mwc-random >= 0.8.0.3,
+    optparse-applicative >= 0.13,
+    parsec >= 3.1.0,
+    semigroups,
+    statistics >= 0.14 && < 0.15,
+    text >= 0.11,
+    time,
+    transformers,
+    transformers-compat >= 0.4,
+    vector >= 0.7.1,
+    vector-algorithms >= 0.4
+  if impl(ghc < 7.6)
+    build-depends:
+      ghc-prim
+
+  default-language: Haskell2010
+  ghc-options: -Wall -funbox-strict-fields
+  if impl(ghc >= 6.8)
+    ghc-options: -fwarn-tabs
+  if flag(fast)
+    ghc-options: -O0
+  else
+    ghc-options: -O2
+
+  if flag(embed-data-files)
+    other-modules: Criterion.EmbeddedData
+    build-depends: file-embed < 0.1,
+                   template-haskell
+    cpp-options: "-DEMBED"
+
+Executable criterion-report
+  Default-Language:     Haskell2010
+  GHC-Options:          -Wall -rtsopts
+  Main-Is:              Report.hs
+  Other-Modules:        Options
+                        Paths_criterion
+  Hs-Source-Dirs:       app
+
+  Build-Depends:
+    base,
+    criterion,
+    optparse-applicative >= 0.13
+
+  if impl(ghc < 7.6)
+    build-depends:
+      ghc-prim
+
+test-suite sanity
+  type:                 exitcode-stdio-1.0
+  hs-source-dirs:       tests
+  main-is:              Sanity.hs
+  default-language:     Haskell2010
+  ghc-options:          -Wall -rtsopts
+  if flag(fast)
+    ghc-options:        -O0
+  else
+    ghc-options:        -O2
+
+  build-depends:
+    HUnit,
+    base,
+    bytestring,
+    criterion,
+    deepseq,
+    tasty,
+    tasty-hunit
+
+test-suite tests
+  type:                 exitcode-stdio-1.0
+  hs-source-dirs:       tests
+  main-is:              Tests.hs
+  default-language:     Haskell2010
+  other-modules:        Properties
+
+  ghc-options:
+    -Wall -threaded     -O0 -rtsopts
+
+  build-depends:
+    QuickCheck >= 2.4,
+    base,
+    criterion,
+    statistics,
+    HUnit,
+    tasty,
+    tasty-hunit,
+    tasty-quickcheck,
+    vector,
+    aeson >= 0.8
+
+test-suite cleanup
+  type:                 exitcode-stdio-1.0
+  hs-source-dirs:       tests
+  default-language:     Haskell2010
+  main-is:              Cleanup.hs
+
+  ghc-options:
+    -Wall -threaded     -O0 -rtsopts
+
+  build-depends:
+    HUnit,
+    base,
+    bytestring,
+    criterion,
+    deepseq,
+    directory,
+    tasty,
+    tasty-hunit
+
+source-repository head
+  type:     git
+  location: https://github.com/bos/criterion.git

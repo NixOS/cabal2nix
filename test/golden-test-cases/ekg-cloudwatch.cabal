@@ -1,0 +1,46 @@
+-- This file has been generated from package.yaml by hpack version 0.17.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:                ekg-cloudwatch
+version:             0.0.1.6
+synopsis:            An ekg backend for Amazon Cloudwatch
+description:         Push ekg metrics to Amazon Cloudwatch
+homepage:            https://github.com/sellerlabs/ekg-cloudwatch#readme
+bug-reports:         https://github.com/sellerlabs/ekg-cloudwatch/issues
+license:             BSD3
+license-file:        LICENSE
+author:              Matt Parsons
+maintainer:          matt@sellerlabs.com
+copyright:           2016 Seller Labs
+category:            Web
+build-type:          Simple
+cabal-version:       >= 1.10
+
+extra-source-files:
+    CHANGELOG.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/sellerlabs/ekg-cloudwatch
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , ekg-core >= 0.1 && < 1.0
+    , amazonka >= 1.0.0
+    , amazonka-cloudwatch >= 1.0.0
+    , amazonka-core >= 1.0.0
+    , bytestring
+    , lens
+    , resourcet
+    , semigroups
+    , text
+    , time
+    , unordered-containers
+  exposed-modules:
+      System.Remote.Monitoring.CloudWatch
+  default-language: Haskell2010

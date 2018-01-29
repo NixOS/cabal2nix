@@ -1,0 +1,430 @@
+Name:                aws
+Version:             0.18
+Synopsis:            Amazon Web Services (AWS) for Haskell
+Description:         Bindings for Amazon Web Services (AWS), with the aim of supporting all AWS services. To see a high level overview of the library, see the README at <https://github.com/aristidb/aws/blob/master/README.md>.
+Homepage:            http://github.com/aristidb/aws
+License:             BSD3
+License-file:        LICENSE
+Author:              Aristid Breitkreuz, contributors see README
+Maintainer:          aristidb@gmail.com
+Copyright:           See contributors list in README and LICENSE file
+Category:            Network, Web, AWS, Cloud, Distributed Computing
+Build-type:          Simple
+
+Extra-source-files:  README.md
+                     CHANGELOG.md
+
+Cabal-version:       >=1.10
+
+Source-repository this
+  type: git
+  location: https://github.com/aristidb/aws.git
+  tag: 0.18
+
+Source-repository head
+  type: git
+  location: https://github.com/aristidb/aws.git
+
+Flag Examples
+  Description: Build the examples.
+  Default: False
+
+Library
+  Exposed-modules:
+                       Aws
+                       Aws.Aws
+                       Aws.Core
+                       Aws.DynamoDb
+                       Aws.DynamoDb.Commands
+                       Aws.DynamoDb.Commands.BatchGetItem
+                       Aws.DynamoDb.Commands.BatchWriteItem
+                       Aws.DynamoDb.Commands.DeleteItem
+                       Aws.DynamoDb.Commands.GetItem
+                       Aws.DynamoDb.Commands.PutItem
+                       Aws.DynamoDb.Commands.Query
+                       Aws.DynamoDb.Commands.Scan
+                       Aws.DynamoDb.Commands.Table
+                       Aws.DynamoDb.Commands.UpdateItem
+                       Aws.DynamoDb.Core
+                       Aws.Ec2.InstanceMetadata
+                       Aws.Iam
+                       Aws.Iam.Commands
+                       Aws.Iam.Commands.CreateAccessKey
+                       Aws.Iam.Commands.CreateUser
+                       Aws.Iam.Commands.DeleteAccessKey
+                       Aws.Iam.Commands.DeleteUser
+                       Aws.Iam.Commands.DeleteUserPolicy
+                       Aws.Iam.Commands.GetUser
+                       Aws.Iam.Commands.GetUserPolicy
+                       Aws.Iam.Commands.ListAccessKeys
+                       Aws.Iam.Commands.ListMfaDevices
+                       Aws.Iam.Commands.ListUserPolicies
+                       Aws.Iam.Commands.ListUsers
+                       Aws.Iam.Commands.PutUserPolicy
+                       Aws.Iam.Commands.UpdateAccessKey
+                       Aws.Iam.Commands.UpdateUser
+                       Aws.Iam.Core
+                       Aws.Iam.Internal
+                       Aws.Network
+                       Aws.S3
+                       Aws.S3.Commands
+                       Aws.S3.Commands.CopyObject
+                       Aws.S3.Commands.DeleteBucket
+                       Aws.S3.Commands.DeleteObject
+                       Aws.S3.Commands.DeleteObjectVersion
+                       Aws.S3.Commands.DeleteObjects
+                       Aws.S3.Commands.GetBucket
+                       Aws.S3.Commands.GetBucketLocation
+                       Aws.S3.Commands.GetBucketObjectVersions
+                       Aws.S3.Commands.GetObject
+                       Aws.S3.Commands.GetService
+                       Aws.S3.Commands.HeadObject
+                       Aws.S3.Commands.PutBucket
+                       Aws.S3.Commands.PutObject
+                       Aws.S3.Commands.Multipart
+                       Aws.S3.Core
+                       Aws.Ses
+                       Aws.Ses.Commands
+                       Aws.Ses.Commands.DeleteIdentity
+                       Aws.Ses.Commands.GetIdentityDkimAttributes
+                       Aws.Ses.Commands.GetIdentityNotificationAttributes
+                       Aws.Ses.Commands.GetIdentityVerificationAttributes
+                       Aws.Ses.Commands.ListIdentities
+                       Aws.Ses.Commands.SendRawEmail
+                       Aws.Ses.Commands.SetIdentityDkimEnabled
+                       Aws.Ses.Commands.SetIdentityFeedbackForwardingEnabled
+                       Aws.Ses.Commands.SetIdentityNotificationTopic
+                       Aws.Ses.Commands.VerifyDomainDkim
+                       Aws.Ses.Commands.VerifyDomainIdentity
+                       Aws.Ses.Commands.VerifyEmailIdentity
+                       Aws.Ses.Core
+                       Aws.SimpleDb
+                       Aws.SimpleDb.Commands
+                       Aws.SimpleDb.Commands.Attributes
+                       Aws.SimpleDb.Commands.Domain
+                       Aws.SimpleDb.Commands.Select
+                       Aws.SimpleDb.Core
+                       Aws.Sqs
+                       Aws.Sqs.Commands
+                       Aws.Sqs.Commands.Message
+                       Aws.Sqs.Commands.Permission
+                       Aws.Sqs.Commands.Queue
+                       Aws.Sqs.Commands.QueueAttributes
+                       Aws.Sqs.Core
+
+  Build-depends:
+                       aeson                >= 0.6,
+                       attoparsec           >= 0.11    && < 0.14,
+                       base                 >= 4.6     && < 5,
+                       base16-bytestring    == 0.1.*,
+                       base64-bytestring    == 1.0.*,
+                       blaze-builder        >= 0.2.1.4 && < 0.5,
+                       byteable             == 0.1.*,
+                       bytestring           >= 0.9     && < 0.11,
+                       case-insensitive     >= 0.2     && < 1.3,
+                       cereal               >= 0.3     && < 0.6,
+                       conduit              >= 1.1     && < 1.3,
+                       conduit-extra        >= 1.1     && < 1.3,
+                       containers           >= 0.4,
+                       cryptonite           >= 0.11,
+                       data-default         >= 0.5.3   && < 0.8,
+                       directory            >= 1.0     && < 2.0,
+                       filepath             >= 1.1     && < 1.5,
+                       http-conduit         >= 2.1     && < 2.3,
+                       http-types           >= 0.7     && < 1.0,
+                       lifted-base          >= 0.1     && < 0.3,
+                       memory,
+                       monad-control        >= 0.3,
+                       mtl                  == 2.*,
+                       network              == 2.*,
+                       old-locale           == 1.*,
+                       resourcet            >= 1.1     && < 1.2,
+                       safe                 >= 0.3     && < 0.4,
+                       scientific           >= 0.3,
+                       tagged               >= 0.7     && < 0.9,
+                       text                 >= 0.11,
+                       time                 >= 1.4.0   && < 2.0,
+                       transformers         >= 0.2.2   && < 0.6,
+                       unordered-containers >= 0.2,
+                       utf8-string          >= 0.3     && < 1.1,
+                       vector               >= 0.10,
+                       xml-conduit          >= 1.2     && <2.0
+ 
+  if !impl(ghc >= 7.6)
+    Build-depends: ghc-prim
+
+  GHC-Options: -Wall
+
+  Default-Language: Haskell2010
+  Default-Extensions:
+        RecordWildCards,
+        TypeFamilies,
+        MultiParamTypeClasses,
+        FlexibleContexts,
+        FlexibleInstances,
+        FunctionalDependencies,
+        DeriveFunctor,
+        DeriveDataTypeable,
+        OverloadedStrings,
+        TupleSections,
+        ScopedTypeVariables,
+        EmptyDataDecls,
+        Rank2Types
+
+Executable GetObject
+  Main-is: GetObject.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       http-conduit,
+                       conduit,
+                       conduit-extra
+
+  Default-Language: Haskell2010
+
+Executable GetObjectGoogle
+  Main-is: GetObjectGoogle.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       http-conduit,
+                       conduit,
+                       conduit-extra
+
+  Default-Language: Haskell2010
+
+Executable MultipartUpload
+  Main-is: MultipartUpload.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       http-conduit,
+                       conduit,
+                       conduit-extra,
+                       text,
+                       resourcet
+
+  Default-Language: Haskell2010
+
+Executable MultipartTransfer
+  Main-is: MultipartTransfer.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       http-conduit,
+                       conduit,
+                       conduit-extra,
+                       text
+
+  Default-Language: Haskell2010
+
+Executable NukeBucket
+  Main-is: NukeBucket.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       http-conduit,
+                       conduit,
+                       conduit-extra,
+                       text >=0.1,
+                       transformers
+
+  Default-Language: Haskell2010
+
+Executable PutBucketNearLine
+  Main-is: PutBucketNearLine.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       http-conduit,
+                       conduit,
+                       conduit-extra,
+                       text >=0.1,
+                       transformers
+
+  Default-Language: Haskell2010
+
+Executable SimpleDb
+  Main-is: SimpleDb.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       text >=0.11
+
+  Default-Language: Haskell2010
+
+Executable DynamoDb
+  Main-is: DynamoDb.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       aws,
+                       base == 4.*,
+                       data-default,
+                       exceptions,
+                       http-conduit,
+                       text,
+                       conduit
+
+  Default-Language: Haskell2010
+
+
+Executable Sqs
+  Main-is: Sqs.hs
+  Hs-source-dirs: Examples
+
+  if !flag(Examples)
+    Buildable: False
+  else
+    Buildable: True
+    Build-depends:
+                       base == 4.*,
+                       aws,
+                       errors >= 2.0,
+                       text >=0.11,
+                       transformers >= 0.3
+
+  Default-Language: Haskell2010
+
+test-suite sqs-tests
+    type: exitcode-stdio-1.0
+    default-language: Haskell2010
+    hs-source-dirs: tests
+    main-is: Sqs/Main.hs
+
+    other-modules:
+        Utils
+
+    build-depends:
+        QuickCheck >= 2.7,
+        aeson >= 0.7,
+        aws,
+        base == 4.*,
+        bytestring >= 0.10,
+        errors >= 2.0,
+        http-client >= 0.3 && < 0.6,
+        lifted-base >= 0.2,
+        monad-control >= 0.3,
+        mtl >= 2.1,
+        quickcheck-instances >= 0.3,
+        resourcet >= 1.1,
+        tagged >= 0.7,
+        tasty >= 0.8,
+        tasty-quickcheck >= 0.8,
+        text >= 1.1,
+        time,
+        transformers >= 0.3,
+        transformers-base >= 0.4
+
+    ghc-options: -Wall -threaded
+
+test-suite dynamodb-tests
+    type: exitcode-stdio-1.0
+    default-language: Haskell2010
+    hs-source-dirs: tests
+    main-is: DynamoDb/Main.hs
+
+    other-modules:
+        Utils
+        DynamoDb.Utils
+
+    build-depends:
+        QuickCheck >= 2.7,
+        aeson >= 0.7,
+        aws,
+        base == 4.*,
+        bytestring >= 0.10,
+        errors >= 2.0,
+        http-client >= 0.3,
+        lifted-base >= 0.2,
+        monad-control >= 0.3,
+        mtl >= 2.1,
+        quickcheck-instances >= 0.3,
+        resourcet >= 1.1,
+        tagged >= 0.7,
+        tasty >= 0.8,
+        tasty-quickcheck >= 0.8,
+        text >= 1.1,
+        time,
+        transformers >= 0.3,
+        transformers-base >= 0.4
+
+
+test-suite s3-tests
+    type: exitcode-stdio-1.0
+    default-language: Haskell2010
+    hs-source-dirs: tests
+    main-is: S3/Main.hs
+
+    other-modules:
+        Utils
+
+    build-depends:
+        aws,
+        base == 4.*,
+        QuickCheck >= 2.7,
+        aeson >= 0.7,
+        bytestring,
+        conduit-combinators,
+        errors >= 2.0,
+        lifted-base >= 0.2,
+        monad-control >= 0.3,
+        mtl >= 2.1,
+        http-client < 0.6,
+        http-client-tls < 0.5,
+        http-types,
+        resourcet,
+        tasty >= 0.8,
+        tasty-hunit >= 0.8,
+        tasty-quickcheck >= 0.8,
+        text,
+        time,
+        tagged >= 0.7,
+        transformers >= 0.3,
+        transformers-base >= 0.4

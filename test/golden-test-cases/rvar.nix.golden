@@ -1,0 +1,17 @@
+{ mkDerivation, base, fetchurl, MonadPrompt, mtl, random-source
+, transformers
+}:
+mkDerivation {
+  pname = "rvar";
+  version = "0.2.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base MonadPrompt mtl random-source transformers
+  ];
+  homepage = "https://github.com/mokus0/random-fu";
+  description = "Random Variables";
+  license = stdenv.lib.licenses.publicDomain;
+}

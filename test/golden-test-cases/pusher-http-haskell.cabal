@@ -1,0 +1,92 @@
+name: pusher-http-haskell
+version: 1.5.1.0
+cabal-version: >=1.18
+build-type: Simple
+license: MIT
+license-file: LICENSE
+copyright: (c) Will Sewell, 2016
+maintainer: me@willsewell.com
+stability: experimental
+homepage: https://github.com/pusher-community/pusher-http-haskell
+bug-reports: https://github.com/pusher-community/pusher-http-haskell/issues
+synopsis: Haskell client library for the Pusher HTTP API
+description:
+    Functions that correspond to endpoints of the Pusher HTTP
+    API. Messages can be triggered, and information about the
+    channel can be queried. Additionally there are functions
+    for authenticating users of private and presence channels.
+category: Network
+author: Will Sewell
+tested-with: GHC >=7.10.2
+
+library
+
+    if impl(ghc >=8.0.0)
+        ghc-options: -Wcompat -Whi-shadowing -Wmissing-signatures
+    else
+        ghc-options: -fwarn-hi-shadowing -fwarn-missing-signatures -fwarn-tabs
+    exposed-modules:
+        Network.Pusher
+        Network.Pusher.Internal
+        Network.Pusher.Internal.Auth
+        Network.Pusher.Internal.HTTP
+        Network.Pusher.Protocol
+    build-depends:
+        aeson >=0.8 && <1.3,
+        base >=4.7 && <4.11,
+        bytestring ==0.10.*,
+        base16-bytestring ==0.1.*,
+        cryptonite >= 0.6 && <0.25,
+        hashable ==1.2.*,
+        http-client >=0.4 && <0.6,
+        http-types >=0.8 && <0.12,
+        memory >= 0.7 && <0.15,
+        text ==1.2.*,
+        time >=1.5 && <1.9,
+        transformers >=0.4 && <0.6,
+        unordered-containers ==0.2.*,
+        vector >=0.10.0.0 && <0.13
+    default-language: Haskell2010
+    default-extensions: OverloadedStrings
+    hs-source-dirs: src
+    other-modules:
+        Network.Pusher.Data
+        Network.Pusher.Error
+        Network.Pusher.Internal.Util
+        Network.Pusher.Webhook
+    ghc-options: -Wall
+
+test-suite tests
+
+    if impl(ghc >=8.0.0)
+        ghc-options: -Wcompat -Whi-shadowing -Wmissing-signatures
+    else
+        ghc-options: -fwarn-hi-shadowing -fwarn-missing-signatures -fwarn-tabs
+    type: exitcode-stdio-1.0
+    main-is: Main.hs
+    build-depends:
+        aeson -any,
+        base -any,
+        bytestring -any,
+        base16-bytestring -any,
+        cryptonite -any,
+        hspec -any,
+        http-client -any,
+        http-types -any,
+        pusher-http-haskell -any,
+        QuickCheck -any,
+        time -any,
+        text -any,
+        transformers -any,
+        unordered-containers -any,
+        vector -any,
+        scientific -any
+    default-language: Haskell2010
+    default-extensions: OverloadedStrings
+    hs-source-dirs: test
+    other-modules:
+        Auth
+        Protocol
+        Webhook
+        Push
+    ghc-options: -Wall

@@ -1,0 +1,27 @@
+{ mkDerivation, aeson, base, bifunctors, binary, containers
+, data-default-class, deepseq, fetchurl, hashable, keys, mtl
+, profunctors, QuickCheck, quickcheck-instances, semigroupoids
+, tasty, tasty-quickcheck, transformers, transformers-compat
+, unordered-containers, vector, vector-instances
+}:
+mkDerivation {
+  pname = "these";
+  version = "0.7.4";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base bifunctors binary containers data-default-class deepseq
+    hashable keys mtl profunctors QuickCheck semigroupoids transformers
+    transformers-compat unordered-containers vector vector-instances
+  ];
+  testHaskellDepends = [
+    aeson base bifunctors binary containers hashable QuickCheck
+    quickcheck-instances tasty tasty-quickcheck transformers
+    unordered-containers vector
+  ];
+  homepage = "https://github.com/isomorphism/these";
+  description = "An either-or-both data type & a generalized 'zip with padding' typeclass";
+  license = stdenv.lib.licenses.bsd3;
+}

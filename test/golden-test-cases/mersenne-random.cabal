@@ -1,0 +1,111 @@
+name:            mersenne-random
+version:         1.0.0.1
+homepage:        http://code.haskell.org/~dons/code/mersenne-random
+synopsis:        Generate high quality pseudorandom numbers using a SIMD Fast Mersenne Twister
+description:
+    The Mersenne twister is a pseudorandom number generator developed by
+    Makoto Matsumoto and Takuji Nishimura that is based on a matrix linear
+    recurrence over a finite binary field. It provides for fast generation
+    of very high quality pseudorandom numbers
+    .
+    This library uses SFMT, the SIMD-oriented Fast Mersenne Twister, a
+    variant of Mersenne Twister that is much faster than the original. 
+    It is designed to be fast when it runs on 128-bit SIMD. It can be
+    compiled with either SSE2 and PowerPC AltiVec support, to take
+    advantage of these instructions.
+    .
+    > cabal install -fuse_sse2
+    .
+    On an x86 system, for performance win.
+    .
+    By default the period of the function is 2^19937-1, however, you can
+    compile in other defaults. Note that this algorithm on its own
+    is not cryptographically secure.
+    .
+    For more information about the algorithm and implementation, see
+    the SFMT homepage,
+    .
+    <http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html>
+    .
+    and, Mutsuo Saito and Makoto Matsumoto,
+    /SIMD-oriented Fast Mersenne Twister: a 128-bit Pseudorandom Number
+    Generator/, in the Proceedings of MCQMC2006, here:
+    .
+    <http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/sfmt.pdf>
+    .
+category:        Math, System
+license:         BSD3
+license-file:    LICENSE
+copyright:       (c) 2008-2011. Don Stewart <dons00@gmail.com>
+author:          Don Stewart
+maintainer:      Don Stewart <dons00@gmail.com>
+cabal-version: >= 1.2.0
+tested-with:     GHC ==6.8.2, Hugs ==2005, GHC ==7.0.2
+build-type:      Simple
+
+flag small_base
+  description: Build with new smaller base library
+  default:     False
+
+flag use_sse2
+  description: Build with SSE2 support.
+  default:     False
+
+flag use_altivec
+  description: Build with Altivec support.
+  default:     False
+
+flag big_endian64
+  description: Build for a big endian 64 bit machine.
+  default:     False
+
+library
+    exposed-modules: System.Random.Mersenne
+    extensions:      CPP, ForeignFunctionInterface, BangPatterns
+
+    if flag(small_base)
+        build-depends: base  < 3
+    else
+        build-depends: base >= 3 && < 5, old-time
+
+    -- For information on how to set different periods, or tune 
+    -- for your arch, see,
+    --
+    -- <http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/howto-compile.html>
+    --
+    -- SSE2 supported on: Pentium M, Pentium 4, Core, Core 2 etc.
+    -- See: http://en.wikipedia.org/wiki/SSE2#CPUs_supporting_SSE2
+    --
+    -- Enable use_sse2 flag if you have one of those archs.
+    --
+    -- Works well on core 2 duo.
+    --
+    -- Enable use_altivec flag to use smid on powerpc.
+    -- Enable big_endian64 flag on a big endian machine 64 bit machine
+    --  (e.g. UltraSparc)
+    --
+    cc-options:
+        -DMEXP=19937
+        -DNDEBUG 
+        -O3 -finline-functions -fomit-frame-pointer
+        -fno-strict-aliasing --param max-inline-insns-single=1800
+
+    if flag(use_sse2)
+        cc-options:
+            -msse2 
+            -DHAVE_SSE2
+
+    if flag(big_endian64)
+        cc-options:
+            -DBIG_ENDIAN64
+
+    if flag(use_altivec)
+        cc-options:
+            -DHAVE_ALTIVEC
+
+    ghc-options:     -Wall -O2 -fexcess-precision
+
+    c-sources:        cbits/SFMT.c cbits/SFMT_wrap.c
+    include-dirs:     include
+    includes:         SFMT.h SFMT_wrap.h
+    install-includes: SFMT.h SFMT_wrap.h

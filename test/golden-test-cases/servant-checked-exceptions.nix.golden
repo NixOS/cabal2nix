@@ -1,0 +1,32 @@
+{ mkDerivation, aeson, base, bytestring, deepseq, doctest, fetchurl
+, Glob, hspec-wai, http-api-data, http-client, http-media
+, natural-transformation, optparse-applicative, profunctors
+, servant, servant-client, servant-docs, servant-server, tagged
+, tasty, tasty-hspec, tasty-hunit, text, wai, warp
+}:
+mkDerivation {
+  pname = "servant-checked-exceptions";
+  version = "0.4.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    aeson base bytestring deepseq http-media profunctors servant
+    servant-client servant-docs servant-server tagged text
+  ];
+  executableHaskellDepends = [
+    aeson base http-api-data http-client natural-transformation
+    optparse-applicative servant servant-client servant-docs
+    servant-server text wai warp
+  ];
+  testHaskellDepends = [
+    base bytestring doctest Glob hspec-wai servant servant-server tasty
+    tasty-hspec tasty-hunit wai
+  ];
+  homepage = "https://github.com/cdepillabout/servant-checked-exceptions";
+  description = "Checked exceptions for Servant APIs";
+  license = stdenv.lib.licenses.bsd3;
+}

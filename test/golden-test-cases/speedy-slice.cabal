@@ -1,0 +1,80 @@
+name:                speedy-slice
+version:             0.3.0
+synopsis:            Speedy slice sampling.
+homepage:            http://github.com/jtobin/speedy-slice
+license:             MIT
+license-file:        LICENSE
+author:              Jared Tobin
+maintainer:          jared@jtobin.ca
+category:            Math
+build-type:          Simple
+cabal-version:       >=1.10
+description:
+  Speedy slice sampling.
+  .
+  This implementation of the slice sampling algorithm uses 'lens' as a means to
+  operate over generic indexed traversable functors, so you can expect it to
+  work if your target function takes a list, vector, map, sequence, etc. as its
+  argument.
+  .
+  Additionally you can sample over anything that's an instance of both 'Num' and
+  'Variate', which is useful in the case of discrete parameters.
+  .
+  Exports a 'mcmc' function that prints a trace to stdout, a 'chain' function
+  for collecting results in memory, and a 'slice' transition operator that can
+  be used more generally.
+  .
+  > import Numeric.MCMC.Slice
+  > import Data.Sequence (Seq, index, fromList)
+  >
+  > bnn :: Seq Double -> Double
+  > bnn xs = -0.5 * (x0 ^ 2 * x1 ^ 2 + x0 ^ 2 + x1 ^ 2 - 8 * x0 - 8 * x1) where
+  >   x0 = index xs 0
+  >   x1 = index xs 1
+  >
+  > main :: IO ()
+  > main = withSystemRandom . asGenIO $ mcmc 10000 1 (fromList [0, 0]) bnn
+
+Source-repository head
+  Type:     git
+  Location: http://github.com/jtobin/speedy-slice.git
+
+library
+  default-language:    Haskell2010
+  exposed-modules:
+      Numeric.MCMC.Slice
+  build-depends:
+      base            >= 4 && < 6
+    , kan-extensions  >= 5 && < 6
+    , lens            >= 4 && < 5
+    , primitive       >= 0.6 && < 1.0
+    , mcmc-types      >= 1.0.1
+    , mwc-probability >= 1.0.1
+    , pipes           >= 4 && < 5
+    , transformers    >= 0.5 && < 1.0
+
+Test-suite rosenbrock
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Rosenbrock.hs
+  default-language:    Haskell2010
+  ghc-options:
+    -rtsopts
+  build-depends:
+      base              >= 4 && < 6
+    , mwc-probability   >= 1.0.1
+    , speedy-slice
+
+Test-suite bnn
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             BNN.hs
+  default-language:    Haskell2010
+  ghc-options:
+    -rtsopts
+  build-depends:
+      base              >= 4 && < 6
+    , containers        >= 0.5 && < 0.6
+    , mwc-probability   >= 1.0.1
+    , speedy-slice
+

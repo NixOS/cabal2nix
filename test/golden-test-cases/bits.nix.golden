@@ -1,0 +1,17 @@
+{ mkDerivation, base, bytes, Cabal, cabal-doctest, doctest
+, fetchurl, mtl, transformers
+}:
+mkDerivation {
+  pname = "bits";
+  version = "0.5.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [ base bytes mtl transformers ];
+  testHaskellDepends = [ base doctest ];
+  homepage = "http://github.com/ekmett/bits";
+  description = "Various bit twiddling and bitwise serialization primitives";
+  license = stdenv.lib.licenses.bsd3;
+}

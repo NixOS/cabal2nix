@@ -1,0 +1,16 @@
+{ mkDerivation, base, bytestring, fetchurl, mtl, time }:
+mkDerivation {
+  pname = "benchpress";
+  version = "0.2.2.10";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base mtl time ];
+  executableHaskellDepends = [ base bytestring ];
+  homepage = "https://github.com/WillSewell/benchpress";
+  description = "Micro-benchmarking with detailed statistics";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, numtype-dk }:
+mkDerivation {
+  pname = "exact-pi";
+  version = "0.4.1.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base numtype-dk ];
+  homepage = "https://github.com/dmcclean/exact-pi/";
+  description = "Exact rational multiples of pi (and integer powers of pi)";
+  license = stdenv.lib.licenses.mit;
+}

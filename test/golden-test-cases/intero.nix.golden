@@ -1,0 +1,27 @@
+{ mkDerivation, array, base, bytestring, containers, directory
+, fetchurl, filepath, ghc, ghc-boot-th, ghc-paths, ghci, haskeline
+, hspec, process, regex-compat, syb, temporary, time, transformers
+, unix
+}:
+mkDerivation {
+  pname = "intero";
+  version = "0.1.24";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = false;
+  isExecutable = true;
+  enableSeparateDataOutput = true;
+  executableHaskellDepends = [
+    array base bytestring containers directory filepath ghc ghc-boot-th
+    ghc-paths ghci haskeline process syb time transformers unix
+  ];
+  testHaskellDepends = [
+    base directory filepath hspec process regex-compat temporary
+    transformers
+  ];
+  homepage = "https://github.com/commercialhaskell/intero";
+  description = "Complete interactive development program for Haskell";
+  license = stdenv.lib.licenses.bsd3;
+}

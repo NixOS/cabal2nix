@@ -1,0 +1,89 @@
+name:                katydid
+version:             0.1.1.0
+synopsis:            A haskell implementation of Katydid
+description:         
+  A haskell implementation of Katydid
+  .
+  This includes:
+  .
+      - Relapse, a validation Language
+      - Parsers for JSON, XML and an abstraction for trees
+  .
+  You should only need the following modules:
+  .
+      - The Relapse module is used for validation.
+      - The Json and XML modules are used to create Json and XML trees that can be validated.
+  .
+  If you want to implement your own parser then you can look at the Parsers module
+  .
+
+homepage:            https://github.com/katydid/katydid-haskell
+license:             BSD3
+license-file:        LICENSE
+author:              Walter Schulze
+maintainer:          awalterschulze@gmail.com
+copyright:           Walter Schulze
+category:            Data
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:   Patterns
+                     , Derive
+                     , MemDerive
+                     , Zip
+                     , IfExprs
+                     , Expr
+                     , Simplify
+                     , Json
+                     , Xml
+                     , Parsers
+                     , ParsePatterns
+                     , VpaDerive
+                     , Parser
+                     , Relapse
+  build-depends:       base >= 4.7 && < 5
+                     , containers
+                     , json
+                     , hxt
+                     , regex-tdfa
+                     , mtl
+                     , parsec
+  default-language:    Haskell2010
+
+executable katydid-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , katydid
+                     , mtl
+  default-language:    Haskell2010
+
+test-suite katydid-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , katydid
+                     , directory
+                     , filepath
+                     , containers
+                     , json
+                     , hxt
+                     , HUnit
+                     , parsec
+                     , mtl
+                     , tasty-hunit
+                     , tasty
+  other-modules:       ParserSpec
+                     , RelapseSpec
+                     , Suite
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/katydid/katydid-haskell

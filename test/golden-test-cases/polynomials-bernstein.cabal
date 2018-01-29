@@ -1,0 +1,22 @@
+Name:		polynomials-bernstein
+Version: 	1.1.2
+Synopsis:	A solver for systems of polynomial equations in bernstein form
+Description: 	This library defines an optimized type for representing polynomials
+		in Bernstein form, as well as instances of numeric classes and other
+		manipulation functions, and a solver of systems of polynomial
+		equations in this form.
+Category:	Math
+Author:         Pierre-Etienne Meunier <pierreetienne.meunier@gmail.com>
+Maintainer:	Jean-Philippe Bernardy <jeanphilippe.bernardy@gmail.com>
+License:	GPL
+License-file:	LICENSE
+Build-Type:	Simple
+Cabal-Version:	>=1.6
+source-repository head
+        type: git
+        location: https://github.com/jyp/polynomials-bernstein
+Library
+        Build-Depends:	base<5,	vector>=0.11
+        Exposed-modules: Algebra.Polynomials.Bernstein, Algebra.Polynomials.Numerical
+        ghc-options: -O2 -Wall
+        c-sources: Algebra/Polynomials/cnumerical.c

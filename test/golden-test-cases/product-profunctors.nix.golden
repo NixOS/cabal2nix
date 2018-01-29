@@ -1,0 +1,18 @@
+{ mkDerivation, base, contravariant, fetchurl, profunctors, tagged
+, template-haskell
+}:
+mkDerivation {
+  pname = "product-profunctors";
+  version = "0.8.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base contravariant profunctors tagged template-haskell
+  ];
+  testHaskellDepends = [ base profunctors ];
+  homepage = "https://github.com/tomjaguarpaw/product-profunctors";
+  description = "product-profunctors";
+  license = stdenv.lib.licenses.bsd3;
+}

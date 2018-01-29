@@ -1,0 +1,18 @@
+{ mkDerivation, base, fetchurl, HUnit, QuickCheck, test-framework
+, test-framework-hunit, test-framework-quickcheck2
+}:
+mkDerivation {
+  pname = "fingertree";
+  version = "0.1.3.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  testHaskellDepends = [
+    base HUnit QuickCheck test-framework test-framework-hunit
+    test-framework-quickcheck2
+  ];
+  description = "Generic finger-tree structure, with example instances";
+  license = stdenv.lib.licenses.bsd3;
+}

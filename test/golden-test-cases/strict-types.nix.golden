@@ -1,0 +1,18 @@
+{ mkDerivation, array, base, bytestring, containers, deepseq
+, fetchurl, hashable, text, unordered-containers, vector
+}:
+mkDerivation {
+  pname = "strict-types";
+  version = "0.1.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    array base bytestring containers deepseq hashable text
+    unordered-containers vector
+  ];
+  homepage = "https://github.com/pepeiborra/strict-types";
+  description = "A type level predicate ranging over strict types";
+  license = stdenv.lib.licenses.bsd3;
+}

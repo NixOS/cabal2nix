@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl }:
+mkDerivation {
+  pname = "iso639";
+  version = "0.1.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  homepage = "https://github.com/HugoDaniel/iso639";
+  description = "ISO-639-1 language codes";
+  license = stdenv.lib.licenses.bsd3;
+}

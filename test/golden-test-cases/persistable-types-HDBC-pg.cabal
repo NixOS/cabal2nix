@@ -1,0 +1,42 @@
+name:                persistable-types-HDBC-pg
+version:             0.0.1.5
+synopsis:            HDBC and Relational-Record instances of PostgreSQL extended types
+description:         This package contains HDBC Convertible instances and
+                     Relational-Record persistable instances of PostgreSQL extended types
+                     Supported extended types: inet, cidr
+homepage:            http://khibino.github.io/haskell-relational-record/
+license:             BSD3
+license-file:        LICENSE
+author:              Kei Hibino
+maintainer:          ex8k.hibino@gmail.com
+copyright:           Copyright (c) 2015-2017 Kei Hibino
+category:            Database
+build-type:          Simple
+cabal-version:       >=1.10
+tested-with:           GHC == 8.2.1
+                     , GHC == 8.0.1, GHC == 8.0.2
+                     , GHC == 7.10.1, GHC == 7.10.2, GHC == 7.10.3
+                     , GHC == 7.8.1, GHC == 7.8.2, GHC == 7.8.3, GHC == 7.8.4
+                     , GHC == 7.6.1, GHC == 7.6.2, GHC == 7.6.3
+                     , GHC == 7.4.1, GHC == 7.4.2
+
+extra-source-files:
+                     example/inet.sh
+                     example/DS.hs
+                     example/InetExample.hs
+
+library
+  exposed-modules:
+                       Database.HDBC.PostgreSQL.Instances
+                       Database.HDBC.PostgreSQL.Persistable
+
+  other-extensions:    MultiParamTypeClasses
+  build-depends:       base <5
+                     , bytestring
+                     , text-postgresql
+                     , convertible
+                     , HDBC
+                     , persistable-record >= 0.4
+                     , relational-query-HDBC
+  hs-source-dirs:      src
+  default-language:    Haskell2010

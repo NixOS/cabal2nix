@@ -1,0 +1,117 @@
+Name:           mongoDB
+Version:        2.3.0.1
+Synopsis:       Driver (client) for MongoDB, a free, scalable, fast, document
+                DBMS
+Description:    This package lets you connect to MongoDB servers and
+                update/query their data. Please see the example in
+                Database.MongoDB and the tutorial from the homepage. For
+                information about MongoDB itself, see www.mongodb.org.
+Category:       Database
+Homepage:       https://github.com/mongodb-haskell/mongodb
+Bug-reports:    https://github.com/mongodb-haskell/mongodb/issues
+Author:         Tony Hannan
+Maintainer:     Victor Denisov <denisovenator@gmail.com>
+Copyright:      Copyright (c) 2010-2012 10gen Inc.
+License:        Apache-2.0
+License-file:   LICENSE
+Cabal-version:  >= 1.10
+Build-type:     Simple
+Stability:      alpha
+Extra-Source-Files: CHANGELOG.md
+
+Library
+  GHC-options:      -Wall
+  default-language: Haskell2010
+
+  Build-depends:      array -any
+                    , base <5
+                    , binary -any
+                    , bson >= 0.3 && < 0.4
+                    , text
+                    , bytestring -any
+                    , containers -any
+                    , conduit
+                    , conduit-extra
+                    , mtl >= 2
+                    , cryptohash -any
+                    , network -any
+                    , parsec -any
+                    , random -any
+                    , random-shuffle -any
+                    , resourcet
+                    , monad-control >= 0.3.1
+                    , lifted-base >= 0.1.0.3
+                    , pureMD5
+                    , tagged
+                    , tls >= 1.2.0
+                    , time
+                    , data-default-class -any
+                    , transformers
+                    , transformers-base >= 0.4.1
+                    , hashtables >= 1.1.2.0
+                    , base16-bytestring >= 0.1.1.6
+                    , base64-bytestring >= 1.0.0.1
+                    , nonce >= 1.0.2
+
+  Exposed-modules:  Database.MongoDB
+                    Database.MongoDB.Admin
+                    Database.MongoDB.Connection
+                    Database.MongoDB.GridFS
+                    Database.MongoDB.Query
+                    Database.MongoDB.Transport
+                    Database.MongoDB.Transport.Tls
+  Other-modules:    Database.MongoDB.Internal.Protocol
+                    Database.MongoDB.Internal.Util
+
+Source-repository head
+    Type:     git
+    Location: https://github.com/mongodb-haskell/mongodb
+
+test-suite test
+  hs-source-dirs: test
+  main-is: Main.hs
+  other-modules:    Spec
+                  , QuerySpec
+                  , TestImport
+  ghc-options:       -Wall -with-rtsopts "-K64m"
+  type: exitcode-stdio-1.0
+  build-depends:   mongoDB
+                 , base
+                 , mtl
+                 , hspec >= 2
+                 -- Keep supporting the old-locale and time < 1.5 packages for
+                 -- now. It's too difficult to support old versions of GHC and
+                 -- the new version of time.
+                 , old-locale
+                 , text
+                 , time
+
+  default-language: Haskell2010
+  default-extensions: OverloadedStrings
+
+Benchmark bench
+  main-is:            Benchmark.hs
+  type:               exitcode-stdio-1.0
+  Build-depends:      array -any
+                    , base < 5
+                    , base64-bytestring
+                    , base16-bytestring
+                    , binary -any
+                    , bson >= 0.3 && < 0.4
+                    , text
+                    , bytestring -any
+                    , containers -any
+                    , mtl >= 2
+                    , cryptohash -any
+                    , network -any
+                    , nonce
+                    , parsec -any
+                    , random -any
+                    , random-shuffle -any
+                    , monad-control >= 0.3.1
+                    , lifted-base >= 0.1.0.3
+                    , transformers-base >= 0.4.1
+                    , hashtables >= 1.1.2.0
+                    , criterion
+  default-language: Haskell2010
+  default-extensions: OverloadedStrings

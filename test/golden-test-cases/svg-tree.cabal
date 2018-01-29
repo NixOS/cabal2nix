@@ -1,0 +1,61 @@
+name:                svg-tree
+version:             0.6.2.1
+synopsis:            SVG file loader and serializer
+description:
+  svg-tree provides types representing a SVG document,
+  and allows to load and save it.
+  .
+  The types definition are aimed at rendering,
+  so they are rather comple. For simpler SVG document building,
+  look after `lucid-svg`.
+  .
+  To render an svg document you can use the `rasterific-svg` package
+
+
+license:             BSD3
+author:              Vincent Berthoux
+maintainer:          Vincent Berthoux
+-- copyright:
+category:            Graphics, Svg
+build-type:          Simple
+cabal-version:       >=1.10
+
+extra-source-files: changelog.md
+
+Source-Repository head
+    Type:      git
+    Location:  git://github.com/Twinside/svg-tree.git
+
+Source-Repository this
+    Type:      git
+    Location:  git://github.com/Twinside/svg-tree.git
+    Tag:       v0.6.2.1
+
+library
+  hs-source-dirs: src
+  Ghc-options: -O3 -Wall
+  default-language: Haskell2010
+  exposed-modules: Graphics.Svg
+                 , Graphics.Svg.CssTypes
+                 , Graphics.Svg.Types
+
+  other-modules: Graphics.Svg.NamedColors
+               , Graphics.Svg.XmlParser
+               , Graphics.Svg.PathParser
+               , Graphics.Svg.CssParser
+               , Graphics.Svg.ColorParser
+
+  build-depends: base >= 4.5 && < 5
+               , JuicyPixels >= 3.2
+               , attoparsec >= 0.12
+               , scientific >= 0.3
+               , containers >= 0.4
+               , xml        >= 1.3
+               , bytestring >= 0.10
+               , linear     >= 1.20
+               , vector     >= 0.10
+               , text       >= 1.1
+               , transformers >= 0.3 && < 0.6
+               , mtl        >= 2.1 && < 2.3
+               , lens       >= 4.6 && < 5
+

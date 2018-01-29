@@ -1,0 +1,34 @@
+name:                io-machine
+version:             0.2.0.0
+synopsis:            Easy I/O model to learn IO monad
+description:         Please see README.md
+homepage:            https://github.com/YoshikuniJujo/io-machine#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Yoshikuni Jujo
+maintainer:          PAF01143@nifty.ne.jp
+copyright:           Copyright (C) 2016 Yoshikuni Jujo All Rights Reserved
+category:            Education
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Machine, IOMcn
+  build-depends:       base >= 4.7 && < 5, time
+  ghc-options:         -fno-warn-tabs
+  default-language:    Haskell2010
+
+test-suite io-machine-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , io-machine
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -fno-warn-tabs
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/YoshikuniJujo/io-machine

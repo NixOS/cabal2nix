@@ -1,0 +1,24 @@
+{ mkDerivation, array, base, bytestring, containers, dlist
+, fetchurl, names-th, persistable-record, product-isomorphic
+, quickcheck-simple, sql-words, template-haskell, text
+, th-reify-compat, time, time-locale-compat, transformers
+}:
+mkDerivation {
+  pname = "relational-query";
+  version = "0.11.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    array base bytestring containers dlist names-th persistable-record
+    product-isomorphic sql-words template-haskell text th-reify-compat
+    time time-locale-compat transformers
+  ];
+  testHaskellDepends = [
+    base containers product-isomorphic quickcheck-simple transformers
+  ];
+  homepage = "http://khibino.github.io/haskell-relational-record/";
+  description = "Typeful, Modular, Relational, algebraic query engine";
+  license = stdenv.lib.licenses.bsd3;
+}

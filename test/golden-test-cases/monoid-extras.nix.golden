@@ -1,0 +1,15 @@
+{ mkDerivation, base, criterion, fetchurl, groups, semigroupoids
+, semigroups
+}:
+mkDerivation {
+  pname = "monoid-extras";
+  version = "0.4.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base groups semigroupoids semigroups ];
+  benchmarkHaskellDepends = [ base criterion ];
+  description = "Various extra monoid-related definitions and utilities";
+  license = stdenv.lib.licenses.bsd3;
+}

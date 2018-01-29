@@ -1,0 +1,41 @@
+name:                kraken
+version:             0.1.0
+
+synopsis:            Kraken.io API client
+description:
+  Kraken is a robust, ultra-fast image optimizer and compressor with
+  best-in-class algorithms.
+
+license:             MIT
+license-file:        LICENSE
+
+author:              Tomas Carnecky
+maintainer:          tomas.carnecky@gmail.com
+
+category:            Network
+
+build-type:          Simple
+cabal-version:       >=1.10
+
+
+source-repository head
+    type:     git
+    location: git://github.com/wereHamster/kraken-haskell.git
+
+
+library
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+
+  ghc-options:         -Wall
+
+  exposed-modules:
+     Network.Kraken
+
+  build-depends:
+     base >=4.5 && <4.11
+   , bytestring >= 0.10
+   , http-client
+   , http-client-tls
+   , aeson
+   , mtl

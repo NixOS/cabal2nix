@@ -1,0 +1,18 @@
+{ mkDerivation, aeson, base, bifunctors, binary, deepseq, fetchurl
+, ghc-prim, hashable, lens, QuickCheck, strict
+}:
+mkDerivation {
+  pname = "strict-base-types";
+  version = "0.5.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    aeson base bifunctors binary deepseq ghc-prim hashable lens
+    QuickCheck strict
+  ];
+  homepage = "https://github.com/meiersi/strict-base-types";
+  description = "Strict variants of the types provided in base";
+  license = stdenv.lib.licenses.bsd3;
+}

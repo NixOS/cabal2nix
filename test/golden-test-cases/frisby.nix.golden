@@ -1,0 +1,14 @@
+{ mkDerivation, array, base, containers, fetchurl, mtl, semigroups
+}:
+mkDerivation {
+  pname = "frisby";
+  version = "0.2.2";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ array base containers mtl semigroups ];
+  homepage = "http://repetae.net/computer/frisby/";
+  description = "Linear time composable parser for PEG grammars";
+  license = stdenv.lib.licenses.bsd3;
+}

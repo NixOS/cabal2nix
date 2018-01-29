@@ -1,0 +1,17 @@
+{ mkDerivation, base, fetchurl, ghc-prim, hashable, primitive
+, vector
+}:
+mkDerivation {
+  pname = "hashtables";
+  version = "1.2.2.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base ghc-prim hashable primitive vector
+  ];
+  homepage = "http://github.com/gregorycollins/hashtables";
+  description = "Mutable hash tables in the ST monad";
+  license = stdenv.lib.licenses.bsd3;
+}

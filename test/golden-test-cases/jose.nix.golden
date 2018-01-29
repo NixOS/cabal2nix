@@ -1,0 +1,34 @@
+{ mkDerivation, aeson, attoparsec, base, base64-bytestring
+, bytestring, concise, containers, cryptonite, fetchurl, hspec
+, lens, memory, monad-time, mtl, network-uri, QuickCheck
+, quickcheck-instances, safe, semigroups, tasty, tasty-hspec
+, tasty-quickcheck, template-haskell, text, time
+, unordered-containers, vector, x509
+}:
+mkDerivation {
+  pname = "jose";
+  version = "0.6.0.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    aeson attoparsec base base64-bytestring bytestring concise
+    containers cryptonite lens memory monad-time mtl network-uri
+    QuickCheck quickcheck-instances safe semigroups template-haskell
+    text time unordered-containers vector x509
+  ];
+  executableHaskellDepends = [ aeson base bytestring lens mtl ];
+  testHaskellDepends = [
+    aeson attoparsec base base64-bytestring bytestring concise
+    containers cryptonite hspec lens memory monad-time mtl network-uri
+    QuickCheck quickcheck-instances safe semigroups tasty tasty-hspec
+    tasty-quickcheck template-haskell text time unordered-containers
+    vector x509
+  ];
+  homepage = "https://github.com/frasertweedale/hs-jose";
+  description = "Javascript Object Signing and Encryption and JSON Web Token library";
+  license = stdenv.lib.licenses.asl20;
+}

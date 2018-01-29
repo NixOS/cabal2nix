@@ -1,0 +1,20 @@
+{ mkDerivation, base, containers, directory, extra, fetchurl
+, filepath, ghc-prof, hashable, scientific, text
+}:
+mkDerivation {
+  pname = "profiterole";
+  version = "0.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  isLibrary = false;
+  isExecutable = true;
+  executableHaskellDepends = [
+    base containers directory extra filepath ghc-prof hashable
+    scientific text
+  ];
+  homepage = "https://github.com/ndmitchell/profiterole#readme";
+  description = "Restructure GHC profile reports";
+  license = stdenv.lib.licenses.bsd3;
+}

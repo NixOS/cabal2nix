@@ -1,0 +1,18 @@
+{ mkDerivation, base, fetchurl, hspec, HUnit, monad-loops
+, MonadRandom, random, random-shuffle
+}:
+mkDerivation {
+  pname = "general-games";
+  version = "1.0.5";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base monad-loops MonadRandom random random-shuffle
+  ];
+  testHaskellDepends = [ base hspec HUnit MonadRandom ];
+  homepage = "https://github.com/cgorski/general-games";
+  description = "Library supporting simulation of a number of games";
+  license = stdenv.lib.licenses.mit;
+}

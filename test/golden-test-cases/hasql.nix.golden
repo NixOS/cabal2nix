@@ -1,0 +1,30 @@
+{ mkDerivation, attoparsec, base, base-prelude, bug, bytestring
+, bytestring-strict-builder, contravariant, contravariant-extras
+, criterion, data-default-class, dlist, fetchurl, hashable
+, hashtables, loch-th, mtl, placeholders, postgresql-binary
+, postgresql-libpq, profunctors, QuickCheck, quickcheck-instances
+, rebase, rerebase, semigroups, tasty, tasty-hunit
+, tasty-quickcheck, text, transformers, vector
+}:
+mkDerivation {
+  pname = "hasql";
+  version = "1.1.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    attoparsec base base-prelude bytestring bytestring-strict-builder
+    contravariant contravariant-extras data-default-class dlist
+    hashable hashtables loch-th mtl placeholders postgresql-binary
+    postgresql-libpq profunctors semigroups text transformers vector
+  ];
+  testHaskellDepends = [
+    bug data-default-class QuickCheck quickcheck-instances rebase
+    rerebase tasty tasty-hunit tasty-quickcheck
+  ];
+  benchmarkHaskellDepends = [ bug criterion rerebase ];
+  homepage = "https://github.com/nikita-volkov/hasql";
+  description = "An efficient PostgreSQL driver and a flexible mapping API";
+  license = stdenv.lib.licenses.mit;
+}

@@ -1,0 +1,108 @@
+Name:             utility-ht
+Version:          0.0.14
+License:          BSD3
+License-File:     LICENSE
+Author:           Henning Thielemann <haskell@henning-thielemann.de>
+Maintainer:       Henning Thielemann <haskell@henning-thielemann.de>
+Category:         Data, List
+Synopsis:         Various small helper functions for Lists, Maybes, Tuples, Functions
+Description:
+  Various small helper functions for Lists, Maybes, Tuples, Functions.
+  Some of these functions are improved implementations of standard functions.
+  They have the same name as their standard counterparts.
+  Others are equivalent to functions from the @base@ package,
+  but if you import them from this utility package
+  then you can write code that runs on older GHC versions
+  or other compilers like Hugs and JHC.
+  .
+  All modules are plain Haskell 98.
+  The package depends exclusively on the @base@ package
+  and only that portions of @base@ that are simple to port.
+  Thus you do not risk a dependency avalanche by importing it.
+  However, further splitting the base package might invalidate this statement.
+  .
+  Alternative packages: @Useful@, @MissingH@
+Tested-With:       GHC==6.8.2, GHC==6.10.4, GHC==6.12.3
+Tested-With:       GHC==7.0.2, GHC==7.2.2, GHC==7.4.1, GHC==7.8.2
+Cabal-Version:     >=1.10
+Build-Type:        Simple
+Stability:         Stable
+
+-- workaround for Cabal-1.10
+Extra-Source-Files:
+  src/Test/Data/Maybe.hs
+  src/Test/Data/ListMatch.hs
+  src/Test/Data/Function.hs
+  src/Test/Data/List.hs
+  src/Test/Utility.hs
+  src/Test.hs
+
+Source-Repository head
+  type:     darcs
+  location: http://code.haskell.org/~thielema/utility/
+
+Source-Repository this
+  type:     darcs
+  location: http://code.haskell.org/~thielema/utility/
+  tag:      0.0.14
+
+Library
+  Build-Depends:
+    base >=2 && <5
+
+  Default-Language: Haskell98
+  GHC-Options:      -Wall
+  Hs-Source-Dirs:   src
+  Exposed-Modules:
+    Data.Bits.HT
+    Data.Bool.HT
+    Data.Eq.HT
+    Data.Function.HT
+    Data.Ix.Enum
+    Data.List.HT
+    Data.List.Key
+    Data.List.Match
+    Data.List.Reverse.StrictElement
+    Data.List.Reverse.StrictSpine
+    Data.Maybe.HT
+    Data.Either.HT
+    Data.Monoid.HT
+    Data.Ord.HT
+    Data.Record.HT
+    Data.String.HT
+    Data.Tuple.HT
+    Data.Tuple.Lazy
+    Data.Tuple.Strict
+    Control.Monad.HT
+    Control.Applicative.HT
+    Control.Functor.HT
+    Data.Strictness.HT
+    Text.Read.HT
+    Text.Show.HT
+  Other-Modules:
+    Data.Bool.HT.Private
+    Data.List.HT.Private
+    Data.List.Key.Private
+    Data.List.Match.Private
+    Data.Function.HT.Private
+    Data.Record.HT.Private
+    Data.Tuple.Example
+
+
+Test-Suite test
+  Type:             exitcode-stdio-1.0
+  Build-Depends:
+    QuickCheck >=1.1 && <3,
+    base >=3 && <5
+  Default-Language: Haskell98
+  Main-Is:          Test.hs
+  GHC-Options:      -Wall
+  Hs-source-dirs:   src
+  Other-Modules:
+    Test.Data.List
+    Test.Data.ListMatch
+    Test.Data.List.Reverse.StrictElement
+    Test.Data.List.Reverse.StrictSpine
+    Test.Data.Maybe
+    Test.Data.Function
+    Test.Utility

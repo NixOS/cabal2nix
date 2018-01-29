@@ -1,0 +1,13 @@
+{ mkDerivation, base, fetchurl, hspec, silently }:
+mkDerivation {
+  pname = "nanospec";
+  version = "0.2.1";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [ base ];
+  testHaskellDepends = [ base hspec silently ];
+  description = "A lightweight implementation of a subset of Hspec's API";
+  license = stdenv.lib.licenses.mit;
+}

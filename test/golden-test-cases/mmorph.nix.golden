@@ -1,0 +1,16 @@
+{ mkDerivation, base, fetchurl, mtl, transformers
+, transformers-compat
+}:
+mkDerivation {
+  pname = "mmorph";
+  version = "1.1.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base mtl transformers transformers-compat
+  ];
+  description = "Monad morphisms";
+  license = stdenv.lib.licenses.bsd3;
+}

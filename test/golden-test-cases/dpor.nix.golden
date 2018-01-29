@@ -1,0 +1,17 @@
+{ mkDerivation, base, containers, deepseq, fetchurl, random
+, semigroups
+}:
+mkDerivation {
+  pname = "dpor";
+  version = "0.2.0.0";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    base containers deepseq random semigroups
+  ];
+  homepage = "https://github.com/barrucadu/dejafu";
+  description = "A generic implementation of dynamic partial-order reduction (DPOR) for testing arbitrary models of concurrency";
+  license = stdenv.lib.licenses.mit;
+}

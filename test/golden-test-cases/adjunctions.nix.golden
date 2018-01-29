@@ -1,0 +1,20 @@
+{ mkDerivation, array, base, comonad, containers, contravariant
+, distributive, fetchurl, free, mtl, profunctors, semigroupoids
+, semigroups, tagged, transformers, transformers-compat, void
+}:
+mkDerivation {
+  pname = "adjunctions";
+  version = "4.3";
+  src = fetchurl {
+    url = "http://example.org/";
+    sha256 = "abc";
+  };
+  libraryHaskellDepends = [
+    array base comonad containers contravariant distributive free mtl
+    profunctors semigroupoids semigroups tagged transformers
+    transformers-compat void
+  ];
+  homepage = "http://github.com/ekmett/adjunctions/";
+  description = "Adjunctions and representable functors";
+  license = stdenv.lib.licenses.bsd3;
+}
