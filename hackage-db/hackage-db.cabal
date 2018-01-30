@@ -1,12 +1,7 @@
--- This file has been generated from package.yaml by hpack version 0.18.1.
---
--- see: https://github.com/sol/hpack
-
 name:                   hackage-db
 version:                2.0
 license:                BSD3
 license-file:           LICENSE
-tested-with:            GHC > 7.8 && < 8.3
 author:                 Peter Simons, Alexander Altman, Ben James
 maintainer:             Peter Simons <simons@cryp.to>
 homepage:               https://github.com/peti/hackage-db#readme
@@ -15,13 +10,27 @@ category:               Distribution
 synopsis:               Access Hackage's package database via Data.Map
 cabal-version:          >= 1.10
 build-type:             Simple
-description:            This is an early and mostly undocumented release of the 2.x version of hackage-db that's intended mostly for experimenting with and testing of the new API. Porting code from 1.x to 2.x is pretty simple, but if you do that at this point, please expect minor details of this API to change in forthcoming releases. For production code, you are probably better off with the 1.x release for now.
-                        .
-                        Check out https://github.com/peti/hackage-db/tree/master/example/ for a collection of simple example programs that demonstrate how to use this code.
+tested-with:            GHC == 7.0.4, GHC == 7.4.2, GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3
+                      , GHC == 8.0.2, GHC == 8.2.2
+
+description:
+  This is an early and mostly undocumented release of the 2.x version of
+  hackage-db that's intended mostly for experimenting with and testing of the
+  new API. Porting code from 1.x to 2.x is pretty simple, but if you do that at
+  this point, please expect minor details of this API to change in forthcoming
+  releases. For production code, you are probably better off with the 1.x
+  release for now.
+  .
+  Check out https://github.com/peti/hackage-db/tree/master/example/ for a
+  collection of simple example programs that demonstrate how to use this code.
 
 source-repository head
   type: git
-  location: https://github.com/peti/hackage-db
+  location: git://github.com/peti/hackage-db.git
+
+flag install-examples
+  description:   Build and install example programs.
+  default:       False
 
 library
   hs-source-dirs:
@@ -51,28 +60,35 @@ library
   default-language: Haskell2010
 
 executable list-known-versions
-  main-is: list-known-versions.hs
-  hs-source-dirs:
-      example
-  build-depends:
-      base >= 3 && < 5
-    , Cabal
-    , containers
-    , hackage-db
-    , bytestring
+  main-is:              list-known-versions.hs
+  hs-source-dirs:       example
+  if flag(install-examples)
+    buildable:          True
+    build-depends:
+        base >= 3 && < 5
+      , Cabal
+      , containers
+      , hackage-db
+      , bytestring
+  else
+    buildable:          False
   default-language: Haskell2010
 
 executable show-meta-data
   main-is: show-meta-data.hs
   hs-source-dirs:
       example
-  build-depends:
-      base >= 3 && < 5
-    , Cabal
-    , containers
-    , hackage-db
-    , bytestring
-    , utf8-string
+  if flag(install-examples)
+    buildable:          True
+    build-depends:
+        base >= 3 && < 5
+      , Cabal
+      , containers
+      , hackage-db
+      , bytestring
+      , utf8-string
+  else
+    buildable:          False
   default-language: Haskell2010
 
 executable show-package-versions
@@ -80,9 +96,13 @@ executable show-package-versions
   hs-source-dirs:
       example
   other-extensions: CPP
-  build-depends:
-      base >= 3 && < 5
-    , Cabal
-    , containers
-    , hackage-db
+  if flag(install-examples)
+    buildable:          True
+    build-depends:
+        base >= 3 && < 5
+      , Cabal
+      , containers
+      , hackage-db
+  else
+    buildable:          False
   default-language: Haskell2010
