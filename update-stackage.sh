@@ -32,6 +32,7 @@ sed -r \
     -e '/ language-nix /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
+    -e '/ weeder /d' \
     -i "$tmpfile"
 
 # Drop the previous configuration ...
