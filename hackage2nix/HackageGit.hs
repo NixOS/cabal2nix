@@ -1,7 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module HackageGit where
+module HackageGit
+  ( Hackage, readHackage, readPackage, readPackageMeta
+  , SHA256Hash, hashes
+  )
+  where
 
 import Control.Lens hiding ( (<.>) )
 import Control.Monad
@@ -54,8 +58,6 @@ readPackage dirPrefix (PackageIdentifier name version) = do
 
 declareLenses [d|
   data Meta = Meta { hashes :: Map String String
-                   , locations :: [String]
-                   , pkgsize :: Int
                    }
     deriving (Show)
   |]
@@ -63,8 +65,6 @@ declareLenses [d|
 instance FromJSON Meta where
   parseJSON (Object v) = Meta
                          <$> v .: "package-hashes"
-                         <*> v .: "package-locations"
-                         <*> v .: "package-size"
   parseJSON o          = fail ("invalid Cabal metadata: " ++ show o)
 
 readPackageMeta :: FilePath -> PackageIdentifier -> IO Meta
