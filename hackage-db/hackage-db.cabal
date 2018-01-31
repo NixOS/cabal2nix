@@ -85,7 +85,6 @@ executable show-meta-data
       , Cabal
       , containers
       , hackage-db
-      , bytestring
       , utf8-string
   else
     buildable:          False
