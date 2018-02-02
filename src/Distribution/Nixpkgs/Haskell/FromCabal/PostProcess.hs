@@ -66,7 +66,6 @@ hooks =
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
-  , ("goatee-gtk", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OSX)))
   , ("gtk3", gtk3Hook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
@@ -162,7 +161,6 @@ haddockHook = set doCheck False
 gitAnnexHook :: Derivation -> Derivation
 gitAnnexHook = set phaseOverrides gitAnnexOverrides
              . over (executableDepends . system) (Set.union buildInputs)
-             . over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os /= OSX))
   where
     gitAnnexOverrides = unlines
       [ "preConfigure = \"export HOME=$TEMPDIR; patchShebangs .\";"
