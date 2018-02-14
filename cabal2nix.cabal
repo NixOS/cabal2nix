@@ -109,7 +109,7 @@ library
     , filepath
     , hackage-db >2
     , hopenssl >=2
-    , hpack >= 0.22
+    , hpack >= 0.26
     , language-nix
     , lens
     , optparse-applicative

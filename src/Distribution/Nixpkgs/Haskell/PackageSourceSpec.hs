@@ -19,7 +19,7 @@ import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Parse as Cabal
 import Distribution.Text ( simpleParse, display )
 import Distribution.Version
-import qualified Hpack.Run as Hpack
+import qualified Hpack.Render as Hpack
 import qualified Hpack.Config as Hpack
 import OpenSSL.Digest ( digestString, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
@@ -191,11 +191,11 @@ handleIO = Exception.handle
 
 hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 hpackDirectory dir = do
-  mPackage <- liftIO $ Hpack.readPackageConfig "" $ dir </> "package.yaml"
+  mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {Hpack.decodeOptionsTarget = dir </> Hpack.packageConfig}
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-    Right (pkg', _) -> do
-      let hpackOutput = Hpack.renderPackage Hpack.defaultRenderSettings 2 [] [] pkg'
+    Right (Hpack.DecodeResult pkg' _ _) -> do
+      let hpackOutput = Hpack.renderPackage [] pkg'
           hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
       case parseGenericPackageDescription hpackOutput of
         ParseFailed perr -> liftIO $ do
