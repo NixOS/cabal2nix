@@ -6,6 +6,7 @@ import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
+import Control.DeepSeq (force)
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
@@ -25,7 +26,7 @@ import OpenSSL.Digest ( digestString, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
-import System.IO ( hPutStrLn, stderr, hPutStr )
+import System.IO
 
 data Package = Package
   { pkgSource   :: DerivationSource
@@ -206,12 +207,13 @@ hpackDirectory dir = do
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =
-  -- readFile throws an error if it's used on binary files which contain sequences
+  -- hGetContents throws an error if it's used on files which contain sequences
   -- that do not represent valid characters. To catch that exception, we need to
-  -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
-  -- the reading of the file, so we will always catch the expression here.
+  -- wrap the whole block in `catchIO`.
   MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
-    buf <- readFile file
+    buf <- withFile file ReadMode $ \ h -> do
+      hSetEncoding h utf8
+      hGetContents h >>= Exception.evaluate . force
     let hash = printSHA256 (digestString (digestByName "sha256") buf)
     case parseGenericPackageDescription buf of
       ParseFailed perr -> if failHard
