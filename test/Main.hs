@@ -19,6 +19,8 @@ import Text.PrettyPrint.HughesPJClass
 
 main :: IO ()
 main = do
+  -- TODO: run this test with all kinds of setLocaleEncoding values to ensure we don't
+  -- depend on the system environment: https://github.com/NixOS/cabal2nix/issues/333
   testCases <- findByExtension [".cabal"] "test/golden-test-cases"
   defaultMain $ testGroup "regression-tests" (map regressionTest testCases)
 
