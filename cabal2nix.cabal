@@ -1,5 +1,5 @@
 name:           cabal2nix
-version:        2.8.1
+version:        2.8.2
 synopsis:       Convert Cabal files into Nix build instructions.
 category:       Distribution, Nix
 stability:      stable
