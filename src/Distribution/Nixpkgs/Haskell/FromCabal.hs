@@ -141,6 +141,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     internalLibNames = fmap unqualComponentNameToPackageName . catMaybes $ libName <$> subLibraries
 
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
+    convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
     convertBuildInfo Cabal.BuildInfo {..} = mempty
       & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends, x `notElem` internalLibNames ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
