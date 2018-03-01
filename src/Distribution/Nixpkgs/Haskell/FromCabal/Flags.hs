@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags ) where
@@ -8,8 +9,16 @@ import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.Version
 
+-- Cabal 2.1 compat: https://github.com/haskell/cabal/commit/6cb6a5165f19fd315bb5dc627cb8531d260d85f9#diff-67a944b99f4af1b1f86dd094973fea18L149
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
-configureCabalFlags (PackageIdentifier name version)
+#if !MIN_VERSION_base(4,11,0)
+configureCabalFlags = configureCabalFlags'
+#else
+configureCabalFlags = mkFlagAssignment . configureCabalFlags'
+#endif
+
+configureCabalFlags' :: PackageIdentifier -> [(FlagName, Bool)]
+configureCabalFlags' (PackageIdentifier name version)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "arithmoi"           = [disable "llvm"]
  | name == "cabal-plan"         = [enable "exe"]

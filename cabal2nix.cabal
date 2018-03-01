@@ -189,5 +189,5 @@ test-suite regression-test
                       , pretty
                       , tasty
                       , tasty-golden
-  ghc-options:          -Wall -with-rtsopts=-K1K
+  ghc-options:          -Wall
   default-language:     Haskell2010

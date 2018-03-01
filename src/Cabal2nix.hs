@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -25,7 +26,7 @@ import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP (pkg)
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
-import Distribution.PackageDescription ( mkFlagName, FlagAssignment )
+import Distribution.PackageDescription ( mkFlagName, FlagAssignment, FlagName )
 import Distribution.Package ( packageId )
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
@@ -37,6 +38,10 @@ import System.Environment ( getArgs )
 import System.IO ( hFlush, hPutStrLn, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
+
+#if MIN_VERSION_base(4,11,0)
+import Distribution.PackageDescription ( unFlagAssignment, mkFlagAssignment )
+#endif
 
 data Options = Options
   { optSha256 :: Maybe String
@@ -165,7 +170,7 @@ processPackage Options{..} pkg = do
 
       flags :: FlagAssignment
       flags = normalizeCabalFlags $
-                configureCabalFlags (packageId (pkgCabal pkg)) ++ readFlagList optFlags
+                configureCabalFlags (packageId (pkgCabal pkg)) <> readFlagList optFlags
 
       deriv :: Derivation
       deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
@@ -219,6 +224,10 @@ cabal2nix args = do
     Right d -> pPrint d
 
 readFlagList :: [String] -> FlagAssignment
+#if MIN_VERSION_base(4,11,0)
+readFlagList = mkFlagAssignment . map tagWithValue
+#else
 readFlagList = map tagWithValue
+#endif
   where tagWithValue ('-':fname) = (mkFlagName (lowercase fname), False)
         tagWithValue fname       = (mkFlagName (lowercase fname), True)

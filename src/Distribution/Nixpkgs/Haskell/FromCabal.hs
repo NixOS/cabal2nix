@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -33,6 +34,17 @@ import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
 import Distribution.Version
 import Language.Nix
+
+#if MIN_VERSION_base(4,11,0)
+import Data.Char
+import qualified Data.Map as Map
+import Distribution.License (License(..))
+import qualified Distribution.License as DL
+import qualified Distribution.Parsec.Class as DPC
+import qualified Distribution.Pretty as Pretty
+import qualified Distribution.SPDX as SPDX
+import qualified Distribution.SPDX.LicenseReference as SPDX
+#endif
 
 type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
@@ -73,8 +85,69 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
                 Right (d,_) -> (d,m)
     Right (d,_)  -> (d,[])
 
+---
+--- Note: this section is only needed for Cabal 2.1, since 2.2 has the license{To,From}SPDX functions.
+--        Although their 2.2 native version have problems: we had to add the second clause to licenseFromSPDX.
+---
+#if MIN_VERSION_base(4,11,0)
+licenseToSPDX :: DL.License -> SPDX.License
+licenseToSPDX l = case l of
+    GPL v | v == version [2]      -> spdx SPDX.GPL_2_0
+    GPL v | v == version [3]      -> spdx SPDX.GPL_3_0
+    LGPL v | v == version [2,1]   -> spdx SPDX.LGPL_2_1
+    LGPL v | v == version [3]     -> spdx SPDX.LGPL_3_0
+    AGPL v | v == version [3]     -> spdx SPDX.AGPL_3_0
+    BSD2                          -> spdx SPDX.BSD_2_Clause
+    BSD3                          -> spdx SPDX.BSD_3_Clause
+    BSD4                          -> spdx SPDX.BSD_4_Clause
+    MIT                           -> spdx SPDX.MIT
+    ISC                           -> spdx SPDX.ISC
+    MPL v | v == mkVersion [2,0]  -> spdx SPDX.MPL_2_0
+    Apache v | v == version [2,0] -> spdx SPDX.Apache_2_0
+    AllRightsReserved             -> SPDX.NONE
+    UnspecifiedLicense            -> SPDX.NONE
+    OtherLicense                  -> ref (SPDX.mkLicenseRef' Nothing "OtherLicense")
+    PublicDomain                  -> ref (SPDX.mkLicenseRef' Nothing "PublicDomain")
+    UnknownLicense str            -> ref (SPDX.mkLicenseRef' Nothing str)
+    _                             -> ref (SPDX.mkLicenseRef' Nothing $ Pretty.prettyShow l)
+  where
+    version = Just . mkVersion
+    spdx    = SPDX.License . SPDX.simpleLicenseExpression
+    ref  r  = SPDX.License $ SPDX.ELicense (SPDX.ELicenseRef r) Nothing
+
+licenseFromSPDX :: SPDX.License -> DL.License
+licenseFromSPDX SPDX.NONE = AllRightsReserved
+licenseFromSPDX (SPDX.License (SPDX.ELicense (SPDX.ELicenseRef lref) Nothing)) =
+  let name = SPDX.licenseRef lref
+      mangle c
+        | isAlphaNum c = Just c
+        | otherwise = Nothing
+      mungle name = fromMaybe (UnknownLicense (mapMaybe mangle name)) (DPC.simpleParsec name)
+  in case name of
+       "LGPL"         -> LGPL Nothing
+       "GPL"          -> GPL Nothing
+       "OtherLicense" -> OtherLicense
+       "PublicDomain" -> PublicDomain
+       _     -> UnknownLicense $ name
+licenseFromSPDX l =
+    fromMaybe (mungle $ Pretty.prettyShow l) $ Map.lookup l m
+  where
+    m :: Map.Map SPDX.License DL.License
+    m = Map.fromList $ filter (isSimple . fst ) $
+        map (\x -> (licenseToSPDX x, x)) DL.knownLicenses
+
+    isSimple (SPDX.License (SPDX.ELicense (SPDX.ELicenseId _) Nothing)) = True
+    isSimple _ = False
+
+    mungle name = fromMaybe (UnknownLicense (mapMaybe mangle name)) (DPC.simpleParsec name)
+
+    mangle c
+        | isAlphaNum c = Just c
+        | otherwise = Nothing
+#endif
+
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
+fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags desc@PackageDescription {..} = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -115,7 +188,11 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     nixLicense :: Nix.License
+#if MIN_VERSION_base(4,11,0)
+    nixLicense = fromCabalLicense (licenseFromSPDX $ license desc)
+#else
     nixLicense = fromCabalLicense license
+#endif
 
     resolveInHackage :: Identifier -> Binding
     resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i

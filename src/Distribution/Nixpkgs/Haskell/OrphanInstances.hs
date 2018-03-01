@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
@@ -23,6 +24,8 @@ import Distribution.Types.Mixin
 import Distribution.Version
 import Language.Haskell.Extension
 
+-- This is needed for GHC 8.4+, due to new Cabal
+#if !MIN_VERSION_base(4,11,0)
 instance NFData SetupBuildInfo
 instance (NFData v, NFData c, NFData a) => NFData (CondTree v c a)
 instance (NFData v, NFData c, NFData a) => NFData (CondBranch v c a)
@@ -62,6 +65,8 @@ instance NFData TestSuiteInterface
 instance NFData TestType
 instance NFData a => NFData (Condition a)
 instance NFData Platform
+#endif
+
 instance NFData CompilerInfo
 instance NFData CompilerId
 instance NFData AbiTag
