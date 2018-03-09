@@ -1,4 +1,5 @@
 {-# LANGUAGE PackageImports #-}
+{-# LANGUAGE CPP #-}
 
 -- | Internal pretty-printing helpers for Nix expressions.
 
@@ -16,6 +17,10 @@ module Language.Nix.PrettyPrinting
   )
   where
 
+-- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
+#if MIN_VERSION_base(4,11,0)
+import Prelude hiding ( (<>) )
+#endif
 import Data.Char
 import Data.Function
 import Data.List

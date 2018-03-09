@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric   #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE CPP #-}
 
 {- |
    A representation of the @meta@ section used in Nix expressions. A
@@ -14,6 +15,10 @@ module Distribution.Nixpkgs.Meta
   , allKnownPlatforms
   ) where
 
+-- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
+#if MIN_VERSION_base(4,11,0)
+import Prelude hiding ( (<>) )
+#endif
 import Control.DeepSeq
 import Control.Lens
 import Data.Set ( Set )
