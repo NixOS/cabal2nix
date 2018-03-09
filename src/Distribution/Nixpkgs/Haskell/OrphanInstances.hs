@@ -65,10 +65,11 @@ instance NFData TestSuiteInterface
 instance NFData TestType
 instance NFData a => NFData (Condition a)
 instance NFData Platform
+
+instance NFData CompilerId
 #endif
 
 instance NFData CompilerInfo
-instance NFData CompilerId
 instance NFData AbiTag
 
 instance IsString Version where

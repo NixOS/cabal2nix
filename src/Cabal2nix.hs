@@ -22,7 +22,7 @@ import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalizeCabalFlags )
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
-import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP (pkg)
+import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
