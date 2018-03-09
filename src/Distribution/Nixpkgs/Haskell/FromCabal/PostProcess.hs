@@ -65,6 +65,7 @@ hooks =
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("gtk3", gtk3Hook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
