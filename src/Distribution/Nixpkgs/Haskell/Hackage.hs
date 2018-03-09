@@ -1,7 +1,8 @@
 module Distribution.Nixpkgs.Haskell.Hackage
   ( HackageDB, PackageData, VersionData(..)
   , hackageTarball, readTarball
-  ) where
+  )
+  where
 
 import Data.Map as Map
 import qualified Distribution.Hackage.DB.Parsed as P

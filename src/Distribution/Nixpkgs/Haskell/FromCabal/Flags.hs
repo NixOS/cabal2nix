@@ -9,7 +9,10 @@ import Distribution.PackageDescription
 import Distribution.Version
 
 configureCabalFlags :: PackageIdentifier -> FlagAssignment
-configureCabalFlags (PackageIdentifier name version)
+configureCabalFlags = mkFlagAssignment . configureCabalFlags'
+
+configureCabalFlags' :: PackageIdentifier -> [(FlagName,Bool)]
+configureCabalFlags' (PackageIdentifier name version)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "arithmoi"           = [disable "llvm"]
  | name == "cabal-plan"         = [enable "exe"]

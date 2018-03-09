@@ -11,6 +11,7 @@ import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
+import Distribution.License
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Distribution.Nixpkgs.Haskell.Constraint
@@ -115,7 +116,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     nixLicense :: Nix.License
-    nixLicense = fromCabalLicense license
+    nixLicense =  fromCabalLicense (either licenseFromSPDX id licenseRaw)
 
     resolveInHackage :: Identifier -> Binding
     resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i

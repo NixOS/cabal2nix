@@ -2,11 +2,12 @@ module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
 
+import Control.DeepSeq (force)
 import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
-import Control.DeepSeq (force)
+import qualified Data.ByteString.Char8 as BS -- TODO: Deal with utf-8 encoding!!
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
@@ -17,11 +18,11 @@ import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
-import Distribution.PackageDescription.Parse as Cabal
+import Distribution.PackageDescription.Parsec as Cabal
 import Distribution.Text ( simpleParse, display )
 import Distribution.Version
-import qualified Hpack.Render as Hpack
 import qualified Hpack.Config as Hpack
+import qualified Hpack.Render as Hpack
 import OpenSSL.Digest ( digestString, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
@@ -198,12 +199,12 @@ hpackDirectory dir = do
     Right (Hpack.DecodeResult pkg' _ _) -> do
       let hpackOutput = Hpack.renderPackage [] pkg'
           hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
-      case parseGenericPackageDescription hpackOutput of
-        ParseFailed perr -> liftIO $ do
-          hPutStrLn stderr $ "*** cannot parse hpack output: " ++ show perr
-          hPutStrLn stderr $ "*** hpack output:\n" ++ hpackOutput
+      case parseGenericPackageDescriptionMaybe (BS.pack hpackOutput) of
+        Nothing -> liftIO $ do
+          hPutStrLn stderr "*** cannot parse hpack output:"
+          hPutStrLn stderr hpackOutput
           fail "*** Exiting."
-        ParseOk _ pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
+        Just pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =
@@ -215,11 +216,9 @@ cabalFromFile failHard file =
       hSetEncoding h utf8
       hGetContents h >>= Exception.evaluate . force
     let hash = printSHA256 (digestString (digestByName "sha256") buf)
-    case parseGenericPackageDescription buf of
-      ParseFailed perr -> if failHard
-                             then fail ("cannot parse " ++ show file ++ ": " ++ show perr)
-                             else return Nothing
-      ParseOk _ pkg    -> return $ Just $ setCabalFileHash hash pkg
+    case parseGenericPackageDescriptionMaybe (BS.pack buf) of
+      Nothing  -> if failHard then fail ("cannot parse " ++ show file) else return Nothing
+      Just pkg -> return $ Just $ setCabalFileHash hash pkg
 
 setCabalFileHash :: String -> GenericPackageDescription -> GenericPackageDescription
 setCabalFileHash sha256 gpd = gpd { packageDescription = (packageDescription gpd) {

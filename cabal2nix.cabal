@@ -97,7 +97,7 @@ library
   other-extensions: CPP DeriveGeneric FlexibleInstances MultiParamTypeClasses OverloadedStrings RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell
   ghc-options: -Wall
   build-depends:
-      Cabal >2
+      Cabal >2.2
     , aeson
     , ansi-wl-pprint
     , base <5
@@ -107,7 +107,7 @@ library
     , directory
     , distribution-nixpkgs >=1.1
     , filepath
-    , hackage-db >2
+    , hackage-db >=2.0.1
     , hopenssl >=2
     , hpack >= 0.26
     , language-nix
@@ -153,7 +153,7 @@ executable hackage2nix
   hs-source-dirs: hackage2nix
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      Cabal >2
+      Cabal >2.2
     , aeson
     , base <5
     , bytestring
@@ -181,7 +181,7 @@ test-suite regression-test
   main-is:              Main.hs
   hs-source-dirs:       test
   build-depends:        base
-                      , Cabal > 2
+                      , Cabal >2.2
                       , cabal2nix
                       , filepath
                       , language-nix

@@ -7,7 +7,7 @@ import Distribution.Nixpkgs.Fetch
 import Control.Lens
 import Distribution.Compiler
 import Distribution.PackageDescription
-import Distribution.PackageDescription.Parse
+import Distribution.PackageDescription.Parsec
 import Distribution.System
 import Distribution.Verbosity
 import Distribution.Version
@@ -35,7 +35,7 @@ regressionTest cabalFile = do
                         (\i -> Just (binding # (i, path # [i])))
                         (Platform X86_64 Linux)
                         (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
-                        []
+                        mempty
                         []
                         gpd
                       & src .~ DerivationSource

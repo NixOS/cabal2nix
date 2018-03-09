@@ -8,62 +8,12 @@ import Data.String
 import qualified Data.Text as T
 import Data.Yaml
 import Distribution.Compiler
-import Distribution.License
 import Distribution.Package
-import Distribution.PackageDescription
 import Distribution.System
 import Distribution.Text
-import Distribution.Types.CondTree
-import Distribution.Types.ExecutableScope
-import Distribution.Types.ForeignLib
-import Distribution.Types.ForeignLibOption
-import Distribution.Types.ForeignLibType
-import Distribution.Types.IncludeRenaming
-import Distribution.Types.Mixin
 import Distribution.Version
-import Language.Haskell.Extension
 
-instance NFData SetupBuildInfo
-instance (NFData v, NFData c, NFData a) => NFData (CondTree v c a)
-instance (NFData v, NFData c, NFData a) => NFData (CondBranch v c a)
-instance NFData Arch
-instance NFData Benchmark
-instance NFData BenchmarkInterface
-instance NFData BenchmarkType
-instance NFData BuildInfo
-instance NFData BuildType
-instance NFData LibVersionInfo
-instance NFData CompilerFlavor
-instance NFData ConfVar
-instance NFData ExecutableScope
-instance NFData IncludeRenaming
-instance NFData ForeignLibType
-instance NFData ForeignLibOption
-instance NFData Executable
-instance NFData Extension
-instance NFData Flag
-instance NFData Mixin
-instance NFData FlagName
-instance NFData GenericPackageDescription
-instance NFData KnownExtension
-instance NFData Language
-instance NFData Library
-instance NFData ForeignLib
-instance NFData License
-instance NFData ModuleReexport
-instance NFData ModuleRenaming
-instance NFData OS
-instance NFData PackageDescription
-instance NFData RepoKind
-instance NFData RepoType
-instance NFData SourceRepo
-instance NFData TestSuite
-instance NFData TestSuiteInterface
-instance NFData TestType
-instance NFData a => NFData (Condition a)
-instance NFData Platform
 instance NFData CompilerInfo
-instance NFData CompilerId
 instance NFData AbiTag
 
 instance IsString Version where
