@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP   #-}
 module Main ( main ) where
 
 import Distribution.Nixpkgs.Haskell.FromCabal
@@ -35,7 +36,11 @@ regressionTest cabalFile = do
                         (\i -> Just (binding # (i, path # [i])))
                         (Platform X86_64 Linux)
                         (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
+#if MIN_VERSION_base(4,11,0)
+                        mempty
+#else
                         []
+#endif
                         []
                         gpd
                       & src .~ DerivationSource

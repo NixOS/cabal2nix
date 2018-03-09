@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize, normalizeCabalFlags ) where
@@ -10,7 +11,10 @@ import Data.String
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.PackageDescription ( FlagAssignment, mkFlagName, unFlagName )
+import Distribution.PackageDescription ( FlagAssignment, FlagName, mkFlagName, unFlagName )
+#if MIN_VERSION_base(4,11,0)
+import Distribution.PackageDescription ( mkFlagAssignment, unFlagAssignment )
+#endif
 import Distribution.Simple.Utils ( lowercase )
 import Language.Nix hiding ( quote )
 
@@ -54,7 +58,14 @@ quote []          = []
 -- [(FlagName "foo",False)]
 
 normalizeCabalFlags :: FlagAssignment -> FlagAssignment
-normalizeCabalFlags flags =
+#if MIN_VERSION_base(4,11,0)
+normalizeCabalFlags = mkFlagAssignment . normalizeCabalFlags' . unFlagAssignment
+#else
+normalizeCabalFlags = normalizeCabalFlags'
+#endif
+
+normalizeCabalFlags' :: [(FlagName, Bool)] -> [(FlagName, Bool)]
+normalizeCabalFlags' flags =
   sortBy (compare `on` fst) $
     reverse $
       nubBy ((==) `on` fst) $

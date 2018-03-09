@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -33,6 +34,17 @@ import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
 import Distribution.Version
 import Language.Nix
+
+#if MIN_VERSION_base(4,11,0)
+import Data.Char
+import qualified Data.Map as Map
+import Distribution.License (License(..))
+import qualified Distribution.License as DL
+import qualified Distribution.Parsec.Class as DPC
+import qualified Distribution.Pretty as Pretty
+import qualified Distribution.SPDX as SPDX
+import qualified Distribution.SPDX.LicenseReference as SPDX
+#endif
 
 type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
@@ -74,7 +86,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     Right (d,_)  -> (d,[])
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
+fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags desc@PackageDescription {..} = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -115,7 +127,11 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     nixLicense :: Nix.License
+#if MIN_VERSION_base(4,11,0)
+    nixLicense = fromCabalLicense (DL.licenseFromSPDX $ license desc)
+#else
     nixLicense = fromCabalLicense license
+#endif
 
     resolveInHackage :: Identifier -> Binding
     resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i

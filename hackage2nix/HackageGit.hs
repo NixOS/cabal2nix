@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -20,7 +21,12 @@ import Distribution.Nixpkgs.Hashes
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Package
 import Distribution.PackageDescription
-import Distribution.PackageDescription.Parse ( parseGenericPackageDescription, ParseResult(..) )
+#if MIN_VERSION_Cabal(2,2,0)
+import Distribution.PackageDescription.Parsec
+#else
+import Distribution.PackageDescription.Parse
+#endif
+                                             ( parseGenericPackageDescription, ParseResult(..), runParseResult )
 import Distribution.Text
 import Distribution.Version
 import OpenSSL.Digest ( digest, digestByName )
@@ -51,9 +57,17 @@ readPackage :: FilePath -> PackageIdentifier -> IO (GenericPackageDescription, S
 readPackage dirPrefix (PackageIdentifier name version) = do
   let cabalFile = dirPrefix </> unPackageName name </> display version </> unPackageName name <.> "cabal"
   buf <- BS.readFile cabalFile
-  cabal <- case parseGenericPackageDescription (decodeUTF8 buf) of
+  cabal <-
+#if MIN_VERSION_Cabal(2,2,0)
+           case snd $ runParseResult $ parseGenericPackageDescription buf of
+             Right a -> return a
+             Left err ->
+#else
+           case parseGenericPackageDescription (decodeUTF8 buf) of
              ParseOk _ a  -> return a
-             ParseFailed err -> fail (cabalFile ++ ": " ++ show err)
+             ParseFailed err ->
+#endif
+               fail (cabalFile ++ ": " ++ show err)
   return (cabal, printSHA256 (digest (digestByName "sha256") buf))
 
 declareLenses [d|
