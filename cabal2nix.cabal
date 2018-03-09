@@ -119,6 +119,7 @@ library
     , text
     , time
     , transformers
+    , utf8-string
     , yaml
   exposed-modules:
       Cabal2nix
