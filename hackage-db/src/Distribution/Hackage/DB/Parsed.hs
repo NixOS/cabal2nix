@@ -13,17 +13,18 @@ import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Hackage.DB.Utility
 
-import GHC.Generics ( Generic )
 import Control.Exception
 import Data.ByteString.Lazy as BS
 import Data.ByteString.Lazy.UTF8 as BS
 import Data.Map as Map
+import Data.Maybe
 import Data.Time.Clock
 import Distribution.Package
 import Distribution.PackageDescription
-import Distribution.PackageDescription.Parse
+import Distribution.PackageDescription.Parsec
 import Distribution.Text
 import Distribution.Version
+import GHC.Generics ( Generic )
 
 type HackageDB = Map PackageName PackageData
 
@@ -57,9 +58,8 @@ parseVersionData pn v (U.VersionData cf m) =
    mapException (\e -> HackageDBPackageVersion v (e :: SomeException)) $
      VersionData gpd (parseMetaData pn v m)
   where
-    gpd = case parsePackageDescription (toString cf) of
-            ParseOk _ a     -> a
-            ParseFailed msg -> throw (InvalidCabalFile (show msg))
+    gpd = fromMaybe (throw (InvalidCabalFile (show (pn,v)))) $
+            parseGenericPackageDescriptionMaybe (toStrict cf)
 
 parseMetaData :: PackageName -> Version -> ByteString -> Map String String
 parseMetaData pn v buf | BS.null buf = Map.empty
