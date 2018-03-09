@@ -20,8 +20,6 @@ parseText t x = fromMaybe (throw (InvalidRepresentationOfType t x)) (simpleParse
 
 -- | Convert the the 'EpochTime' used by the @tar@ library into a standard
 -- 'UTCTime' type.
---
--- prop> \et -> toEpochTime (fromEpochTime et) == et
 
 fromEpochTime :: EpochTime -> UTCTime
 fromEpochTime et = posixSecondsToUTCTime (realToFrac et)
