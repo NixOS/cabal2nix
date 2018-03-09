@@ -21,7 +21,6 @@ import qualified Data.Set as Set
 import Distribution.Nixpkgs.License
 import Distribution.System
 import GHC.Generics ( Generic )
-import Internal.OrphanInstances ( )
 import Language.Nix.Identifier
 import Language.Nix.PrettyPrinting
 
