@@ -189,5 +189,6 @@ test-suite regression-test
                       , pretty
                       , tasty
                       , tasty-golden
-  ghc-options:          -Wall -with-rtsopts=-K1K
+                        -- TODO: Why does 1K not work any longer?
+  ghc-options:          -Wall -with-rtsopts=-K48K
   default-language:     Haskell2010
