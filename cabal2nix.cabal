@@ -170,7 +170,6 @@ executable hackage2nix
     , mtl
     , optparse-applicative
     , pretty >=1.1.2
-    , utf8-string
   other-modules:
       Paths_cabal2nix
       HackageGit
