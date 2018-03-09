@@ -1,9 +1,3 @@
-{-# LANGUAGE CPP #-}
-
-#if !MIN_VERSION_Cabal(2,0,0)
-#  define mkPackageName PackageName
-#endif
-
 module Main ( main ) where
 
 import Distribution.Hackage.DB
