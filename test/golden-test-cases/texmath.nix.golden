@@ -1,6 +1,6 @@
 { mkDerivation, base, bytestring, containers, directory, fetchurl
-, filepath, mtl, network-uri, pandoc-types, parsec, process, split
-, syb, temporary, text, utf8-string, xml
+, filepath, mtl, pandoc-types, parsec, process, split, syb
+, temporary, text, utf8-string, xml
 }:
 mkDerivation {
   pname = "texmath";
@@ -14,7 +14,6 @@ mkDerivation {
   libraryHaskellDepends = [
     base containers mtl pandoc-types parsec syb xml
   ];
-  executableHaskellDepends = [ network-uri ];
   testHaskellDepends = [
     base bytestring directory filepath process split temporary text
     utf8-string xml

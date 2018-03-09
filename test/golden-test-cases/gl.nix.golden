@@ -1,5 +1,5 @@
 { mkDerivation, base, Cabal, containers, directory, fetchurl
-, filepath, fixed, half, hxt, mesa, transformers
+, filepath, fixed, half, hxt, libGL, transformers
 }:
 mkDerivation {
   pname = "gl";
@@ -14,7 +14,7 @@ mkDerivation {
   libraryHaskellDepends = [
     base containers fixed half transformers
   ];
-  librarySystemDepends = [ mesa ];
+  librarySystemDepends = [ libGL ];
   description = "Complete OpenGL raw bindings";
   license = stdenv.lib.licenses.bsd3;
 }

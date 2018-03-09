@@ -17,7 +17,6 @@ mkDerivation {
     microlens microlens-th mtl network-uri servant servant-client text
     transformers
   ];
-  executableHaskellDepends = [ base network-uri text ];
   testHaskellDepends = [
     aeson base basic-prelude bytestring containers directory hspec lens
     network-uri text

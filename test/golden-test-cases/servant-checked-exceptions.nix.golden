@@ -1,8 +1,7 @@
 { mkDerivation, aeson, base, bytestring, deepseq, doctest, fetchurl
-, Glob, hspec-wai, http-api-data, http-client, http-media
-, natural-transformation, optparse-applicative, profunctors
-, servant, servant-client, servant-docs, servant-server, tagged
-, tasty, tasty-hspec, tasty-hunit, text, wai, warp
+, Glob, hspec-wai, http-media, profunctors, servant, servant-client
+, servant-docs, servant-server, tagged, tasty, tasty-hspec
+, tasty-hunit, text, wai
 }:
 mkDerivation {
   pname = "servant-checked-exceptions";
@@ -16,11 +15,6 @@ mkDerivation {
   libraryHaskellDepends = [
     aeson base bytestring deepseq http-media profunctors servant
     servant-client servant-docs servant-server tagged text
-  ];
-  executableHaskellDepends = [
-    aeson base http-api-data http-client natural-transformation
-    optparse-applicative servant servant-client servant-docs
-    servant-server text wai warp
   ];
   testHaskellDepends = [
     base bytestring doctest Glob hspec-wai servant servant-server tasty

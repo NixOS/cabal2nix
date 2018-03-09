@@ -15,7 +15,6 @@ mkDerivation {
     base blaze-html containers mtl parsec regex-pcre-builtin
     utf8-string
   ];
-  executableHaskellDepends = [ base blaze-html containers filepath ];
   testHaskellDepends = [
     base blaze-html containers Diff directory filepath process
   ];
