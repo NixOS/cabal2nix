@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -27,6 +28,10 @@ import Distribution.PackageDescription ( FlagAssignment, unFlagName, unFlagAssig
 import GHC.Generics ( Generic )
 import Language.Nix
 import Language.Nix.PrettyPrinting
+
+#if MIN_VERSION_base(4,11,0)
+import Prelude hiding ((<>))
+#endif
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
