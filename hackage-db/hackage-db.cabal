@@ -10,8 +10,8 @@ category:               Distribution
 synopsis:               Access cabal-install's Hackage database via Data.Map
 cabal-version:          >= 1.10
 build-type:             Simple
-tested-with:            GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3
-                      , GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.1
+tested-with:            GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2
+                      , GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.3
 
 description:
   This library provides convenient access to the local copy of the Hackage
