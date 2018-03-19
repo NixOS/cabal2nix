@@ -1,5 +1,6 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Cabal2nix
   ( main, cabal2nix, cabal2nix', cabal2nixWithDB
@@ -9,7 +10,9 @@ module Cabal2nix
 import Control.Exception ( bracket )
 import Control.Lens
 import Control.Monad ( when )
-import Data.Maybe ( fromMaybe, isJust )
+import Data.List
+import Data.List.Split
+import Data.Maybe ( fromMaybe, isJust, listToMaybe )
 import Data.Monoid ( (<>) )
 import qualified Data.Set as Set
 import Data.String
@@ -81,7 +84,7 @@ options = Options
           <*> switch (long "shell" <> help "generate output suitable for nix-shell")
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
           <*> option (readP parse) (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith display)
-          <*> option (readP parsePlatform) (long "system" <> help "target system to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
+          <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
           <*> strArgument (metavar "URI")
@@ -99,19 +102,51 @@ readP p = eitherReader $ \s -> case [ r' | (r',"") <- P.readP_to_S p s ] of
                                     (r:_) -> Right r
                                     _     -> Left ("invalid value " ++ show s)
 
-parsePlatform :: P.ReadP r Platform
-parsePlatform = do arch <- P.choice [ P.string "i686" >> return I386
-                                    , P.string "x86_64" >> return X86_64
-                                    , P.string "armv7l" >> return Arm
-                                    , P.string "armv6l" >> return Arm
-                                    -- Not yet supported yet, see Cabal #5221
-                                    --, P.string "aarch64" >> return AArch64
-                                    , P.string "mipsel" >> return Mips
-                                    ]
-                   _ <- P.char '-'
-                   os <- P.choice [ P.string "linux" >> return Linux, P.string "darwin" >> return OSX
-                                  , P.string "windows" >> return Windows]
-                   return (Platform arch os)
+-- | Replicate the normalization performed by GHC_CONVERT_CPU in GHC's aclocal.m4
+-- since the output of that is what Cabal parses.
+ghcConvertArch :: String -> String
+ghcConvertArch arch = case arch of
+  "i486"  -> "i386"
+  "i586"  -> "i386"
+  "i686"  -> "i386"
+  "amd64" -> "x86_64"
+  _ -> fromMaybe arch $ listToMaybe
+    [prefix | prefix <- archPrefixes, prefix `isPrefixOf` arch]
+  where archPrefixes =
+          [ "aarch64", "alpha", "arm", "hppa1_1", "hppa", "m68k", "mipseb"
+          , "mipsel", "mips", "powerpc64le", "powerpc64", "powerpc", "s390x"
+          , "sparc64", "sparc"
+          ]
+
+-- | Replicate the normalization performed by GHC_CONVERT_OS in GHC's aclocal.m4
+-- since the output of that is what Cabal parses.
+ghcConvertOS :: String -> String
+ghcConvertOS os = case os of
+  "watchos"       -> "ios"
+  "tvos"          -> "ios"
+  "linux-android" -> "linux-android"
+  _ | "linux-" `isPrefixOf` os -> "linux"
+  _ -> fromMaybe os $ listToMaybe
+    [prefix | prefix <- osPrefixes, prefix `isPrefixOf` os]
+  where osPrefixes =
+          [ "gnu", "openbsd", "aix", "darwin", "solaris2", "freebsd", "nto-qnx"]
+
+parseArch :: String -> Arch
+parseArch = classifyArch Permissive . ghcConvertArch
+
+parseOS :: String -> OS
+parseOS = classifyOS Permissive . ghcConvertOS
+
+parsePlatform :: String -> Maybe Platform
+parsePlatform = parsePlatformParts . splitOn "-"
+
+parsePlatformParts :: [String] -> Maybe Platform
+parsePlatformParts = \case
+  [arch, os] ->
+    Just $ Platform (parseArch arch) (parseOS os)
+  (arch : _ : osParts) ->
+    Just $ Platform (parseArch arch) $ parseOS $ intercalate "-" osParts
+  _ -> Nothing
 
 pinfo :: ParserInfo Options
 pinfo = info
