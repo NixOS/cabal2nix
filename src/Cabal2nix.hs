@@ -102,7 +102,8 @@ readP p = eitherReader $ \s -> case [ r' | (r',"") <- P.readP_to_S p s ] of
 parsePlatform :: P.ReadP r Platform
 parsePlatform = do arch <- P.choice [P.string "i686" >> return I386, P.string "x86_64" >> return X86_64]
                    _ <- P.char '-'
-                   os <- P.choice [P.string "linux" >> return Linux, P.string "darwin" >> return OSX]
+                   os <- P.choice [ P.string "linux" >> return Linux, P.string "darwin" >> return OSX
+                                  , P.string "windows" >> return Windows]
                    return (Platform arch os)
 
 pinfo :: ParserInfo Options
