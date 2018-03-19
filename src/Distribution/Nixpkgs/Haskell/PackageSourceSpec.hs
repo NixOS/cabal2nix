@@ -2,13 +2,12 @@ module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
 
-import Control.DeepSeq (force)
 import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Bifunctor
-import qualified Data.ByteString.Char8 as BS -- TODO: Deal with utf-8 encoding!!
+import qualified Data.ByteString.Char8 as BS
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
@@ -25,11 +24,13 @@ import Distribution.Text ( simpleParse, display )
 import Distribution.Version
 import qualified Hpack.Config as Hpack
 import qualified Hpack.Render as Hpack
-import OpenSSL.Digest ( digestString, digestByName )
+import OpenSSL.Digest ( digest, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
 import System.IO
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 
 data Package = Package
   { pkgSource   :: DerivationSource
@@ -193,18 +194,21 @@ cabalFromDirectory False dir = do
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
 
+encodeUtf8 :: String -> BS.ByteString
+encodeUtf8 = T.encodeUtf8 . T.pack
+
 hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 hpackDirectory dir = do
   mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {Hpack.decodeOptionsTarget = dir </> Hpack.packageConfig}
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
     Right (Hpack.DecodeResult pkg' _ _) -> do
-      let hpackOutput = Hpack.renderPackage [] pkg'
-          hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
-      case runParseGenericPackageDescription "<hpack output>" (BS.pack hpackOutput) of
+      let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] pkg'
+          hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
+      case runParseGenericPackageDescription "<hpack output>" hpackOutput of
         Left msg -> liftIO $ do
           hPutStrLn stderr "*** hpack output:"
-          hPutStrLn stderr hpackOutput
+          BS.hPutStrLn stderr hpackOutput
           hPutStrLn stderr "*** cannot parse hpack output:"
           hPutStrLn stderr msg
           fail "*** Exiting."
@@ -216,11 +220,9 @@ cabalFromFile failHard file =
   -- that do not represent valid characters. To catch that exception, we need to
   -- wrap the whole block in `catchIO`.
   MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
-    buf <- withFile file ReadMode $ \ h -> do
-      hSetEncoding h utf8
-      hGetContents h >>= Exception.evaluate . force
-    let hash = printSHA256 (digestString (digestByName "sha256") buf)
-    case runParseGenericPackageDescription file (BS.pack buf) of
+    buf <- BS.readFile file
+    let hash = printSHA256 (digest (digestByName "sha256") buf)
+    case runParseGenericPackageDescription file buf of
       Left msg | failHard -> liftIO $ do
           hPutStrLn stderr $ "*** cannot parse " ++ show file ++ ":"
           hPutStrLn stderr msg
