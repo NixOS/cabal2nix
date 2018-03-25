@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -11,6 +12,9 @@ import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
+#if MIN_VERSION_Cabal(2,2,0)
+import Distribution.License (licenseFromSPDX)
+#endif
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Distribution.Nixpkgs.Haskell.Constraint
@@ -20,8 +24,7 @@ import Distribution.Nixpkgs.Haskell.FromCabal.Normalize
 import Distribution.Nixpkgs.Haskell.FromCabal.PostProcess (postProcess)
 import qualified Distribution.Nixpkgs.Meta as Nix
 import Distribution.Package
-import Distribution.PackageDescription
-import qualified Distribution.PackageDescription as Cabal
+import Distribution.PackageDescription as Cabal
 import Distribution.Types.ExeDependency as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
 import Distribution.Types.PkgconfigDependency as Cabal
@@ -32,6 +35,13 @@ import Distribution.System
 import Distribution.Text ( display )
 import Distribution.Version
 import Language.Nix
+
+-- Cabal 2.2 and later uses SPDX license naming yet our license resolution logic
+-- uses old-style Cabal license names.
+#if !MIN_VERSION_Cabal(2,2,0)
+licenseFromSPDX :: License -> License
+licenseFromSPDX = id
+#endif
 
 type HaskellResolver = Dependency -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
@@ -66,7 +76,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     Right (d,_)  -> (d,[])
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
+fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags pd@PackageDescription {..} = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -97,7 +107,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & metaSection .~ ( Nix.nullMeta
                      & Nix.homepage .~ homepage
                      & Nix.description .~ synopsis
-                     & Nix.license .~ fromCabalLicense license
+                     & Nix.license .~ fromCabalLicense (licenseFromSPDX $ Cabal.license pd)
                      & Nix.platforms .~ Nix.allKnownPlatforms
                      & Nix.hydraPlatforms .~ Nix.allKnownPlatforms
                      & Nix.maintainers .~ mempty

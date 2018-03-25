@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -24,9 +25,17 @@ import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.PackageDescription ( FlagAssignment, unFlagName )
+#if MIN_VERSION_Cabal(2,2,0)
+import Distribution.PackageDescription ( unFlagAssignment )
+#endif
 import GHC.Generics ( Generic )
 import Language.Nix
 import Language.Nix.PrettyPrinting
+
+#if !MIN_VERSION_Cabal(2,2,0)
+unFlagAssignment :: _
+unFlagAssignment = id
+#endif
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
@@ -140,7 +149,7 @@ instance Pretty Derivation where
                           , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
                           ]
 
-      renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- _cabalFlags ]
+      renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
       sourceAttr (DerivationSource{..})

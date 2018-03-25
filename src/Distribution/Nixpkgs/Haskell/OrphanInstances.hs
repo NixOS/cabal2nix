@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
@@ -8,11 +9,13 @@ import Data.String
 import qualified Data.Text as T
 import Data.Yaml
 import Distribution.Compiler
-import Distribution.License
 import Distribution.Package
-import Distribution.PackageDescription
 import Distribution.System
 import Distribution.Text
+import Distribution.Version
+#if !MIN_VERSION_Cabal(2,2,0)
+import Distribution.License
+import Distribution.PackageDescription
 import Distribution.Types.CondTree
 import Distribution.Types.ExecutableScope
 import Distribution.Types.ForeignLib
@@ -20,9 +23,12 @@ import Distribution.Types.ForeignLibOption
 import Distribution.Types.ForeignLibType
 import Distribution.Types.IncludeRenaming
 import Distribution.Types.Mixin
-import Distribution.Version
 import Language.Haskell.Extension
+#endif
 
+instance NFData CompilerInfo
+instance NFData AbiTag
+#if !MIN_VERSION_Cabal(2,2,0)
 instance NFData SetupBuildInfo
 instance (NFData v, NFData c, NFData a) => NFData (CondTree v c a)
 instance (NFData v, NFData c, NFData a) => NFData (CondBranch v c a)
@@ -62,9 +68,8 @@ instance NFData TestSuiteInterface
 instance NFData TestType
 instance NFData a => NFData (Condition a)
 instance NFData Platform
-instance NFData CompilerInfo
 instance NFData CompilerId
-instance NFData AbiTag
+#endif
 
 instance IsString Version where
   fromString = text2isString "Version"

@@ -12,11 +12,11 @@ import Data.Map as Map
 import Data.Set as Set
 import Data.String
 import Data.String.UTF8 ( toString, fromRep )
+import Distribution.Nixpkgs.CabalCompat
 import Distribution.Nixpkgs.Hashes
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Package
 import Distribution.PackageDescription
-import Distribution.PackageDescription.Parse ( parseGenericPackageDescription, ParseResult(..) )
 import Distribution.Text
 import Distribution.Version
 import OpenSSL.Digest ( digest, digestByName )
@@ -47,9 +47,9 @@ readPackage :: FilePath -> PackageIdentifier -> IO (GenericPackageDescription, S
 readPackage dirPrefix (PackageIdentifier name version) = do
   let cabalFile = dirPrefix </> unPackageName name </> display version </> unPackageName name <.> "cabal"
   buf <- BS.readFile cabalFile
-  cabal <- case parseGenericPackageDescription (decodeUTF8 buf) of
-             ParseOk _ a  -> return a
-             ParseFailed err -> fail (cabalFile ++ ": " ++ show err)
+  cabal <- case parseGenericPackageDescription buf of
+             Right a  -> return a
+             Left err -> fail (cabalFile ++ ": " ++ err)
   return (cabal, printSHA256 (digest (digestByName "sha256") buf))
 
 declareLenses [d|

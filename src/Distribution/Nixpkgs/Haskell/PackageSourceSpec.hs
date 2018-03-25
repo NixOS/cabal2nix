@@ -1,25 +1,31 @@
+{-# LANGUAGE CPP #-}
 module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
 
-import qualified Control.Exception as Exception
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
+import qualified Data.ByteString.Char8 as BS
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
+import qualified Data.String.UTF8 as UTF8
 import Data.Time
+import Distribution.Nixpkgs.CabalCompat
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
 import qualified Distribution.Package as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
-import Distribution.PackageDescription.Parse as Cabal
 import Distribution.Text ( simpleParse, display )
 import Distribution.Version
+#if MIN_VERSION_hpack(0,28,0)
+import qualified Hpack.Render as Hpack
+#else
 import qualified Hpack.Run as Hpack
+#endif
 import qualified Hpack.Config as Hpack
 import OpenSSL.Digest ( digestString, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
@@ -186,38 +192,40 @@ cabalFromDirectory False dir = do
     [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
     _       -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
-handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
-handleIO = Exception.handle
-
 hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 hpackDirectory dir = do
-  mPackage <- liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
+#if MIN_VERSION_hpack(0,28,0)
+  mPackage <- fmap (fmap Hpack.decodeResultPackage) $ liftIO $ Hpack.readPackageConfig
+    $ Hpack.defaultDecodeOptions { Hpack.decodeOptionsTarget = dir </> "package.yaml" }
+#else
+  mPackage <- fmap (fmap snd) $ liftIO $ Hpack.readPackageConfig $ dir </> "package.yaml"
+#endif
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-    Right (_, pkg') -> do
+    Right pkg' -> do
+#if MIN_VERSION_hpack(0,28,0)
+      let hpackOutput = Hpack.renderPackage [] pkg'
+#else
       let hpackOutput = Hpack.renderPackage Hpack.defaultRenderSettings 2 [] [] pkg'
-          hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
-      case parseGenericPackageDescription hpackOutput of
-        ParseFailed perr -> liftIO $ do
+#endif
+      let hash = printSHA256 $ digestString (digestByName "sha256") hpackOutput
+      case parseGenericPackageDescription $ UTF8.toRep $ UTF8.fromString hpackOutput of
+        Left perr -> liftIO $ do
           hPutStrLn stderr $ "*** cannot parse hpack output: " ++ show perr
           hPutStrLn stderr $ "*** hpack output:\n" ++ hpackOutput
           fail "*** Exiting."
-        ParseOk _ pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
+        Right pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =
-  -- readFile throws an error if it's used on binary files which contain sequences
-  -- that do not represent valid characters. To catch that exception, we need to
-  -- wrap the whole block in `catchIO`, because of lazy IO. The `case` will force
-  -- the reading of the file, so we will always catch the expression here.
-  MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
-    buf <- readFile file
-    let hash = printSHA256 (digestString (digestByName "sha256") buf)
+  MaybeT $ do
+    buf <- BS.readFile file
+    let hash = printSHA256 (digestString (digestByName "sha256") $ BS.unpack buf)
     case parseGenericPackageDescription buf of
-      ParseFailed perr -> if failHard
+      Left perr -> if failHard
                              then fail ("cannot parse " ++ show file ++ ": " ++ show perr)
                              else return Nothing
-      ParseOk _ pkg    -> return $ Just $ setCabalFileHash hash pkg
+      Right pkg    -> return $ Just $ setCabalFileHash hash pkg
 
 setCabalFileHash :: String -> GenericPackageDescription -> GenericPackageDescription
 setCabalFileHash sha256 gpd = gpd { packageDescription = (packageDescription gpd) {

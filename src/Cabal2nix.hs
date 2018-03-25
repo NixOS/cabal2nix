@@ -16,6 +16,7 @@ import Data.String
 import Data.Time
 import qualified Distribution.Compat.ReadP as P
 import Distribution.Compiler
+import Distribution.Nixpkgs.CabalCompat
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
@@ -211,6 +212,6 @@ cabal2nix args = do
     Right d -> pPrint d
 
 readFlagList :: [String] -> FlagAssignment
-readFlagList = map tagWithValue
+readFlagList = mkFlagAssignment . map tagWithValue
   where tagWithValue ('-':fname) = (mkFlagName (lowercase fname), False)
         tagWithValue fname       = (mkFlagName (lowercase fname), True)

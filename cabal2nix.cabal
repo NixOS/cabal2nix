@@ -127,8 +127,10 @@ library
     , time
     , transformers
     , yaml
+    , utf8-string
   exposed-modules:
       Cabal2nix
+      Distribution.Nixpkgs.CabalCompat
       Distribution.Nixpkgs.Fetch
       Distribution.Nixpkgs.Haskell
       Distribution.Nixpkgs.Haskell.BuildInfo
