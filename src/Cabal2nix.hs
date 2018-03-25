@@ -100,7 +100,14 @@ readP p = eitherReader $ \s -> case [ r' | (r',"") <- P.readP_to_S p s ] of
                                     _     -> Left ("invalid value " ++ show s)
 
 parsePlatform :: P.ReadP r Platform
-parsePlatform = do arch <- P.choice [P.string "i686" >> return I386, P.string "x86_64" >> return X86_64]
+parsePlatform = do arch <- P.choice [ P.string "i686" >> return I386
+                                    , P.string "x86_64" >> return X86_64
+                                    , P.string "armv7l" >> return Arm
+                                    , P.string "armv6l" >> return Arm
+                                    -- Not yet supported yet, see Cabal #5221
+                                    --, P.string "aarch64" >> return AArch64
+                                    , P.string "mipsel" >> return Mips
+                                    ]
                    _ <- P.char '-'
                    os <- P.choice [ P.string "linux" >> return Linux, P.string "darwin" >> return OSX
                                   , P.string "windows" >> return Windows]
