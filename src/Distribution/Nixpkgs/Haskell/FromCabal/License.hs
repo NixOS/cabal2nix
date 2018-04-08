@@ -35,6 +35,7 @@ fromCabalLicense (Apache Nothing)                          = Known "stdenv.lib.l
 fromCabalLicense (Apache (Just (versionNumbers -> [2,0]))) = Known "stdenv.lib.licenses.asl20"
 fromCabalLicense ISC                                       = Known "stdenv.lib.licenses.isc"
 fromCabalLicense OtherLicense                              = Unknown Nothing
+fromCabalLicense CC0_1_0                                   = Known "stdenv.lib.licenses.cc0"
 fromCabalLicense (UnknownLicense "CC0-1.0")                = Known "stdenv.lib.licenses.cc0"
 fromCabalLicense l                                         = error $ "Distribution.Nixpkgs.Haskell.FromCabal.License.fromCabalLicense: unknown license"
                                                                   ++ show l ++"\nChoose one of: " ++ intercalate ", " (map display knownLicenses)
