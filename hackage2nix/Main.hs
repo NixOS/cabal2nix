@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE CPP #-}
 
 module Main ( main ) where
 
@@ -14,7 +15,9 @@ import Data.List
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
+#if !MIN_VERSION_base(4,11,0)
 import Data.Monoid
+#endif
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.String
