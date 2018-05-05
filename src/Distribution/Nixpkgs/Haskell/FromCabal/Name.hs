@@ -47,6 +47,7 @@ libNixName "gdk-2.0"                            = return "gtk2"
 libNixName "gdk-3.0"                            = return "gtk3"
 libNixName "gdk-pixbuf-2.0"                     = return "gdk_pixbuf"
 libNixName "gdk-x11-2.0"                        = return "gdk_x11"
+libNixName "gdk-x11-3.0"                        = return "gtk3"
 libNixName "gio-2.0"                            = return "glib"
 libNixName "GL"                                 = return "libGL"
 libNixName "GLU"                                = ["libGLU","libGL"]
