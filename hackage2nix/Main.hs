@@ -27,7 +27,7 @@ import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Package
-import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools )
+import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools, homepage )
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
@@ -153,6 +153,7 @@ main = do
                   & metaSection.hydraPlatforms %~ (`Set.difference` Map.findWithDefault Set.empty name (dontDistributePackages config))
                   & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
                   & metaSection.hydraPlatforms %~ (if isInDefaultPackageSet then id else const Set.empty)
+                  & metaSection.homepage .~ ""
 
           overrides :: Doc
           overrides = fcat $ punctuate space [ disp b <> semi | b <- Set.toList ((view (dependencies . each) drv) `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
