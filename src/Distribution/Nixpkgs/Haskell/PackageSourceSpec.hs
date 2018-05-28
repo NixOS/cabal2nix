@@ -71,7 +71,7 @@ fetchOrFromDB optHpack hackageDB src
   | otherwise                             = do
     r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
-      Nothing -> fail "Failed to fetch source. Does the URL exist?"
+      Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
         return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
 
