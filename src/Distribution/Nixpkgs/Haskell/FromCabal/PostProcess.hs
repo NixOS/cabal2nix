@@ -198,7 +198,7 @@ gfPhaseOverrides = unlines
   ]
 
 wxcHook :: Derivation -> Derivation
-wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "mesa", bind "pkgs.xorg.libX11"])
+wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "libGL", bind "pkgs.xorg.libX11"])
                   & libraryDepends . pkgconfig . contains (pkg "wxGTK") .~ True
                   & phaseOverrides .~ wxcPostInstall (packageVersion drv)
                   & runHaddock .~ False
