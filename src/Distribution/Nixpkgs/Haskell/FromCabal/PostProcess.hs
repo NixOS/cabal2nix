@@ -43,6 +43,7 @@ hooks =
   , ("bindings-lxc", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
+  , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [bind "self.mtl", bind "self.parsec"]))) -- https://github.com/haskell/cabal/issues/5391
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
   , ("cabal-install", set doCheck False . set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
