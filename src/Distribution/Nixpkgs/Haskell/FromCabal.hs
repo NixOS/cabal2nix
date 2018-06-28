@@ -53,7 +53,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     finalize resolver = finalizePD flags requestedComponents resolver arch compiler constraints genDesc
 
     requestedComponents :: ComponentRequestedSpec
-    requestedComponents = defaultComponentRequestedSpec
+    requestedComponents = ComponentRequestedSpec
                           { testsRequested      = True
                           , benchmarksRequested = True
                           }
