@@ -38,7 +38,7 @@ import Paths_cabal2nix ( version )
 import System.Environment ( getArgs )
 import System.IO ( hFlush, hPutStrLn, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2
-import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi )
+import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi, render, prettyShow )
 
 data Options = Options
   { optSha256 :: Maybe String
@@ -253,11 +253,7 @@ processPackage Options{..} pkg = do
   pure $ if optNixShellOutput then Left shell else Right deriv
 
 cabal2nix :: [String] -> IO ()
-cabal2nix args = do
-  v <- cabal2nix' args
-  print $ case v of
-    Left shell -> shell
-    Right d -> pPrint d
+cabal2nix = cabal2nix' >=> putStrLn . either render prettyShow
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = mkFlagAssignment . map tagWithValue
