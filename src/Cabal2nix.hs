@@ -9,7 +9,7 @@ module Cabal2nix
 
 import Control.Exception ( bracket )
 import Control.Lens
-import Control.Monad ( when )
+import Control.Monad
 import Data.List
 import Data.List.Split
 import Data.Maybe ( fromMaybe, isJust, listToMaybe )
@@ -218,7 +218,7 @@ processPackage Options{..} pkg = do
                                             (pkgCabal pkg)
               & src .~ pkgSource pkg
               & subpath .~ fromMaybe "." optSubpath
-              & runHaddock .~ optHaddock
+              & runHaddock %~ (optHaddock &&)
               & jailbreak .~ optJailbreak
               & hyperlinkSource .~ optHyperlinkSource
               & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
