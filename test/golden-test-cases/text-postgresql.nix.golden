@@ -1,13 +1,10 @@
-{ mkDerivation, base, dlist, fetchurl, QuickCheck
-, quickcheck-simple, transformers, transformers-compat
+{ mkDerivation, base, dlist, QuickCheck, quickcheck-simple, stdenv
+, transformers, transformers-compat
 }:
 mkDerivation {
   pname = "text-postgresql";
   version = "0.0.2.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base dlist transformers transformers-compat
   ];

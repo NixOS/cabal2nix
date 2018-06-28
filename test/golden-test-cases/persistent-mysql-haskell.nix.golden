@@ -1,15 +1,12 @@
 { mkDerivation, aeson, base, bytestring, conduit, containers
-, fetchurl, io-streams, monad-control, monad-logger, mysql-haskell
-, network, persistent, persistent-template, resource-pool
-, resourcet, text, time, tls, transformers
+, io-streams, monad-control, monad-logger, mysql-haskell, network
+, persistent, persistent-template, resource-pool, resourcet, stdenv
+, text, time, tls, transformers
 }:
 mkDerivation {
   pname = "persistent-mysql-haskell";
   version = "0.3.6";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

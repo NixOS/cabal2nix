@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, template-haskell }:
+{ mkDerivation, base, stdenv, template-haskell }:
 mkDerivation {
   pname = "partial-isomorphisms";
   version = "0.2.2.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base template-haskell ];
   homepage = "http://www.informatik.uni-marburg.de/~rendel/unparse";
   description = "Partial isomorphisms";

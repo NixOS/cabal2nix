@@ -1,13 +1,10 @@
 { mkDerivation, base, bytestring, chell, chell-quickcheck, deepseq
-, fetchurl, QuickCheck, text
+, QuickCheck, stdenv, text
 }:
 mkDerivation {
   pname = "system-filepath";
   version = "0.4.13.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring deepseq text ];
   testHaskellDepends = [
     base bytestring chell chell-quickcheck QuickCheck text

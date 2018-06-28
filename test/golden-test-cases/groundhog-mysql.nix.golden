@@ -1,14 +1,11 @@
-{ mkDerivation, base, bytestring, containers, fetchurl, groundhog
+{ mkDerivation, base, bytestring, containers, groundhog
 , monad-control, monad-logger, mysql, mysql-simple, resource-pool
-, resourcet, text, time, transformers
+, resourcet, stdenv, text, time, transformers
 }:
 mkDerivation {
   pname = "groundhog-mysql";
   version = "0.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring containers groundhog monad-control monad-logger
     mysql mysql-simple resource-pool resourcet text time transformers

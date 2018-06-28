@@ -1,13 +1,10 @@
-{ mkDerivation, base, criterion, deepseq, fetchurl, primitive
-, tasty, tasty-hunit, tasty-quickcheck, vector
+{ mkDerivation, base, criterion, deepseq, primitive, stdenv, tasty
+, tasty-hunit, tasty-quickcheck, vector
 }:
 mkDerivation {
   pname = "matrices";
   version = "0.4.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base deepseq primitive vector ];
   testHaskellDepends = [
     base tasty tasty-hunit tasty-quickcheck vector

@@ -1,13 +1,10 @@
-{ mkDerivation, aeson, base, exceptions, fetchurl, hspec
-, http-api-data, path-pieces, persistent, QuickCheck, text
+{ mkDerivation, aeson, base, exceptions, hspec, http-api-data
+, path-pieces, persistent, QuickCheck, stdenv, text
 }:
 mkDerivation {
   pname = "slug";
   version = "0.1.7";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base exceptions http-api-data path-pieces persistent
     QuickCheck text

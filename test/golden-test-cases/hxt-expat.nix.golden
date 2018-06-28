@@ -1,11 +1,8 @@
-{ mkDerivation, base, bytestring, fetchurl, hexpat, hxt }:
+{ mkDerivation, base, bytestring, hexpat, hxt, stdenv }:
 mkDerivation {
   pname = "hxt-expat";
   version = "9.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring hexpat hxt ];
   homepage = "http://www.fh-wedel.de/~si/HXmlToolbox/index.html";
   description = "Expat parser for HXT";

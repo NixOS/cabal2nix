@@ -1,14 +1,11 @@
 { mkDerivation, aeson, attoparsec, base, blaze-html, bytestring
-, containers, contravariant, fetchurl, jmacro, mtl, scientific
-, split, text, unordered-containers, vector
+, containers, contravariant, jmacro, mtl, scientific, split, stdenv
+, text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "jmacro-rpc";
   version = "0.3.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson attoparsec base blaze-html bytestring containers
     contravariant jmacro mtl scientific split text unordered-containers

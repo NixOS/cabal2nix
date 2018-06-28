@@ -1,11 +1,8 @@
-{ mkDerivation, base, bytestring, fetchurl }:
+{ mkDerivation, base, bytestring, stdenv }:
 mkDerivation {
   pname = "unix-bytestring";
   version = "0.3.7.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring ];
   homepage = "http://code.haskell.org/~wren/";
   description = "Unix/Posix-specific functions for ByteStrings";

@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, fetchurl, gnuidn, gnutls, gsasl
-, libxml-sax, monads-tf, network, text, transformers, xml-types
+{ mkDerivation, base, bytestring, gnuidn, gnutls, gsasl, libxml-sax
+, monads-tf, network, stdenv, text, transformers, xml-types
 }:
 mkDerivation {
   pname = "network-protocol-xmpp";
   version = "0.4.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring gnuidn gnutls gsasl libxml-sax monads-tf network
     text transformers xml-types

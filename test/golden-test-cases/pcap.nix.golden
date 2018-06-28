@@ -1,11 +1,8 @@
-{ mkDerivation, base, bytestring, fetchurl, network, time }:
+{ mkDerivation, base, bytestring, network, stdenv, time }:
 mkDerivation {
   pname = "pcap";
   version = "0.4.5.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring network time ];
   homepage = "https://github.com/bos/pcap";
   description = "A system-independent interface for user-level packet capture";

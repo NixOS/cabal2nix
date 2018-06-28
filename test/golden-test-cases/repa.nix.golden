@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, fetchurl, ghc-prim, QuickCheck
+{ mkDerivation, base, bytestring, ghc-prim, QuickCheck, stdenv
 , template-haskell, vector
 }:
 mkDerivation {
   pname = "repa";
   version = "3.4.1.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring ghc-prim QuickCheck template-haskell vector
   ];

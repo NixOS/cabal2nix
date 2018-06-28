@@ -1,15 +1,12 @@
 { mkDerivation, aeson, base, base16-bytestring, bytestring
-, cryptonite, fetchurl, hashable, hspec, http-client, http-types
-, memory, QuickCheck, scientific, text, time, transformers
+, cryptonite, hashable, hspec, http-client, http-types, memory
+, QuickCheck, scientific, stdenv, text, time, transformers
 , unordered-containers, vector
 }:
 mkDerivation {
   pname = "pusher-http-haskell";
   version = "1.5.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base base16-bytestring bytestring cryptonite hashable
     http-client http-types memory text time transformers

@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, QuickCheck }:
+{ mkDerivation, base, QuickCheck, stdenv }:
 mkDerivation {
   pname = "utility-ht";
   version = "0.0.14";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base QuickCheck ];
   description = "Various small helper functions for Lists, Maybes, Tuples, Functions";

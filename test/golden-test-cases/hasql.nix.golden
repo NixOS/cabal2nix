@@ -1,18 +1,15 @@
 { mkDerivation, attoparsec, base, base-prelude, bug, bytestring
 , bytestring-strict-builder, contravariant, contravariant-extras
-, criterion, data-default-class, dlist, fetchurl, hashable
-, hashtables, loch-th, mtl, placeholders, postgresql-binary
-, postgresql-libpq, profunctors, QuickCheck, quickcheck-instances
-, rebase, rerebase, semigroups, tasty, tasty-hunit
-, tasty-quickcheck, text, transformers, vector
+, criterion, data-default-class, dlist, hashable, hashtables
+, loch-th, mtl, placeholders, postgresql-binary, postgresql-libpq
+, profunctors, QuickCheck, quickcheck-instances, rebase, rerebase
+, semigroups, stdenv, tasty, tasty-hunit, tasty-quickcheck, text
+, transformers, vector
 }:
 mkDerivation {
   pname = "hasql";
   version = "1.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec base base-prelude bytestring bytestring-strict-builder
     contravariant contravariant-extras data-default-class dlist

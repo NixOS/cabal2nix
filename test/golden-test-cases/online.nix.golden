@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, foldl, numhask, protolude, tdigest
+{ mkDerivation, base, foldl, numhask, protolude, stdenv, tdigest
 , vector, vector-algorithms
 }:
 mkDerivation {
   pname = "online";
   version = "0.2.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base foldl numhask protolude tdigest vector vector-algorithms
   ];

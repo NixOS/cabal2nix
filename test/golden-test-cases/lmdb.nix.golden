@@ -1,11 +1,8 @@
-{ mkDerivation, array, base, fetchurl, lmdb }:
+{ mkDerivation, array, base, lmdb, stdenv }:
 mkDerivation {
   pname = "lmdb";
   version = "0.2.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ array base ];
   librarySystemDepends = [ lmdb ];
   homepage = "http://github.com/dmbarbour/haskell-lmdb";

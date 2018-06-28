@@ -1,16 +1,13 @@
 { mkDerivation, array, base, bifunctors, comonad, containers
-, contravariant, fetchurl, ghc-prim, hspec, profunctors, QuickCheck
-, semigroups, StateVar, stm, tagged, template-haskell
+, contravariant, ghc-prim, hspec, profunctors, QuickCheck
+, semigroups, StateVar, stdenv, stm, tagged, template-haskell
 , th-abstraction, transformers, transformers-compat
 , unordered-containers
 }:
 mkDerivation {
   pname = "invariant";
   version = "0.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base bifunctors comonad containers contravariant ghc-prim
     profunctors semigroups StateVar stm tagged template-haskell

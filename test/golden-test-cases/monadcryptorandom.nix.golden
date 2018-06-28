@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, crypto-api, exceptions, fetchurl
-, mtl, tagged, transformers, transformers-compat
+{ mkDerivation, base, bytestring, crypto-api, exceptions, mtl
+, stdenv, tagged, transformers, transformers-compat
 }:
 mkDerivation {
   pname = "monadcryptorandom";
   version = "0.7.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring crypto-api exceptions mtl tagged transformers
     transformers-compat

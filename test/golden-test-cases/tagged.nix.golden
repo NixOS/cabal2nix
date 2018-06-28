@@ -1,13 +1,10 @@
-{ mkDerivation, base, deepseq, fetchurl, template-haskell
+{ mkDerivation, base, deepseq, stdenv, template-haskell
 , transformers, transformers-compat
 }:
 mkDerivation {
   pname = "tagged";
   version = "0.8.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base deepseq template-haskell transformers transformers-compat
   ];

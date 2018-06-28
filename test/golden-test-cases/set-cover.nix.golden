@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, enummapset, fetchurl, psqueues
+{ mkDerivation, base, containers, enummapset, psqueues, stdenv
 , utility-ht
 }:
 mkDerivation {
   pname = "set-cover";
   version = "0.0.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

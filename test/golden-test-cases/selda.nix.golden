@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, exceptions, fetchurl, hashable
-, mtl, psqueues, text, time, unordered-containers
+{ mkDerivation, base, bytestring, exceptions, hashable, mtl
+, psqueues, stdenv, text, time, unordered-containers
 }:
 mkDerivation {
   pname = "selda";
   version = "0.1.11.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring exceptions hashable mtl psqueues text time
     unordered-containers

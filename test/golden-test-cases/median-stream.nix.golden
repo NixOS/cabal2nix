@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, heap, QuickCheck }:
+{ mkDerivation, base, heap, QuickCheck, stdenv }:
 mkDerivation {
   pname = "median-stream";
   version = "0.7.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base heap ];
   testHaskellDepends = [ base QuickCheck ];
   homepage = "https://github.com/caneroj1/median-stream#readme";

@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, hspec, lens, QuickCheck
+{ mkDerivation, base, hspec, lens, QuickCheck, stdenv
 , template-haskell, transformers
 }:
 mkDerivation {
   pname = "quickcheck-arbitrary-adt";
   version = "0.2.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base QuickCheck ];
   testHaskellDepends = [
     base hspec lens QuickCheck template-haskell transformers

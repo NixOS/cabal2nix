@@ -1,11 +1,8 @@
-{ mkDerivation, base, containers, data-default-class, fetchurl }:
+{ mkDerivation, base, containers, data-default-class, stdenv }:
 mkDerivation {
   pname = "data-default-instances-containers";
   version = "0.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers data-default-class ];
   description = "Default instances for types in containers";
   license = stdenv.lib.licenses.bsd3;

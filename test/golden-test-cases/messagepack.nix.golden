@@ -1,14 +1,11 @@
 { mkDerivation, base, bytestring, cereal, containers, deepseq
-, fetchurl, QuickCheck, test-framework, test-framework-quickcheck2
+, QuickCheck, stdenv, test-framework, test-framework-quickcheck2
 , test-framework-th
 }:
 mkDerivation {
   pname = "messagepack";
   version = "0.5.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring cereal containers deepseq
   ];

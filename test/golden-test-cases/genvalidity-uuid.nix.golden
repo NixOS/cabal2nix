@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, genvalidity, genvalidity-hspec
-, hspec, QuickCheck, uuid, validity, validity-uuid
+{ mkDerivation, base, genvalidity, genvalidity-hspec, hspec
+, QuickCheck, stdenv, uuid, validity, validity-uuid
 }:
 mkDerivation {
   pname = "genvalidity-uuid";
   version = "0.0.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base genvalidity QuickCheck uuid validity validity-uuid
   ];

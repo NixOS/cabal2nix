@@ -1,16 +1,13 @@
 { mkDerivation, aeson, ansi-wl-pprint, base, bifunctors, bytestring
-, comonad, directory, double-conversion, fetchurl, filepath, free
-, lens, mtl, parsers, scientific, semigroups, tasty, tasty-golden
+, comonad, directory, double-conversion, filepath, free, lens, mtl
+, parsers, scientific, semigroups, stdenv, tasty, tasty-golden
 , text, text-format, text-manipulate, trifecta
 , unordered-containers, vector
 }:
 mkDerivation {
   pname = "ede";
   version = "0.2.8.7";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [
     aeson ansi-wl-pprint base bifunctors bytestring comonad directory

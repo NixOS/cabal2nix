@@ -1,11 +1,8 @@
-{ mkDerivation, base, bytestring, bzip2, fetchurl }:
+{ mkDerivation, base, bytestring, bzip2, stdenv }:
 mkDerivation {
   pname = "bzlib";
   version = "0.5.0.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring ];
   librarySystemDepends = [ bzip2 ];
   description = "Compression and decompression in the bzip2 format";

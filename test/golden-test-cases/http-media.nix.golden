@@ -1,14 +1,11 @@
 { mkDerivation, base, bytestring, case-insensitive, containers
-, fetchurl, QuickCheck, test-framework, test-framework-quickcheck2
+, QuickCheck, stdenv, test-framework, test-framework-quickcheck2
 , utf8-string
 }:
 mkDerivation {
   pname = "http-media";
   version = "0.7.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring case-insensitive containers utf8-string
   ];

@@ -1,13 +1,10 @@
-{ mkDerivation, base, binary, bytestring, fetchurl, QuickCheck
-, random, test-framework, test-framework-quickcheck2
+{ mkDerivation, base, binary, bytestring, QuickCheck, random
+, stdenv, test-framework, test-framework-quickcheck2
 }:
 mkDerivation {
   pname = "binary-bits";
   version = "0.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base binary bytestring ];
   testHaskellDepends = [
     base binary bytestring QuickCheck random test-framework

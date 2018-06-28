@@ -1,15 +1,12 @@
 { mkDerivation, attoparsec, base, blaze-builder, bytestring
-, case-insensitive, conduit, conduit-extra, data-default, fetchurl
-, hspec, HUnit, QuickCheck, resourcet, text, transformers
+, case-insensitive, conduit, conduit-extra, data-default, hspec
+, HUnit, QuickCheck, resourcet, stdenv, text, transformers
 , xml-conduit
 }:
 mkDerivation {
   pname = "tagstream-conduit";
   version = "0.5.5.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec base blaze-builder bytestring case-insensitive conduit
     conduit-extra data-default resourcet text transformers xml-conduit

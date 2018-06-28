@@ -1,14 +1,11 @@
 { mkDerivation, array, async, base, blaze-builder, bytestring
-, criterion, deepseq, directory, fetchurl, hspec, network, process
-, QuickCheck, random, stm, text, transformers, unix, zlib
+, criterion, deepseq, directory, hspec, network, process
+, QuickCheck, random, stdenv, stm, text, transformers, unix, zlib
 }:
 mkDerivation {
   pname = "streaming-commons";
   version = "0.1.18";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array async base blaze-builder bytestring directory network process
     random stm text transformers unix zlib

@@ -1,14 +1,11 @@
-{ mkDerivation, attoparsec, base, bytestring, fetchurl, HUnit
-, io-streams, network, test-framework, test-framework-hunit
+{ mkDerivation, attoparsec, base, bytestring, HUnit, io-streams
+, network, stdenv, test-framework, test-framework-hunit
 , transformers
 }:
 mkDerivation {
   pname = "io-streams-haproxy";
   version = "1.0.0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec base bytestring io-streams network transformers
   ];

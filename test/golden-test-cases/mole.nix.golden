@@ -1,17 +1,14 @@
 { mkDerivation, attoparsec, base, base64-bytestring, bytestring
-, containers, cryptohash, css-syntax, directory, fetchurl
-, filemanip, filepath, fsnotify, hspec, hspec-smallcheck, kraken
-, mtl, network-uri, optparse-applicative, process, smallcheck
-, snap-core, snap-server, stm, tagsoup, text, time, transformers
-, unix, unordered-containers, vector
+, containers, cryptohash, css-syntax, directory, filemanip
+, filepath, fsnotify, hspec, hspec-smallcheck, kraken, mtl
+, network-uri, optparse-applicative, process, smallcheck, snap-core
+, snap-server, stdenv, stm, tagsoup, text, time, transformers, unix
+, unordered-containers, vector
 }:
 mkDerivation {
   pname = "mole";
   version = "0.0.6";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [

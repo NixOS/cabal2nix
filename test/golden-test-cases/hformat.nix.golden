@@ -1,13 +1,10 @@
-{ mkDerivation, ansi-terminal, base, base-unicode-symbols, fetchurl
-, hspec, text
+{ mkDerivation, ansi-terminal, base, base-unicode-symbols, hspec
+, stdenv, text
 }:
 mkDerivation {
   pname = "hformat";
   version = "0.3.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     ansi-terminal base base-unicode-symbols text
   ];

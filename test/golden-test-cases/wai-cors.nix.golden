@@ -1,15 +1,12 @@
 { mkDerivation, attoparsec, base, base-unicode-symbols, bytestring
-, case-insensitive, directory, fetchurl, filepath, http-types, mtl
-, network, process, tasty, tasty-hunit, text, transformers, wai
+, case-insensitive, directory, filepath, http-types, mtl, network
+, process, stdenv, tasty, tasty-hunit, text, transformers, wai
 , wai-extra, wai-websockets, warp, websockets
 }:
 mkDerivation {
   pname = "wai-cors";
   version = "0.2.6";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [
     attoparsec base base-unicode-symbols bytestring case-insensitive

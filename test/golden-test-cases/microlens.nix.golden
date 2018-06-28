@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl }:
+{ mkDerivation, base, stdenv }:
 mkDerivation {
   pname = "microlens";
   version = "0.4.8.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   homepage = "http://github.com/aelve/microlens";
   description = "A tiny lens library with no dependencies. If you're writing an app, you probably want microlens-platform, not this.";

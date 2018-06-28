@@ -1,13 +1,10 @@
-{ mkDerivation, array, base, binary, bytestring, fetchurl
-, QuickCheck, test-framework, test-framework-quickcheck2
+{ mkDerivation, array, base, binary, bytestring, QuickCheck, stdenv
+, test-framework, test-framework-quickcheck2
 }:
 mkDerivation {
   pname = "SHA";
   version = "1.6.4.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ array base binary bytestring ];

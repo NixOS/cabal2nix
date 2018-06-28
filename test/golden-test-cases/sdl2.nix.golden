@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, exceptions, fetchurl, linear
-, SDL2, StateVar, text, transformers, vector
+{ mkDerivation, base, bytestring, exceptions, linear, SDL2
+, StateVar, stdenv, text, transformers, vector
 }:
 mkDerivation {
   pname = "sdl2";
   version = "2.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

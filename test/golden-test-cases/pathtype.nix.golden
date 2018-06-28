@@ -1,13 +1,10 @@
-{ mkDerivation, base, deepseq, directory, fetchurl, old-time
-, QuickCheck, random, tagged, time, transformers, utility-ht
+{ mkDerivation, base, deepseq, directory, old-time, QuickCheck
+, random, stdenv, tagged, time, transformers, utility-ht
 }:
 mkDerivation {
   pname = "pathtype";
   version = "0.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

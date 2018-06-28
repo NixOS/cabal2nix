@@ -1,11 +1,8 @@
-{ mkDerivation, base, blaze-markup, fetchurl, mtl }:
+{ mkDerivation, base, blaze-markup, mtl, stdenv }:
 mkDerivation {
   pname = "blaze-svg";
   version = "0.3.6.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base blaze-markup mtl ];
   homepage = "https://github.com/deepakjois/blaze-svg";
   description = "SVG combinator library";

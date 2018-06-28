@@ -1,13 +1,10 @@
 { mkDerivation, base, bytestring, clock, data-default, doctest
-, fetchurl, http-types, prometheus-client, text, wai
+, http-types, prometheus-client, stdenv, text, wai
 }:
 mkDerivation {
   pname = "wai-middleware-prometheus";
   version = "0.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring clock data-default http-types prometheus-client
     text wai

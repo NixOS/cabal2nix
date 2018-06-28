@@ -1,16 +1,13 @@
 { mkDerivation, base, commutative, composition, containers
-, contravariant, criterion, fetchurl, hashable, keys, mtl
-, QuickCheck, quickcheck-instances, semigroupoids, semigroups
-, tasty, tasty-hunit, tasty-quickcheck, transformers
-, transformers-base, unordered-containers, witherable
+, contravariant, criterion, hashable, keys, mtl, QuickCheck
+, quickcheck-instances, semigroupoids, semigroups, stdenv, tasty
+, tasty-hunit, tasty-quickcheck, transformers, transformers-base
+, unordered-containers, witherable
 }:
 mkDerivation {
   pname = "sets";
   version = "0.0.5.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base commutative composition containers contravariant hashable keys
     mtl QuickCheck semigroupoids semigroups transformers

@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl }:
+{ mkDerivation, base, stdenv }:
 mkDerivation {
   pname = "deque";
   version = "0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/nikita-volkov/deque";
   description = "Double-ended queue";

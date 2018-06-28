@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, fetchurl, hashable
+{ mkDerivation, base, containers, hashable, stdenv
 , unordered-containers, vector
 }:
 mkDerivation {
   pname = "functor-classes-compat";
   version = "1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers hashable unordered-containers vector
   ];

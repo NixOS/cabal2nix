@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, ncurses, process, readline }:
+{ mkDerivation, base, ncurses, process, readline, stdenv }:
 mkDerivation {
   pname = "readline";
   version = "1.0.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base process ];
   librarySystemDepends = [ ncurses readline ];
   description = "An interface to the GNU readline library";

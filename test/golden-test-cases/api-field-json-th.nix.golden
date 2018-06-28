@@ -1,13 +1,10 @@
-{ mkDerivation, aeson, base, fetchurl, HUnit, lens, split
+{ mkDerivation, aeson, base, HUnit, lens, split, stdenv
 , template-haskell, text
 }:
 mkDerivation {
   pname = "api-field-json-th";
   version = "0.1.0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base lens split template-haskell text
   ];

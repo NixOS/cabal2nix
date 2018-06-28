@@ -1,14 +1,11 @@
 { mkDerivation, attoparsec, base, blaze-html, blaze-markup
-, criterion, directory, fetchurl, hspec, hspec-attoparsec, tagsoup
+, criterion, directory, hspec, hspec-attoparsec, stdenv, tagsoup
 , text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "taggy";
   version = "0.2.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

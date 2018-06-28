@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, logging-effect, template-haskell
+{ mkDerivation, base, logging-effect, stdenv, template-haskell
 , wl-pprint-text
 }:
 mkDerivation {
   pname = "logging-effect-extra-file";
   version = "1.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

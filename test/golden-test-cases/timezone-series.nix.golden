@@ -1,11 +1,8 @@
-{ mkDerivation, base, deepseq, fetchurl, time }:
+{ mkDerivation, base, deepseq, stdenv, time }:
 mkDerivation {
   pname = "timezone-series";
   version = "0.1.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base deepseq time ];
   homepage = "http://projects.haskell.org/time-ng/";
   description = "Enhanced timezone handling for Data.Time";

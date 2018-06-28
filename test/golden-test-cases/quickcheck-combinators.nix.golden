@@ -1,12 +1,8 @@
-{ mkDerivation, base, fetchurl, QuickCheck, unfoldable-restricted
-}:
+{ mkDerivation, base, QuickCheck, stdenv, unfoldable-restricted }:
 mkDerivation {
   pname = "quickcheck-combinators";
   version = "0.0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base QuickCheck unfoldable-restricted ];
   description = "Simple type-level combinators for augmenting QuickCheck instances";
   license = stdenv.lib.licenses.bsd3;

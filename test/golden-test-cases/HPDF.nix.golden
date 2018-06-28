@@ -1,13 +1,10 @@
 { mkDerivation, array, base, base64-bytestring, binary, bytestring
-, containers, errors, fetchurl, HTF, mtl, random, vector, zlib
+, containers, errors, HTF, mtl, random, stdenv, vector, zlib
 }:
 mkDerivation {
   pname = "HPDF";
   version = "1.4.10";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base base64-bytestring binary bytestring containers errors
     mtl random vector zlib

@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, fasta, fetchurl, lens
-, optparse-applicative, pipes, pipes-text, split, text, text-show
+{ mkDerivation, base, containers, fasta, lens, optparse-applicative
+, pipes, pipes-text, split, stdenv, text, text-show
 }:
 mkDerivation {
   pname = "blosum";
   version = "0.1.1.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

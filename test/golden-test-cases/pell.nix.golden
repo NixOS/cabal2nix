@@ -1,13 +1,10 @@
 { mkDerivation, arithmoi, base, Cabal, cabal-test-quickcheck
-, containers, fetchurl, primes, QuickCheck
+, containers, primes, QuickCheck, stdenv
 }:
 mkDerivation {
   pname = "pell";
   version = "0.1.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ arithmoi base containers ];
   testHaskellDepends = [
     arithmoi base Cabal cabal-test-quickcheck containers primes

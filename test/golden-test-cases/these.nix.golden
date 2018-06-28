@@ -1,16 +1,13 @@
 { mkDerivation, aeson, base, bifunctors, binary, containers
-, data-default-class, deepseq, fetchurl, hashable, keys, mtl
-, profunctors, QuickCheck, quickcheck-instances, semigroupoids
-, tasty, tasty-quickcheck, transformers, transformers-compat
+, data-default-class, deepseq, hashable, keys, mtl, profunctors
+, QuickCheck, quickcheck-instances, semigroupoids, stdenv, tasty
+, tasty-quickcheck, transformers, transformers-compat
 , unordered-containers, vector, vector-instances
 }:
 mkDerivation {
   pname = "these";
   version = "0.7.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base bifunctors binary containers data-default-class deepseq
     hashable keys mtl profunctors QuickCheck semigroupoids transformers

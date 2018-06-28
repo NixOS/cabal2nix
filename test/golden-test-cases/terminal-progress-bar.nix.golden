@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, HUnit, stm, stm-chans
-, test-framework, test-framework-hunit
+{ mkDerivation, base, HUnit, stdenv, stm, stm-chans, test-framework
+, test-framework-hunit
 }:
 mkDerivation {
   pname = "terminal-progress-bar";
   version = "0.1.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ base stm stm-chans ];

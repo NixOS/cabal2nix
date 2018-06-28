@@ -1,14 +1,11 @@
 { mkDerivation, base, binary, bytestring, data-binary-ieee754
-, deepseq, directory, fetchurl, hspec, split, vector, vector-split
+, deepseq, directory, hspec, split, stdenv, vector, vector-split
 , zlib
 }:
 mkDerivation {
   pname = "openexr-write";
   version = "0.1.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base binary bytestring data-binary-ieee754 deepseq split vector
     vector-split zlib

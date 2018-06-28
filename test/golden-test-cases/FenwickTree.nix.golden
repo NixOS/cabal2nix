@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, QuickCheck, template-haskell }:
+{ mkDerivation, base, QuickCheck, stdenv, template-haskell }:
 mkDerivation {
   pname = "FenwickTree";
   version = "0.1.2.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ base QuickCheck template-haskell ];
   testHaskellDepends = [ base QuickCheck template-haskell ];

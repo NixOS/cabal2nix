@@ -1,14 +1,11 @@
-{ mkDerivation, aeson, base, containers, errors, fetchurl, hspec
+{ mkDerivation, aeson, base, containers, errors, hspec
 , http-api-data, http-client, http-client-tls, megaparsec, mtl
-, servant, servant-client, text, time, transformers
+, servant, servant-client, stdenv, text, time, transformers
 }:
 mkDerivation {
   pname = "slack-web";
   version = "0.2.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base containers errors http-api-data http-client
     http-client-tls megaparsec mtl servant servant-client text time

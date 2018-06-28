@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, mtl, old-locale, process-extras
-, text, time, time-locale-compat
+{ mkDerivation, base, mtl, old-locale, process-extras, stdenv, text
+, time, time-locale-compat
 }:
 mkDerivation {
   pname = "pdfinfo";
   version = "1.5.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base mtl old-locale process-extras text time time-locale-compat
   ];

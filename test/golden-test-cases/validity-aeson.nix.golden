@@ -1,14 +1,10 @@
-{ mkDerivation, aeson, base, fetchurl, validity
-, validity-scientific, validity-text, validity-unordered-containers
-, validity-vector
+{ mkDerivation, aeson, base, stdenv, validity, validity-scientific
+, validity-text, validity-unordered-containers, validity-vector
 }:
 mkDerivation {
   pname = "validity-aeson";
   version = "0.1.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base validity validity-scientific validity-text
     validity-unordered-containers validity-vector

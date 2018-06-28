@@ -1,11 +1,8 @@
-{ mkDerivation, base, containers, dbus, fetchurl }:
+{ mkDerivation, base, containers, dbus, stdenv }:
 mkDerivation {
   pname = "fdo-notify";
   version = "0.3.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers dbus ];
   homepage = "http://bitbucket.org/taejo/fdo-notify/";
   description = "Desktop Notifications client";

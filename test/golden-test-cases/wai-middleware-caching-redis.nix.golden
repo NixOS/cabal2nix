@@ -1,13 +1,10 @@
-{ mkDerivation, base, blaze-builder, bytestring, fetchurl, hedis
-, http-types, text, wai, wai-middleware-caching
+{ mkDerivation, base, blaze-builder, bytestring, hedis, http-types
+, stdenv, text, wai, wai-middleware-caching
 }:
 mkDerivation {
   pname = "wai-middleware-caching-redis";
   version = "0.2.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base blaze-builder bytestring hedis http-types text wai
     wai-middleware-caching

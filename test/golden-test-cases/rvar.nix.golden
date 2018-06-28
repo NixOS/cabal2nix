@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, MonadPrompt, mtl, random-source
+{ mkDerivation, base, MonadPrompt, mtl, random-source, stdenv
 , transformers
 }:
 mkDerivation {
   pname = "rvar";
   version = "0.2.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base MonadPrompt mtl random-source transformers
   ];

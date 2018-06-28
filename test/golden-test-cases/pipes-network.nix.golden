@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, fetchurl, network, network-simple
-, pipes, pipes-safe, transformers
+{ mkDerivation, base, bytestring, network, network-simple, pipes
+, pipes-safe, stdenv, transformers
 }:
 mkDerivation {
   pname = "pipes-network";
   version = "0.6.4.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring network network-simple pipes pipes-safe
     transformers

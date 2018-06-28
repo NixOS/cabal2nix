@@ -1,16 +1,13 @@
 { mkDerivation, async, base, base-prelude, containers, criterion
-, fetchurl, focus, free, hashable, hashtables, HTF, list-t, loch-th
-, mtl, mtl-prelude, mwc-random, mwc-random-monad, placeholders
-, primitive, QuickCheck, text, transformers, unordered-containers
-, vector
+, focus, free, hashable, hashtables, HTF, list-t, loch-th, mtl
+, mtl-prelude, mwc-random, mwc-random-monad, placeholders
+, primitive, QuickCheck, stdenv, text, transformers
+, unordered-containers, vector
 }:
 mkDerivation {
   pname = "stm-containers";
   version = "0.2.16";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base base-prelude focus hashable list-t primitive transformers
   ];

@@ -1,14 +1,11 @@
 { mkDerivation, base, binary, bytestring, containers, criterion
-, data-binary-ieee754, deepseq, fetchurl, groom, hashable, hspec
-, QuickCheck, text, unordered-containers, vector, void
+, data-binary-ieee754, deepseq, groom, hashable, hspec, QuickCheck
+, stdenv, text, unordered-containers, vector, void
 }:
 mkDerivation {
   pname = "data-msgpack";
   version = "0.0.10";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

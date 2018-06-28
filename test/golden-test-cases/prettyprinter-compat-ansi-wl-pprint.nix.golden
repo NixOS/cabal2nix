@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, prettyprinter
-, prettyprinter-ansi-terminal, text
+{ mkDerivation, base, prettyprinter, prettyprinter-ansi-terminal
+, stdenv, text
 }:
 mkDerivation {
   pname = "prettyprinter-compat-ansi-wl-pprint";
   version = "1.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base prettyprinter prettyprinter-ansi-terminal text
   ];

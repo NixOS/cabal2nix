@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, directory, extra, fetchurl
-, filepath, ghc-prof, hashable, scientific, text
+{ mkDerivation, base, containers, directory, extra, filepath
+, ghc-prof, hashable, scientific, stdenv, text
 }:
 mkDerivation {
   pname = "profiterole";
   version = "0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [

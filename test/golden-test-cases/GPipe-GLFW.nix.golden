@@ -1,13 +1,9 @@
-{ mkDerivation, async, base, containers, fetchurl, GLFW-b, GPipe
-, stm
+{ mkDerivation, async, base, containers, GLFW-b, GPipe, stdenv, stm
 }:
 mkDerivation {
   pname = "GPipe-GLFW";
   version = "1.4.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ async base containers GLFW-b GPipe stm ];
   homepage = "https://github.com/plredmond/GPipe-GLFW";

@@ -1,13 +1,10 @@
-{ mkDerivation, base, binary, fetchurl, HUnit, test-framework
+{ mkDerivation, base, binary, HUnit, stdenv, test-framework
 , test-framework-hunit
 }:
 mkDerivation {
   pname = "rank1dynamic";
   version = "0.4.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base binary ];
   testHaskellDepends = [
     base HUnit test-framework test-framework-hunit

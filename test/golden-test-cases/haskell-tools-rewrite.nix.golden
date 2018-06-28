@@ -1,14 +1,11 @@
-{ mkDerivation, base, containers, directory, fetchurl, filepath
-, ghc, haskell-tools-ast, haskell-tools-prettyprint, mtl
-, references, tasty, tasty-hunit
+{ mkDerivation, base, containers, directory, filepath, ghc
+, haskell-tools-ast, haskell-tools-prettyprint, mtl, references
+, stdenv, tasty, tasty-hunit
 }:
 mkDerivation {
   pname = "haskell-tools-rewrite";
   version = "1.0.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers ghc haskell-tools-ast haskell-tools-prettyprint mtl
     references

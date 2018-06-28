@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, hsp, jmacro, mtl, text
+{ mkDerivation, base, hsp, jmacro, mtl, stdenv, text
 , wl-pprint-text
 }:
 mkDerivation {
   pname = "hsx-jmacro";
   version = "7.3.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base hsp jmacro mtl text wl-pprint-text
   ];

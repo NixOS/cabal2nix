@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, time }:
+{ mkDerivation, base, stdenv, time }:
 mkDerivation {
   pname = "io-machine";
   version = "0.2.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base time ];
   testHaskellDepends = [ base ];
   homepage = "https://github.com/YoshikuniJujo/io-machine#readme";

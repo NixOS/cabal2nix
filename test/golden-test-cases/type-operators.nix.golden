@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, ghc-prim }:
+{ mkDerivation, base, ghc-prim, stdenv }:
 mkDerivation {
   pname = "type-operators";
   version = "0.1.0.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ghc-prim ];
   homepage = "https://github.com/Shou/type-operators#readme";
   description = "Various type-level operators";

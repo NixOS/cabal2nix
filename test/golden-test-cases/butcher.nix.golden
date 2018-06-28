@@ -1,14 +1,11 @@
 { mkDerivation, base, bifunctors, containers, deque, either, extra
-, fetchurl, free, microlens, microlens-th, mtl, multistate, pretty
+, free, microlens, microlens-th, mtl, multistate, pretty, stdenv
 , transformers, unsafe, void
 }:
 mkDerivation {
   pname = "butcher";
   version = "1.2.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bifunctors containers deque either extra free microlens
     microlens-th mtl multistate pretty transformers unsafe void

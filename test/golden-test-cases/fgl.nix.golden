@@ -1,13 +1,10 @@
-{ mkDerivation, array, base, containers, deepseq, fetchurl, hspec
-, microbench, QuickCheck, transformers
+{ mkDerivation, array, base, containers, deepseq, hspec, microbench
+, QuickCheck, stdenv, transformers
 }:
 mkDerivation {
   pname = "fgl";
   version = "5.5.4.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base containers deepseq transformers
   ];

@@ -1,14 +1,11 @@
 { mkDerivation, base, bytestring, conduit, conduit-extra, directory
-, fetchurl, process, resourcet, safe, terminfo, text, transformers
+, process, resourcet, safe, stdenv, terminfo, text, transformers
 , unix
 }:
 mkDerivation {
   pname = "pager";
   version = "0.1.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

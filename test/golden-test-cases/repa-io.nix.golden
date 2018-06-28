@@ -1,13 +1,10 @@
-{ mkDerivation, base, binary, bmp, bytestring, fetchurl, old-time
-, repa, vector
+{ mkDerivation, base, binary, bmp, bytestring, old-time, repa
+, stdenv, vector
 }:
 mkDerivation {
   pname = "repa-io";
   version = "3.4.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base binary bmp bytestring old-time repa vector
   ];

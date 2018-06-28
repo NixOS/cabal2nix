@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, pretty }:
+{ mkDerivation, base, pretty, stdenv }:
 mkDerivation {
   pname = "prettyclass";
   version = "1.0.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base pretty ];
   description = "Pretty printing class similar to Show";
   license = stdenv.lib.licenses.bsd3;

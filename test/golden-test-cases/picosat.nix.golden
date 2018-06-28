@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, fetchurl, random, rdtsc
+{ mkDerivation, base, containers, random, rdtsc, stdenv
 , transformers
 }:
 mkDerivation {
   pname = "picosat";
   version = "0.1.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers transformers ];
   testHaskellDepends = [ base containers random rdtsc transformers ];
   homepage = "https://github.com/sdiehl/haskell-picosat";

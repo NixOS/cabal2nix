@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, hxt, hxt-charproperties
-, hxt-unicode, tagsoup
+{ mkDerivation, base, hxt, hxt-charproperties, hxt-unicode, stdenv
+, tagsoup
 }:
 mkDerivation {
   pname = "hxt-tagsoup";
   version = "9.1.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base hxt hxt-charproperties hxt-unicode tagsoup
   ];

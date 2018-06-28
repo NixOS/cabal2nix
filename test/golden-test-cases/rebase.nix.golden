@@ -1,16 +1,13 @@
 { mkDerivation, base, base-prelude, bifunctors, bytestring
 , containers, contravariant, contravariant-extras, deepseq, dlist
-, either, fail, fetchurl, hashable, mtl, profunctors, scientific
-, semigroupoids, semigroups, stm, text, time, transformers
+, either, fail, hashable, mtl, profunctors, scientific
+, semigroupoids, semigroups, stdenv, stm, text, time, transformers
 , unordered-containers, uuid, vector, void
 }:
 mkDerivation {
   pname = "rebase";
   version = "1.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base base-prelude bifunctors bytestring containers contravariant
     contravariant-extras deepseq dlist either fail hashable mtl

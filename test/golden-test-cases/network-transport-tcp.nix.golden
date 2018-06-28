@@ -1,13 +1,10 @@
 { mkDerivation, base, bytestring, containers, data-accessor
-, fetchurl, network, network-transport, network-transport-tests
+, network, network-transport, network-transport-tests, stdenv
 }:
 mkDerivation {
   pname = "network-transport-tcp";
   version = "0.6.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring containers data-accessor network network-transport
   ];

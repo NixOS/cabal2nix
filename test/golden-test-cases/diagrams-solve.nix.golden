@@ -1,13 +1,10 @@
-{ mkDerivation, base, deepseq, fetchurl, tasty, tasty-hunit
+{ mkDerivation, base, deepseq, stdenv, tasty, tasty-hunit
 , tasty-quickcheck
 }:
 mkDerivation {
   pname = "diagrams-solve";
   version = "0.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [
     base deepseq tasty tasty-hunit tasty-quickcheck

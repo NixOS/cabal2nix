@@ -1,15 +1,12 @@
-{ mkDerivation, aeson, base, fetchurl, genvalidity
-, genvalidity-hspec, genvalidity-scientific, genvalidity-text
+{ mkDerivation, aeson, base, genvalidity, genvalidity-hspec
+, genvalidity-scientific, genvalidity-text
 , genvalidity-unordered-containers, genvalidity-vector, hspec
-, QuickCheck, validity, validity-aeson
+, QuickCheck, stdenv, validity, validity-aeson
 }:
 mkDerivation {
   pname = "genvalidity-aeson";
   version = "0.1.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base genvalidity genvalidity-scientific genvalidity-text
     genvalidity-unordered-containers genvalidity-vector QuickCheck

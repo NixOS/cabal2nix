@@ -1,14 +1,11 @@
-{ mkDerivation, aeson, base, doctest, either, fetchurl, Glob, hspec
+{ mkDerivation, aeson, base, doctest, either, Glob, hspec
 , http-api-data, http-client, http-client-tls, mtl, safe, servant
-, servant-client, text, time, transformers, vector
+, servant-client, stdenv, text, time, transformers, vector
 }:
 mkDerivation {
   pname = "yahoo-finance-api";
   version = "0.2.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base either http-api-data http-client mtl servant
     servant-client text time transformers vector

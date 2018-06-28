@@ -1,17 +1,14 @@
 { mkDerivation, aeson, async, base, bloodhound, bytestring
 , containers, criterion, deepseq, enclosed-exceptions, exceptions
-, fetchurl, http-client, http-types, katip, lens, lens-aeson
-, quickcheck-instances, random, retry, scientific, stm, stm-chans
-, tagged, tasty, tasty-hunit, tasty-quickcheck, text, time
-, transformers, unordered-containers, uuid, vector
+, http-client, http-types, katip, lens, lens-aeson
+, quickcheck-instances, random, retry, scientific, stdenv, stm
+, stm-chans, tagged, tasty, tasty-hunit, tasty-quickcheck, text
+, time, transformers, unordered-containers, uuid, vector
 }:
 mkDerivation {
   pname = "katip-elasticsearch";
   version = "0.4.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson async base bloodhound bytestring enclosed-exceptions
     exceptions http-client http-types katip retry scientific stm

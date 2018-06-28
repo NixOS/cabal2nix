@@ -1,15 +1,12 @@
 { mkDerivation, base, bytestring, case-insensitive, containers
-, criterion, deepseq, fetchurl, hspec, hspec-expectations, mtl
-, parser-combinators, QuickCheck, scientific, text, transformers
-, weigh
+, criterion, deepseq, hspec, hspec-expectations, mtl
+, parser-combinators, QuickCheck, scientific, stdenv, text
+, transformers, weigh
 }:
 mkDerivation {
   pname = "megaparsec";
   version = "6.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring case-insensitive containers deepseq mtl
     parser-combinators scientific text transformers

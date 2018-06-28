@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, fetchurl, hashable
+{ mkDerivation, base, containers, hashable, stdenv
 , template-haskell, unordered-containers
 }:
 mkDerivation {
   pname = "once";
   version = "0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers hashable template-haskell unordered-containers
   ];

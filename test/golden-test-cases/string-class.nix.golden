@@ -1,11 +1,8 @@
-{ mkDerivation, base, bytestring, fetchurl, tagged, text }:
+{ mkDerivation, base, bytestring, stdenv, tagged, text }:
 mkDerivation {
   pname = "string-class";
   version = "0.1.6.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring tagged text ];
   homepage = "https://github.com/bairyn/string-class";
   description = "String class library";

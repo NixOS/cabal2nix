@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, genvalidity, genvalidity-hspec
-, hspec, QuickCheck, scientific, validity, validity-scientific
+{ mkDerivation, base, genvalidity, genvalidity-hspec, hspec
+, QuickCheck, scientific, stdenv, validity, validity-scientific
 }:
 mkDerivation {
   pname = "genvalidity-scientific";
   version = "0.1.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base genvalidity QuickCheck scientific validity validity-scientific
   ];

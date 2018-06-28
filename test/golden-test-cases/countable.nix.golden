@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, fetchurl, silently, tasty
+{ mkDerivation, base, bytestring, silently, stdenv, tasty
 , tasty-golden, tasty-hunit
 }:
 mkDerivation {
   pname = "countable";
   version = "1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [
     base bytestring silently tasty tasty-golden tasty-hunit

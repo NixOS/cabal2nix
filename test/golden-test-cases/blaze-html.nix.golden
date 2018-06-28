@@ -1,14 +1,11 @@
 { mkDerivation, base, blaze-builder, blaze-markup, bytestring
-, containers, fetchurl, HUnit, QuickCheck, test-framework
+, containers, HUnit, QuickCheck, stdenv, test-framework
 , test-framework-hunit, test-framework-quickcheck2, text
 }:
 mkDerivation {
   pname = "blaze-html";
   version = "0.9.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base blaze-builder blaze-markup bytestring text
   ];

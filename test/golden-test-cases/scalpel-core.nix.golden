@@ -1,14 +1,11 @@
 { mkDerivation, base, bytestring, containers, criterion
-, data-default, fail, fetchurl, HUnit, regex-base, regex-tdfa
+, data-default, fail, HUnit, regex-base, regex-tdfa, stdenv
 , tagsoup, text, vector
 }:
 mkDerivation {
   pname = "scalpel-core";
   version = "0.5.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring containers data-default fail regex-base regex-tdfa
     tagsoup text vector

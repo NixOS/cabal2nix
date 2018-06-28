@@ -1,13 +1,10 @@
-{ mkDerivation, base, direct-sqlite, directory, exceptions
-, fetchurl, selda, text
+{ mkDerivation, base, direct-sqlite, directory, exceptions, selda
+, stdenv, text
 }:
 mkDerivation {
   pname = "selda-sqlite";
   version = "0.1.6.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base direct-sqlite directory exceptions selda text
   ];

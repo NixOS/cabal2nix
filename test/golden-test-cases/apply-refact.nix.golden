@@ -1,15 +1,12 @@
-{ mkDerivation, base, containers, directory, fetchurl, filemanip
-, filepath, ghc, ghc-exactprint, mtl, optparse-applicative, process
-, refact, silently, syb, tasty, tasty-expected-failure
+{ mkDerivation, base, containers, directory, filemanip, filepath
+, ghc, ghc-exactprint, mtl, optparse-applicative, process, refact
+, silently, stdenv, syb, tasty, tasty-expected-failure
 , tasty-golden, temporary, transformers, unix-compat
 }:
 mkDerivation {
   pname = "apply-refact";
   version = "0.4.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

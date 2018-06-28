@@ -1,11 +1,8 @@
-{ mkDerivation, base, bytestring, fetchurl, mtl, network, text }:
+{ mkDerivation, base, bytestring, mtl, network, stdenv, text }:
 mkDerivation {
   pname = "hstatsd";
   version = "0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring mtl network text ];
   homepage = "https://github.com/mokus0/hstatsd";
   description = "Quick and dirty statsd interface";

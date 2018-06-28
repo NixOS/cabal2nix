@@ -1,16 +1,13 @@
 { mkDerivation, aeson, base, base-compat, base64-bytestring
 , bytestring, colour, containers, data-default-class, directory
-, fetchurl, http-types, kansas-comet, mime-types, process, scotty
-, shake, stm, text, text-show, time, transformers, unix, vector
+, http-types, kansas-comet, mime-types, process, scotty, shake
+, stdenv, stm, text, text-show, time, transformers, unix, vector
 , wai, wai-extra, warp
 }:
 mkDerivation {
   pname = "blank-canvas";
   version = "0.6.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [
     aeson base base-compat base64-bytestring bytestring colour

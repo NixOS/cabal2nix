@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, process }:
+{ mkDerivation, base, process, stdenv }:
 mkDerivation {
   pname = "simple-smt";
   version = "0.7.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base process ];
   description = "A simple way to interact with an SMT solver process";
   license = stdenv.lib.licenses.bsd3;

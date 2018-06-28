@@ -1,15 +1,12 @@
 { mkDerivation, aeson, base, bytestring, directory, doctest
-, edit-distance-vector, fetchurl, filepath, Glob, hashable, hlint
-, mtl, optparse-applicative, QuickCheck, quickcheck-instances
-, scientific, text, unordered-containers, vector
+, edit-distance-vector, filepath, Glob, hashable, hlint, mtl
+, optparse-applicative, QuickCheck, quickcheck-instances
+, scientific, stdenv, text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "aeson-diff";
   version = "1.1.0.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

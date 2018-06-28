@@ -1,14 +1,11 @@
-{ mkDerivation, attoparsec, base, bytestring, containers, fetchurl
-, JuicyPixels, lens, linear, mtl, scientific, text, transformers
-, vector, xml
+{ mkDerivation, attoparsec, base, bytestring, containers
+, JuicyPixels, lens, linear, mtl, scientific, stdenv, text
+, transformers, vector, xml
 }:
 mkDerivation {
   pname = "svg-tree";
   version = "0.6.2.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec base bytestring containers JuicyPixels lens linear mtl
     scientific text transformers vector xml

@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl }:
+{ mkDerivation, base, stdenv }:
 mkDerivation {
   pname = "fixed";
   version = "0.2.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   homepage = "http://github.com/ekmett/fixed";
   description = "Signed 15.16 precision fixed point arithmetic";

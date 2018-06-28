@@ -1,15 +1,12 @@
 { mkDerivation, AC-Vector, base, bytestring, containers, deepseq
-, directory, fetchurl, ghc-prim, GLUT, hPDB, IfElse, iterable, mtl
-, Octree, OpenGL, process, QuickCheck, template-haskell, text
+, directory, ghc-prim, GLUT, hPDB, IfElse, iterable, mtl, Octree
+, OpenGL, process, QuickCheck, stdenv, template-haskell, text
 , text-format, time, vector
 }:
 mkDerivation {
   pname = "hPDB-examples";
   version = "1.2.0.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [

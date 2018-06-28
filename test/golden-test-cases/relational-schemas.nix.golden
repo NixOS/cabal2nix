@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, containers, fetchurl
-, relational-query, template-haskell, time
+{ mkDerivation, base, bytestring, containers, relational-query
+, stdenv, template-haskell, time
 }:
 mkDerivation {
   pname = "relational-schemas";
   version = "0.1.6.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring containers relational-query template-haskell time
   ];

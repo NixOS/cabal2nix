@@ -1,15 +1,12 @@
-{ mkDerivation, aeson, base, bytestring, deepseq, doctest, fetchurl
-, Glob, hspec-wai, http-media, profunctors, servant, servant-client
-, servant-docs, servant-server, tagged, tasty, tasty-hspec
+{ mkDerivation, aeson, base, bytestring, deepseq, doctest, Glob
+, hspec-wai, http-media, profunctors, servant, servant-client
+, servant-docs, servant-server, stdenv, tagged, tasty, tasty-hspec
 , tasty-hunit, text, wai
 }:
 mkDerivation {
   pname = "servant-checked-exceptions";
   version = "0.4.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

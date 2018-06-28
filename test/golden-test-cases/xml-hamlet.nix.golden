@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, fetchurl, hspec, HUnit, parsec
-, shakespeare, template-haskell, text, xml-conduit
+{ mkDerivation, base, containers, hspec, HUnit, parsec, shakespeare
+, stdenv, template-haskell, text, xml-conduit
 }:
 mkDerivation {
   pname = "xml-hamlet";
   version = "0.4.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers parsec shakespeare template-haskell text
     xml-conduit

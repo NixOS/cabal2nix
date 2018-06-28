@@ -1,13 +1,10 @@
-{ mkDerivation, accelerate, accelerate-io, base, carray, fetchurl
-, fft, storable-complex
+{ mkDerivation, accelerate, accelerate-io, base, carray, fft
+, stdenv, storable-complex
 }:
 mkDerivation {
   pname = "accelerate-fftw";
   version = "1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     accelerate accelerate-io base carray fft storable-complex
   ];

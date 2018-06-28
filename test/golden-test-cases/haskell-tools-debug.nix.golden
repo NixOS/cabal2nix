@@ -1,15 +1,12 @@
-{ mkDerivation, base, fetchurl, filepath, ghc, ghc-paths
-, haskell-tools-ast, haskell-tools-backend-ghc
-, haskell-tools-builtin-refactorings, haskell-tools-prettyprint
-, haskell-tools-refactor, references, split, template-haskell
+{ mkDerivation, base, filepath, ghc, ghc-paths, haskell-tools-ast
+, haskell-tools-backend-ghc, haskell-tools-builtin-refactorings
+, haskell-tools-prettyprint, haskell-tools-refactor, references
+, split, stdenv, template-haskell
 }:
 mkDerivation {
   pname = "haskell-tools-debug";
   version = "1.0.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

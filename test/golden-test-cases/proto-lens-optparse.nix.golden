@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, optparse-applicative, proto-lens
+{ mkDerivation, base, optparse-applicative, proto-lens, stdenv
 , text
 }:
 mkDerivation {
   pname = "proto-lens-optparse";
   version = "0.1.0.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base optparse-applicative proto-lens text
   ];

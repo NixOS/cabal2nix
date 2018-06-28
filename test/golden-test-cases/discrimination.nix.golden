@@ -1,15 +1,12 @@
 { mkDerivation, array, base, containers, contravariant, criterion
-, deepseq, fetchurl, ghc-prim, hashable, primitive, profunctors
-, promises, semigroups, transformers, transformers-compat
+, deepseq, ghc-prim, hashable, primitive, profunctors, promises
+, semigroups, stdenv, transformers, transformers-compat
 , unordered-containers, vector, void
 }:
 mkDerivation {
   pname = "discrimination";
   version = "0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base containers contravariant deepseq ghc-prim hashable
     primitive profunctors promises semigroups transformers

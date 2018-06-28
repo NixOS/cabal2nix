@@ -1,15 +1,12 @@
 { mkDerivation, aeson, attoparsec, base, bytestring, criterion
-, doctest, fetchurl, hashable, HUnit, primitive, QuickCheck
-, quickcheck-classes, test-framework, test-framework-hunit
+, doctest, hashable, HUnit, primitive, QuickCheck
+, quickcheck-classes, stdenv, test-framework, test-framework-hunit
 , test-framework-quickcheck2, text, vector
 }:
 mkDerivation {
   pname = "ip";
   version = "1.1.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson attoparsec base bytestring hashable primitive text vector
   ];

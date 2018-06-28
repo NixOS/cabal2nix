@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl }:
+{ mkDerivation, base, stdenv }:
 mkDerivation {
   pname = "cassette";
   version = "0.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   description = "A combinator library for simultaneously defining parsers and pretty printers";
   license = stdenv.lib.licenses.bsd3;

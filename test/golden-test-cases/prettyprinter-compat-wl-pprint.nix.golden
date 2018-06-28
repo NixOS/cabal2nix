@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, prettyprinter, text }:
+{ mkDerivation, base, prettyprinter, stdenv, text }:
 mkDerivation {
   pname = "prettyprinter-compat-wl-pprint";
   version = "1.0.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base prettyprinter text ];
   homepage = "http://github.com/quchen/prettyprinter";
   description = "Prettyprinter compatibility module for previous users of the wl-pprint package";

@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, integer-gmp, mpfr }:
+{ mkDerivation, base, integer-gmp, mpfr, stdenv }:
 mkDerivation {
   pname = "hmpfr";
   version = "0.4.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ base integer-gmp ];
   librarySystemDepends = [ mpfr ];

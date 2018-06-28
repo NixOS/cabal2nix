@@ -1,14 +1,11 @@
 { mkDerivation, aeson, base, bytestring, eventful-core
-, eventful-sql-common, eventful-test-helpers, fetchurl, hspec
-, HUnit, mtl, persistent, persistent-sqlite, text, uuid
+, eventful-sql-common, eventful-test-helpers, hspec, HUnit, mtl
+, persistent, persistent-sqlite, stdenv, text, uuid
 }:
 mkDerivation {
   pname = "eventful-sqlite";
   version = "0.2.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base bytestring eventful-core eventful-sql-common mtl
     persistent text uuid

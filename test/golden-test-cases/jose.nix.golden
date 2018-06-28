@@ -1,17 +1,13 @@
 { mkDerivation, aeson, attoparsec, base, base64-bytestring
-, bytestring, concise, containers, cryptonite, fetchurl, hspec
-, lens, memory, monad-time, mtl, network-uri, QuickCheck
-, quickcheck-instances, safe, semigroups, tasty, tasty-hspec
-, tasty-quickcheck, template-haskell, text, time
-, unordered-containers, vector, x509
+, bytestring, concise, containers, cryptonite, hspec, lens, memory
+, monad-time, mtl, network-uri, QuickCheck, quickcheck-instances
+, safe, semigroups, stdenv, tasty, tasty-hspec, tasty-quickcheck
+, template-haskell, text, time, unordered-containers, vector, x509
 }:
 mkDerivation {
   pname = "jose";
   version = "0.6.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

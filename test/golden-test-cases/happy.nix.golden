@@ -1,13 +1,10 @@
-{ mkDerivation, array, base, Cabal, containers, directory, fetchurl
-, filepath, mtl, process
+{ mkDerivation, array, base, Cabal, containers, directory, filepath
+, mtl, process, stdenv
 }:
 mkDerivation {
   pname = "happy";
   version = "1.19.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = false;
   isExecutable = true;
   setupHaskellDepends = [ base Cabal directory filepath ];

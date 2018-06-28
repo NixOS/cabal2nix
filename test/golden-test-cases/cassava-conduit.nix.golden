@@ -1,14 +1,11 @@
 { mkDerivation, array, base, bifunctors, bytestring, cassava
-, conduit, conduit-extra, containers, criterion, fetchurl, mtl
-, QuickCheck, text
+, conduit, conduit-extra, containers, criterion, mtl, QuickCheck
+, stdenv, text
 }:
 mkDerivation {
   pname = "cassava-conduit";
   version = "0.4.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base bifunctors bytestring cassava conduit conduit-extra
     containers mtl text

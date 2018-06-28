@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, hspec, HUnit, monad-loops
-, MonadRandom, random, random-shuffle
+{ mkDerivation, base, hspec, HUnit, monad-loops, MonadRandom
+, random, random-shuffle, stdenv
 }:
 mkDerivation {
   pname = "general-games";
   version = "1.0.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base monad-loops MonadRandom random random-shuffle
   ];

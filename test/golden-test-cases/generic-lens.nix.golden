@@ -1,13 +1,10 @@
-{ mkDerivation, base, criterion, deepseq, doctest, fetchurl
-, inspection-testing, lens, profunctors, QuickCheck, tagged
+{ mkDerivation, base, criterion, deepseq, doctest
+, inspection-testing, lens, profunctors, QuickCheck, stdenv, tagged
 }:
 mkDerivation {
   pname = "generic-lens";
   version = "0.5.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base profunctors tagged ];
   testHaskellDepends = [ base doctest inspection-testing lens ];
   benchmarkHaskellDepends = [

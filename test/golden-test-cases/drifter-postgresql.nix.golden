@@ -1,14 +1,11 @@
-{ mkDerivation, base, containers, drifter, either, fetchurl, mtl
-, postgresql-simple, tasty, tasty-hunit, text, time, transformers
-, transformers-compat
+{ mkDerivation, base, containers, drifter, either, mtl
+, postgresql-simple, stdenv, tasty, tasty-hunit, text, time
+, transformers, transformers-compat
 }:
 mkDerivation {
   pname = "drifter-postgresql";
   version = "0.2.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers drifter mtl postgresql-simple time transformers
     transformers-compat

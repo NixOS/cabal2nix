@@ -1,12 +1,8 @@
-{ mkDerivation, base, bytestring, fetchurl, template-haskell, text
-}:
+{ mkDerivation, base, bytestring, stdenv, template-haskell, text }:
 mkDerivation {
   pname = "rawstring-qm";
   version = "0.2.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring template-haskell text ];
   homepage = "https://github.com/tolysz/rawstring-qm";
   description = "Simple raw string quotation and dictionary interpolation";

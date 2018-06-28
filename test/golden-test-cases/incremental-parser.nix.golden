@@ -1,14 +1,11 @@
 { mkDerivation, base, bytestring, checkers, criterion, deepseq
-, fetchurl, monoid-subclasses, QuickCheck, tasty, tasty-quickcheck
+, monoid-subclasses, QuickCheck, stdenv, tasty, tasty-quickcheck
 , text
 }:
 mkDerivation {
   pname = "incremental-parser";
   version = "0.2.5.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base monoid-subclasses ];
   testHaskellDepends = [
     base checkers monoid-subclasses QuickCheck tasty tasty-quickcheck

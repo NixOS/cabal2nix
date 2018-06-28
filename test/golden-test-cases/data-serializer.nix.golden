@@ -1,13 +1,10 @@
 { mkDerivation, base, binary, bytestring, cereal, data-endian
-, fetchurl, parsers, semigroups, split, tasty, tasty-quickcheck
+, parsers, semigroups, split, stdenv, tasty, tasty-quickcheck
 }:
 mkDerivation {
   pname = "data-serializer";
   version = "0.3.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base binary bytestring cereal data-endian parsers semigroups split
   ];

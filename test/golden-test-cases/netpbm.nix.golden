@@ -1,14 +1,11 @@
 { mkDerivation, attoparsec, attoparsec-binary, base, bytestring
-, criterion, fetchurl, hspec, HUnit, storable-record
+, criterion, hspec, HUnit, stdenv, storable-record
 , unordered-containers, vector, vector-th-unbox
 }:
 mkDerivation {
   pname = "netpbm";
   version = "1.0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec attoparsec-binary base bytestring storable-record
     unordered-containers vector vector-th-unbox

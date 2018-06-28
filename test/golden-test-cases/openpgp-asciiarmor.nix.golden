@@ -1,13 +1,10 @@
 { mkDerivation, attoparsec, base, base64-bytestring, bytestring
-, cereal, fetchurl, HUnit, test-framework, test-framework-hunit
+, cereal, HUnit, stdenv, test-framework, test-framework-hunit
 }:
 mkDerivation {
   pname = "openpgp-asciiarmor";
   version = "0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec base base64-bytestring bytestring cereal
   ];

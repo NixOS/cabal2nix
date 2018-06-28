@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, chell, fetchurl, system-filepath
+{ mkDerivation, base, bytestring, chell, stdenv, system-filepath
 , temporary, text, time, transformers, unix
 }:
 mkDerivation {
   pname = "system-fileio";
   version = "0.3.16.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring system-filepath text time unix
   ];

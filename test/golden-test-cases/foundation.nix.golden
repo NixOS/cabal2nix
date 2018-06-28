@@ -1,11 +1,8 @@
-{ mkDerivation, base, basement, fetchurl, gauge, ghc-prim }:
+{ mkDerivation, base, basement, gauge, ghc-prim, stdenv }:
 mkDerivation {
   pname = "foundation";
   version = "0.0.17";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base basement ghc-prim ];
   testHaskellDepends = [ base basement ];
   benchmarkHaskellDepends = [ base basement gauge ];

@@ -1,13 +1,10 @@
-{ mkDerivation, aeson, base, bytestring, fetchurl, tasty
-, tasty-hunit, text, time, transformers
+{ mkDerivation, aeson, base, bytestring, stdenv, tasty, tasty-hunit
+, text, time, transformers
 }:
 mkDerivation {
   pname = "swagger";
   version = "0.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base bytestring text time transformers
   ];

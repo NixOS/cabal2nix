@@ -1,14 +1,11 @@
-{ mkDerivation, base, data-default-class, exceptions, fetchurl
+{ mkDerivation, base, data-default-class, exceptions
 , haskell-src-exts, haskell-src-meta, hspec, hspec-discover, mtl
-, template-haskell, th-orphans, transformers
+, stdenv, template-haskell, th-orphans, transformers
 }:
 mkDerivation {
   pname = "test-fixture";
   version = "0.5.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base data-default-class exceptions haskell-src-exts
     haskell-src-meta mtl template-haskell th-orphans

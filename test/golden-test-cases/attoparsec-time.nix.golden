@@ -1,14 +1,11 @@
 { mkDerivation, attoparsec, base, base-prelude, bytestring, Cabal
-, cabal-doctest, directory, doctest, fetchurl, filepath, scientific
+, cabal-doctest, directory, doctest, filepath, scientific, stdenv
 , text, time
 }:
 mkDerivation {
   pname = "attoparsec-time";
   version = "1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   setupHaskellDepends = [ base Cabal cabal-doctest ];
   libraryHaskellDepends = [
     attoparsec base base-prelude bytestring scientific text time

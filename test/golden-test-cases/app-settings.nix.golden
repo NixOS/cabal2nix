@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, directory, fetchurl, hspec, HUnit
-, mtl, parsec, text
+{ mkDerivation, base, containers, directory, hspec, HUnit, mtl
+, parsec, stdenv, text
 }:
 mkDerivation {
   pname = "app-settings";
   version = "0.2.0.11";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers directory mtl parsec text
   ];

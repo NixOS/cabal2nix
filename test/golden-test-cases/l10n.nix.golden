@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, text, time }:
+{ mkDerivation, base, stdenv, text, time }:
 mkDerivation {
   pname = "l10n";
   version = "0.1.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base text time ];
   homepage = "https://github.com/louispan/l10n#readme";
   description = "Enables providing localization as typeclass instances in separate files";

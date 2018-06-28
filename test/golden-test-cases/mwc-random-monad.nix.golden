@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, monad-primitive, mwc-random
-, primitive, transformers, vector
+{ mkDerivation, base, monad-primitive, mwc-random, primitive
+, stdenv, transformers, vector
 }:
 mkDerivation {
   pname = "mwc-random-monad";
   version = "0.7.3.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base monad-primitive mwc-random primitive transformers vector
   ];

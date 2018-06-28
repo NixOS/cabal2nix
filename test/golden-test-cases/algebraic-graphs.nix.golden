@@ -1,13 +1,10 @@
-{ mkDerivation, array, base, containers, criterion, extra, fetchurl
-, QuickCheck
+{ mkDerivation, array, base, containers, criterion, extra
+, QuickCheck, stdenv
 }:
 mkDerivation {
   pname = "algebraic-graphs";
   version = "0.0.5";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ array base containers ];
   testHaskellDepends = [ base containers extra QuickCheck ];
   benchmarkHaskellDepends = [ base containers criterion ];

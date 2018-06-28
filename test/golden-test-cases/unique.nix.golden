@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, ghc-prim, hashable }:
+{ mkDerivation, base, ghc-prim, hashable, stdenv }:
 mkDerivation {
   pname = "unique";
   version = "0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base ghc-prim hashable ];
   homepage = "http://github.com/ekmett/unique/";
   description = "Fully concurrent unique identifiers";

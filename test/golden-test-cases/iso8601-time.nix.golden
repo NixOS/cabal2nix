@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, hspec, HUnit, time }:
+{ mkDerivation, base, hspec, HUnit, stdenv, time }:
 mkDerivation {
   pname = "iso8601-time";
   version = "0.1.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base time ];
   testHaskellDepends = [ base hspec HUnit time ];
   homepage = "https://github.com/nh2/iso8601-time";

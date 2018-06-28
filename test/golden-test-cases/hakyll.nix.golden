@@ -1,20 +1,17 @@
 { mkDerivation, base, binary, blaze-html, blaze-markup, bytestring
 , containers, cryptohash, data-default, deepseq, directory
-, fetchurl, filepath, fsnotify, http-conduit, http-types, lrucache
-, mtl, network, network-uri, optparse-applicative, pandoc
+, filepath, fsnotify, http-conduit, http-types, lrucache, mtl
+, network, network-uri, optparse-applicative, pandoc
 , pandoc-citeproc, parsec, process, QuickCheck, random, regex-base
-, regex-tdfa, resourcet, scientific, system-filepath, tagsoup
-, tasty, tasty-hunit, tasty-quickcheck, text, time
+, regex-tdfa, resourcet, scientific, stdenv, system-filepath
+, tagsoup, tasty, tasty-hunit, tasty-quickcheck, text, time
 , time-locale-compat, unordered-containers, utillinux, vector, wai
 , wai-app-static, warp, yaml
 }:
 mkDerivation {
   pname = "hakyll";
   version = "4.10.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

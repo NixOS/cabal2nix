@@ -1,16 +1,13 @@
 { mkDerivation, aeson, array, base, base16-bytestring, bifunctors
 , binary, binary-orphans, bytestring, containers, criterion
-, deepseq, fetchurl, generics-sop, hashable, nats
-, quickcheck-instances, scientific, semigroups, SHA, tagged, tasty
+, deepseq, generics-sop, hashable, nats, quickcheck-instances
+, scientific, semigroups, SHA, stdenv, tagged, tasty
 , tasty-quickcheck, text, time, unordered-containers, vector
 }:
 mkDerivation {
   pname = "binary-tagged";
   version = "0.1.4.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson array base base16-bytestring binary bytestring containers
     generics-sop hashable nats scientific semigroups SHA tagged text

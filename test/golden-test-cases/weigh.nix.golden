@@ -1,13 +1,10 @@
-{ mkDerivation, base, deepseq, fetchurl, mtl, process, split
+{ mkDerivation, base, deepseq, mtl, process, split, stdenv
 , template-haskell, temporary
 }:
 mkDerivation {
   pname = "weigh";
   version = "0.0.7";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base deepseq mtl process split template-haskell temporary
   ];

@@ -1,14 +1,11 @@
-{ mkDerivation, base, bytestring, containers, dhall, fetchurl
-, neat-interpolation, optparse-generic, shell-escape, text
+{ mkDerivation, base, bytestring, containers, dhall
+, neat-interpolation, optparse-generic, shell-escape, stdenv, text
 , text-format, trifecta, vector
 }:
 mkDerivation {
   pname = "dhall-bash";
   version = "1.0.6";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

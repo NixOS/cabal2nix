@@ -1,12 +1,8 @@
-{ mkDerivation, base, directory, fetchurl, mtl, syb, transformers
-}:
+{ mkDerivation, base, directory, mtl, stdenv, syb, transformers }:
 mkDerivation {
   pname = "Strafunski-StrategyLib";
   version = "5.0.0.10";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base directory mtl syb transformers ];
   description = "Library for strategic programming";
   license = stdenv.lib.licenses.bsd3;

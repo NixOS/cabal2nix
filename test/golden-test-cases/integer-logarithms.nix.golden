@@ -1,14 +1,11 @@
-{ mkDerivation, array, base, fetchurl, ghc-prim, integer-gmp
-, QuickCheck, smallcheck, tasty, tasty-hunit, tasty-quickcheck
+{ mkDerivation, array, base, ghc-prim, integer-gmp, QuickCheck
+, smallcheck, stdenv, tasty, tasty-hunit, tasty-quickcheck
 , tasty-smallcheck
 }:
 mkDerivation {
   pname = "integer-logarithms";
   version = "1.0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ array base ghc-prim integer-gmp ];
   testHaskellDepends = [
     base QuickCheck smallcheck tasty tasty-hunit tasty-quickcheck

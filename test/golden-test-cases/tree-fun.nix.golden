@@ -1,11 +1,8 @@
-{ mkDerivation, base, containers, fetchurl, mtl }:
+{ mkDerivation, base, containers, mtl, stdenv }:
 mkDerivation {
   pname = "tree-fun";
   version = "0.8.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers mtl ];
   description = "Library for functions pertaining to tree exploration and manipulation";
   license = stdenv.lib.licenses.gpl3;

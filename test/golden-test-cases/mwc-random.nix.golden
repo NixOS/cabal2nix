@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, math-functions, primitive, time
+{ mkDerivation, base, math-functions, primitive, stdenv, time
 , vector
 }:
 mkDerivation {
   pname = "mwc-random";
   version = "0.13.6.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base math-functions primitive time vector
   ];

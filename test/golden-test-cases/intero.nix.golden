@@ -1,15 +1,12 @@
 { mkDerivation, array, base, bytestring, containers, directory
-, fetchurl, filepath, ghc, ghc-boot-th, ghc-paths, ghci, haskeline
-, hspec, process, regex-compat, syb, temporary, time, transformers
+, filepath, ghc, ghc-boot-th, ghc-paths, ghci, haskeline, hspec
+, process, regex-compat, stdenv, syb, temporary, time, transformers
 , unix
 }:
 mkDerivation {
   pname = "intero";
   version = "0.1.24";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = false;
   isExecutable = true;
   enableSeparateDataOutput = true;

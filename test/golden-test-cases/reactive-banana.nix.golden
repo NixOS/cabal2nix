@@ -1,14 +1,11 @@
-{ mkDerivation, base, containers, fetchurl, hashable, HUnit, pqueue
-, psqueues, test-framework, test-framework-hunit, transformers
+{ mkDerivation, base, containers, hashable, HUnit, pqueue, psqueues
+, stdenv, test-framework, test-framework-hunit, transformers
 , unordered-containers, vault
 }:
 mkDerivation {
   pname = "reactive-banana";
   version = "1.1.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers hashable pqueue transformers unordered-containers
     vault

@@ -1,13 +1,10 @@
-{ mkDerivation, base, binary, bytestring, directory, fetchurl
-, hspec, vector
+{ mkDerivation, base, binary, bytestring, directory, hspec, stdenv
+, vector
 }:
 mkDerivation {
   pname = "mnist-idx";
   version = "0.1.2.8";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base binary bytestring vector ];
   testHaskellDepends = [ base binary directory hspec vector ];
   homepage = "https://github.com/kryoxide/mnist-idx/";

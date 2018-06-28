@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, nix, process }:
+{ mkDerivation, base, nix, process, stdenv }:
 mkDerivation {
   pname = "nix-paths";
   version = "1.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base process ];
   libraryToolDepends = [ nix ];
   homepage = "https://github.com/peti/nix-paths";

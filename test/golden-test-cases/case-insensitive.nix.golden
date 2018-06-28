@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, criterion, deepseq, fetchurl
-, hashable, HUnit, test-framework, test-framework-hunit, text
+{ mkDerivation, base, bytestring, criterion, deepseq, hashable
+, HUnit, stdenv, test-framework, test-framework-hunit, text
 }:
 mkDerivation {
   pname = "case-insensitive";
   version = "1.2.0.10";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring deepseq hashable text ];
   testHaskellDepends = [
     base bytestring HUnit test-framework test-framework-hunit text

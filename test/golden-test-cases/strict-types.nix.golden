@@ -1,13 +1,10 @@
 { mkDerivation, array, base, bytestring, containers, deepseq
-, fetchurl, hashable, text, unordered-containers, vector
+, hashable, stdenv, text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "strict-types";
   version = "0.1.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base bytestring containers deepseq hashable text
     unordered-containers vector

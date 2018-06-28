@@ -1,13 +1,10 @@
-{ mkDerivation, base, Cabal, containers, directory, fetchurl
-, filepath, fixed, half, hxt, libGL, transformers
+{ mkDerivation, base, Cabal, containers, directory, filepath, fixed
+, half, hxt, libGL, stdenv, transformers
 }:
 mkDerivation {
   pname = "gl";
   version = "0.8.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   setupHaskellDepends = [
     base Cabal containers directory filepath hxt transformers
   ];

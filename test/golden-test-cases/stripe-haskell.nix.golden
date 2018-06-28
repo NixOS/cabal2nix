@@ -1,11 +1,8 @@
-{ mkDerivation, base, fetchurl, stripe-core, stripe-http-streams }:
+{ mkDerivation, base, stdenv, stripe-core, stripe-http-streams }:
 mkDerivation {
   pname = "stripe-haskell";
   version = "2.2.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base stripe-core stripe-http-streams ];
   homepage = "https://github.com/dmjio/stripe";
   description = "Stripe API for Haskell";

@@ -1,15 +1,12 @@
 { mkDerivation, array, base, bytestring, case-insensitive, conduit
-, conduit-extra, deepseq, fetchurl, http-types, httpd-shed, HUnit
-, mtl, network, network-uri, parsec, pureMD5, split, test-framework
-, test-framework-hunit, time, wai, warp
+, conduit-extra, deepseq, http-types, httpd-shed, HUnit, mtl
+, network, network-uri, parsec, pureMD5, split, stdenv
+, test-framework, test-framework-hunit, time, wai, warp
 }:
 mkDerivation {
   pname = "HTTP";
   version = "4000.3.9";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base bytestring mtl network network-uri parsec time
   ];

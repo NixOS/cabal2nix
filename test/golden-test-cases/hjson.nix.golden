@@ -1,11 +1,8 @@
-{ mkDerivation, base, containers, fetchurl, parsec }:
+{ mkDerivation, base, containers, parsec, stdenv }:
 mkDerivation {
   pname = "hjson";
   version = "1.3.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers parsec ];
   description = "JSON parsing library";
   license = stdenv.lib.licenses.bsd3;

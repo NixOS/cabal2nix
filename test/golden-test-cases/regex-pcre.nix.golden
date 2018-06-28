@@ -1,13 +1,10 @@
-{ mkDerivation, array, base, bytestring, containers, fetchurl, pcre
-, regex-base
+{ mkDerivation, array, base, bytestring, containers, pcre
+, regex-base, stdenv
 }:
 mkDerivation {
   pname = "regex-pcre";
   version = "0.94.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base bytestring containers regex-base
   ];

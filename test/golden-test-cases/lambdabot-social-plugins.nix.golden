@@ -1,13 +1,10 @@
-{ mkDerivation, base, binary, bytestring, containers, fetchurl
-, lambdabot-core, mtl, split, time
+{ mkDerivation, base, binary, bytestring, containers
+, lambdabot-core, mtl, split, stdenv, time
 }:
 mkDerivation {
   pname = "lambdabot-social-plugins";
   version = "5.1.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base binary bytestring containers lambdabot-core mtl split time
   ];

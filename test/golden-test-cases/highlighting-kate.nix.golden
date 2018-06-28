@@ -1,18 +1,16 @@
-{ mkDerivation, base, blaze-html, containers, Diff, directory
-, fetchurl, filepath, mtl, parsec, process, regex-pcre-builtin
+{ mkDerivation, base, blaze-html, bytestring, containers, Diff
+, directory, filepath, mtl, parsec, pcre-light, process, stdenv
 , utf8-string
 }:
 mkDerivation {
   pname = "highlighting-kate";
   version = "0.6.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
+  configureFlags = [ "-fpcre-light" ];
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    base blaze-html containers mtl parsec regex-pcre-builtin
+    base blaze-html bytestring containers mtl parsec pcre-light
     utf8-string
   ];
   testHaskellDepends = [

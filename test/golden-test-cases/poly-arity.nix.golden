@@ -1,11 +1,8 @@
-{ mkDerivation, base, constraints, fetchurl }:
+{ mkDerivation, base, constraints, stdenv }:
 mkDerivation {
   pname = "poly-arity";
   version = "0.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base constraints ];
   description = "Tools for working with functions of undetermined arity";
   license = stdenv.lib.licenses.bsd3;

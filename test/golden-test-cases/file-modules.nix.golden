@@ -1,13 +1,10 @@
-{ mkDerivation, async, base, directory, fetchurl, filepath
-, haskell-src-exts, MissingH, regex-compat, regex-pcre
+{ mkDerivation, async, base, directory, filepath, haskell-src-exts
+, MissingH, regex-compat, regex-pcre, stdenv
 }:
 mkDerivation {
   pname = "file-modules";
   version = "0.1.2.4";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

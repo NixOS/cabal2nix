@@ -1,13 +1,10 @@
-{ mkDerivation, base, containers, fetchurl, kan-extensions, lens
-, mcmc-types, mwc-probability, pipes, primitive, transformers
+{ mkDerivation, base, containers, kan-extensions, lens, mcmc-types
+, mwc-probability, pipes, primitive, stdenv, transformers
 }:
 mkDerivation {
   pname = "speedy-slice";
   version = "0.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base kan-extensions lens mcmc-types mwc-probability pipes primitive
     transformers

@@ -1,11 +1,8 @@
-{ mkDerivation, base, containers, fetchurl, validity }:
+{ mkDerivation, base, containers, stdenv, validity }:
 mkDerivation {
   pname = "validity-containers";
   version = "0.2.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers validity ];
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "Validity instances for containers";

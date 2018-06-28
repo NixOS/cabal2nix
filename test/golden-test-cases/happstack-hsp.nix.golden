@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, fetchurl, happstack-server, harp
-, hsp, hsx2hs, mtl, syb, text, utf8-string
+{ mkDerivation, base, bytestring, happstack-server, harp, hsp
+, hsx2hs, mtl, stdenv, syb, text, utf8-string
 }:
 mkDerivation {
   pname = "happstack-hsp";
   version = "7.3.7.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base bytestring happstack-server harp hsp hsx2hs mtl syb text
     utf8-string

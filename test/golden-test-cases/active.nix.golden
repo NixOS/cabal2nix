@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, lens, linear, QuickCheck
-, semigroupoids, semigroups, vector
+{ mkDerivation, base, lens, linear, QuickCheck, semigroupoids
+, semigroups, stdenv, vector
 }:
 mkDerivation {
   pname = "active";
   version = "0.2.0.13";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base lens linear semigroupoids semigroups vector
   ];

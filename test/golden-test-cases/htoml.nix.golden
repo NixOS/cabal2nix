@@ -1,14 +1,11 @@
 { mkDerivation, aeson, base, bytestring, containers, criterion
-, fetchurl, file-embed, old-locale, parsec, tasty, tasty-hspec
+, file-embed, old-locale, parsec, stdenv, tasty, tasty-hspec
 , tasty-hunit, text, time, unordered-containers, vector
 }:
 mkDerivation {
   pname = "htoml";
   version = "1.0.0.3";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base containers old-locale parsec text time
     unordered-containers vector

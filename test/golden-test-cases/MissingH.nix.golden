@@ -1,15 +1,12 @@
 { mkDerivation, array, base, containers, directory
-, errorcall-eq-instance, fetchurl, filepath, hslogger, HUnit, mtl
-, network, old-locale, old-time, parsec, process, QuickCheck
-, random, regex-compat, testpack, time, unix
+, errorcall-eq-instance, filepath, hslogger, HUnit, mtl, network
+, old-locale, old-time, parsec, process, QuickCheck, random
+, regex-compat, stdenv, testpack, time, unix
 }:
 mkDerivation {
   pname = "MissingH";
   version = "1.4.0.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base containers directory filepath hslogger HUnit mtl network
     old-locale old-time parsec process random regex-compat time unix

@@ -1,14 +1,11 @@
 { mkDerivation, attoparsec, base, bytestring, containers
-, data-default-class, fetchurl, lens-family, parsec, pretty, text
+, data-default-class, lens-family, parsec, pretty, stdenv, text
 , transformers, void
 }:
 mkDerivation {
   pname = "proto-lens";
   version = "0.2.2.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     attoparsec base bytestring containers data-default-class
     lens-family parsec pretty text transformers void

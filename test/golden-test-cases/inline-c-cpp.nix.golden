@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, hspec, inline-c, safe-exceptions
+{ mkDerivation, base, hspec, inline-c, safe-exceptions, stdenv
 , template-haskell
 }:
 mkDerivation {
   pname = "inline-c-cpp";
   version = "0.2.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base inline-c safe-exceptions template-haskell
   ];

@@ -1,9 +1,9 @@
 { mkDerivation, aeson, async, auto-update, base, blaze-builder
 , bytestring, containers, criterion, deepseq, directory, either
-, fetchurl, filepath, hostname, microlens, microlens-th
-, monad-control, mtl, old-locale, quickcheck-instances, regex-tdfa
-, resourcet, safe-exceptions, scientific, semigroups, stm
-, string-conv, tasty, tasty-golden, tasty-hunit, tasty-quickcheck
+, filepath, hostname, microlens, microlens-th, monad-control, mtl
+, old-locale, quickcheck-instances, regex-tdfa, resourcet
+, safe-exceptions, scientific, semigroups, stdenv, stm, string-conv
+, tasty, tasty-golden, tasty-hunit, tasty-quickcheck
 , template-haskell, text, time, time-locale-compat, transformers
 , transformers-base, transformers-compat, unix
 , unordered-containers
@@ -11,10 +11,7 @@
 mkDerivation {
   pname = "katip";
   version = "0.5.2.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson async auto-update base bytestring containers either hostname
     microlens microlens-th monad-control mtl old-locale resourcet

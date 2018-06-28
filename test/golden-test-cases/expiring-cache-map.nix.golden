@@ -1,13 +1,10 @@
-{ mkDerivation, base, bytestring, containers, fetchurl, hashable
+{ mkDerivation, base, bytestring, containers, hashable, stdenv
 , time, unordered-containers
 }:
 mkDerivation {
   pname = "expiring-cache-map";
   version = "0.0.6.1";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base containers hashable unordered-containers
   ];

@@ -1,13 +1,10 @@
-{ mkDerivation, ansi-terminal, base, bytestring, fetchurl, options
-, patience, random, template-haskell, text, transformers
+{ mkDerivation, ansi-terminal, base, bytestring, options, patience
+, random, stdenv, template-haskell, text, transformers
 }:
 mkDerivation {
   pname = "chell";
   version = "0.4.0.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     ansi-terminal base bytestring options patience random
     template-haskell text transformers

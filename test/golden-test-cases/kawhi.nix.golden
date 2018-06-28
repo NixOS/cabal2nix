@@ -1,15 +1,12 @@
-{ mkDerivation, aeson, base, bytestring, exceptions, fetchurl
-, http-client, http-conduit, http-types, mtl, safe, scientific
-, smallcheck, tasty, tasty-hunit, tasty-quickcheck
-, tasty-smallcheck, text
+{ mkDerivation, aeson, base, bytestring, exceptions, http-client
+, http-conduit, http-types, mtl, safe, scientific, smallcheck
+, stdenv, tasty, tasty-hunit, tasty-quickcheck, tasty-smallcheck
+, text
 }:
 mkDerivation {
   pname = "kawhi";
   version = "0.3.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     aeson base bytestring exceptions http-client http-conduit
     http-types mtl safe scientific text

@@ -1,11 +1,8 @@
-{ mkDerivation, base, containers, fetchurl, tree-fun }:
+{ mkDerivation, base, containers, stdenv, tree-fun }:
 mkDerivation {
   pname = "clumpiness";
   version = "0.17.0.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers tree-fun ];
   description = "Calculate the clumpiness of leaf properties in a tree";
   license = stdenv.lib.licenses.gpl3;

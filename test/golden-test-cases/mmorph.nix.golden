@@ -1,13 +1,10 @@
-{ mkDerivation, base, fetchurl, mtl, transformers
+{ mkDerivation, base, mtl, stdenv, transformers
 , transformers-compat
 }:
 mkDerivation {
   pname = "mmorph";
   version = "1.1.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     base mtl transformers transformers-compat
   ];

@@ -1,18 +1,15 @@
 { mkDerivation, aeson, ansi-wl-pprint, base, base-compat, binary
 , bytestring, cassava, code-page, containers, deepseq, directory
-, exceptions, fetchurl, filepath, Glob, HUnit, js-flot, js-jquery
+, exceptions, filepath, Glob, HUnit, js-flot, js-jquery
 , microstache, mtl, mwc-random, optparse-applicative, parsec
-, QuickCheck, semigroups, statistics, tasty, tasty-hunit
+, QuickCheck, semigroups, statistics, stdenv, tasty, tasty-hunit
 , tasty-quickcheck, text, time, transformers, transformers-compat
 , vector, vector-algorithms
 }:
 mkDerivation {
   pname = "criterion";
   version = "1.2.6.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

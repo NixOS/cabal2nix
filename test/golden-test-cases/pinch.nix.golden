@@ -1,14 +1,11 @@
 { mkDerivation, array, base, bytestring, containers, deepseq
-, fetchurl, ghc-prim, hashable, hspec, hspec-discover, QuickCheck
+, ghc-prim, hashable, hspec, hspec-discover, QuickCheck, stdenv
 , text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "pinch";
   version = "0.3.2.0";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   libraryHaskellDepends = [
     array base bytestring containers deepseq ghc-prim hashable text
     unordered-containers vector

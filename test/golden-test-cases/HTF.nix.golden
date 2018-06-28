@@ -1,17 +1,14 @@
 { mkDerivation, aeson, aeson-pretty, array, base, base64-bytestring
-, bytestring, containers, cpphs, Diff, directory, fetchurl
-, filepath, haskell-src, HUnit, lifted-base, monad-control, mtl
-, old-time, pretty, process, QuickCheck, random, regex-compat
+, bytestring, containers, cpphs, Diff, directory, filepath
+, haskell-src, HUnit, lifted-base, monad-control, mtl, old-time
+, pretty, process, QuickCheck, random, regex-compat, stdenv
 , template-haskell, temporary, text, time, unix
 , unordered-containers, vector, xmlgen
 }:
 mkDerivation {
   pname = "HTF";
   version = "0.13.2.2";
-  src = fetchurl {
-    url = "http://example.org/";
-    sha256 = "abc";
-  };
+  sha256 = "deadbeef";
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
