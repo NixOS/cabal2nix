@@ -190,7 +190,7 @@ Haskell Platform later, so one doesn't have to worry that every single install
 is going to be that expensive.
 
 In its last step, `nix-env` creates a "user environment" at
-`$HOME/.nix-profile`, which simplies use of the installed packages a lot. That
+`$HOME/.nix-profile`, which simplifies use of the installed packages a lot. That
 environment uses symlinks to create a view of the Nix store that combines those
 packages that have been installed into a single hierarchy. For example, the
 path `~/.nix-profile/bin/ghc` will be a symlink to

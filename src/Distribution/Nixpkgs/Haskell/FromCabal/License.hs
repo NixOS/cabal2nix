@@ -8,7 +8,7 @@ import Distribution.Text (display)
 import Data.List (intercalate)
 import Distribution.Version
 
--- TODO: Programatically strip trailing zeros from license version numbers.
+-- TODO: Programmatically strip trailing zeros from license version numbers.
 
 fromCabalLicense :: Distribution.License.License -> Distribution.Nixpkgs.License.License
 fromCabalLicense (GPL Nothing)                             = Unknown (Just "GPL")

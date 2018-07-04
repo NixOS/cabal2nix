@@ -69,7 +69,7 @@ testLibrary cabalFile = do
 --  * Run cabal2nix in an empty environment. Currently, this fails because the
 --    tool uses $HOME to write cache files for SHA256 hashes. To fix this, use
 --    of the cache directory ought to be optional. Arguably, the whole notion
---    of caching those hashes is a bit silly in the presense of format 01
+--    of caching those hashes is a bit silly in the presence of format 01
 --    cabal-install tarballs which contain them already.
 --
 --  * If we cannot get along without $HOME, then we should at least set it to

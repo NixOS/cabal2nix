@@ -116,7 +116,7 @@ reflection. Nixpkgs defines the Haskell package set recursively as a function
 produce and then uses that information to the produce the attribute set it's
 already received as an argument. It's a mind-boggling way to define a recursive
 attribute set `rec { ... }` without actually using the `rec` keyword. Every
-computable function of this kind has a fixed point: a value `x` that satifies
+computable function of this kind has a fixed point: a value `x` that satisfies
 `f x = x`. That `x` is the result we actually want --- it's an ordinary
 attribute set with all the `self`-references resolved and replaced by actual
 values. The details of fixed points aren't important, though. What's important

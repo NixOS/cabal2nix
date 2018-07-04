@@ -31,7 +31,7 @@ hackage=$(git rev-parse --verify HEAD)
 cd ..
 
 # This command needs a recent development version of cabal-install. I don't
-# think this works properly in verson 2.0.0.0 already.
+# think this works properly in version 2.0.0.0 already.
 cabal -v0 new-run hackage2nix -- --nixpkgs="$PWD/nixpkgs" +RTS -M4G -RTS
 
 cd nixpkgs
