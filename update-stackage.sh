@@ -31,6 +31,8 @@ sed -r \
     -e '/ hopenssl /d' \
     -e '/ jailbreak-cabal /d' \
     -e '/ json-autotype/d' \
+    -e '/ lambdabot-core /d' \
+    -e '/ lambdabot-irc-plugins /d' \
     -e '/ language-nix /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
