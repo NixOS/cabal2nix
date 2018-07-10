@@ -3,7 +3,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Cabal2nix
-  ( main, cabal2nix, cabal2nix', cabal2nixWithDB
+  ( main, cabal2nix, cabal2nix', cabal2nixWithDB, parseArgs
+  , Options(..)
   )
   where
 
@@ -61,9 +62,9 @@ data Options = Options
   , optSystem :: Platform
   , optSubpath :: Maybe FilePath
   , optHackageSnapshot :: Maybe UTCTime
+  , optNixpkgsIdentifier :: NixpkgsResolver
   , optUrl :: String
   }
-  deriving (Show)
 
 options :: Parser Options
 options = Options
@@ -87,6 +88,7 @@ options = Options
           <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
+          <*> pure (\i -> Just (binding # (i, path # [i])))
           <*> strArgument (metavar "URI")
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
@@ -183,19 +185,15 @@ hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
                . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
-cabal2nix' :: [String] -> IO (Either Doc Derivation)
-cabal2nix' args = do
-  opts@Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
-
+cabal2nix' :: Options -> IO (Either Doc Derivation)
+cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optHackageDb optHackageSnapshot $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
-cabal2nixWithDB :: DB.HackageDB -> [String] -> IO (Either Doc Derivation)
-cabal2nixWithDB db args = do
-  opts@Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
+cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
+cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
-
   pkg <- getPackage' optHpack (return db) $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
@@ -210,7 +208,7 @@ processPackage Options{..} pkg = do
 
       deriv :: Derivation
       deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
-                                            (\i -> Just (binding # (i, path # [i])))
+                                            optNixpkgsIdentifier
                                             optSystem
                                             (unknownCompilerInfo optCompiler NoAbiTag)
                                             flags
@@ -253,7 +251,12 @@ processPackage Options{..} pkg = do
   pure $ if optNixShellOutput then Left shell else Right deriv
 
 cabal2nix :: [String] -> IO ()
-cabal2nix = cabal2nix' >=> putStrLn . either render prettyShow
+cabal2nix = parseArgs >=> cabal2nix' >=> putStrLn . either render prettyShow
+
+parseArgs :: [String] -> IO Options
+parseArgs = handleParseResult . execParserPure defaultPrefs pinfo
+
+-- Utils
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = mkFlagAssignment . map tagWithValue
