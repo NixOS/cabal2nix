@@ -62,9 +62,9 @@ data Options = Options
   , optSystem :: Platform
   , optSubpath :: Maybe FilePath
   , optHackageSnapshot :: Maybe UTCTime
+  , optNixpkgsIdentifier :: NixpkgsResolver
   , optUrl :: String
   }
-  deriving (Show)
 
 options :: Parser Options
 options = Options
@@ -88,6 +88,7 @@ options = Options
           <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
+          <*> pure (\i -> Just (binding # (i, path # [i])))
           <*> strArgument (metavar "URI")
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
@@ -207,7 +208,7 @@ processPackage Options{..} pkg = do
 
       deriv :: Derivation
       deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
-                                            (\i -> Just (binding # (i, path # [i])))
+                                            optNixpkgsIdentifier
                                             optSystem
                                             (unknownCompilerInfo optCompiler NoAbiTag)
                                             flags
