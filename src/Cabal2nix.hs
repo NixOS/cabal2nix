@@ -3,7 +3,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Cabal2nix
-  ( main, cabal2nix, cabal2nix', cabal2nixWithDB
+  ( main, cabal2nix, cabal2nix', cabal2nixWithDB, parseArgs
+  , Options(..)
   )
   where
 
@@ -183,19 +184,15 @@ hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
                . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
-cabal2nix' :: [String] -> IO (Either Doc Derivation)
-cabal2nix' args = do
-  opts@Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
-
+cabal2nix' :: Options -> IO (Either Doc Derivation)
+cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optHackageDb optHackageSnapshot $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
-cabal2nixWithDB :: DB.HackageDB -> [String] -> IO (Either Doc Derivation)
-cabal2nixWithDB db args = do
-  opts@Options {..} <- handleParseResult $ execParserPure defaultPrefs pinfo args
+cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
+cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
-
   pkg <- getPackage' optHpack (return db) $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
@@ -253,7 +250,12 @@ processPackage Options{..} pkg = do
   pure $ if optNixShellOutput then Left shell else Right deriv
 
 cabal2nix :: [String] -> IO ()
-cabal2nix = cabal2nix' >=> putStrLn . either render prettyShow
+cabal2nix = parseArgs >=> cabal2nix' >=> putStrLn . either render prettyShow
+
+parseArgs :: [String] -> IO Options
+parseArgs = handleParseResult . execParserPure defaultPrefs pinfo
+
+-- Utils
 
 readFlagList :: [String] -> FlagAssignment
 readFlagList = mkFlagAssignment . map tagWithValue
