@@ -27,8 +27,10 @@ import Text.PrettyPrint.HughesPJClass
 
 main :: IO ()
 main = do
-  -- TODO: run this test with all kinds of setLocaleEncoding values to ensure we don't
-  -- depend on the system environment: https://github.com/NixOS/cabal2nix/issues/333
+  -- TODO: Run this test with all kinds of setLocaleEncoding values to ensure we don't
+  --       depend on the system environment: https://github.com/NixOS/cabal2nix/issues/333.
+  --
+  -- TODO: Run this test without $HOME defined to ensure that we don't need that variable.
   cabal2nix <- findExecutable "cabal2nix" >>= maybe (fail "cannot find 'cabal2nix' in $PATH") return
   testCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases"
   defaultMain $ testGroup "regression-tests"
