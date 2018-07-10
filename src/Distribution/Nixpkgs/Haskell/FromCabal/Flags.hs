@@ -30,13 +30,13 @@ configureCabalFlags' (PackageIdentifier name version)
                                   , enable "pairing"
                                   , enable "production"
                                   , enable "quvi"
-                                  , enable "s3"
+                                  , disable "s3"
                                   , enable "tahoe"
                                   , enable "tdfa"
                                   , ("testsuite", version `withinRange` "< 6.20170925 || >= 6.20171214")
                                   , enable "torrentparser"
-                                  , enable "webapp"
-                                  , enable "webapp-secure"
+                                  , disable "webapp"
+                                  , disable "webapp-secure"
                                   , enable "webdav"
                                   , enable "xmpp"
                                   ]
