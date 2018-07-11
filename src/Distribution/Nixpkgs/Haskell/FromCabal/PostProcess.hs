@@ -4,9 +4,11 @@ module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess, pkg ) w
 
 import Control.Lens
 import Data.List.Split
+import Data.Map ( Map )
+import qualified Data.Map as Map
+import Data.Map.Lens
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Data.Set.Lens
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
@@ -24,13 +26,15 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
                        & dependencies . tool %~ Set.filter (not . collidesWithHaskellName)
   where
     collidesWithHaskellName :: Binding -> Bool
-    collidesWithHaskellName b = view localName b `Set.member` buildDeps
+    collidesWithHaskellName b = case buildDeps Map.!? view localName b of
+      Nothing -> False -- totally uncollided
+      Just p  -> p /= view reference b -- identical is not collision, and important to preserve for cross
 
     myName :: Identifier
     myName = ident # unPackageName (packageName drv)
 
-    buildDeps :: Set Identifier
-    buildDeps = Set.delete myName (setOf (dependencies . haskell . folded . localName) drv)
+    buildDeps :: Map Identifier Path
+    buildDeps = Map.delete myName (toMapOf (dependencies . haskell . to Set.toList . traverse . binding . ifolded) drv)
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
