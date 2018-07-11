@@ -14,6 +14,7 @@ mkDerivation {
     base bytestring containers hspec hspec-discover QuickCheck text
     unordered-containers vector
   ];
+  testToolDepends = [ hspec-discover ];
   homepage = "https://github.com/abhinav/pinch#readme";
   description = "An alternative implementation of Thrift for Haskell";
   license = stdenv.lib.licenses.bsd3;

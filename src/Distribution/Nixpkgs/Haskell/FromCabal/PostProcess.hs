@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess, pkg ) where
 
 import Control.Lens
+import Control.Monad.Trans.State
 import Data.List.Split
 import Data.Map ( Map )
 import qualified Data.Map as Map
@@ -18,7 +20,11 @@ import Distribution.Version
 import Language.Nix
 
 postProcess :: Derivation -> Derivation
-postProcess deriv = foldr ($) (fixGtkBuilds deriv) [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
+postProcess deriv =
+ foldr (.) id [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
+ . fixGtkBuilds
+ . fixBuildDependsForTools
+ $ deriv
 
 fixGtkBuilds :: Derivation -> Derivation
 fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesWithHaskellName)
@@ -35,6 +41,33 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 
     buildDeps :: Map Identifier Path
     buildDeps = Map.delete myName (toMapOf (dependencies . haskell . to Set.toList . traverse . binding . ifolded) drv)
+
+-- Per https://github.com/haskell/cabal/issues/5412 hvr considers
+-- `build-depends` providing executables an accident, and fragile one at that,
+-- unworthy of any compatibility hacks. But while he and the other Hackage
+-- maintainers is dedicated to fixing executables and libraries on Hackage, test
+-- suites and benchmarks are not a priority, as it is trivial to skip building
+-- test-suites with cabal-install. Nix however wishes to build test suites much
+-- more widely, so skipping those components is not an option.
+--
+-- Between that, and Stack not changing behavior as of
+-- https://github.com/commercialhaskell/stack/pull/4132, it seems likely that
+-- for a while packages scraped from Hackage will continue to improperly use
+-- `build-depends: package-for-tool` instead of `build-tool-depends` (which does
+-- also work for Stack). Until that changes, we provide do this to work around
+-- those package's brokeness.
+fixBuildDependsForTools :: Derivation -> Derivation
+fixBuildDependsForTools = foldr (.) id
+  [ fmap snd $ runState $ do
+      needs <- use $ cloneLens c . haskell . contains p
+      cloneLens c . tool . contains p ||= needs
+  | (c :: ALens' Derivation BuildInfo) <- [ testDepends, benchmarkDepends ]
+  , p <- self <$> [ "hspec-discover"
+                  , "tasty-discover"
+                  , "hsx2hs"
+                  , "markdown-unlit"
+                  ]
+  ]
 
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
