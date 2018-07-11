@@ -41,13 +41,13 @@ hooks =
   [ ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("Agda >= 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
-  , ("alex",  set (executableDepends . tool . contains (bind "self.happy")) True)
+  , ("alex",  set (executableDepends . tool . contains (self "happy")) True)
   , ("alsa-core", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("bindings-lxc", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
-  , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [bind "self.mtl", bind "self.parsec"]))) -- https://github.com/haskell/cabal/issues/5391
+  , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [self "mtl", self "parsec"]))) -- https://github.com/haskell/cabal/issues/5391
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
   , ("cabal-install", set doCheck False . set phaseOverrides cabalInstallPostInstall)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
@@ -92,14 +92,14 @@ hooks =
   , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
   , ("http-conduit", set doCheck False)         -- attempts to access the network
   , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
-  , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (bind "self.random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
+  , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (self "random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
   , ("js-jquery", set doCheck False)            -- attempts to access the network
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("libxml", set (configureFlags . contains "--extra-include-dir=${libxml2.dev}/include/libxml2") True)
   , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
-  , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (bind "self.only-buildable-on-windows")) False)
-  , ("MFlow < 4.6", set (libraryDepends . tool . contains (bind "self.cpphs")) True)
+  , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
+  , ("MFlow < 4.6", set (libraryDepends . tool . contains (self "cpphs")) True)
   , ("mwc-random", set doCheck False)
   , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
@@ -122,7 +122,7 @@ hooks =
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("text", set doCheck False)         -- break infinite recursion
-  , ("thyme", set (libraryDepends . tool . contains (bind "self.cpphs")) True) -- required on Darwin
+  , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
   , ("udev", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
@@ -135,12 +135,15 @@ hooks =
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender","pkgs.xorg.libXScrnSaver"])))
   , ("xmonad", set phaseOverrides xmonadPostInstall)
-  , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (bind "self.zip") (pkg "zip")))
+  , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (self "zip") (pkg "zip")))
   , ("zip-archive >= 0.3.1 && < 0.3.2.3", over (testDepends . tool) (Set.union (Set.fromList [pkg "zip", pkg "unzip"])))   -- https://github.com/jgm/zip-archive/issues/35
   ]
 
 pkg :: Identifier -> Binding
 pkg i = binding # (i, path # ["pkgs",i])
+
+self :: Identifier -> Binding
+self i = binding # (i, path # ["self",i])
 
 pkgs :: [Identifier] -> Set Binding
 pkgs = Set.fromList . map pkg
