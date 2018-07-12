@@ -1,206 +1,204 @@
-name:           cabal2nix
-version:        2.10.0
-synopsis:       Convert Cabal files into Nix build instructions.
-category:       Distribution, Nix
-stability:      stable
-homepage:       https://github.com/nixos/cabal2nix#readme
-bug-reports:    https://github.com/nixos/cabal2nix/issues
-author:         Peter Simons,
-                Andres Loeh,
-                Benno Fünfstück,
-                Mateusz Kowalczyk,
-                Michael Alan Dorman,
-                Tom Smalley,
-                Mathijs Kwik,
-                Shea Levy,
-                Dmitry Malikov,
-                Eric Seidel,
-                Jacob Mitchell,
-                Graham Christensen,
-                Hamish Mackenzie,
-                Nikolay Amiantov,
-                Aycan iRiCAN,
-                Bryan Gardiner,
-                Joe Hermaszewski,
-                John Wiegley,
-                Philipp Hausmann,
-                Spencer Janssen,
-                Tom Hunger,
-                William Casarin,
-                koral,
-                ksaric,
-                Adam Vogt,
-                Alexey Shmalko,
-                Corey O'Connor,
-                Cray Elliott,
-                David Johnson,
-                Dmitry Bushev,
-                Domen Kožar,
-                Felix Kunzmann,
-                Gabriel Ebner,
-                Gergely Risko,
-                Joachim Fasting,
-                John Albietz,
-                John Chee,
-                Jussi Maki,
-                Lisanna Dettwyler,
-                Mark Laws,
-                Mark Wotton,
-                Matthew Pickering,
-                Matthew Stewart,
-                Matvey Aksenov,
-                Nicholas Clarke,
-                Nicolas Rolland,
-                Oliver Charles,
-                Pascal Wittmann,
-                Patrick John Wheeler,
-                Phil de Joux,
-                Piotr Bogdan,
-                Profpatsch,
-                Raymond Gauthier,
-                Renzo Carbonara,
-                Rodney Lorrimar,
-                Sibi,
-                Sukant Hajra,
-                Tanner Doshier,
-                Vaibhav Sagar,
-                Viktar Basharymau,
-                danbst,
-                karsten gebbert,
-                laMudri,
-                Александр Цамутали
-maintainer:     Peter Simons <simons@cryp.to>
-license:        BSD3
-license-file:   LICENSE
-tested-with:    GHC == 8.4.3
-build-type:     Simple
-cabal-version:  1.24
-
+name:               cabal2nix
+version:            2.10.0
+synopsis:           Convert Cabal files into Nix build instructions.
 description:
-  Convert Cabal files into Nix build instructions. Users of Nix can install the
-  latest version by running:
+  Convert Cabal files into Nix build instructions. Users of Nix can install the latest
+  version by running:
   .
   > nix-env -i cabal2nix
-
-extra-source-files:
-  README.md
-  test/golden-test-cases/*.cabal
-  test/golden-test-cases/*.nix.golden
+license:            BSD3
+license-file:       LICENSE
+author:             Peter Simons,
+                    Andres Loeh,
+                    Benno Fünfstück,
+                    Mateusz Kowalczyk,
+                    Michael Alan Dorman,
+                    Tom Smalley,
+                    Mathijs Kwik,
+                    Shea Levy,
+                    Dmitry Malikov,
+                    Eric Seidel,
+                    Jacob Mitchell,
+                    Graham Christensen,
+                    Hamish Mackenzie,
+                    Nikolay Amiantov,
+                    Aycan iRiCAN,
+                    Bryan Gardiner,
+                    Joe Hermaszewski,
+                    John Wiegley,
+                    Philipp Hausmann,
+                    Spencer Janssen,
+                    Tom Hunger,
+                    William Casarin,
+                    koral,
+                    ksaric,
+                    Adam Vogt,
+                    Alexey Shmalko,
+                    Corey O'Connor,
+                    Cray Elliott,
+                    David Johnson,
+                    Dmitry Bushev,
+                    Domen Kožar,
+                    Felix Kunzmann,
+                    Gabriel Ebner,
+                    Gergely Risko,
+                    Joachim Fasting,
+                    John Albietz,
+                    John Chee,
+                    Jussi Maki,
+                    Lisanna Dettwyler,
+                    Mark Laws,
+                    Mark Wotton,
+                    Matthew Pickering,
+                    Matthew Stewart,
+                    Matvey Aksenov,
+                    Nicholas Clarke,
+                    Nicolas Rolland,
+                    Oliver Charles,
+                    Pascal Wittmann,
+                    Patrick John Wheeler,
+                    Phil de Joux,
+                    Piotr Bogdan,
+                    Profpatsch,
+                    Raymond Gauthier,
+                    Renzo Carbonara,
+                    Rodney Lorrimar,
+                    Sibi,
+                    Sukant Hajra,
+                    Tanner Doshier,
+                    Vaibhav Sagar,
+                    Viktar Basharymau,
+                    danbst,
+                    karsten gebbert,
+                    laMudri,
+                    Александр Цамутали
+maintainer:         Peter Simons <simons@cryp.to>
+stability:          stable
+tested-with:        GHC == 8.4.3
+category:           Distribution, Nix
+homepage:           https://github.com/nixos/cabal2nix#readme
+bug-reports:        https://github.com/nixos/cabal2nix/issues
+build-type:         Simple
+extra-source-files: README.md
+                    test/golden-test-cases/*.cabal
+                    test/golden-test-cases/*.nix.golden
+cabal-version:      1.24
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/nixos/cabal2nix
 
 library
-  hs-source-dirs:       src
-  other-extensions:     CPP DeriveGeneric FlexibleInstances MultiParamTypeClasses
-                        OverloadedStrings RecordWildCards ScopedTypeVariables
-                        StandaloneDeriving TemplateHaskell
-  default-extensions:   MonadFailDesugaring
-  ghc-options:          -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                        -Wredundant-constraints
-  build-depends:
-      Cabal >2.2
-    , aeson
-    , ansi-wl-pprint
-    , base <5
-    , bytestring
-    , containers
-    , deepseq >=1.4
-    , directory
-    , distribution-nixpkgs >=1.1.1
-    , filepath
-    , hackage-db >=2.0.1
-    , hopenssl >=2
-    , hpack >= 0.26
-    , language-nix
-    , lens
-    , optparse-applicative
-    , pretty >=1.1.2
-    , process
-    , split
-    , text
-    , time
-    , transformers
-    , yaml
-  exposed-modules:
-      Cabal2nix
-      Distribution.Nixpkgs.Fetch
-      Distribution.Nixpkgs.Haskell
-      Distribution.Nixpkgs.Haskell.BuildInfo
-      Distribution.Nixpkgs.Haskell.Constraint
-      Distribution.Nixpkgs.Haskell.Derivation
-      Distribution.Nixpkgs.Haskell.FromCabal
-      Distribution.Nixpkgs.Haskell.FromCabal.Configuration
-      Distribution.Nixpkgs.Haskell.FromCabal.Flags
-      Distribution.Nixpkgs.Haskell.FromCabal.License
-      Distribution.Nixpkgs.Haskell.FromCabal.Name
-      Distribution.Nixpkgs.Haskell.FromCabal.Normalize
-      Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
-      Distribution.Nixpkgs.Haskell.Hackage
-      Distribution.Nixpkgs.Haskell.OrphanInstances
-      Distribution.Nixpkgs.Haskell.PackageSourceSpec
-  other-modules:
-      Paths_cabal2nix
-  default-language: Haskell2010
+  exposed-modules:    Cabal2nix
+                      Distribution.Nixpkgs.Fetch
+                      Distribution.Nixpkgs.Haskell
+                      Distribution.Nixpkgs.Haskell.BuildInfo
+                      Distribution.Nixpkgs.Haskell.Constraint
+                      Distribution.Nixpkgs.Haskell.Derivation
+                      Distribution.Nixpkgs.Haskell.FromCabal
+                      Distribution.Nixpkgs.Haskell.FromCabal.Configuration
+                      Distribution.Nixpkgs.Haskell.FromCabal.Flags
+                      Distribution.Nixpkgs.Haskell.FromCabal.License
+                      Distribution.Nixpkgs.Haskell.FromCabal.Name
+                      Distribution.Nixpkgs.Haskell.FromCabal.Normalize
+                      Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
+                      Distribution.Nixpkgs.Haskell.Hackage
+                      Distribution.Nixpkgs.Haskell.OrphanInstances
+                      Distribution.Nixpkgs.Haskell.PackageSourceSpec
+  other-modules:      Paths_cabal2nix
+  hs-source-dirs:     src
+  build-depends:      base                 < 5
+                    , Cabal                > 2.2
+                    , aeson
+                    , ansi-wl-pprint
+                    , bytestring
+                    , containers
+                    , deepseq              >= 1.4
+                    , directory
+                    , distribution-nixpkgs >= 1.1.1
+                    , filepath
+                    , hackage-db           >= 2.0.1
+                    , hopenssl             >= 2
+                    , hpack                >= 0.26
+                    , language-nix
+                    , lens
+                    , optparse-applicative
+                    , pretty               >= 1.1.2
+                    , process
+                    , split
+                    , text
+                    , time
+                    , transformers
+                    , yaml
+  default-language:   Haskell2010
+  default-extensions: MonadFailDesugaring
+  other-extensions:   MultiParamTypeClasses
+                      ScopedTypeVariables
+                      FlexibleInstances
+                      CPP
+                      TemplateHaskell
+                      StandaloneDeriving
+                      RecordWildCards
+                      OverloadedStrings
+                      DeriveGeneric
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints
 
 executable cabal2nix
-  main-is: Main.hs
-  hs-source-dirs: cabal2nix
-  default-extensions:   MonadFailDesugaring
-  ghc-options:          -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                        -Wredundant-constraints
-  build-depends: base, cabal2nix
-  default-language: Haskell2010
+  main-is:            Main.hs
+  hs-source-dirs:     cabal2nix
+  build-depends:      base, cabal2nix
+  default-language:   Haskell2010
+  default-extensions: MonadFailDesugaring
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints
 
 executable hackage2nix
-  main-is: Main.hs
-  hs-source-dirs: hackage2nix
-  default-extensions:   MonadFailDesugaring
-  ghc-options:          -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                        -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      Cabal >2.2
-    , aeson
-    , base <5
-    , bytestring
-    , cabal2nix
-    , containers
-    , directory
-    , distribution-nixpkgs >=1.1.1
-    , filepath
-    , hopenssl >=2
-    , language-nix
-    , lens
-    , monad-par
-    , monad-par-extras
-    , mtl
-    , optparse-applicative
-    , pretty >=1.1.2
-  other-modules:
-      Paths_cabal2nix
-      HackageGit
-  default-language: Haskell2010
+  main-is:            Main.hs
+  other-modules:      HackageGit
+                      Paths_cabal2nix
+  hs-source-dirs:     hackage2nix
+  build-depends:      base                 < 5
+                    , Cabal                > 2.2
+                    , aeson
+                    , bytestring
+                    , cabal2nix
+                    , containers
+                    , directory
+                    , distribution-nixpkgs >= 1.1.1
+                    , filepath
+                    , hopenssl             >= 2
+                    , language-nix
+                    , lens
+                    , monad-par
+                    , monad-par-extras
+                    , mtl
+                    , optparse-applicative
+                    , pretty               >= 1.1.2
+  default-language:   Haskell2010
+  default-extensions: MonadFailDesugaring
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
 
 test-suite regression-test
-  type:                 exitcode-stdio-1.0
-  main-is:              Main.hs
-  hs-source-dirs:       test
-  default-extensions:   MonadFailDesugaring
-  ghc-options:          -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                        -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-                        -with-rtsopts=-K1K
-  build-depends:        base
-                      , Cabal >2.2
-                      , cabal2nix
-                      , containers
-                      , directory
-                      , filepath
-                      , language-nix
-                      , lens
-                      , pretty
-                      , process >1.2
-                      , tasty
-                      , tasty-golden
-  build-tools:          cabal2nix
-  default-language:     Haskell2010
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  hs-source-dirs:     test
+  build-depends:      base
+                    , Cabal        > 2.2
+                    , cabal2nix
+                    , containers
+                    , directory
+                    , filepath
+                    , language-nix
+                    , lens
+                    , pretty
+                    , process      > 1.2
+                    , tasty
+                    , tasty-golden
+  default-language:   Haskell2010
+  default-extensions: MonadFailDesugaring
+  build-tools:        cabal2nix
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+                      -with-rtsopts=-K1K
