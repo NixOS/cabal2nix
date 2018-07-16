@@ -78,7 +78,10 @@ testLibrary cabalFile = do
 --    some temporary location that is empty.
 --
 --  * Run this test with different kinds of encodings.
-
+--
+--  * Run tests with a different target OS, like Darwin. The packages "iconv",
+--    "crypt-sha512", "gl" might be worthwhile for testing since their output
+--    differs on Darwin.
 
 testExecutable :: FilePath -> FilePath -> TestTree
 testExecutable exe cabalFile = do
@@ -89,7 +92,7 @@ testExecutable exe cabalFile = do
     (\ref new -> ["diff", "-u", ref, new])
     goldenFile
     nixFile
-    (callCommand (unwords ["env LANG=en_US.UTF-8", exe, "--sha256=deadbeef", "--compiler=ghc-8.2", "--", cabalFile, ">"++nixFile]))
+    (callCommand (unwords ["env LANG=en_US.UTF-8", exe, "--sha256=deadbeef", "--system=x86_64-linux", "--compiler=ghc-8.2", "--", cabalFile, ">"++nixFile]))
 
 -------------------------------------------------------------------------------
 -- * Helper functions
