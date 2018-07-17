@@ -183,13 +183,18 @@ cabalFromDirectory :: Bool -- ^ Whether hpack should regenerate the cabal file
                    -> FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 cabalFromDirectory True dir = hpackDirectory dir
 cabalFromDirectory False dir = do
-  cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
-  case cabals of
-    [] -> do
-      liftIO $ hPutStrLn stderr "*** found zero cabal files. Trying hpack..."
+  useHpack <- liftIO $ doesFileExist (dir </> "package.yaml")
+  if useHpack
+    then do
+      liftIO $ hPutStrLn stderr "*** found package.yaml. Using hpack..."
       hpackDirectory dir
-    [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
-    _       -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
+    else do
+      cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
+      case cabals of
+        [] -> do
+          fail "*** Found neither a .cabal file nor package.yaml. Exiting."
+        [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
+        _ -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
