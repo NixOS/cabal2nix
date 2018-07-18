@@ -191,8 +191,7 @@ cabalFromDirectory False dir = do
     else do
       cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
       case cabals of
-        [] -> do
-          fail "*** Found neither a .cabal file nor package.yaml. Exiting."
+        [] -> fail "*** Found neither a .cabal file nor package.yaml. Exiting."
         [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
         _ -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
