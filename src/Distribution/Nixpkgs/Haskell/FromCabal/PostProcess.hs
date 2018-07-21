@@ -75,9 +75,9 @@ hooks =
   , ("Agda >= 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
   , ("alex",  set (executableDepends . tool . contains (self "happy")) True)
-  , ("alsa-core", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("alsa-core", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
-  , ("bindings-lxc", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("bindings-lxc", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
   , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
   , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [self "mtl", self "parsec"]))) -- https://github.com/haskell/cabal/issues/5391
@@ -161,7 +161,7 @@ hooks =
   , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
-  , ("udev", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))                                                                                                      , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("udev", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
   , ("webkitgtk3", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("webkitgtk3-javascriptcore", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
