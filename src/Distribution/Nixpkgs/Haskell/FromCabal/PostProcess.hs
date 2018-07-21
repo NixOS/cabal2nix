@@ -142,6 +142,8 @@ hooks =
   , ("pandoc", set jailbreak False) -- jailbreak-cabal break the build
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
+  , ("proto-lens-protobuf-types", set (libraryDepends . tool . contains (pkg "protobuf")) True)
+  , ("proto-lens-protoc", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("qtah-cpp-qt5", set (libraryDepends . system . contains (bind "pkgs.qt5.qtbase")) True)
   , ("qtah-qt5", set (libraryDepends . tool . contains (bind "pkgs.qt5.qtbase")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
@@ -155,6 +157,7 @@ hooks =
   , ("target", set (testDepends . system . contains (pkg "z3")) True)
   , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
   , ("text", set doCheck False)         -- break infinite recursion
+  , ("tensorflow-proto", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
