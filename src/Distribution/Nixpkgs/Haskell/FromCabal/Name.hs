@@ -143,6 +143,7 @@ libNixName "stdc++.dll"                         = [] -- What is that?
 libNixName "systemd-journal"                    = return "systemd"
 libNixName "tag_c"                              = return "taglib"
 libNixName "taglib_c"                           = return "taglib"
+libNixName "tensorflow"                         = return "libtensorflow"
 libNixName "udev"                               = return "systemd";
 libNixName "uuid"                               = return "libossp_uuid";
 libNixName "wayland-client"                     = return "wayland"
