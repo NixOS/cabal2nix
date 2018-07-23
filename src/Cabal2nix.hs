@@ -88,7 +88,7 @@ options = Options
           <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
-          <*> pure (\i -> Just (binding # (i, path # [i])))
+          <*> pure (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
           <*> strArgument (metavar "URI")
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.

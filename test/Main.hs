@@ -46,7 +46,7 @@ testLibrary cabalFile = do
       cabal2nix :: GenericPackageDescription -> Derivation
       cabal2nix gpd = fromGenericPackageDescription
                          (const True)
-                         (\i -> Just (binding # (i, path # [i])))
+                         (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
                          (Platform X86_64 Linux)
                          (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
                          (configureCabalFlags (packageId gpd))

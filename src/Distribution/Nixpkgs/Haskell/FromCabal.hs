@@ -122,6 +122,14 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i
                        | otherwise = binding # (i, path # ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
+    -- TODO: This is all very confusing. Haskell packages refer to the Nixpkgs
+    -- derivation 'foo' as 'pkgs.foo', because they live in the 'haskellPackages'
+    -- name space -- not on the top level. Therefore, we built our Nixpkgs lookup
+    -- function so that top level names are returned as 'pkgs.foo'. As a result, we
+    -- end up pre-pending that path to all kinds of names all over the place. I
+    -- suppose the correct approach would be to assume that the lookup function
+    -- returns names that live in the top-level and to adapt the code in
+    -- PostProcess.hs et all to that fact.
     goodScopes :: Set [Identifier]
     goodScopes = Set.fromList (map ("pkgs":) [[], ["xorg"], ["xlibs"], ["gnome2"], ["gnome"], ["gnome3"], ["kde4"]])
 
