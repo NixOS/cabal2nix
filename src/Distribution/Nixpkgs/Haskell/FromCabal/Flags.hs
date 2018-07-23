@@ -46,7 +46,7 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "hlibsass" && version >= mkVersion [0,1,5]
                                 = [enable "externalLibsass"]
  | name == "hmatrix"            = [enable "openblas", enable "disable-default-paths"]
- | name == "hslua"              = [enable "system-lua"]
+ | name == "hslua"              = [enable "system-lua", disable "use-pkgconfig"]
  | name == "idris"              = [enable "gmp", enable "ffi", enable "curses", ("execonly", version `withinRange` orLaterVersion (mkVersion [1,1,1])) ]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "liquid-fixpoint"    = [enable "build-external"]
