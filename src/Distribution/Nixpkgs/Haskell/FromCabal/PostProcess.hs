@@ -190,10 +190,18 @@ bind s = binding # (i, path # is)
     is = map (review ident) (splitOn "." s)
     i = last is
 
+-- | @replace old new bset@ replaces the Nix binding @old@ with @new@ in the
+-- set of bindings @bset@. If @old@ is not found in @bset@, then the function
+-- fails with an 'error'.
 replace :: Binding -> Binding -> Set Binding -> Set Binding
-replace old new bs = if old `Set.member` bs then Set.insert new (Set.delete old bs) else bs
+replace old new bs
+  | old `Set.member` bs = Set.insert new (Set.delete old bs)
+  | otherwise           = error (unwords [ "post-process: cannot replace name binding"
+                                         , show old, "by", show new
+                                         , "because it's not found in set"
+                                         , show bs
+                                         ])
 
--- TODO: I need to figure out how to conveniently replace a binding in a set.
 gtk3Hook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
 gtk3Hook = set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
          . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
