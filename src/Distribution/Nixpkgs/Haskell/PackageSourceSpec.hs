@@ -203,7 +203,10 @@ encodeUtf8 = T.encodeUtf8 . T.pack
 
 hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 hpackDirectory dir = do
-  mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {Hpack.decodeOptionsTarget = dir </> Hpack.packageConfig}
+  mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {
+      Hpack.decodeOptionsProgramName = Hpack.ProgramName "cabal2nix"
+    , Hpack.decodeOptionsTarget = dir </> Hpack.packageConfig
+    }
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
     Right r -> do
