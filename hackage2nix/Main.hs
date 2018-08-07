@@ -193,7 +193,10 @@ enforcePreferredVersions cs pkg = Set.filter (\v -> PackageIdentifier pkg v `sat
 
 resolveConstraint :: Constraint -> Hackage -> Version
 resolveConstraint c = fromMaybe (error msg) . resolveConstraint' c
-  where msg = "constraint " ++ display c ++ " cannot be resolved in Hackage"
+  where msg = unlines [ "constraint " ++ display c ++ " cannot be resolved in Hackage"
+                      , "This could be due the package being missing in the hackage directory"
+                      , "or the file system not being case sensitive."
+                      ]
 
 resolveConstraint' :: Constraint -> Hackage -> Maybe Version
 resolveConstraint' (Dependency name vrange) hackage
