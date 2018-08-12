@@ -79,11 +79,11 @@ fetch :: forall a.
                                                 -- This is required, because we cannot always check if a download succeeded otherwise.
       -> Source                                 -- ^ The source to fetch from.
       -> IO (Maybe (DerivationSource, a))       -- ^ The derivation source and the result of the processing function. Returns Nothing if the download failed.
-fetch s f = runMaybeT . fetchers where
+fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
     [ (False, "url", [])
-    , (True, "git", if s then ["--fetch-submodules"] else [])
+    , (True, "git", ["--fetch-submodules" | optSubModules ])
     , (True, "hg", [])
     , (True, "svn", [])
     , (True, "bzr", [])
