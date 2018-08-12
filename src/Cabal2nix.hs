@@ -91,7 +91,7 @@ options = Options
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
           <*> pure (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
           <*> strArgument (metavar "URI")
-          <*> flag True False (long "no-submodules" <> help "don't fetch git submodules")
+          <*> flag True False (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
 -- Example: parseTime defaultTimeLocale "%FT%T%QZ" "2017-11-20T12:18:35Z" :: Maybe UTCTime
