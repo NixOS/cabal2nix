@@ -64,6 +64,7 @@ data Options = Options
   , optHackageSnapshot :: Maybe UTCTime
   , optNixpkgsIdentifier :: NixpkgsResolver
   , optUrl :: String
+  , optFetchSubmodules :: Bool
   }
 
 options :: Parser Options
@@ -90,6 +91,7 @@ options = Options
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
           <*> pure (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
           <*> strArgument (metavar "URI")
+          <*> flag True False (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
 -- Example: parseTime defaultTimeLocale "%FT%T%QZ" "2017-11-20T12:18:35Z" :: Maybe UTCTime
@@ -187,14 +189,16 @@ hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
 
 cabal2nix' :: Options -> IO (Either Doc Derivation)
 cabal2nix' opts@Options{..} = do
-  pkg <- getPackage optHpack optHackageDb optHackageSnapshot $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+  pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
+         Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
 cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
 cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
-  pkg <- getPackage' optHpack (return db) $ Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+  pkg <- getPackage' optHpack optFetchSubmodules (return db) $
+         Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
 processPackage :: Options -> Package -> IO (Either Doc Derivation)

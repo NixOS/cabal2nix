@@ -41,35 +41,41 @@ data Package = Package
 
 getPackage :: Bool
            -- ^ Whether hpack should regenerate the cabal file.
+           -> Bool
+           -- ^ Whether to fetch submodules if fetching from git
            -> Maybe FilePath
            -- ^ The path to the Hackage database.
            -> Maybe UTCTime
            -- ^ If we have hackage-snapshot time.
            -> Source
            -> IO Package
-getPackage optHpack optHackageDB optHackageSnapshot =
-  getPackage' optHpack (loadHackageDB optHackageDB optHackageSnapshot)
+getPackage optHpack optSubmodules optHackageDB optHackageSnapshot =
+  getPackage' optHpack optSubmodules (loadHackageDB optHackageDB optHackageSnapshot)
 
 getPackage' :: Bool
             -- ^ Whether hpack should regenerate the cabal file.
+            -> Bool
+            -- ^ Whether to fetch submodules if fetching from git
             -> IO DB.HackageDB
             -> Source
             -> IO Package
-getPackage' optHpack hackageDB source = do
-  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack hackageDB source
+getPackage' optHpack optSubmodules hackageDB source = do
+  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optSubmodules hackageDB source
   (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
 fetchOrFromDB :: Bool
               -- ^ Whether hpack should regenerate the cabal file
+              -> Bool
+              -- ^ Whether to fetch submodules if fetching from git
               -> IO DB.HackageDB
               -> Source
               -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
-fetchOrFromDB optHpack hackageDB src
+fetchOrFromDB optHpack optSubmodules hackageDB src
   | "cabal://" `isPrefixOf` sourceUrl src = do
       (msrc, pkgDesc) <- fromDB hackageDB . drop (length "cabal://") $ sourceUrl src
       return (msrc, False, pkgDesc)
   | otherwise                             = do
-    r <- fetch (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
+    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
       Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
