@@ -166,9 +166,9 @@ fetchWith (supportsRev, kind, addArgs) source = do
         case length ls of
           0 -> return Nothing
           1 -> return (Just (DerivationSource { derivKind = kind
-                                              , derivUrl = (sourceUrl source)
+                                              , derivUrl = sourceUrl source
                                               , derivRevision = ""
-                                              , derivHash = (BS.unpack (head ls))
+                                              , derivHash = BS.unpack (head ls)
                                               , derivSubmodule = Nothing
                                               }
                             , sourceUrl source))
