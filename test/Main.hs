@@ -57,6 +57,7 @@ testLibrary cabalFile = do
                                   , derivUrl      = "mirror://hackage/foo.tar.gz"
                                   , derivRevision = ""
                                   , derivHash     = "deadbeef"
+                                  , derivSubmodule = Nothing
                                   }
                        & extraFunctionArgs %~ Set.union (Set.singleton "inherit stdenv")
   goldenVsFileDiff

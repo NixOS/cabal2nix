@@ -19,6 +19,7 @@ import Control.Monad.Trans.Maybe
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.List as L
+import Data.Maybe
 import GHC.Generics ( Generic )
 import Language.Nix.PrettyPrinting as PP
 import System.Directory
@@ -58,6 +59,7 @@ data DerivationSource = DerivationSource
   , derivUrl      :: String -- ^ URL to fetch from.
   , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
   , derivHash     :: String -- ^ The hash of the source.
+  , derivSubmodule :: Maybe Bool -- ^ The fetchSubmodule setting (if any)
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -68,6 +70,7 @@ instance FromJSON DerivationSource where
         <$> o .: "url"
         <*> o .: "rev"
         <*> o .: "sha256"
+        <*> o .: "fetchSubmodules"
   parseJSON _ = error "invalid DerivationSource"
 
 instance PP.Pretty DerivationSource where
@@ -82,13 +85,14 @@ instance PP.Pretty DerivationSource where
                    [ attr "url" $ string derivUrl
                    , attr "sha256" $ string derivHash
                    , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
+                   , boolattr "fetchSubmodules" (isJust derivSubmodule) (fromJust derivSubmodule)
                    ]
                  , rbrace PP.<> semi
                  ]
 
 
 urlDerivationSource :: String -> String -> DerivationSource
-urlDerivationSource url hash = DerivationSource "url" url "" hash
+urlDerivationSource url hash = DerivationSource "url" url "" hash Nothing
 
 fromDerivationSource :: DerivationSource -> Source
 fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision (Certain derivHash) "."
@@ -135,7 +139,7 @@ fetch optSubModules f = runMaybeT . fetchers where
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
   process (derivSource, file) = (,) derivSource <$> f file
 
-  localDerivationSource p = DerivationSource "" p "" ""
+  localDerivationSource p = DerivationSource "" p "" "" Nothing
 
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: (Bool, String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
@@ -165,6 +169,7 @@ fetchWith (supportsRev, kind, addArgs) source = do
                                               , derivUrl = (sourceUrl source)
                                               , derivRevision = ""
                                               , derivHash = (BS.unpack (head ls))
+                                              , derivSubmodule = Nothing
                                               }
                             , sourceUrl source))
           _ -> case eitherDecode buf' of
