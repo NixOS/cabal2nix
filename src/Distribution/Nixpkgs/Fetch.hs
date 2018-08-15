@@ -18,7 +18,9 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.List as L
 import GHC.Generics ( Generic )
+import Language.Nix.PrettyPrinting as PP
 import System.Directory
 import System.Environment
 import System.Exit
@@ -67,6 +69,23 @@ instance FromJSON DerivationSource where
         <*> o .: "rev"
         <*> o .: "sha256"
   parseJSON _ = error "invalid DerivationSource"
+
+instance PP.Pretty DerivationSource where
+  pPrint DerivationSource {..} =
+    let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
+        fetched = derivKind /= ""
+    in if isHackagePackage then attr "sha256" $ string derivHash
+       else if not fetched then attr "src" $ text derivUrl
+            else vcat
+                 [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace
+                 , nest 2 $ vcat
+                   [ attr "url" $ string derivUrl
+                   , attr "sha256" $ string derivHash
+                   , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
+                   ]
+                 , rbrace PP.<> semi
+                 ]
+
 
 urlDerivationSource :: String -> String -> DerivationSource
 urlDerivationSource url hash = DerivationSource "url" url "" hash
