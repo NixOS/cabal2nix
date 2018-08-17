@@ -98,7 +98,7 @@ fromDB hackageDBIO pkg = do
   vd <- maybe unknownPackageError return (DB.lookup name hackageDB >>= lookupVersion)
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
-             Just hash -> Just (DerivationSource "url" url "" hash)
+             Just hash -> Just (urlDerivationSource url hash)
   return (ds, setCabalFileHash (DB.cabalFileSha256 vd) (DB.cabalFile vd))
  where
   pkgId :: Cabal.PackageIdentifier
@@ -144,20 +144,20 @@ sourceFromHackage optHash pkgId cabalDir = do
   -- Use the cached hash (either from cache file or given on cmdline via sha256 opt)
   -- if available, otherwise download from hackage to compute hash.
   case cachedHash of
-    Guess hash -> return $ DerivationSource "url" url "" hash
+    Guess hash -> return $ urlDerivationSource url hash
     Certain hash ->
       -- We need to force the hash here. If we didn't do this, then when reading the
       -- hash from the cache file, the cache file will still be open for reading
       -- (because lazy io) when writeFile opens the file again for writing. By forcing
       -- the hash here, we ensure that the file is closed before opening it again.
       seq (length hash) $
-      DerivationSource "url" url "" hash <$ writeFile cacheFile hash
+      urlDerivationSource url hash <$ writeFile cacheFile hash
     UnknownHash -> do
       maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", []) (Source url "" UnknownHash cabalDir))
       case maybeHash of
         Just hash ->
           seq (length hash) $
-          DerivationSource "url" url "" hash <$ writeFile cacheFile hash
+          urlDerivationSource url hash <$ writeFile cacheFile hash
         Nothing -> do
           hPutStr stderr $ unlines
             [ "*** cannot compute hash. (Not a hackage project?)"

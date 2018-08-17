@@ -6,7 +6,7 @@
 module Distribution.Nixpkgs.Fetch
   ( Source(..)
   , Hash(..)
-  , DerivationSource(..), fromDerivationSource
+  , DerivationSource(..), fromDerivationSource, urlDerivationSource
   , fetch
   , fetchWith
   ) where
@@ -18,7 +18,10 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.List as L
+import Data.Maybe
 import GHC.Generics ( Generic )
+import Language.Nix.PrettyPrinting as PP
 import System.Directory
 import System.Environment
 import System.Exit
@@ -56,6 +59,7 @@ data DerivationSource = DerivationSource
   , derivUrl      :: String -- ^ URL to fetch from.
   , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
   , derivHash     :: String -- ^ The hash of the source.
+  , derivSubmodule :: Maybe Bool -- ^ The fetchSubmodule setting (if any)
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -66,7 +70,29 @@ instance FromJSON DerivationSource where
         <$> o .: "url"
         <*> o .: "rev"
         <*> o .: "sha256"
+        <*> o .: "fetchSubmodules"
   parseJSON _ = error "invalid DerivationSource"
+
+instance PP.Pretty DerivationSource where
+  pPrint DerivationSource {..} =
+    let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
+        fetched = derivKind /= ""
+    in if isHackagePackage then attr "sha256" $ string derivHash
+       else if not fetched then attr "src" $ text derivUrl
+            else vcat
+                 [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace
+                 , nest 2 $ vcat
+                   [ attr "url" $ string derivUrl
+                   , attr "sha256" $ string derivHash
+                   , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
+                   , boolattr "fetchSubmodules" (isJust derivSubmodule) (fromJust derivSubmodule)
+                   ]
+                 , rbrace PP.<> semi
+                 ]
+
+
+urlDerivationSource :: String -> String -> DerivationSource
+urlDerivationSource url hash = DerivationSource "url" url "" hash Nothing
 
 fromDerivationSource :: DerivationSource -> Source
 fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision (Certain derivHash) "."
@@ -102,16 +128,18 @@ fetch optSubModules f = runMaybeT . fetchers where
     guard $ existsDir || existsFile
     let path' | '/' `elem` path = path
               | otherwise       = "./" ++ path
-    process (DerivationSource "" path' "" "", path') <|> localArchive path'
+    process (localDerivationSource path', path') <|> localArchive path'
 
   localArchive :: FilePath -> MaybeT IO (DerivationSource, a)
   localArchive path = do
     absolutePath <- liftIO $ canonicalizePath path
     unpacked <- snd <$> fetchWith (False, "url", ["--unpack"]) (Source ("file://" ++ absolutePath) "" UnknownHash ".")
-    process (DerivationSource "" absolutePath "" "", unpacked)
+    process (localDerivationSource absolutePath, unpacked)
 
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
   process (derivSource, file) = (,) derivSource <$> f file
+
+  localDerivationSource p = DerivationSource "" p "" "" Nothing
 
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: (Bool, String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
@@ -137,7 +165,13 @@ fetchWith (supportsRev, kind, addArgs) source = do
             buf'   = BS.unlines (reverse ls)
         case length ls of
           0 -> return Nothing
-          1 -> return (Just (DerivationSource kind (sourceUrl source) "" (BS.unpack (head ls))  , sourceUrl source))
+          1 -> return (Just (DerivationSource { derivKind = kind
+                                              , derivUrl = sourceUrl source
+                                              , derivRevision = ""
+                                              , derivHash = BS.unpack (head ls)
+                                              , derivSubmodule = Nothing
+                                              }
+                            , sourceUrl source))
           _ -> case eitherDecode buf' of
                  Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
                  Right ds -> return (Just (ds { derivKind = kind }, BS.unpack l))
