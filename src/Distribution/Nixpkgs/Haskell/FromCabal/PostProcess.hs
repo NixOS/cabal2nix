@@ -170,7 +170,7 @@ hooks =
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender","pkgs.xorg.libXScrnSaver"])))
-  , ("xmonad", set phaseOverrides xmonadPostInstall)
+  , ("xmonad >= 0.14.2", set phaseOverrides xmonadPostInstall)
   , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (self "zip") (pkg "zip")))
   , ("zip-archive >= 0.3.1 && < 0.3.2.3", over (testDepends . tool) (Set.union (Set.fromList [pkg "zip", pkg "unzip"])))   -- https://github.com/jgm/zip-archive/issues/35
   ]
@@ -281,10 +281,8 @@ darcsInstallPostInstall = unlines
 xmonadPostInstall :: String
 xmonadPostInstall = unlines
   [ "postInstall = ''"
-  , "  shopt -s globstar"
-  , "  mkdir -p $doc/share/man/man1"
-  , "  mv \"$data/\"**\"/man/\"*[0-9] $doc/share/man/man1/"
-  , "  rm \"$data/\"**\"/man/\"*"
+  , "  install -D man/xmonad.1 $doc/share/man/man1/xmonad.1"
+  , "  install -D man/xmonad.hs $doc/share/doc/$name/sample-xmonad.hs"
   , "'';"
   ]
 
