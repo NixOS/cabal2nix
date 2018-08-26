@@ -139,6 +139,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
       | i == "gtk2"                      = binding # (i, path # ["pkgs","gnome2","gtk"])
       | i == "gtk3"                      = binding # (i, path # ["pkgs","gnome3","gtk"])
       | i == "gtksourceview3"            = binding # (i, path # ["pkgs","gnome3","gtksourceview"])
+      | i == "vte_291"                  = binding # (i, path # ["pkgs","gnome3","vte"])
       | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
       | otherwise                        = bindNull i
 
