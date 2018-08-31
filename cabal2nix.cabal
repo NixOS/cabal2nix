@@ -106,6 +106,7 @@ library
                       Distribution.Nixpkgs.Haskell.OrphanInstances
                       Distribution.Nixpkgs.Haskell.PackageSourceSpec
   other-modules:      Paths_cabal2nix
+                    , Hpack.Dhall
   hs-source-dirs:     src
   build-depends:      base                 < 5
                     , Cabal                > 2.2
@@ -120,6 +121,8 @@ library
                     , hackage-db           >= 2.0.1
                     , hopenssl             >= 2
                     , hpack                >= 0.29.6
+                    , dhall
+                    , dhall-json
                     , language-nix
                     , lens
                     , optparse-applicative

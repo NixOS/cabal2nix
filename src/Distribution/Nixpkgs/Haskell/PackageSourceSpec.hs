@@ -32,6 +32,7 @@ import System.FilePath ( (</>), (<.>) )
 import System.IO
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import Hpack.Dhall
 
 data Package = Package
   { pkgSource   :: DerivationSource
@@ -219,7 +220,28 @@ encodeUtf8 = T.encodeUtf8 . T.pack
 hpackDirectory :: CabalGen
                -> FilePath
                -> MaybeT IO (Maybe CabalGen, Cabal.GenericPackageDescription)
-hpackDirectory CabalGenDhall _ = undefined
+
+hpackDirectory gen@CabalGenDhall dir = do
+  liftIO $ hPutStrLn stderr "*** found package.dhall. Using hpack-dhall..."
+  mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {
+      Hpack.decodeOptionsProgramName = Hpack.ProgramName "cabal2nix"
+    , Hpack.decodeOptionsTarget = dir </> "package.dhall"
+    , Hpack.decodeOptionsDecode = decodeDhall
+    }
+  case mPackage of
+    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
+    Right r -> do
+      let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] (Hpack.decodeResultPackage r)
+          hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
+      case runParseGenericPackageDescription "<hpack output>" hpackOutput of
+        Left msg -> liftIO $ do
+          hPutStrLn stderr "*** hpack output:"
+          BS.hPutStrLn stderr hpackOutput
+          hPutStrLn stderr "*** cannot parse hpack output:"
+          hPutStrLn stderr msg
+          fail "*** Exiting."
+        Right pkg -> MaybeT $ return $ Just $ (,) (Just gen) $ setCabalFileHash hash pkg
+
 hpackDirectory gen@CabalGenHpack dir = do
   liftIO $ hPutStrLn stderr "*** found package.yaml. Using hpack..."
   mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {
