@@ -73,8 +73,10 @@ options = Options
           <*> many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
 --        <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
           <*> flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
-          <*> (   flag' (Just CabalGenHpack) (long "hpack" <> help "package.yaml --> .cabal (only non-hackage packages)")
-              <|> flag' (Just CabalGenDhall) (long "dhall" <> help "package.dhall -> .cabal (only non-hackage packages)")
+          <*> 
+              optional
+              (   flag' CabalGenHpack (long "hpack" <> help "package.yaml --> .cabal (only non-hackage packages)")
+              <|> flag' CabalGenDhall (long "dhall" <> help "package.dhall -> .cabal (only non-hackage packages)")
               )
           <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
