@@ -217,50 +217,43 @@ handleIO = Exception.handle
 encodeUtf8 :: String -> BS.ByteString
 encodeUtf8 = T.encodeUtf8 . T.pack
 
+hpackDirectory' :: CabalGen
+                -> Hpack.DecodeOptions
+                -> MaybeT IO (Maybe CabalGen, Cabal.GenericPackageDescription)
+hpackDirectory' gen optsDecode = do
+  mPackage <- liftIO $ Hpack.readPackageConfig optsDecode
+  case mPackage of
+    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
+    Right r -> do
+      let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] (Hpack.decodeResultPackage r)
+          hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
+      case runParseGenericPackageDescription "<hpack output>" hpackOutput of
+        Left msg -> liftIO $ do
+          hPutStrLn stderr "*** hpack output:"
+          BS.hPutStrLn stderr hpackOutput
+          hPutStrLn stderr "*** cannot parse hpack output:"
+          hPutStrLn stderr msg
+          fail "*** Exiting."
+        Right pkg -> MaybeT $ return $ Just $ (,) (Just gen) $ setCabalFileHash hash pkg
+
 hpackDirectory :: CabalGen
                -> FilePath
                -> MaybeT IO (Maybe CabalGen, Cabal.GenericPackageDescription)
 
 hpackDirectory gen@CabalGenDhall dir = do
   liftIO $ hPutStrLn stderr "*** found package.dhall. Using hpack-dhall..."
-  mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {
+  hpackDirectory' gen Hpack.defaultDecodeOptions {
       Hpack.decodeOptionsProgramName = Hpack.ProgramName "cabal2nix"
     , Hpack.decodeOptionsTarget = dir </> "package.dhall"
     , Hpack.decodeOptionsDecode = decodeDhall
     }
-  case mPackage of
-    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-    Right r -> do
-      let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] (Hpack.decodeResultPackage r)
-          hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
-      case runParseGenericPackageDescription "<hpack output>" hpackOutput of
-        Left msg -> liftIO $ do
-          hPutStrLn stderr "*** hpack output:"
-          BS.hPutStrLn stderr hpackOutput
-          hPutStrLn stderr "*** cannot parse hpack output:"
-          hPutStrLn stderr msg
-          fail "*** Exiting."
-        Right pkg -> MaybeT $ return $ Just $ (,) (Just gen) $ setCabalFileHash hash pkg
 
 hpackDirectory gen@CabalGenHpack dir = do
   liftIO $ hPutStrLn stderr "*** found package.yaml. Using hpack..."
-  mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {
+  hpackDirectory' gen Hpack.defaultDecodeOptions {
       Hpack.decodeOptionsProgramName = Hpack.ProgramName "cabal2nix"
     , Hpack.decodeOptionsTarget = dir </> Hpack.packageConfig
     }
-  case mPackage of
-    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
-    Right r -> do
-      let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] (Hpack.decodeResultPackage r)
-          hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
-      case runParseGenericPackageDescription "<hpack output>" hpackOutput of
-        Left msg -> liftIO $ do
-          hPutStrLn stderr "*** hpack output:"
-          BS.hPutStrLn stderr hpackOutput
-          hPutStrLn stderr "*** cannot parse hpack output:"
-          hPutStrLn stderr msg
-          fail "*** Exiting."
-        Right pkg -> MaybeT $ return $ Just $ (,) (Just gen) $ setCabalFileHash hash pkg
 
 cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
 cabalFromFile failHard file =
