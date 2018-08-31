@@ -46,7 +46,7 @@ data Options = Options
   , optMaintainer :: [String]
 --, optPlatform :: [String]       -- TODO: fix command line handling of platforms
   , optHaddock :: Bool
-  , optHpack :: Bool
+  , optCabalGen :: Maybe CabalGen
   , optDoCheck :: Bool
   , optJailbreak :: Bool
   , optRevision :: Maybe String
@@ -73,7 +73,9 @@ options = Options
           <*> many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
 --        <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
           <*> flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
-          <*> switch (long "hpack" <> help "run hpack before configuring this package (only non-hackage packages)")
+          <*> (   flag' (Just CabalGenHpack) (long "hpack" <> help "package.yaml --> .cabal (only non-hackage packages)")
+              <|> flag' (Just CabalGenDhall) (long "dhall" <> help "package.dhall -> .cabal (only non-hackage packages)")
+              )
           <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
           <*> optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
@@ -183,13 +185,19 @@ main :: IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
   cabal2nix =<< getArgs
 
-hpackOverrides :: Derivation -> Derivation
-hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
-               . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
+preConfigure :: String -> Derivation -> Derivation
+preConfigure genTool =
+  over phaseOverrides (++ "preConfigure = \"" ++ genTool ++ "\";")
+  . set (libraryDepends . tool . contains (PP.pkg (ident # genTool))) True
+
+cabalGenOverrides :: Maybe CabalGen -> Derivation -> Derivation
+cabalGenOverrides (Just CabalGenHpack) = preConfigure "hpack"
+cabalGenOverrides (Just CabalGenDhall) = preConfigure "hpack-dhall"
+cabalGenOverrides Nothing = id
 
 cabal2nix' :: Options -> IO (Either Doc Derivation)
 cabal2nix' opts@Options{..} = do
-  pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
+  pkg <- getPackage optCabalGen optFetchSubmodules optHackageDb optHackageSnapshot $
          Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
@@ -197,21 +205,21 @@ cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
 cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
-  pkg <- getPackage' optHpack optFetchSubmodules (return db) $
+  pkg <- getPackage' optCabalGen optFetchSubmodules (return db) $
          Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
   processPackage opts pkg
 
 processPackage :: Options -> Package -> IO (Either Doc Derivation)
 processPackage Options{..} pkg = do
   let
-      withHpackOverrides :: Derivation -> Derivation
-      withHpackOverrides = if pkgRanHpack pkg then hpackOverrides else id
+      withCabalGenOverrides :: Derivation -> Derivation
+      withCabalGenOverrides = cabalGenOverrides $ pkgRanHpack pkg
 
       flags :: FlagAssignment
       flags = configureCabalFlags (packageId (pkgCabal pkg)) `mappend` readFlagList optFlags
 
       deriv :: Derivation
-      deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
+      deriv = withCabalGenOverrides $ fromGenericPackageDescription (const True)
                                             optNixpkgsIdentifier
                                             optSystem
                                             (unknownCompilerInfo optCompiler NoAbiTag)
