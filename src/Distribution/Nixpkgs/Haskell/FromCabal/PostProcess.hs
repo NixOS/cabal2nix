@@ -83,6 +83,7 @@ hooks =
   , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [self "mtl", self "parsec"]))) -- https://github.com/haskell/cabal/issues/5391
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
   , ("cabal-install", set doCheck False . set phaseOverrides cabalInstallPostInstall)
+  , ("cabal2nix > 2", cabal2nixOverrides)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
@@ -354,3 +355,11 @@ opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
 hspecCoreOverrides = set phaseOverrides "testTarget = \"--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\";"
+
+cabal2nixOverrides :: Derivation -> Derivation
+cabal2nixOverrides = set phaseOverrides $ unlines
+  [ "preCheck = ''"
+  , "  export PATH=\"$PWD/dist/build/cabal2nix:$PATH\""
+  , "  export HOME=\"$TMPDIR/home\""
+  , "'';"
+  ]
