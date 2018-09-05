@@ -1,4 +1,5 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TupleSections #-}
 module Hpack.Dhall where
 
 import Control.Monad.Trans.Except
@@ -12,11 +13,12 @@ import qualified Dhall.TypeCheck
 import qualified Dhall.JSON
 
 -- SEE: https://github.com/sol/hpack-dhall/blob/master/src/Hpack/Dhall.hs
-decodeDhall :: FilePath -> IO (Either String Value)
+decodeDhall :: FilePath -> IO (Either String ([String], Value))
 decodeDhall file = runExceptT $ do
   expr <- readInput >>= parseExpr >>= liftIO . Dhall.Import.load
   _ <- liftResult $ Dhall.TypeCheck.typeOf expr
-  liftResult $ Dhall.JSON.dhallToJSON expr
+  -- NOTE: dhallToJSON returns no warnings hence the empty list of warnings.
+  liftResult $ ([],) <$> Dhall.JSON.dhallToJSON expr
   where
     readInput = liftIO (T.readFile file)
     parseExpr = liftResult . Dhall.Parser.exprFromText file

@@ -49,7 +49,7 @@ data CabalGen
 
 instance Show CabalGen where
   show CabalGenHpack = "hpack"
-  show CabalGenDhall = "dhall"
+  show CabalGenDhall = "hpack-dhall"
 
 getPackage :: Maybe CabalGen
            -- ^ Whether and how to regenerate the cabal file.
@@ -227,7 +227,7 @@ hpackDirectory' :: CabalGen
 hpackDirectory' gen optsDecode = do
   mPackage <- liftIO $ Hpack.readPackageConfig optsDecode
   case mPackage of
-    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
+    Left err -> liftIO $ hPutStrLn stderr ("*** " ++ show gen ++ " error: " ++ show err ++ ". Exiting.") >> exitFailure
     Right r -> do
       let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] (Hpack.decodeResultPackage r)
           hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
