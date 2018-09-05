@@ -56,7 +56,7 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "snap-server"        = [enable "openssl"]
  | name == "xmobar"             = [enable "with_alsa", enable "with_conduit", enable "with_datezone", enable "with_dbus", enable "with_inotify", enable "with_iwlib", enable "with_mpd", enable "with_mpris", enable "with_rtsopts", enable "with_threaded", enable "with_utf8", enable "with_uvmeter", enable "with_weather", enable "with_xft", enable "with_xpm"]
  | name == "xmonad-extras"      = [disable "with_hlist", enable "with_split", enable "with_parsec"]
- | name == "yaml"               = [enable "system-libyaml"]
+ | name == "yaml"               = [("system-libyaml", version >= "0.10.1.1")]
  | name == "yi"                 = [enable "pango", enable "vty"]
  | otherwise                    = []
 
