@@ -41,7 +41,11 @@ data Package = Package
   }
   deriving (Show)
 
-data CabalGen = CabalGenHpack | CabalGenDhall
+data CabalGen
+  = CabalGenHpack
+  -- ^ Generate cabal from @package.yaml@ with [hpack](https://hackage.haskell.org/package/hpack).
+  | CabalGenDhall
+  -- ^ Generate cabal from @package.dhall@ using [hpack-dhall](https://hackage.haskell.org/package/hpack-dhall).
 
 instance Show CabalGen where
   show CabalGenHpack = "hpack"
