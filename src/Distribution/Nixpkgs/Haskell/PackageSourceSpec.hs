@@ -206,7 +206,7 @@ cabalFromDirectory Nothing dir = do
   useDhall <- liftIO $ doesFileExist (dir </> "package.dhall")
   useHpack <- liftIO $ doesFileExist (dir </> "package.yaml")
   if useDhall || useHpack
-    then do
+    then
       hpackDirectory (if useDhall then CabalGenDhall else CabalGenHpack) dir
     else do
       cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
