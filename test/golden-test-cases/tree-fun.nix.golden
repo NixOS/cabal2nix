@@ -3,6 +3,7 @@ mkDerivation {
   pname = "tree-fun";
   version = "0.8.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base containers mtl ];
   description = "Library for functions pertaining to tree exploration and manipulation";
   license = stdenv.lib.licenses.gpl3;

@@ -8,6 +8,7 @@ mkDerivation {
   pname = "invariant";
   version = "0.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base bifunctors comonad containers contravariant ghc-prim
     profunctors semigroups StateVar stm tagged template-haskell

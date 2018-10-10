@@ -5,6 +5,7 @@ mkDerivation {
   pname = "lambdabot-social-plugins";
   version = "5.1.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base binary bytestring containers lambdabot-core mtl split time
   ];

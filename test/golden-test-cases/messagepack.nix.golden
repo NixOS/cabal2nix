@@ -6,6 +6,7 @@ mkDerivation {
   pname = "messagepack";
   version = "0.5.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring cereal containers deepseq
   ];

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "prettyprinter-compat-ansi-wl-pprint";
   version = "1.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base prettyprinter prettyprinter-ansi-terminal text
   ];

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "dotnet-timespan";
   version = "0.0.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   homepage = "http://github.com/YoEight/dotnet-timespan";
   description = ".NET TimeSpan";

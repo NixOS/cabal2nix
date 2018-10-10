@@ -5,6 +5,7 @@ mkDerivation {
   pname = "app-settings";
   version = "0.2.0.11";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base containers directory mtl parsec text
   ];

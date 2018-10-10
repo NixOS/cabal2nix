@@ -6,6 +6,7 @@ mkDerivation {
   pname = "eventful-sqlite";
   version = "0.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base bytestring eventful-core eventful-sql-common mtl
     persistent text uuid

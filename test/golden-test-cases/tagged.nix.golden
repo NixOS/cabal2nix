@@ -5,6 +5,7 @@ mkDerivation {
   pname = "tagged";
   version = "0.8.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base deepseq template-haskell transformers transformers-compat
   ];

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "openexr-write";
   version = "0.1.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base binary bytestring data-binary-ieee754 deepseq split vector
     vector-split zlib

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "dhall-bash";
   version = "1.0.6";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "persistable-types-HDBC-pg";
   version = "0.0.1.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring convertible HDBC persistable-record
     relational-query-HDBC text-postgresql

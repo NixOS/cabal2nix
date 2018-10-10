@@ -3,6 +3,7 @@ mkDerivation {
   pname = "gsasl";
   version = "0.3.6";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring transformers ];
   libraryPkgconfigDepends = [ gsasl ];
   homepage = "https://john-millikin.com/software/haskell-gsasl/";

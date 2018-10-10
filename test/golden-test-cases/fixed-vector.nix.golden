@@ -5,6 +5,7 @@ mkDerivation {
   pname = "fixed-vector";
   version = "1.0.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base deepseq primitive ];
   testHaskellDepends = [ base doctest filemanip primitive ];
   description = "Generic vectors with statically known size";

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "reform-hsp";
   version = "0.2.7.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base hsp hsx2hs reform text ];
   homepage = "http://www.happstack.com/";
   description = "Add support for using HSP with Reform";

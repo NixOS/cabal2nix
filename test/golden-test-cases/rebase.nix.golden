@@ -8,6 +8,7 @@ mkDerivation {
   pname = "rebase";
   version = "1.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base base-prelude bifunctors bytestring containers contravariant
     contravariant-extras deepseq dlist either fail hashable mtl

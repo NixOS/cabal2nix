@@ -3,6 +3,7 @@ mkDerivation {
   pname = "prettyprinter-compat-wl-pprint";
   version = "1.0.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base prettyprinter text ];
   homepage = "http://github.com/quchen/prettyprinter";
   description = "Prettyprinter compatibility module for previous users of the wl-pprint package";

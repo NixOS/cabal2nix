@@ -3,6 +3,7 @@ mkDerivation {
   pname = "bbdb";
   version = "0.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base parsec ];
   testHaskellDepends = [ base hspec parsec ];
   homepage = "https://github.com/henrylaxen/bbdb";

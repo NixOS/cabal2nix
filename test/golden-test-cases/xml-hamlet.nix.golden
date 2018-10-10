@@ -5,6 +5,7 @@ mkDerivation {
   pname = "xml-hamlet";
   version = "0.4.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base containers parsec shakespeare template-haskell text
     xml-conduit

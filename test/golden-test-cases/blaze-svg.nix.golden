@@ -3,6 +3,7 @@ mkDerivation {
   pname = "blaze-svg";
   version = "0.3.6.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base blaze-markup mtl ];
   homepage = "https://github.com/deepakjois/blaze-svg";
   description = "SVG combinator library";

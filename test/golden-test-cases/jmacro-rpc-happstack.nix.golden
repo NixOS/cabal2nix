@@ -5,6 +5,7 @@ mkDerivation {
   pname = "jmacro-rpc-happstack";
   version = "0.3.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base blaze-html bytestring containers happstack-server jmacro
     jmacro-rpc mtl

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "blaze-markup";
   version = "0.8.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base blaze-builder bytestring text ];
   testHaskellDepends = [
     base blaze-builder bytestring containers HUnit QuickCheck

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "cereal-text";
   version = "0.1.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base cereal text ];
   homepage = "https://github.com/ulikoehler/cereal-text";
   description = "Data.Text instances for the cereal serialization library";

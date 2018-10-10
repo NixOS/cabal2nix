@@ -5,6 +5,7 @@ mkDerivation {
   pname = "happstack-hsp";
   version = "7.3.7.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring happstack-server harp hsp hsx2hs mtl syb text
     utf8-string

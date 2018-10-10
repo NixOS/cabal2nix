@@ -3,6 +3,7 @@ mkDerivation {
   pname = "stack-type";
   version = "0.1.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base transformers ];
   homepage = "https://github.com/aiya000/hs-stack-type";
   description = "The basic stack type";

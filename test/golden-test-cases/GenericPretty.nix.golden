@@ -3,6 +3,7 @@ mkDerivation {
   pname = "GenericPretty";
   version = "1.2.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ghc-prim pretty ];
   homepage = "https://github.com/RazvanRanca/GenericPretty";
   description = "A generic, derivable, haskell pretty printer";

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "hstatsd";
   version = "0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring mtl network text ];
   homepage = "https://github.com/mokus0/hstatsd";
   description = "Quick and dirty statsd interface";

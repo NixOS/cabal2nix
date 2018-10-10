@@ -5,6 +5,7 @@ mkDerivation {
   pname = "mwc-random";
   version = "0.13.6.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base math-functions primitive time vector
   ];

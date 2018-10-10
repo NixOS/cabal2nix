@@ -11,6 +11,7 @@ mkDerivation {
   pname = "github";
   version = "0.18";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson aeson-compat base base-compat base16-bytestring binary
     binary-orphans byteable bytestring containers cryptohash deepseq

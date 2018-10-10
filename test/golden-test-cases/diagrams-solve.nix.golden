@@ -5,6 +5,7 @@ mkDerivation {
   pname = "diagrams-solve";
   version = "0.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [
     base deepseq tasty tasty-hunit tasty-quickcheck

@@ -4,6 +4,7 @@ mkDerivation {
   pname = "transformers-lift";
   version = "0.2.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base transformers writer-cps-transformers
   ];

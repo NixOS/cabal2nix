@@ -5,6 +5,7 @@ mkDerivation {
   pname = "speedy-slice";
   version = "0.3.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base kan-extensions lens mcmc-types mwc-probability pipes primitive
     transformers

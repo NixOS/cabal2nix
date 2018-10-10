@@ -5,6 +5,7 @@ mkDerivation {
   pname = "mmorph";
   version = "1.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base mtl transformers transformers-compat
   ];

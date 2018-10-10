@@ -3,6 +3,7 @@ mkDerivation {
   pname = "harp";
   version = "0.4.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/seereason/harp";
   description = "HaRP allows pattern-matching with regular expressions";

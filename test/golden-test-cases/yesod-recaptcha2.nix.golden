@@ -5,6 +5,7 @@ mkDerivation {
   pname = "yesod-recaptcha2";
   version = "0.2.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base classy-prelude-yesod http-conduit yesod-auth
   ];

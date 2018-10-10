@@ -5,6 +5,7 @@ mkDerivation {
   pname = "binary-bits";
   version = "0.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base binary bytestring ];
   testHaskellDepends = [
     base binary bytestring QuickCheck random test-framework

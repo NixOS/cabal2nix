@@ -3,6 +3,7 @@ mkDerivation {
   pname = "unique";
   version = "0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ghc-prim hashable ];
   homepage = "http://github.com/ekmett/unique/";
   description = "Fully concurrent unique identifiers";

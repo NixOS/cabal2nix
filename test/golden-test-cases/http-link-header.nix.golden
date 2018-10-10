@@ -7,6 +7,7 @@ mkDerivation {
   pname = "http-link-header";
   version = "1.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec base bytestring bytestring-conversion errors
     http-api-data network-uri text

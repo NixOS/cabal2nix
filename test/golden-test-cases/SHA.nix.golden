@@ -5,6 +5,7 @@ mkDerivation {
   pname = "SHA";
   version = "1.6.4.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ array base binary bytestring ];

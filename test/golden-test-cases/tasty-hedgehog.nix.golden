@@ -5,6 +5,7 @@ mkDerivation {
   pname = "tasty-hedgehog";
   version = "0.1.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base hedgehog tagged tasty ];
   testHaskellDepends = [
     base hedgehog tasty tasty-expected-failure

@@ -8,6 +8,7 @@ mkDerivation {
   pname = "ttrie";
   version = "0.1.2.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     atomic-primops base hashable primitive stm
   ];

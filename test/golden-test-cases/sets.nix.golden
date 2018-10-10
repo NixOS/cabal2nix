@@ -8,6 +8,7 @@ mkDerivation {
   pname = "sets";
   version = "0.0.5.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base commutative composition containers contravariant hashable keys
     mtl QuickCheck semigroupoids semigroups transformers

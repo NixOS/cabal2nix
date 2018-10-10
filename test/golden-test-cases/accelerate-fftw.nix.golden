@@ -5,6 +5,7 @@ mkDerivation {
   pname = "accelerate-fftw";
   version = "1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     accelerate accelerate-io base carray fft storable-complex
   ];

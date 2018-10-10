@@ -6,6 +6,7 @@ mkDerivation {
   pname = "proto-lens";
   version = "0.2.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec base bytestring containers data-default-class
     lens-family parsec pretty text transformers void

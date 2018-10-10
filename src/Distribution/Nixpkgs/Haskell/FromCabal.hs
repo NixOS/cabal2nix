@@ -75,7 +75,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     Right (d,_)  -> (d,[])
 
 fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
+fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags pd@PackageDescription {..} = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package
     & revision .~ xrev
@@ -103,6 +103,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & editedCabalFile .~ (if xrev > 0
                              then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
                              else "")
+    & isSimpleBuild .~ (Cabal.buildType pd == Cabal.Simple)
     & metaSection .~ ( Nix.nullMeta
                      & Nix.homepage .~ homepage
                      & Nix.description .~ synopsis

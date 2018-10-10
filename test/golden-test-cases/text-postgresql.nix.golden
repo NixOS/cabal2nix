@@ -5,6 +5,7 @@ mkDerivation {
   pname = "text-postgresql";
   version = "0.0.2.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base dlist transformers transformers-compat
   ];

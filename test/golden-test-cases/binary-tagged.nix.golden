@@ -8,6 +8,7 @@ mkDerivation {
   pname = "binary-tagged";
   version = "0.1.4.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson array base base16-bytestring binary bytestring containers
     generics-sop hashable nats scientific semigroups SHA tagged text

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "mnist-idx";
   version = "0.1.2.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base binary bytestring vector ];
   testHaskellDepends = [ base binary directory hspec vector ];
   homepage = "https://github.com/kryoxide/mnist-idx/";

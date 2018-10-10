@@ -3,6 +3,7 @@ mkDerivation {
   pname = "rosezipper";
   version = "0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base containers ];
   description = "Generic zipper implementation for Data.Tree";
   license = stdenv.lib.licenses.bsd3;

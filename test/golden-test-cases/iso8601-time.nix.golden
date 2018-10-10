@@ -3,6 +3,7 @@ mkDerivation {
   pname = "iso8601-time";
   version = "0.1.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base time ];
   testHaskellDepends = [ base hspec HUnit time ];
   homepage = "https://github.com/nh2/iso8601-time";

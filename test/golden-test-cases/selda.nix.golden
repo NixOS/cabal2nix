@@ -5,6 +5,7 @@ mkDerivation {
   pname = "selda";
   version = "0.1.11.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring exceptions hashable mtl psqueues text time
     unordered-containers

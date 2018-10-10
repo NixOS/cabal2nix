@@ -8,6 +8,7 @@ mkDerivation {
   pname = "these";
   version = "0.7.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base bifunctors binary containers data-default-class deepseq
     hashable keys mtl profunctors QuickCheck semigroupoids transformers

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "primitive";
   version = "0.6.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ghc-prim transformers ];
   testHaskellDepends = [ base ghc-prim ];
   homepage = "https://github.com/haskell/primitive";

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "algebraic-graphs";
   version = "0.0.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ array base containers ];
   testHaskellDepends = [ base containers extra QuickCheck ];
   benchmarkHaskellDepends = [ base containers criterion ];

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "http-media";
   version = "0.7.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring case-insensitive containers utf8-string
   ];

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "weigh";
   version = "0.0.7";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base deepseq mtl process split template-haskell temporary
   ];

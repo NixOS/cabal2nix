@@ -8,6 +8,7 @@ mkDerivation {
   pname = "psqueues";
   version = "0.2.4.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base deepseq ghc-prim hashable ];
   testHaskellDepends = [
     array base deepseq ghc-prim hashable HUnit QuickCheck tagged

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "funcmp";
   version = "1.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ base filepath process ];
   homepage = "http://savannah.nongnu.org/projects/funcmp/";

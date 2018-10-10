@@ -8,6 +8,7 @@ mkDerivation {
   pname = "ede";
   version = "0.2.8.7";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [
     aeson ansi-wl-pprint base bifunctors bytestring comonad directory

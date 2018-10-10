@@ -5,6 +5,7 @@ mkDerivation {
   pname = "reform-blaze";
   version = "0.2.4.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base blaze-html blaze-markup reform text
   ];

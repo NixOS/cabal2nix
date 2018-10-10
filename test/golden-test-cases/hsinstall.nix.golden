@@ -3,6 +3,7 @@ mkDerivation {
   pname = "hsinstall";
   version = "1.6";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "validity-aeson";
   version = "0.1.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base validity validity-scientific validity-text
     validity-unordered-containers validity-vector

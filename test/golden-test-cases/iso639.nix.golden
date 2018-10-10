@@ -3,6 +3,7 @@ mkDerivation {
   pname = "iso639";
   version = "0.1.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/HugoDaniel/iso639";
   description = "ISO-639-1 language codes";

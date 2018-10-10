@@ -6,6 +6,7 @@ mkDerivation {
   pname = "crypt-sha512";
   version = "0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec base bytestring cryptohash-sha512
   ];

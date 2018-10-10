@@ -6,6 +6,7 @@ mkDerivation {
   pname = "texmath";
   version = "0.10.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

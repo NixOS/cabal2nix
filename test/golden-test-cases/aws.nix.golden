@@ -13,6 +13,7 @@ mkDerivation {
   pname = "aws";
   version = "0.18";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

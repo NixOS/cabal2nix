@@ -3,6 +3,7 @@ mkDerivation {
   pname = "simple-smt";
   version = "0.7.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base process ];
   description = "A simple way to interact with an SMT solver process";
   license = stdenv.lib.licenses.bsd3;

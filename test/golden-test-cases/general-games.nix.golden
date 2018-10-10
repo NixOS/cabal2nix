@@ -5,6 +5,7 @@ mkDerivation {
   pname = "general-games";
   version = "1.0.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base monad-loops MonadRandom random random-shuffle
   ];

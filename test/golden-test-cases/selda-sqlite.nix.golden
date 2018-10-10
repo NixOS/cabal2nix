@@ -5,6 +5,7 @@ mkDerivation {
   pname = "selda-sqlite";
   version = "0.1.6.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base direct-sqlite directory exceptions selda text
   ];

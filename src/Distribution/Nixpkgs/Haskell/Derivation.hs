@@ -9,7 +9,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
-  , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
+  , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, isSimpleBuild
   )
   where
 
@@ -63,6 +63,7 @@ data Derivation = MkDerivation
   , _phaseOverrides             :: String
   , _editedCabalFile            :: String
   , _enableSeparateDataOutput   :: Bool
+  , _isSimpleBuild              :: Bool
   , _metaSection                :: Meta
   }
   deriving (Show, Eq, Generic)
@@ -94,6 +95,7 @@ nullDerivation = MkDerivation
   , _phaseOverrides = error "undefined Derivation.phaseOverrides"
   , _editedCabalFile = error "undefined Derivation.editedCabalFile"
   , _enableSeparateDataOutput = error "undefined Derivation.enableSeparateDataOutput"
+  , _isSimpleBuild = error "undefined Derivation.isSimpleBuild"
   , _metaSection = error "undefined Derivation.metaSection"
   }
 
@@ -116,6 +118,7 @@ instance Pretty Derivation where
       , onlyIf (_subpath /= ".") $ attr "postUnpack" postUnpack
       , onlyIf (_revision > 0) $ attr "revision" $ doubleQuotes $ int _revision
       , onlyIf (not (null _editedCabalFile) && _revision > 0) $ attr "editedCabalFile" $ string _editedCabalFile
+      , boolattr "isSimpleBuild" _isSimpleBuild _isSimpleBuild
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
       , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable

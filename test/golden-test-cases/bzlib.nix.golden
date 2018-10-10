@@ -3,6 +3,7 @@ mkDerivation {
   pname = "bzlib";
   version = "0.5.0.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring ];
   librarySystemDepends = [ bzip2 ];
   description = "Compression and decompression in the bzip2 format";

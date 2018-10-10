@@ -3,6 +3,7 @@ mkDerivation {
   pname = "hmpfr";
   version = "0.4.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ base integer-gmp ];
   librarySystemDepends = [ mpfr ];

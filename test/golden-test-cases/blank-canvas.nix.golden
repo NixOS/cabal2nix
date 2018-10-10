@@ -8,6 +8,7 @@ mkDerivation {
   pname = "blank-canvas";
   version = "0.6.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [
     aeson base base-compat base64-bytestring bytestring colour

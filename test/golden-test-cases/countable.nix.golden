@@ -5,6 +5,7 @@ mkDerivation {
   pname = "countable";
   version = "1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [
     base bytestring silently tasty tasty-golden tasty-hunit

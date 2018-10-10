@@ -5,6 +5,7 @@ mkDerivation {
   pname = "async";
   version = "2.1.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base stm ];
   testHaskellDepends = [
     base HUnit test-framework test-framework-hunit

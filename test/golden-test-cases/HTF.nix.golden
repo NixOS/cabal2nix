@@ -9,6 +9,7 @@ mkDerivation {
   pname = "HTF";
   version = "0.13.2.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

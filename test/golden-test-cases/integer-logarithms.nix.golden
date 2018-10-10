@@ -6,6 +6,7 @@ mkDerivation {
   pname = "integer-logarithms";
   version = "1.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ array base ghc-prim integer-gmp ];
   testHaskellDepends = [
     base QuickCheck smallcheck tasty tasty-hunit tasty-quickcheck

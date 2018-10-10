@@ -3,6 +3,7 @@ mkDerivation {
   pname = "indentation-core";
   version = "0.0.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base mtl ];
   homepage = "https://bitbucket.org/adamsmd/indentation";
   description = "Indentation sensitive parsing combinators core library";

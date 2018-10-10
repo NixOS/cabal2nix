@@ -5,6 +5,7 @@ mkDerivation {
   pname = "zlib";
   version = "0.6.1.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring ];
   librarySystemDepends = [ zlib ];
   testHaskellDepends = [

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "adjunctions";
   version = "4.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base comonad containers contravariant distributive free mtl
     profunctors semigroupoids semigroups tagged transformers

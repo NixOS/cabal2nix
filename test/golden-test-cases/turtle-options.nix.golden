@@ -5,6 +5,7 @@ mkDerivation {
   pname = "turtle-options";
   version = "0.1.0.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ base optional-args parsec text turtle ];

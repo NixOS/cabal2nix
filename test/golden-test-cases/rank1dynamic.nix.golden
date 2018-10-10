@@ -5,6 +5,7 @@ mkDerivation {
   pname = "rank1dynamic";
   version = "0.4.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base binary ];
   testHaskellDepends = [
     base HUnit test-framework test-framework-hunit

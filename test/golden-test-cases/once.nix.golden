@@ -5,6 +5,7 @@ mkDerivation {
   pname = "once";
   version = "0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base containers hashable template-haskell unordered-containers
   ];

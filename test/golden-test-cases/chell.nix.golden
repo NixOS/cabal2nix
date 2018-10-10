@@ -5,6 +5,7 @@ mkDerivation {
   pname = "chell";
   version = "0.4.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     ansi-terminal base bytestring options patience random
     template-haskell text transformers

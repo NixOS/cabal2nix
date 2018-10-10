@@ -3,6 +3,7 @@ mkDerivation {
   pname = "system-argv0";
   version = "0.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring system-filepath text ];
   homepage = "https://john-millikin.com/software/haskell-filesystem/";
   description = "Get argv[0] as a FilePath";

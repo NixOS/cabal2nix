@@ -8,6 +8,7 @@ mkDerivation {
   pname = "stm-containers";
   version = "0.2.16";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base base-prelude focus hashable list-t primitive transformers
   ];

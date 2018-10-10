@@ -6,6 +6,7 @@ mkDerivation {
   pname = "groundhog-mysql";
   version = "0.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring containers groundhog monad-control monad-logger
     mysql mysql-simple resource-pool resourcet text time transformers

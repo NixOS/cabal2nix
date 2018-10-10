@@ -3,6 +3,7 @@ mkDerivation {
   pname = "deque";
   version = "0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/nikita-volkov/deque";
   description = "Double-ended queue";

@@ -9,6 +9,7 @@ mkDerivation {
   pname = "mongoDB";
   version = "2.3.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base base16-bytestring base64-bytestring binary bson
     bytestring conduit conduit-extra containers cryptohash

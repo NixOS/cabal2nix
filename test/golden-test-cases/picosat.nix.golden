@@ -5,6 +5,7 @@ mkDerivation {
   pname = "picosat";
   version = "0.1.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base containers transformers ];
   testHaskellDepends = [ base containers random rdtsc transformers ];
   homepage = "https://github.com/sdiehl/haskell-picosat";

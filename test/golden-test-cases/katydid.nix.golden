@@ -5,6 +5,7 @@ mkDerivation {
   pname = "katydid";
   version = "0.1.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

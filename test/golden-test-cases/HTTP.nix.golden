@@ -7,6 +7,7 @@ mkDerivation {
   pname = "HTTP";
   version = "4000.3.9";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base bytestring mtl network network-uri parsec time
   ];

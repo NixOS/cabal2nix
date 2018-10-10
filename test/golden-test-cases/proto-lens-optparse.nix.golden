@@ -5,6 +5,7 @@ mkDerivation {
   pname = "proto-lens-optparse";
   version = "0.1.0.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base optparse-applicative proto-lens text
   ];

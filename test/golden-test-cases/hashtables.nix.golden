@@ -4,6 +4,7 @@ mkDerivation {
   pname = "hashtables";
   version = "1.2.2.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base ghc-prim hashable primitive vector
   ];

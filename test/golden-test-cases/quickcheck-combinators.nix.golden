@@ -3,6 +3,7 @@ mkDerivation {
   pname = "quickcheck-combinators";
   version = "0.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base QuickCheck unfoldable-restricted ];
   description = "Simple type-level combinators for augmenting QuickCheck instances";
   license = stdenv.lib.licenses.bsd3;

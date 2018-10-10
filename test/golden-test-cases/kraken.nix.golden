@@ -5,6 +5,7 @@ mkDerivation {
   pname = "kraken";
   version = "0.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base bytestring http-client http-client-tls mtl
   ];

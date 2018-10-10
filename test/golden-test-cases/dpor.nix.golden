@@ -5,6 +5,7 @@ mkDerivation {
   pname = "dpor";
   version = "0.2.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base containers deepseq random semigroups
   ];

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "partial-semigroup";
   version = "0.3.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base doctest hedgehog ];
   homepage = "https://github.com/chris-martin/partial-semigroup";

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "htoml";
   version = "1.0.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base containers old-locale parsec text time
     unordered-containers vector

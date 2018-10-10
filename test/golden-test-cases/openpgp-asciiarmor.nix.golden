@@ -5,6 +5,7 @@ mkDerivation {
   pname = "openpgp-asciiarmor";
   version = "0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec base base64-bytestring bytestring cereal
   ];

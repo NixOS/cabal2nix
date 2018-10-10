@@ -12,6 +12,7 @@ mkDerivation {
   pname = "hakyll";
   version = "4.10.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "netpbm";
   version = "1.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec attoparsec-binary base bytestring storable-record
     unordered-containers vector vector-th-unbox

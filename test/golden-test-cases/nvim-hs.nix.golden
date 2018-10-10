@@ -12,6 +12,7 @@ mkDerivation {
   pname = "nvim-hs";
   version = "0.2.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

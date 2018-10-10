@@ -3,6 +3,7 @@ mkDerivation {
   pname = "regex-compat";
   version = "0.95.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ array base regex-base regex-posix ];
   homepage = "http://sourceforge.net/projects/lazy-regex";
   description = "Replaces/Enhances Text.Regex";

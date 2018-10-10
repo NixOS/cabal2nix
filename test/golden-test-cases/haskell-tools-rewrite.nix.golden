@@ -6,6 +6,7 @@ mkDerivation {
   pname = "haskell-tools-rewrite";
   version = "1.0.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base containers ghc haskell-tools-ast haskell-tools-prettyprint mtl
     references

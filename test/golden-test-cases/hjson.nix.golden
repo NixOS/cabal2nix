@@ -3,6 +3,7 @@ mkDerivation {
   pname = "hjson";
   version = "1.3.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base containers parsec ];
   description = "JSON parsing library";
   license = stdenv.lib.licenses.bsd3;

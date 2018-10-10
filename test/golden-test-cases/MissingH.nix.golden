@@ -7,6 +7,7 @@ mkDerivation {
   pname = "MissingH";
   version = "1.4.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base containers directory filepath hslogger HUnit mtl network
     old-locale old-time parsec process random regex-compat time unix

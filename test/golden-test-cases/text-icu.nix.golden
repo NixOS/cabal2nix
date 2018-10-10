@@ -6,6 +6,7 @@ mkDerivation {
   pname = "text-icu";
   version = "0.7.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring deepseq text ];
   librarySystemDepends = [ icu ];
   testHaskellDepends = [

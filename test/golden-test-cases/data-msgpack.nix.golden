@@ -6,6 +6,7 @@ mkDerivation {
   pname = "data-msgpack";
   version = "0.0.10";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

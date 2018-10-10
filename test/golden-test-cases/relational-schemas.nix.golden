@@ -5,6 +5,7 @@ mkDerivation {
   pname = "relational-schemas";
   version = "0.1.6.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring containers relational-query template-haskell time
   ];

@@ -10,6 +10,7 @@ mkDerivation {
   pname = "wai-middleware-auth";
   version = "0.1.2.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

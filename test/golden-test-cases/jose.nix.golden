@@ -8,6 +8,7 @@ mkDerivation {
   pname = "jose";
   version = "0.6.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

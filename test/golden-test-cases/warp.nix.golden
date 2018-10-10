@@ -10,6 +10,7 @@ mkDerivation {
   pname = "warp";
   version = "3.2.13";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array async auto-update base blaze-builder bytestring
     bytestring-builder case-insensitive containers ghc-prim hashable

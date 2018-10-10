@@ -5,6 +5,7 @@ mkDerivation {
   pname = "mwc-random-monad";
   version = "0.7.3.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base monad-primitive mwc-random primitive transformers vector
   ];

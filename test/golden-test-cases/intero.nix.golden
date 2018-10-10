@@ -7,6 +7,7 @@ mkDerivation {
   pname = "intero";
   version = "0.1.24";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = false;
   isExecutable = true;
   enableSeparateDataOutput = true;

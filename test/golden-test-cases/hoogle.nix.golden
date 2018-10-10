@@ -10,6 +10,7 @@ mkDerivation {
   pname = "hoogle";
   version = "5.0.14";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

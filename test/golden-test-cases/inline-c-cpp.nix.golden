@@ -5,6 +5,7 @@ mkDerivation {
   pname = "inline-c-cpp";
   version = "0.2.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base inline-c safe-exceptions template-haskell
   ];

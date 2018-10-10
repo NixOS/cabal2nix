@@ -6,6 +6,7 @@ mkDerivation {
   pname = "librato";
   version = "0.2.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson attoparsec base bytestring either http-client http-conduit
     http-types mtl resourcet text unordered-containers uri-templater

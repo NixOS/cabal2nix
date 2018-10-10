@@ -5,6 +5,7 @@ mkDerivation {
   pname = "vivid-supercollider";
   version = "0.3.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base binary bytestring cereal split utf8-string vivid-osc
   ];

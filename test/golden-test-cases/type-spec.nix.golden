@@ -3,6 +3,7 @@ mkDerivation {
   pname = "type-spec";
   version = "0.3.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base pretty ];
   testHaskellDepends = [ base ];
   homepage = "https://github.com/sheyll/type-spec#readme";

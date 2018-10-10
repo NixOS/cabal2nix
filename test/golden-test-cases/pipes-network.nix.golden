@@ -5,6 +5,7 @@ mkDerivation {
   pname = "pipes-network";
   version = "0.6.4.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring network network-simple pipes pipes-safe
     transformers

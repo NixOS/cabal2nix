@@ -8,6 +8,7 @@ mkDerivation {
   pname = "avers-server";
   version = "0.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson avers avers-api base base64-bytestring bytestring
     bytestring-conversion containers cookie cryptonite http-types

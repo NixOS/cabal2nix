@@ -3,6 +3,7 @@ mkDerivation {
   pname = "monad-products";
   version = "4.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base semigroupoids ];
   homepage = "http://github.com/ekmett/monad-products";
   description = "Monad products";

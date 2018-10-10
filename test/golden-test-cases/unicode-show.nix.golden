@@ -5,6 +5,7 @@ mkDerivation {
   pname = "unicode-show";
   version = "0.1.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [
     base HUnit QuickCheck test-framework test-framework-hunit

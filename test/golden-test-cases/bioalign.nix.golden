@@ -3,6 +3,7 @@ mkDerivation {
   pname = "bioalign";
   version = "0.0.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base biocore bytestring ];
   homepage = "https://patch-tag.com/r/dfornika/biophd/home";
   description = "Data structures and helper functions for calculating alignments";

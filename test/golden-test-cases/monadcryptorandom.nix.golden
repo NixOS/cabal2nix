@@ -5,6 +5,7 @@ mkDerivation {
   pname = "monadcryptorandom";
   version = "0.7.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring crypto-api exceptions mtl tagged transformers
     transformers-compat

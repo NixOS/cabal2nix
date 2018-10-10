@@ -6,6 +6,7 @@ mkDerivation {
   pname = "lucid";
   version = "2.9.9";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base blaze-builder bytestring containers hashable mmorph mtl text
     transformers unordered-containers

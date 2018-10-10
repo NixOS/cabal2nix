@@ -5,6 +5,7 @@ mkDerivation {
   pname = "active";
   version = "0.2.0.13";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base lens linear semigroupoids semigroups vector
   ];

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "product-profunctors";
   version = "0.8.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base contravariant profunctors tagged template-haskell
   ];

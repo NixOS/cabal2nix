@@ -5,6 +5,7 @@ mkDerivation {
   pname = "QuasiText";
   version = "0.1.2.6";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec base haskell-src-meta template-haskell text
     th-lift-instances

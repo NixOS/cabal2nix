@@ -6,6 +6,7 @@ mkDerivation {
   pname = "incremental-parser";
   version = "0.2.5.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base monoid-subclasses ];
   testHaskellDepends = [
     base checkers monoid-subclasses QuickCheck tasty tasty-quickcheck

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "io-machine";
   version = "0.2.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base time ];
   testHaskellDepends = [ base ];
   homepage = "https://github.com/YoshikuniJujo/io-machine#readme";

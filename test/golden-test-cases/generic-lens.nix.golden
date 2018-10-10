@@ -5,6 +5,7 @@ mkDerivation {
   pname = "generic-lens";
   version = "0.5.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base profunctors tagged ];
   testHaskellDepends = [ base doctest inspection-testing lens ];
   benchmarkHaskellDepends = [

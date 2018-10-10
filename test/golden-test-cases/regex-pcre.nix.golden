@@ -5,6 +5,7 @@ mkDerivation {
   pname = "regex-pcre";
   version = "0.94.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base bytestring containers regex-base
   ];

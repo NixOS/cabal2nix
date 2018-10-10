@@ -3,6 +3,7 @@ mkDerivation {
   pname = "FenwickTree";
   version = "0.1.2.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ base QuickCheck template-haskell ];
   testHaskellDepends = [ base QuickCheck template-haskell ];

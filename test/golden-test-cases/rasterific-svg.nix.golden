@@ -7,6 +7,7 @@ mkDerivation {
   pname = "rasterific-svg";
   version = "0.3.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

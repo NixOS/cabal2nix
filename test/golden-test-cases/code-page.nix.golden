@@ -3,6 +3,7 @@ mkDerivation {
   pname = "code-page";
   version = "0.1.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base ];
   homepage = "https://github.com/RyanGlScott/code-page";

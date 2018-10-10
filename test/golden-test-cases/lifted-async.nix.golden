@@ -6,6 +6,7 @@ mkDerivation {
   pname = "lifted-async";
   version = "0.9.3.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     async base constraints lifted-base monad-control transformers-base
   ];

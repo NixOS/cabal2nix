@@ -4,6 +4,7 @@ mkDerivation {
   pname = "GPipe-GLFW";
   version = "1.4.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [ async base containers GLFW-b GPipe stm ];
   homepage = "https://github.com/plredmond/GPipe-GLFW";

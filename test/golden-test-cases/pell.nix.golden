@@ -5,6 +5,7 @@ mkDerivation {
   pname = "pell";
   version = "0.1.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ arithmoi base containers ];
   testHaskellDepends = [
     arithmoi base Cabal cabal-test-quickcheck containers primes

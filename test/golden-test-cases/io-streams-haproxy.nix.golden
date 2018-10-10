@@ -6,6 +6,7 @@ mkDerivation {
   pname = "io-streams-haproxy";
   version = "1.0.0.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     attoparsec base bytestring io-streams network transformers
   ];

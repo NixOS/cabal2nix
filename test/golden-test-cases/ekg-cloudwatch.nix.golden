@@ -6,6 +6,7 @@ mkDerivation {
   pname = "ekg-cloudwatch";
   version = "0.0.1.6";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     amazonka amazonka-cloudwatch amazonka-core base bytestring ekg-core
     lens resourcet semigroups text time unordered-containers

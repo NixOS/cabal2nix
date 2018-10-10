@@ -3,6 +3,7 @@ mkDerivation {
   pname = "lmdb";
   version = "0.2.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ array base ];
   librarySystemDepends = [ lmdb ];
   homepage = "http://github.com/dmbarbour/haskell-lmdb";

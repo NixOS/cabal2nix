@@ -5,6 +5,7 @@ mkDerivation {
   pname = "genvalidity-uuid";
   version = "0.0.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base genvalidity QuickCheck uuid validity validity-uuid
   ];

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "Strafunski-StrategyLib";
   version = "5.0.0.10";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base directory mtl syb transformers ];
   description = "Library for strategic programming";
   license = stdenv.lib.licenses.bsd3;

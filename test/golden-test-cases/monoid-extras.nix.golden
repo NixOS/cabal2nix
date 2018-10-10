@@ -5,6 +5,7 @@ mkDerivation {
   pname = "monoid-extras";
   version = "0.4.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base groups semigroupoids semigroups ];
   benchmarkHaskellDepends = [ base criterion ];
   description = "Various extra monoid-related definitions and utilities";

@@ -7,6 +7,7 @@ mkDerivation {
   pname = "giphy-api";
   version = "0.5.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

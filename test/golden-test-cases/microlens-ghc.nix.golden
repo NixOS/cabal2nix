@@ -5,6 +5,7 @@ mkDerivation {
   pname = "microlens-ghc";
   version = "0.4.8.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base bytestring containers microlens transformers
   ];

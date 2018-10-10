@@ -5,6 +5,7 @@ mkDerivation {
   pname = "case-insensitive";
   version = "1.2.0.10";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring deepseq hashable text ];
   testHaskellDepends = [
     base bytestring HUnit test-framework test-framework-hunit text

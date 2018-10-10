@@ -3,6 +3,7 @@ mkDerivation {
   pname = "unlit";
   version = "0.4.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ base directory text ];

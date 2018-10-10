@@ -5,6 +5,7 @@ mkDerivation {
   pname = "system-fileio";
   version = "0.3.16.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring system-filepath text time unix
   ];

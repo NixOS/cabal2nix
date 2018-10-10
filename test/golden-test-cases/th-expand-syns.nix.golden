@@ -3,6 +3,7 @@ mkDerivation {
   pname = "th-expand-syns";
   version = "0.4.4.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base containers syb template-haskell ];
   testHaskellDepends = [ base template-haskell ];
   homepage = "https://github.com/DanielSchuessler/th-expand-syns";

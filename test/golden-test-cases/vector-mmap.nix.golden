@@ -5,6 +5,7 @@ mkDerivation {
   pname = "vector-mmap";
   version = "0.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base mmap primitive vector ];
   testHaskellDepends = [ base QuickCheck temporary vector ];
   homepage = "http://github.com/pumpkin/vector-mmap";

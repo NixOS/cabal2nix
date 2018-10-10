@@ -3,6 +3,7 @@ mkDerivation {
   pname = "presburger";
   version = "1.3.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base containers pretty ];
   testHaskellDepends = [ base QuickCheck ];
   homepage = "http://github.com/yav/presburger";

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "Hclip";
   version = "3.0.0.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base mtl process strict ];
   homepage = "https://github.com/jetho/Hclip";
   description = "A small cross-platform library for reading and modifying the system clipboard";

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "hostname-validate";
   version = "1.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ attoparsec base bytestring ];
   description = "Validate hostnames e.g. localhost or foo.co.uk.";
   license = stdenv.lib.licenses.bsd3;

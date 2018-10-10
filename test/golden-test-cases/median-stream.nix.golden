@@ -3,6 +3,7 @@ mkDerivation {
   pname = "median-stream";
   version = "0.7.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base heap ];
   testHaskellDepends = [ base QuickCheck ];
   homepage = "https://github.com/caneroj1/median-stream#readme";

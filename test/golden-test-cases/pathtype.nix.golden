@@ -5,6 +5,7 @@ mkDerivation {
   pname = "pathtype";
   version = "0.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

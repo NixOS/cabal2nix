@@ -3,6 +3,7 @@ mkDerivation {
   pname = "colorize-haskell";
   version = "1.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ ansi-terminal base haskell-lexer ];

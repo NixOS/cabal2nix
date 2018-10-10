@@ -5,6 +5,7 @@ mkDerivation {
   pname = "fgl";
   version = "5.5.4.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base containers deepseq transformers
   ];

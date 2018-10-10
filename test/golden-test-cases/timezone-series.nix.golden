@@ -3,6 +3,7 @@ mkDerivation {
   pname = "timezone-series";
   version = "0.1.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base deepseq time ];
   homepage = "http://projects.haskell.org/time-ng/";
   description = "Enhanced timezone handling for Data.Time";

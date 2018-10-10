@@ -6,6 +6,7 @@ mkDerivation {
   pname = "yahoo-finance-api";
   version = "0.2.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base either http-api-data http-client mtl servant
     servant-client text time transformers vector

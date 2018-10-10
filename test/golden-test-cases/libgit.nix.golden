@@ -3,6 +3,7 @@ mkDerivation {
   pname = "libgit";
   version = "0.3.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base mtl process ];
   homepage = "https://github.com/vincenthz/hs-libgit";
   description = "Simple Git Wrapper";

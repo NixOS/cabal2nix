@@ -5,6 +5,7 @@ mkDerivation {
   pname = "data-serializer";
   version = "0.3.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base binary bytestring cereal data-endian parsers semigroups split
   ];

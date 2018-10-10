@@ -3,6 +3,7 @@ mkDerivation {
   pname = "ReadArgs";
   version = "1.2.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ base system-filepath text ];

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "genvalidity-hspec-binary";
   version = "0.1.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base binary deepseq genvalidity genvalidity-hspec hspec QuickCheck
   ];

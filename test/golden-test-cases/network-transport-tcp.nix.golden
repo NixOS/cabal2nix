@@ -5,6 +5,7 @@ mkDerivation {
   pname = "network-transport-tcp";
   version = "0.6.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base bytestring containers data-accessor network network-transport
   ];

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "logging-effect-extra-file";
   version = "1.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "sdl2";
   version = "2.3.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   enableSeparateDataOutput = true;

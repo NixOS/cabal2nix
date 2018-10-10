@@ -5,6 +5,7 @@ mkDerivation {
   pname = "envelope";
   version = "0.2.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ aeson base http-api-data mtl text ];
   testHaskellDepends = [ base doctest Glob ];
   homepage = "https://github.com/cdepillabout/envelope#readme";

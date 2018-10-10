@@ -3,6 +3,7 @@ mkDerivation {
   pname = "stb-image-redux";
   version = "0.2.1.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base vector ];
   testHaskellDepends = [ base hspec vector ];
   homepage = "https://github.com/typedrat/stb-image-redux#readme";

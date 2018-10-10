@@ -5,6 +5,7 @@ mkDerivation {
   pname = "quickcheck-arbitrary-adt";
   version = "0.2.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base QuickCheck ];
   testHaskellDepends = [
     base hspec lens QuickCheck template-haskell transformers

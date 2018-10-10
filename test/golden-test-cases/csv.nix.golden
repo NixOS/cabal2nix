@@ -3,6 +3,7 @@ mkDerivation {
   pname = "csv";
   version = "0.1.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base filepath parsec ];
   description = "CSV loader and dumper";
   license = stdenv.lib.licenses.mit;

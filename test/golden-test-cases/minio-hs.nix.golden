@@ -11,6 +11,7 @@ mkDerivation {
   pname = "minio-hs";
   version = "0.3.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson async base base64-bytestring bytestring case-insensitive
     conduit conduit-combinators conduit-extra containers cryptonite

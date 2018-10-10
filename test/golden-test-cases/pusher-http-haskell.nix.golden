@@ -7,6 +7,7 @@ mkDerivation {
   pname = "pusher-http-haskell";
   version = "1.5.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base base16-bytestring bytestring cryptonite hashable
     http-client http-types memory text time transformers

@@ -6,6 +6,7 @@ mkDerivation {
   pname = "pointed";
   version = "5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base comonad containers data-default-class hashable kan-extensions
     semigroupoids semigroups stm tagged transformers

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "monadloc";
   version = "0.7.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base template-haskell transformers ];
   homepage = "http://github.com/pepeiborra/monadloc";
   description = "A class for monads which can keep a monadic call trace";

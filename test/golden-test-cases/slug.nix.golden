@@ -5,6 +5,7 @@ mkDerivation {
   pname = "slug";
   version = "0.1.7";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base exceptions http-api-data path-pieces persistent
     QuickCheck text

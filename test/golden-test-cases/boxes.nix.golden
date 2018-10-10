@@ -3,6 +3,7 @@ mkDerivation {
   pname = "boxes";
   version = "0.1.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base split ];
   testHaskellDepends = [ base QuickCheck split ];
   description = "2D text pretty-printing library";

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "l10n";
   version = "0.1.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base text time ];
   homepage = "https://github.com/louispan/l10n#readme";
   description = "Enables providing localization as typeclass instances in separate files";

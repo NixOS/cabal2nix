@@ -5,6 +5,7 @@ mkDerivation {
   pname = "ChasingBottoms";
   version = "1.3.1.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base containers mtl QuickCheck random syb
   ];

@@ -3,6 +3,7 @@ mkDerivation {
   pname = "bindings-uname";
   version = "0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ];
   description = "Low-level binding to POSIX uname(3)";
   license = stdenv.lib.licenses.publicDomain;

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "swagger";
   version = "0.3.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base bytestring text time transformers
   ];

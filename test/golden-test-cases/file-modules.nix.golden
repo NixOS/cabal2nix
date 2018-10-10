@@ -5,6 +5,7 @@ mkDerivation {
   pname = "file-modules";
   version = "0.1.2.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [

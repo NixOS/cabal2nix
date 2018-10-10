@@ -3,6 +3,7 @@ mkDerivation {
   pname = "foundation";
   version = "0.0.17";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base basement ghc-prim ];
   testHaskellDepends = [ base basement ];
   benchmarkHaskellDepends = [ base basement gauge ];

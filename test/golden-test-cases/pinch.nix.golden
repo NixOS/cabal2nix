@@ -6,6 +6,7 @@ mkDerivation {
   pname = "pinch";
   version = "0.3.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base bytestring containers deepseq ghc-prim hashable text
     unordered-containers vector

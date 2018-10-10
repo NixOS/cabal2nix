@@ -5,6 +5,7 @@ mkDerivation {
   pname = "hsx-jmacro";
   version = "7.3.8";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base hsp jmacro mtl text wl-pprint-text
   ];

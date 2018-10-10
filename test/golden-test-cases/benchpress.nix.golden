@@ -3,6 +3,7 @@ mkDerivation {
   pname = "benchpress";
   version = "0.2.2.10";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ base mtl time ];

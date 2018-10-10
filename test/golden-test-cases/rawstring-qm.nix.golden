@@ -3,6 +3,7 @@ mkDerivation {
   pname = "rawstring-qm";
   version = "0.2.3.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base bytestring template-haskell text ];
   homepage = "https://github.com/tolysz/rawstring-qm";
   description = "Simple raw string quotation and dictionary interpolation";

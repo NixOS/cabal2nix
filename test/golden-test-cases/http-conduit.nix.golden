@@ -10,6 +10,7 @@ mkDerivation {
   pname = "http-conduit";
   version = "2.2.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base bytestring conduit conduit-extra exceptions http-client
     http-client-tls http-types lifted-base monad-control mtl resourcet

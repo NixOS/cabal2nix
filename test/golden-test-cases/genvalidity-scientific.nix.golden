@@ -5,6 +5,7 @@ mkDerivation {
   pname = "genvalidity-scientific";
   version = "0.1.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base genvalidity QuickCheck scientific validity validity-scientific
   ];

@@ -5,6 +5,7 @@ mkDerivation {
   pname = "amazonka-waf";
   version = "1.5.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ amazonka-core base ];
   testHaskellDepends = [
     amazonka-core amazonka-test base bytestring tasty tasty-hunit text

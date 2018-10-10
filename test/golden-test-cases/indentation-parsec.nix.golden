@@ -5,6 +5,7 @@ mkDerivation {
   pname = "indentation-parsec";
   version = "0.0.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base indentation-core mtl parsec ];
   testHaskellDepends = [ base parsec tasty tasty-hunit ];
   homepage = "https://bitbucket.org/adamsmd/indentation";

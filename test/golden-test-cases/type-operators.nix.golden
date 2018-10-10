@@ -3,6 +3,7 @@ mkDerivation {
   pname = "type-operators";
   version = "0.1.0.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base ghc-prim ];
   homepage = "https://github.com/Shou/type-operators#readme";
   description = "Various type-level operators";

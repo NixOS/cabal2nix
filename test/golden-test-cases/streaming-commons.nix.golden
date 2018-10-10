@@ -6,6 +6,7 @@ mkDerivation {
   pname = "streaming-commons";
   version = "0.1.18";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array async base blaze-builder bytestring directory network process
     random stm text transformers unix zlib

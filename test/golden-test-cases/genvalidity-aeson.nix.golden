@@ -7,6 +7,7 @@ mkDerivation {
   pname = "genvalidity-aeson";
   version = "0.1.0.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base genvalidity genvalidity-scientific genvalidity-text
     genvalidity-unordered-containers genvalidity-vector QuickCheck

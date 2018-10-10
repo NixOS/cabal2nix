@@ -13,6 +13,7 @@ mkDerivation {
   pname = "hOpenPGP";
   version = "2.5.5";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson attoparsec base base16-bytestring base64-bytestring
     bifunctors binary binary-conduit byteable bytestring bzlib conduit

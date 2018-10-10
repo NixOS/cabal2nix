@@ -5,6 +5,7 @@ mkDerivation {
   pname = "online";
   version = "0.2.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base foldl numhask protolude tdigest vector vector-algorithms
   ];

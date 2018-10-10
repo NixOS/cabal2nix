@@ -6,6 +6,7 @@ mkDerivation {
   pname = "jmacro-rpc";
   version = "0.3.2";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson attoparsec base blaze-html bytestring containers
     contravariant jmacro mtl scientific split text unordered-containers

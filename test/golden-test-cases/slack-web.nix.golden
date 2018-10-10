@@ -6,6 +6,7 @@ mkDerivation {
   pname = "slack-web";
   version = "0.2.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     aeson base containers errors http-api-data http-client
     http-client-tls megaparsec mtl servant servant-client text time

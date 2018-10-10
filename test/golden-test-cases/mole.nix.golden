@@ -9,6 +9,7 @@ mkDerivation {
   pname = "mole";
   version = "0.0.6";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [

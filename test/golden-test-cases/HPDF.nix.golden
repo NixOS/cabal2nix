@@ -5,6 +5,7 @@ mkDerivation {
   pname = "HPDF";
   version = "1.4.10";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     array base base64-bytestring binary bytestring containers errors
     mtl random vector zlib

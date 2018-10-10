@@ -5,6 +5,7 @@ mkDerivation {
   pname = "repa-io";
   version = "3.4.1.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base binary bmp bytestring old-time repa vector
   ];

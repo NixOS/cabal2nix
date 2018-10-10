@@ -5,6 +5,7 @@ mkDerivation {
   pname = "pdfinfo";
   version = "1.5.4";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base mtl old-locale process-extras text time time-locale-compat
   ];

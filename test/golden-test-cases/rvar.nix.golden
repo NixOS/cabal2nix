@@ -5,6 +5,7 @@ mkDerivation {
   pname = "rvar";
   version = "0.2.0.3";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base MonadPrompt mtl random-source transformers
   ];

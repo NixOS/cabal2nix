@@ -5,6 +5,7 @@ mkDerivation {
   pname = "profiterole";
   version = "0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [

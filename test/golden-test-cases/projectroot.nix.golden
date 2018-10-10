@@ -3,6 +3,7 @@ mkDerivation {
   pname = "projectroot";
   version = "0.2.0.1";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [ base directory ];
   testHaskellDepends = [ base hspec QuickCheck ];
   homepage = "https://github.com/yamadapc/haskell-projectroot";

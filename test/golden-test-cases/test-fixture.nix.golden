@@ -6,6 +6,7 @@ mkDerivation {
   pname = "test-fixture";
   version = "0.5.1.0";
   sha256 = "deadbeef";
+  isSimpleBuild = true;
   libraryHaskellDepends = [
     base data-default-class exceptions haskell-src-exts
     haskell-src-meta mtl template-haskell th-orphans
