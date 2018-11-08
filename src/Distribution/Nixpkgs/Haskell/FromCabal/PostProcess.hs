@@ -108,6 +108,7 @@ hooks =
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("graphviz", set (testDepends . system . contains (pkg "graphviz")) True)
   , ("gtk3", gtk3Hook)
+  , ("gtkglext", gtkglextHook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts", set doCheck False)
@@ -363,3 +364,15 @@ cabal2nixOverrides = set phaseOverrides $ unlines
   , "  export HOME=\"$TMPDIR/home\""
   , "'';"
   ]
+
+gtkglextHook :: Derivation -> Derivation
+gtkglextHook = over (libraryDepends . system) (Set.union (Set.fromList deps))
+  where
+    deps :: [Binding]
+    deps = bind <$> [ "pkgs.gtk2"
+                    , "pkgs.libGLU"
+                    , "pkgs.xorg.libSM"
+                    , "pkgs.xorg.libICE"
+                    , "pkgs.xorg.libXt"
+                    , "pkgs.xorg.libXmu"
+                    ]
