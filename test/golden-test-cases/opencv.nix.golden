@@ -9,9 +9,6 @@ mkDerivation {
   pname = "opencv";
   version = "0.0.2.1";
   sha256 = "deadbeef";
-  configureFlags = [
-    "--with-gcc=${stdenv.cc}/bin/c++" "--with-ld=${stdenv.cc}/bin/c++"
-  ];
   setupHaskellDepends = [ base Cabal ];
   libraryHaskellDepends = [
     aeson base base64-bytestring bindings-DSL bytestring containers

@@ -351,8 +351,6 @@ webkitgtk24xHook = set (libraryDepends . pkgconfig . contains (pkg "webkitgtk24x
 opencvOverrides :: Derivation -> Derivation
 opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
                 . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
-                . set (configureFlags . contains "--with-gcc=${stdenv.cc}/bin/c++") True
-                . set (configureFlags . contains "--with-ld=${stdenv.cc}/bin/c++") True
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
 hspecCoreOverrides = set phaseOverrides "testTarget = \"--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\";"
