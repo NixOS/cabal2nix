@@ -55,7 +55,7 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 -- for a while packages scraped from Hackage will continue to improperly use
 -- `build-depends: package-for-tool` instead of `build-tool-depends` (which does
 -- also work for Stack). Until that changes, we provide do this to work around
--- those package's brokeness.
+-- those package's brokenness.
 fixBuildDependsForTools :: Derivation -> Derivation
 fixBuildDependsForTools = foldr (.) id
   [ fmap snd $ runState $ do
