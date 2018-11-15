@@ -34,6 +34,7 @@ sed -r \
     -e '/ lambdabot-core /d' \
     -e '/ lambdabot-irc-plugins /d' \
     -e '/ language-nix /d' \
+    -e '/ shake /d' \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
     -e '/ weeder /d' \
