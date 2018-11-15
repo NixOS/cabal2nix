@@ -91,13 +91,19 @@ hooks =
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("gi-cairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gdk", set runHaddock True )
+  , ("gi-gio", set runHaddock True )
+  , ("gi-glib", set runHaddock True )
   , ("gi-gst", giGstLibOverrides "gstreamer")               -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstaudio", giGstLibOverrides "gst-plugins-base")   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstbase", giGstLibOverrides "gst-plugins-base")    -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gstvideo", giGstLibOverrides "gst-plugins-base")   -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-gtk", set runHaddock True )
   , ("gi-javascriptcore < 4.0.0.0", webkitgtk24xHook)       -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-pango", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-pango", set runHaddock True )
   , ("gi-pangocairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
+  , ("gi-vte", set runHaddock True )
   , ("gi-webkit", webkitgtk24xHook)   -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
