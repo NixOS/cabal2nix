@@ -7,4 +7,5 @@ mkDerivation {
   homepage = "https://github.com/brendanhay/gogol";
   description = "Google Firebase Rules SDK";
   license = "unknown";
+  hydraPlatforms = stdenv.lib.platforms.none;
 }

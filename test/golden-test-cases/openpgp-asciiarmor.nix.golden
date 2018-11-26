@@ -15,4 +15,5 @@ mkDerivation {
   homepage = "http://floss.scru.org/openpgp-asciiarmor";
   description = "OpenPGP (RFC4880) ASCII Armor codec";
   license = "unknown";
+  hydraPlatforms = stdenv.lib.platforms.none;
 }

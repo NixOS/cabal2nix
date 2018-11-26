@@ -7,4 +7,5 @@ mkDerivation {
   homepage = "https://github.com/brendanhay/gogol";
   description = "Google Email Migration API v2 SDK";
   license = "unknown";
+  hydraPlatforms = stdenv.lib.platforms.none;
 }

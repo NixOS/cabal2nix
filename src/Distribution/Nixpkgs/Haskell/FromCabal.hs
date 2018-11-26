@@ -107,7 +107,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.description .~ synopsis
                      & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nix.allKnownPlatforms
-                     & Nix.hydraPlatforms .~ (if nixLicense == Nix.Known "stdenv.lib.licenses.unfree" then Set.empty else Nix.allKnownPlatforms)
+                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nix.allKnownPlatforms else Set.empty)
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
                      )

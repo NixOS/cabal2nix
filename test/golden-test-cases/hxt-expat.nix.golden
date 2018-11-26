@@ -7,4 +7,5 @@ mkDerivation {
   homepage = "http://www.fh-wedel.de/~si/HXmlToolbox/index.html";
   description = "Expat parser for HXT";
   license = "unknown";
+  hydraPlatforms = stdenv.lib.platforms.none;
 }

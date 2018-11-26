@@ -11,4 +11,5 @@ mkDerivation {
   testHaskellDepends = [ aeson base bytestring tasty tasty-hunit ];
   description = "Implementation of swagger data model";
   license = "unknown";
+  hydraPlatforms = stdenv.lib.platforms.none;
 }
