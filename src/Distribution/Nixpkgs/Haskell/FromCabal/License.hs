@@ -3,6 +3,7 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.License
     ( fromCabalLicense
     , fromSPDXLicense
+    , isFreeLicense
     ) where
 
 import Data.List (intercalate)
@@ -162,3 +163,8 @@ fromSPDXLicense (SPDX.License expr) =
       -- Not handled: compound expressions, not expressible in Nixpkgs.
       -- Use the SPDX expression as a free-form license string.
       Unknown (Just $ prettyShow expr)
+
+isFreeLicense :: Distribution.Nixpkgs.License.License -> Bool
+isFreeLicense (Known "stdenv.lib.licenses.unfree") = False
+isFreeLicense (Unknown Nothing)                    = False
+isFreeLicense _                                    = True
