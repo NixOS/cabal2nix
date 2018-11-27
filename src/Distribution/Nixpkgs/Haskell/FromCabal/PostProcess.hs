@@ -149,7 +149,7 @@ hooks =
   , ("opencv", opencvOverrides)
   , ("pandoc >= 1.16.0.2 && < 2.5", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
   , ("pandoc", pandocOverrides)
-  , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
+  , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/369
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
   , ("proto-lens-protobuf-types", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("proto-lens-protoc", set (libraryDepends . tool . contains (pkg "protobuf")) True)
