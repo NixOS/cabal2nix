@@ -148,7 +148,7 @@ hooks =
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
   , ("opencv", opencvOverrides)
   , ("pandoc >= 1.16.0.2", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
-  , ("pandoc", set jailbreak False) -- jailbreak-cabal break the build
+  , ("pandoc", pandocOverrides)
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
   , ("proto-lens-protobuf-types", set (libraryDepends . tool . contains (pkg "protobuf")) True)
@@ -381,3 +381,12 @@ gtkglextHook = over (libraryDepends . system) (Set.union (Set.fromList deps))
                     , "pkgs.xorg.libXt"
                     , "pkgs.xorg.libXmu"
                     ]
+
+pandocOverrides :: Derivation -> Derivation
+pandocOverrides = set phaseOverrides postInstall
+  where
+    postInstall = unlines [ "postInstall = ''"
+                          , "  mkdir -p $out/share"
+                          , "  mv $data/*/*/man $out/share/"
+                          , "'';"
+                          ]
