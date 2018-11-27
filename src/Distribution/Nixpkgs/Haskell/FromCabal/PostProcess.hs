@@ -147,7 +147,7 @@ hooks =
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
   , ("opencv", opencvOverrides)
-  , ("pandoc >= 1.16.0.2", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
+  , ("pandoc >= 1.16.0.2 && < 2.5", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
   , ("pandoc", pandocOverrides)
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/172
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
