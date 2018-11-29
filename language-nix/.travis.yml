@@ -77,6 +77,7 @@ install:
   - if [ $HCNUMVER -ge 80000 ]; then cabal new-install -w ${HC} -j2 --symlink-bindir=$HOME/.local/bin doctest --constraint='doctest ==0.16.*'; fi
   - if [ $HCNUMVER -eq 80602 ]; then cabal new-install -w ${HC} -j2 --symlink-bindir=$HOME/.local/bin hlint --constraint='hlint ==2.1.*'; fi
   - "printf 'packages: \".\"\\n' > cabal.project"
+  - "printf 'write-ghc-environment-files: always' >> cabal.project"
   - touch cabal.project.local
   - "if ! $NOINSTALLEDCONSTRAINTS; then for pkg in $($HCPKG list --simple-output); do echo $pkg  | grep -vw -- language-nix | sed 's/^/constraints: /' | sed 's/-[^-]*$/ installed/' >> cabal.project.local; done; fi"
   - cat cabal.project || true
@@ -99,6 +100,7 @@ script:
   - cd ${DISTDIR} || false
   - find . -maxdepth 1 -name '*.tar.gz' -exec tar -xvf '{}' \;
   - "printf 'packages: language-nix-*/*.cabal\\n' > cabal.project"
+  - "printf 'write-ghc-environment-files: always' >> cabal.project"
   - touch cabal.project.local
   - "if ! $NOINSTALLEDCONSTRAINTS; then for pkg in $($HCPKG list --simple-output); do echo $pkg  | grep -vw -- language-nix | sed 's/^/constraints: /' | sed 's/-[^-]*$/ installed/' >> cabal.project.local; done; fi"
   - cat cabal.project || true
