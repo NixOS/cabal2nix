@@ -22,24 +22,16 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "fltkhs"             = [enable "opengl"]
  | name == "folds"              = [disable "test-hlint"]
  | name == "git-annex"          = [ enable "assistant"
-                                  , enable "cryptonite"
+                                  , disable "benchmark"
                                   , enable "dbus"
-                                  , enable "desktopnotify"
-                                  , enable "dns"
-                                  , enable "feed"
-                                  , enable "inotify"
+                                  , disable "debuglocks"
+                                  , enable "magicmime"
                                   , enable "pairing"
                                   , enable "production"
-                                  , enable "quvi"
-                                  , disable "s3"
-                                  , enable "tahoe"
-                                  , enable "tdfa"
-                                  , ("testsuite", version `withinRange` "< 6.20170925 || >= 6.20171214")
+                                  , enable "s3"
                                   , enable "torrentparser"
-                                  , disable "webapp"
-                                  , disable "webapp-secure"
+                                  , enable "webapp"
                                   , enable "webdav"
-                                  , enable "xmpp"
                                   ]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
