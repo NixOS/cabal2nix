@@ -4,6 +4,8 @@ module Distribution.Nixpkgs.Haskell.Hackage
   )
   where
 
+import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty (NonEmpty)
 import Data.Map as Map
 import qualified Distribution.Hackage.DB.Parsed as P
 import Distribution.Hackage.DB.Path
@@ -19,10 +21,11 @@ type HackageDB = Map PackageName PackageData
 
 type PackageData = Map Version VersionData
 
+type Sha256 = String
+
 data VersionData = VersionData
-  { cabalFile :: !GenericPackageDescription
-  , cabalFileSha256 :: !String
-  , tarballSha256 :: !(Maybe String)
+  { cabalFilesWithHashes :: !(NonEmpty (Sha256, GenericPackageDescription))
+  , tarballSha256 :: !(Maybe Sha256)
   }
   deriving (Show)
 
@@ -37,9 +40,10 @@ parsePackageData dbu pn = mapWithKey (parseVersionData (dbu ! pn))
 
 parseVersionData :: U.PackageData -> Version -> P.VersionData -> VersionData
 parseVersionData pdu v vd = VersionData
-                            { cabalFile = P.cabalFile vd
-                            , cabalFileSha256 = printSHA256 (digest (digestByName "sha256") file)
+                            { cabalFilesWithHashes = cfsWithHashes
                             , tarballSha256 = Map.lookup "sha256" (P.tarballHashes vd)
                             }
   where
-    file = U.cabalFile (U.versions pdu ! v)
+    cfsWithHashes = NE.zip sha256s (P.cabalFileRevisions vd)
+    sha256s = NE.map (\file -> printSHA256 (digest (digestByName "sha256") file))
+              (NE.fromList $ U.cabalFileRevisions (U.versions pdu ! v))

@@ -9,6 +9,7 @@ import Control.Monad.Trans.Maybe
 import Data.Bifunctor
 import qualified Data.ByteString.Char8 as BS
 import Data.List ( isSuffixOf, isPrefixOf )
+import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as DB
 import Data.Maybe
 import Data.Time
@@ -99,7 +100,8 @@ fromDB hackageDBIO pkg = do
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
              Just hash -> Just (urlDerivationSource url hash)
-  return (ds, setCabalFileHash (DB.cabalFileSha256 vd) (DB.cabalFile vd))
+      (cabalFileSha256, cabalFile) = NE.last (DB.cabalFilesWithHashes vd)
+  return (ds, setCabalFileHash cabalFileSha256 cabalFile)
  where
   pkgId :: Cabal.PackageIdentifier
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
