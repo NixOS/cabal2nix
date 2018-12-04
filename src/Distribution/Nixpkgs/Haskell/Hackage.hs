@@ -1,5 +1,5 @@
 module Distribution.Nixpkgs.Haskell.Hackage
-  ( HackageDB, PackageData, VersionData(..)
+  ( HackageDB, PackageData, VersionData(..), Sha256
   , hackageTarball, readTarball, parsePackageData
   )
   where

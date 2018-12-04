@@ -8,7 +8,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Bifunctor
 import qualified Data.ByteString.Char8 as BS
-import Data.List ( isSuffixOf, isPrefixOf )
+import Data.List ( isSuffixOf, isPrefixOf, stripPrefix )
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as DB
 import Data.Maybe
@@ -30,6 +30,7 @@ import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMi
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
 import System.IO
+import Text.Read ( readMaybe )
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
@@ -91,18 +92,38 @@ loadHackageDB optHackageDB optHackageSnapshot = do
   dbPath <- maybe DB.hackageTarball return optHackageDB
   DB.readTarball optHackageSnapshot dbPath
 
+data Revision = RevisionLatest | RevisionN Int | RevisionSha256 DB.Sha256
+
 fromDB :: IO DB.HackageDB
        -> String
        -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
-fromDB hackageDBIO pkg = do
+fromDB hackageDBIO pkgRev = do
   hackageDB <- hackageDBIO
   vd <- maybe unknownPackageError return (DB.lookup name hackageDB >>= lookupVersion)
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
              Just hash -> Just (urlDerivationSource url hash)
-      (cabalFileSha256, cabalFile) = NE.last (DB.cabalFilesWithHashes vd)
+      cabalFilesWithHashes = DB.cabalFilesWithHashes vd
+      (cabalFileSha256, cabalFile) =
+        case rev of
+          RevisionLatest -> NE.last cabalFilesWithHashes
+          RevisionN n -> case NE.drop n cabalFilesWithHashes of
+            [] -> fail $ "invalid Haskell package " ++ show pkg ++ " revision " ++ show n
+            x : _ -> x
+          RevisionSha256 sha -> case NE.filter ((== sha) . fst) cabalFilesWithHashes of
+            [] -> fail $ "invalid Haskell package " ++ show pkg ++ " revision SHA256" ++ show sha
+            x : _ -> x
   return (ds, setCabalFileHash cabalFileSha256 cabalFile)
  where
+  (pkg, rev) = case span (/= '@') pkgRev of
+    (p, "") -> (p, RevisionLatest)
+    (p, r) | Just nStr <- stripPrefix "@rev:" r,
+             Just n <- readMaybe nStr,
+             n >= 0 ->
+               (p, RevisionN n)
+    (p, r) | Just sha256 <- stripPrefix "@sha256:" r ->
+               (p, RevisionSha256 sha256)
+    _ -> error $ "invalid Haskell package id " ++ show pkgRev
   pkgId :: Cabal.PackageIdentifier
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
   name = Cabal.packageName pkgId
