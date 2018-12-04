@@ -201,4 +201,5 @@ test-suite regression-test
   build-tools:        cabal2nix
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-                      -with-rtsopts=-K1K
+                      -with-rtsopts=-K64K
+                      -- TODO: this must be 1K!
