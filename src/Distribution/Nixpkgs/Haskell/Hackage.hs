@@ -1,5 +1,5 @@
 module Distribution.Nixpkgs.Haskell.Hackage
-  ( HackageDB, PackageData, VersionData(..), Sha256
+  ( HackageDB, PackageData, VersionData(..), NixSha256
   , hackageTarball, readTarball, parsePackageData
   )
   where
@@ -21,11 +21,11 @@ type HackageDB = Map PackageName PackageData
 
 type PackageData = Map Version VersionData
 
-type Sha256 = String
+type NixSha256 = String
 
 data VersionData = VersionData
-  { cabalFilesWithHashes :: !(NonEmpty (Sha256, GenericPackageDescription))
-  , tarballSha256 :: !(Maybe Sha256)
+  { cabalFilesWithHashes :: !(NonEmpty (NixSha256, GenericPackageDescription))
+  , tarballSha256 :: !(Maybe NixSha256)
   }
   deriving (Show)
 

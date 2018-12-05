@@ -92,7 +92,7 @@ loadHackageDB optHackageDB optHackageSnapshot = do
   dbPath <- maybe DB.hackageTarball return optHackageDB
   DB.readTarball optHackageSnapshot dbPath
 
-data Revision = RevisionLatest | RevisionN Int | RevisionSha256 DB.Sha256
+data Revision = RevisionLatest | RevisionN Int | RevisionSha256 DB.NixSha256
 
 fromDB :: IO DB.HackageDB
        -> String
@@ -111,7 +111,7 @@ fromDB hackageDBIO pkgRev = do
             [] -> fail $ "invalid Haskell package " ++ show pkg ++ " revision " ++ show n
             x : _ -> x
           RevisionSha256 sha -> case NE.filter ((== sha) . fst) cabalFilesWithHashes of
-            [] -> fail $ "invalid Haskell package " ++ show pkg ++ " revision SHA256" ++ show sha
+            [] -> fail $ "invalid Haskell package " ++ show pkg ++ " revision SHA256 " ++ show sha
             x : _ -> x
   return (ds, setCabalFileHash cabalFileSha256 cabalFile)
  where
@@ -121,9 +121,11 @@ fromDB hackageDBIO pkgRev = do
              Just n <- readMaybe nStr,
              n >= 0 ->
                (p, RevisionN n)
-    (p, r) | Just sha256 <- stripPrefix "@sha256:" r ->
-               (p, RevisionSha256 sha256)
+    (p, r) | Just sha256size <- stripPrefix "@sha256:" r,
+             sha256hex <- takeWhile (/= ',') sha256size ->
+               (p, RevisionSha256 (toNixSha256 sha256hex))
     _ -> error $ "invalid Haskell package id " ++ show pkgRev
+  toNixSha256 = printSHA256 . packHex
   pkgId :: Cabal.PackageIdentifier
   pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
   name = Cabal.packageName pkgId

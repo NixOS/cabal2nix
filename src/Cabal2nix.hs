@@ -164,7 +164,7 @@ pinfo = info
                      [ P2.text ""
                      , P2.text "Recognized URI schemes:"
                      , P2.text ""
-                     , P2.text "  cabal://pkgname-pkgversion@pkgrevision     download the specified package from Hackage, use revision N if pkgrevision is 'rev:N' or use revision with cabal file SHA256 equal to S with pkgrevision specified as 'sha256:S'"
+                     , P2.text "  cabal://pkgname-pkgversion@pkgrevision     download the specified package from Hackage, use revision N if pkgrevision is 'rev:N' or use revision with cabal file SHA256 equal to S with pkgrevision specified as 'sha256:S,SZ (SZ part is being ignored)'"
                      , P2.text "  cabal://pkgname-pkgversion                 download the specified package from Hackage, use latest revision"
                      , P2.text "  cabal://pkgname                            download latest version of this package from Hackage"
                      , P2.text "  file:///local/path                         load the Cabal file from the local disk"
