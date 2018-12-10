@@ -216,7 +216,10 @@ hpackDirectory dir = do
   case mPackage of
     Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
     Right r -> do
-      let hpackOutput = encodeUtf8 $ Hpack.renderPackage [] (Hpack.decodeResultPackage r)
+      let hpackOutput =
+            let body = Hpack.renderPackage [] (Hpack.decodeResultPackage r)
+                cabalVersion = Hpack.decodeResultCabalVersion r
+            in encodeUtf8 $ cabalVersion ++ body
           hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
       case runParseGenericPackageDescription "<hpack output>" hpackOutput of
         Left msg -> liftIO $ do
