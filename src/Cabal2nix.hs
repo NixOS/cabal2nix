@@ -49,6 +49,7 @@ data Options = Options
   , optHpack :: Bool
   , optDoCheck :: Bool
   , optJailbreak :: Bool
+  , optDoBenchmark :: Bool
   , optRevision :: Maybe String
   , optHyperlinkSource :: Bool
   , optEnableLibraryProfiling :: Bool
@@ -76,6 +77,7 @@ options = Options
           <*> switch (long "hpack" <> help "run hpack before configuring this package (only non-hackage packages)")
           <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
+          <*> switch (long "benchmark" <> help "enable benchmarks for this package")
           <*> optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
           <*> flag True False (long "no-hyperlink-source" <> help "don't generate pretty-printed source code for the documentation")
           <*> switch (long "enable-library-profiling" <> help "enable library profiling in the generated build")
@@ -228,6 +230,7 @@ processPackage Options{..} pkg = do
               & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
 --            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
+              & doBenchmark ||~ optDoBenchmark
               & extraFunctionArgs %~ Set.union (Set.fromList ("inherit stdenv":map (fromString . ("inherit " ++)) optExtraArgs))
 
       shell :: Doc
