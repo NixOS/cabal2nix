@@ -7,7 +7,7 @@
 module Distribution.Nixpkgs.Haskell.Derivation
   ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
-  , cabalFlags, runHaddock, jailbreak, doCheck, testTarget, hyperlinkSource, enableSplitObjs
+  , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
   )
@@ -55,6 +55,7 @@ data Derivation = MkDerivation
   , _runHaddock                 :: Bool
   , _jailbreak                  :: Bool
   , _doCheck                    :: Bool
+  , _doBenchmark                :: Bool
   , _testTarget                 :: String
   , _hyperlinkSource            :: Bool
   , _enableLibraryProfiling     :: Bool
@@ -86,6 +87,7 @@ nullDerivation = MkDerivation
   , _runHaddock = error "undefined Derivation.runHaddock"
   , _jailbreak = error "undefined Derivation.jailbreak"
   , _doCheck = error "undefined Derivation.doCheck"
+  , _doBenchmark = error "undefined Derivation.doBenchmark"
   , _testTarget = error "undefined Derivation.testTarget"
   , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
   , _enableLibraryProfiling = error "undefined Derivation.enableLibraryProfiling"
@@ -131,6 +133,7 @@ instance Pretty Derivation where
       , boolattr "doHaddock" (not _runHaddock) _runHaddock
       , boolattr "jailbreak" _jailbreak _jailbreak
       , boolattr "doCheck" (not _doCheck) _doCheck
+      , boolattr "doBenchmark" _doBenchmark _doBenchmark
       , onlyIf (not (null _testTarget)) $ attr "testTarget" $ string _testTarget
       , boolattr "hyperlinkSource" (not _hyperlinkSource) _hyperlinkSource
       , onlyIf (not (null _phaseOverrides)) $ vcat ((map text . lines) _phaseOverrides)

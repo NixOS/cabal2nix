@@ -91,6 +91,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & runHaddock .~ doHaddockPhase
     & jailbreak .~ False
     & doCheck .~ True
+    & doBenchmark .~ False
     & testTarget .~ mempty
     & hyperlinkSource .~ True
     & enableSplitObjs .~ True
