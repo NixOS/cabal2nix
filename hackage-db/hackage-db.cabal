@@ -9,8 +9,7 @@ license:       BSD3
 license-file:  LICENSE
 author:        Peter Simons, Alexander Altman, Ben James
 maintainer:    Peter Simons <simons@cryp.to>
-tested-with:   GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2,
-               GHC == 8.4.4, GHC == 8.6.3
+tested-with:   GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.3
 category:      Distribution
 homepage:      https://github.com/peti/hackage-db#readme
 bug-reports:   https://github.com/peti/hackage-db/issues
@@ -79,3 +78,40 @@ executable show-package-versions
     build-depends: base >= 3 && < 5, Cabal, containers, hackage-db
   else
     buildable: False
+
+executable new-callback-api
+  main-is:          new-callback-api.hs
+  build-depends:    base
+                  , Cabal
+                  , bytestring
+                  , containers
+                  , deepseq
+                  , filepath
+                  , hackage-db
+                  , mtl
+                  , tar
+  default-language: Haskell2010
+  ghc-options:      -Wall -rtsopts
+
+  if impl(ghc > 8)
+    ghc-options: -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                 -Wredundant-constraints
+
+executable new-class-api
+  main-is:          new-class-api.hs
+  build-depends:    base
+                  , Cabal
+                  , bytestring
+                  , containers
+                  , deepseq
+                  , exceptions
+                  , filepath
+                  , hackage-db
+                  , mtl
+                  , tar
+  default-language: Haskell2010
+  ghc-options:      -Wall -rtsopts
+
+  if impl(ghc > 8)
+    ghc-options: -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                 -Wredundant-constraints
