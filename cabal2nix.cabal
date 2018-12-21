@@ -200,6 +200,7 @@ test-suite regression-test
   default-extensions: MonadFailDesugaring
   build-tools:        cabal2nix
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                      -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-                      -with-rtsopts=-K64K
-                      -- TODO: this must be 1K!
+                      -Wredundant-constraints -threaded -with-rtsopts=-K64K
+                      -- TODO: This ought to be 1K!                     ^^^
+                      --       https://github.com/NixOS/cabal2nix/issues/398
+                      --       https://github.com/feuerbach/tasty/issues/234
