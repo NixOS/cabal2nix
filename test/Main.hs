@@ -99,14 +99,6 @@ testExecutable exe cabalFile = do
 -- * Helper functions
 -------------------------------------------------------------------------------
 
--- | Find all *files* in the given directory. This function does not recurse,
--- nor does it include the special entries @'.'@ or @'..'@ in the result.
-
-listDirectoryFiles :: FilePath -> IO [FilePath]
-listDirectoryFiles dirPath = do
-  entries <- listDirectory dirPath
-  filterM doesFileExist (map (dirPath </>) entries)
-
 -- | Find all *files* in the given directory that end with the given suffix.
 -- This function does not recurse, nor does it include the special entries
 -- @'.'@ or @'..'@ in the result.
@@ -119,9 +111,9 @@ listDirectoryFiles dirPath = do
 -- we prefer our own simpler code.
 
 listDirectoryFilesBySuffix :: String -> FilePath -> IO [FilePath]
-listDirectoryFilesBySuffix suff =
-  fmap (filter ((suff ==) . takeExtension)) . listDirectoryFiles
-
+listDirectoryFilesBySuffix suff dirPath = do
+  entries <- listDirectory dirPath
+  filterM doesFileExist [ dirPath </> e | e <- entries, takeExtension e == suff ]
 
 -- | A variant of 'writeFile' that appends a newline to the end of the buffer
 -- before writing.
