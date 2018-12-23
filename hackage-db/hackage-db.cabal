@@ -81,11 +81,12 @@ executable show-package-versions
 
 executable new-callback-api
   main-is:          new-callback-api.hs
-  build-depends:    base
-                  , Cabal
+  build-depends:    Cabal
+                  , base
                   , bytestring
                   , containers
                   , deepseq
+                  , exceptions
                   , filepath
                   , hackage-db
                   , mtl
