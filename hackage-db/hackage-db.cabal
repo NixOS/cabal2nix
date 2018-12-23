@@ -1,5 +1,5 @@
 name:          hackage-db
-version:       2.0.1
+version:       2.1.0
 synopsis:      Access cabal-install's Hackage database via Data.Map
 description:   This library provides convenient access to the local copy of the Hackage
                database that \"cabal update\" creates. Check out
