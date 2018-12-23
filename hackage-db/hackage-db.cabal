@@ -26,6 +26,7 @@ flag install-examples
 
 library
   exposed-modules:  Distribution.Hackage.DB
+                    Distribution.Hackage.DB.Builder
                     Distribution.Hackage.DB.Errors
                     Distribution.Hackage.DB.MetaData
                     Distribution.Hackage.DB.Parsed
@@ -40,6 +41,7 @@ library
                   , bytestring
                   , containers
                   , directory
+                  , exceptions
                   , filepath
                   , tar         >= 0.4
                   , time
@@ -92,11 +94,7 @@ executable new-callback-api
                   , mtl
                   , tar
   default-language: Haskell2010
-  ghc-options:      -Wall -rtsopts
-
-  if impl(ghc > 8)
-    ghc-options: -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                 -Wredundant-constraints
+  ghc-options:      -rtsopts
 
 executable new-class-api
   main-is:          new-class-api.hs
@@ -111,8 +109,4 @@ executable new-class-api
                   , mtl
                   , tar
   default-language: Haskell2010
-  ghc-options:      -Wall -rtsopts
-
-  if impl(ghc > 8)
-    ghc-options: -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                 -Wredundant-constraints
+  ghc-options:      -rtsopts
