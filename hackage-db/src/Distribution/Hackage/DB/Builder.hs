@@ -13,7 +13,6 @@ module Distribution.Hackage.DB.Builder
   where
 
 import Distribution.Hackage.DB.Errors
-import Distribution.Hackage.DB.Path
 import Distribution.Hackage.DB.Utility
 
 import Codec.Archive.Tar as Tar
