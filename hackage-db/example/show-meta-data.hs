@@ -5,7 +5,7 @@ import Distribution.Hackage.DB.Unparsed
 import Distribution.Hackage.DB.Utility
 
 import Control.Monad
-import Data.ByteString.Lazy.UTF8 as BS
+import Data.ByteString.UTF8 as BS
 import Data.Map as Map
 import Distribution.Package
 import System.Environment

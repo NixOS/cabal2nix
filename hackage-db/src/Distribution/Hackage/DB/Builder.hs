@@ -7,8 +7,8 @@
  -}
 
 module Distribution.Hackage.DB.Builder
-  ( readHackageTarball, readTarball
-  , Builder(..), parseTarball
+  ( readTarball, parseTarball
+  , Builder(..)
   )
   where
 
@@ -23,9 +23,6 @@ import qualified Data.ByteString.Lazy as BSL
 import Distribution.Types.PackageName
 import Distribution.Types.Version
 import System.FilePath
-
-readHackageTarball :: IO (Entries FormatError)
-readHackageTarball = hackageTarball >>= readTarball
 
 readTarball :: FilePath -> IO (Entries FormatError)
 readTarball = fmap Tar.read . BSL.readFile

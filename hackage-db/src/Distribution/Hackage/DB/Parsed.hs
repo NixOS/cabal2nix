@@ -13,9 +13,13 @@ import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Hackage.DB.Utility
 
+import Codec.Archive.Tar
+import Codec.Archive.Tar.Entry
 import Control.Exception
-import Data.ByteString.Lazy as BS
-import Data.ByteString.Lazy.UTF8 as BS
+import Control.Monad.Catch
+import Data.ByteString as BSS
+import Data.ByteString.Lazy as BSL
+import Data.ByteString.UTF8 as BSS
 import Data.Map as Map
 import Data.Maybe
 import Data.Time.Clock
@@ -36,10 +40,10 @@ data VersionData = VersionData { cabalFile :: !GenericPackageDescription
   deriving (Show, Eq, Generic)
 
 readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
-readTarball snapshot path = fmap (parseTarball snapshot path) (BS.readFile path)
+readTarball snapshot tarball = fmap parseDB (U.readTarball snapshot tarball)
 
-parseTarball :: Maybe UTCTime -> FilePath -> ByteString -> HackageDB
-parseTarball snapshot path buf = parseDB (U.parseTarball snapshot path buf)
+parseTarball :: MonadThrow m => Maybe UTCTime -> Entries FormatError -> m HackageDB
+parseTarball snapshot es = fmap parseDB (U.parseTarball snapshot es mempty)
 
 parseDB :: U.HackageDB -> HackageDB
 parseDB = Map.mapWithKey parsePackageData
@@ -50,7 +54,7 @@ parsePackageData pn (U.PackageData pv vs') =
     Map.mapWithKey (parseVersionData pn) $
       Map.filterWithKey (\v _ -> v `withinRange` vr) vs'
   where
-    Dependency _ vr | BS.null pv = Dependency pn anyVersion
+    Dependency _ vr | BSS.null pv = Dependency pn anyVersion
                     | otherwise  = parseText "preferred version range" (toString pv)
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
@@ -59,12 +63,12 @@ parseVersionData pn v (U.VersionData cf m) =
      VersionData gpd (parseMetaData pn v m)
   where
     gpd = fromMaybe (throw (InvalidCabalFile (show (pn,v)))) $
-            parseGenericPackageDescriptionMaybe (toStrict cf)
+            parseGenericPackageDescriptionMaybe cf
 
-parseMetaData :: PackageName -> Version -> ByteString -> Map String String
-parseMetaData pn v buf | BS.null buf = Map.empty
-                       | otherwise   = maybe Map.empty U.hashes targetData
+parseMetaData :: PackageName -> Version -> BSS.ByteString -> Map String String
+parseMetaData pn v buf | BSS.null buf = Map.empty
+                       | otherwise    = maybe Map.empty U.hashes targetData
   where
-    targets = U.targets (U.signed (U.parseMetaData buf))
+    targets = U.targets (U.signed (U.parseMetaData (BSL.fromStrict buf)))
     target  = "<repo>/package/" ++ display pn ++ "-" ++ display v ++ ".tar.gz"
     targetData = Map.lookup target targets

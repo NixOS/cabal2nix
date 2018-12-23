@@ -4,7 +4,7 @@ import Distribution.Hackage.DB.Path
 import Distribution.Hackage.DB.Unparsed
 
 import Control.Monad
-import qualified Data.ByteString.Lazy as BS
+import qualified Data.ByteString as BS
 import Data.List as List
 import Data.Map as Map
 import Distribution.Text
