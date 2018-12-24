@@ -51,19 +51,19 @@ parseTarball = Build.parseTarball builder . fmap toEpochTime
 builder :: Applicative m => Builder m HackageDB
 builder = Builder
   { insertPreferredVersions = \pn _ buf   -> let new     = PackageData (toStrict buf) mempty
-                                                 f old _ = old { preferredVersions = preferredVersions new }
+                                                 f _ old = old { preferredVersions = preferredVersions new }
                                              in pure . Map.insertWith f pn new
 
   , insertCabalFile         = \pn v _ buf -> let f Nothing   = PackageData mempty (Map.singleton v new)
                                                  f (Just pd) = pd { versions = Map.insertWith g v new (versions pd) }
                                                  new         = VersionData (toStrict buf) mempty
-                                                 g old _     = old { cabalFile = cabalFile new }
+                                                 g _ old     = old { cabalFile = cabalFile new }
                                              in pure . Map.alter (Just . f) pn
 
   , insertMetaFile          = \pn v _ buf -> let f Nothing   = PackageData mempty (Map.singleton v new)
                                                  f (Just pd) = pd { versions = Map.insertWith g v new (versions pd) }
 
                                                  new         = VersionData mempty (toStrict buf)
-                                                 g old _     = old { metaFile = metaFile new }
+                                                 g _ old     = old { metaFile = metaFile new }
                                              in pure . Map.alter (Just . f) pn
   }
