@@ -21,7 +21,7 @@ import Codec.Archive.Tar as Tar
 import Codec.Archive.Tar.Entry as Tar
 import Control.Exception
 import Control.Monad.Catch
-import Data.ByteString
+import Data.ByteString ( ByteString )
 import Data.ByteString.Lazy ( toStrict )
 import Data.Map.Strict as Map
 import Data.Time.Clock
@@ -32,13 +32,13 @@ import System.FilePath
 
 type HackageDB = Map PackageName PackageData
 
-data PackageData = PackageData { preferredVersions :: ByteString
-                               , versions          :: Map Version VersionData
+data PackageData = PackageData { preferredVersions :: !ByteString
+                               , versions          :: !(Map Version VersionData)
                                }
   deriving (Show, Eq, Generic)
 
-data VersionData = VersionData { cabalFile :: ByteString
-                               , metaFile  :: ByteString
+data VersionData = VersionData { cabalFile :: !ByteString
+                               , metaFile  :: !ByteString
                                }
   deriving (Show, Eq, Generic)
 
