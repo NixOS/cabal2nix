@@ -182,6 +182,7 @@ hooks =
   , ("xmonad >= 0.14.2", set phaseOverrides xmonadPostInstall)
   , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (self "zip") (pkg "zip")))
   , ("zip-archive >= 0.3.1 && < 0.3.2.3", over (testDepends . tool) (Set.union (Set.fromList [pkg "zip", pkg "unzip"])))   -- https://github.com/jgm/zip-archive/issues/35
+  , ("zip-archive >= 0.4", set (testDepends . tool . contains (pkg "which")) True)
   ]
 
 pkg :: Identifier -> Binding
