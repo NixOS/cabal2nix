@@ -201,6 +201,3 @@ test-suite regression-test
   build-tools:        cabal2nix
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints -threaded -with-rtsopts=-K64K
-                      -- TODO: This ought to be 1K!                     ^^^
-                      --       https://github.com/NixOS/cabal2nix/issues/398
-                      --       https://github.com/feuerbach/tasty/issues/234
