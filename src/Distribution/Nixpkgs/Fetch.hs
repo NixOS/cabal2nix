@@ -78,7 +78,7 @@ instance PP.Pretty DerivationSource where
     let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
         fetched = derivKind /= ""
     in if isHackagePackage then attr "sha256" $ string derivHash
-       else if not fetched then attr "src" $ string derivUrl
+       else if not fetched then attr "src" $ text derivUrl
             else vcat
                  [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace
                  , nest 2 $ vcat
