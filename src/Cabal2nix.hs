@@ -46,7 +46,7 @@ data Options = Options
   , optMaintainer :: [String]
 --, optPlatform :: [String]       -- TODO: fix command line handling of platforms
   , optHaddock :: Bool
-  , optHpack :: Bool
+  , optHpack :: HpackUse
   , optDoCheck :: Bool
   , optJailbreak :: Bool
   , optDoBenchmark :: Bool
@@ -74,7 +74,14 @@ options = Options
           <*> many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
 --        <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
           <*> flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
-          <*> switch (long "hpack" <> help "run hpack before configuring this package (only non-hackage packages)")
+          <*>
+          (
+            flag' ForceHpack (long "hpack" <> help "run hpack before configuring this package (only non-hackage packages)")
+            <|>
+            flag' NoHpack (long "no-hpack" <> help "disable hpack run and use only cabal disregarding package.yaml existence")
+            <|>
+            pure PackageYamlHpack
+          )
           <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
           <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
           <*> switch (long "benchmark" <> help "enable benchmarks for this package")

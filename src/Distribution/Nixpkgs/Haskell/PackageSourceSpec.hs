@@ -1,5 +1,5 @@
 module Distribution.Nixpkgs.Haskell.PackageSourceSpec
-  ( Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
+  ( HpackUse(..), Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
 
 import qualified Control.Exception as Exception
@@ -32,6 +32,11 @@ import System.IO
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
+data HpackUse
+  = ForceHpack
+  | PackageYamlHpack
+  | NoHpack
+
 data Package = Package
   { pkgSource   :: DerivationSource
   , pkgRanHpack :: Bool -- ^ If hpack generated a new cabal file
@@ -39,8 +44,8 @@ data Package = Package
   }
   deriving (Show)
 
-getPackage :: Bool
-           -- ^ Whether hpack should regenerate the cabal file.
+getPackage :: HpackUse
+           -- ^ the way hpack should be used.
            -> Bool
            -- ^ Whether to fetch submodules if fetching from git
            -> Maybe FilePath
@@ -52,8 +57,8 @@ getPackage :: Bool
 getPackage optHpack optSubmodules optHackageDB optHackageSnapshot =
   getPackage' optHpack optSubmodules (loadHackageDB optHackageDB optHackageSnapshot)
 
-getPackage' :: Bool
-            -- ^ Whether hpack should regenerate the cabal file.
+getPackage' :: HpackUse
+            -- ^ the way hpack should be used.
             -> Bool
             -- ^ Whether to fetch submodules if fetching from git
             -> IO DB.HackageDB
@@ -63,8 +68,8 @@ getPackage' optHpack optSubmodules hackageDB source = do
   (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optSubmodules hackageDB source
   (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
 
-fetchOrFromDB :: Bool
-              -- ^ Whether hpack should regenerate the cabal file
+fetchOrFromDB :: HpackUse
+              -- ^ the way hpack should be used
               -> Bool
               -- ^ Whether to fetch submodules if fetching from git
               -> IO DB.HackageDB
@@ -175,7 +180,7 @@ showPackageIdentifier pkgDesc = name ++ "-" ++ display version where
   name = Cabal.unPackageName (Cabal.packageName pkgId)
   version = Cabal.packageVersion pkgId
 
-cabalFromPath :: Bool -- ^ Whether hpack should regenerate the cabal file
+cabalFromPath :: HpackUse -- ^ the way hpack should be used
               -> FilePath -> MaybeT IO (Bool, Bool, Cabal.GenericPackageDescription)
 cabalFromPath optHpack path = do
   d <- liftIO $ doesDirectoryExist path
@@ -185,21 +190,25 @@ cabalFromPath optHpack path = do
     return (d, ranHpack, pkg)
   else (,,) d False <$> cabalFromFile False path
 
-cabalFromDirectory :: Bool -- ^ Whether hpack should regenerate the cabal file
+cabalFromDirectory :: HpackUse -- ^ the way hpack should be used
                    -> FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
-cabalFromDirectory True dir = hpackDirectory dir
-cabalFromDirectory False dir = do
+cabalFromDirectory ForceHpack dir = hpackDirectory dir
+cabalFromDirectory NoHpack dir = onlyCabalFromDirectory dir "*** No .cabal file was found. Exiting."
+cabalFromDirectory PackageYamlHpack dir = do
   useHpack <- liftIO $ doesFileExist (dir </> "package.yaml")
   if useHpack
     then do
       liftIO $ hPutStrLn stderr "*** found package.yaml. Using hpack..."
       hpackDirectory dir
-    else do
-      cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
-      case cabals of
-        [] -> fail "*** Found neither a .cabal file nor package.yaml. Exiting."
-        [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
-        _ -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
+    else onlyCabalFromDirectory dir "*** Found neither a .cabal file nor package.yaml. Exiting."
+
+onlyCabalFromDirectory :: FilePath -> String -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+onlyCabalFromDirectory dir errMsg = do
+  cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
+  case cabals of
+    [] -> fail errMsg
+    [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
+    _ -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
