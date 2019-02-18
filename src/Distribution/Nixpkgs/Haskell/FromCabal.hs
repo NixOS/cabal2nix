@@ -88,7 +88,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags
-    & runHaddock .~ maybe True (not . null . exposedModules) library
+    & runHaddock .~ doHaddockPhase
     & jailbreak .~ False
     & doCheck .~ True
     & doBenchmark .~ False
@@ -149,6 +149,11 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 
     internalLibNames :: [PackageName]
     internalLibNames = fmap unqualComponentNameToPackageName . catMaybes $ libName <$> subLibraries
+
+    doHaddockPhase :: Bool
+    doHaddockPhase | not (null internalLibNames) = False
+                   | Just l <- library           = not (null (exposedModules l))
+                   | otherwise                   = True
 
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
