@@ -26,6 +26,7 @@ configureCabalFlags' (PackageIdentifier name version)
                                   , enable "dbus"
                                   , disable "debuglocks"
                                   , enable "magicmime"
+                                  , disable "networkbsd"
                                   , enable "pairing"
                                   , enable "production"
                                   , enable "s3"
