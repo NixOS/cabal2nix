@@ -2,8 +2,9 @@
 
 set -eu -o pipefail
 
-tmpfile=$(mktemp "stackage-update.XXXXXXX")
-trap "rm $tmpfile" 0
+tmpfile=$(mktemp "update-stackage.XXXXXXX")
+# shellcheck disable=SC2064
+trap "rm ${tmpfile} ${tmpfile}.new" 0
 
 curl -L -s "https://www.stackage.org/lts/cabal.config" >"$tmpfile"
 version=$(sed -n "s/^--.*http:..www.stackage.org.snapshot.lts-//p" "$tmpfile")
@@ -16,7 +17,7 @@ sed -r \
     -e 's|,$||' \
     -e '/installed$/d' \
     -e '/^$/d' \
-    -i "$tmpfile"
+    < "${tmpfile}" | sort --ignore-case >"${tmpfile}.new"
 
 # Drop restrictions on some tools where we always want the latest version.
 sed -r \
@@ -38,9 +39,10 @@ sed -r \
     -e '/ ShellCheck /d' \
     -e '/ stack /d' \
     -e '/ weeder /d' \
-    -i "$tmpfile"
+    < "${tmpfile}.new" > "${tmpfile}"
 
 # Drop the previous configuration ...
+# shellcheck disable=SC1004
 sed -e '/# LTS Haskell/,/^$/c \TODO\
 '   -i nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml
 
