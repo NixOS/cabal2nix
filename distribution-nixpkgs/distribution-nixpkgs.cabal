@@ -5,7 +5,7 @@ description:   Types and functions to represent, query, and manipulate the Nixpk
 license:       BSD3
 license-file:  LICENSE
 maintainer:    Peter Simons <simons@cryp.to>
-tested-with:   GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.3
+tested-with:   GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.3
 category:      Distribution, Nix
 homepage:      https://github.com/peti/distribution-nixpkgs#readme
 bug-reports:   https://github.com/peti/distribution-nixpkgs/issues

@@ -38,8 +38,6 @@ matrix:
       addons: {apt: {packages: [ghc-ppa-tools,cabal-install-2.4,ghc-8.2.2], sources: [hvr-ghc]}}
     - compiler: "ghc-8.0.2"
       addons: {apt: {packages: [ghc-ppa-tools,cabal-install-2.4,ghc-8.0.2], sources: [hvr-ghc]}}
-    - compiler: "ghc-7.10.3"
-      addons: {apt: {packages: [ghc-ppa-tools,cabal-install-2.4,ghc-7.10.3], sources: [hvr-ghc]}}
 
 before_install:
   - HC=/opt/ghc/bin/${CC}
@@ -62,7 +60,7 @@ install:
   - sed -i.bak 's/^jobs:/-- jobs:/' $CABALHOME/config
   - rm -fv cabal.project cabal.project.local
   - grep -Ev -- '^\s*--' $CABALHOME/config | grep -Ev '^\s*$'
-  - if [ $HCNUMVER -ge 80000 ] ; then ${CABAL} new-install -w ${HC} -j2 doctest --constraint='doctest ==0.16.*' ; fi
+  - ${CABAL} new-install -w ${HC} -j2 doctest --constraint='doctest ==0.16.*'
   - if [ $HCNUMVER -eq 80603 ] ; then ${CABAL} new-install -w ${HC} -j2 hlint --constraint='hlint ==2.1.*' ; fi
   - rm -f cabal.project
   - touch cabal.project
@@ -106,7 +104,7 @@ script:
   - if [ "x$TEST" = "x--enable-tests" ]; then ${CABAL} new-test -w ${HC} ${TEST} ${BENCH} all; fi
 
   # doctest
-  - if [ $HCNUMVER -ge 80000 ] ; then (cd distribution-nixpkgs-* && doctest  -XMonadFailDesugaring src) ; fi
+  - (cd distribution-nixpkgs-* && doctest  -XMonadFailDesugaring src)
 
   # hlint
   - if [ $HCNUMVER -eq 80603 ] ; then (cd distribution-nixpkgs-* && hlint -XMonadFailDesugaring src) ; fi
