@@ -71,7 +71,7 @@ main = do
   CLI {..} <- execParser pinfo
 
   config <- readConfiguration (nixpkgsRepository </>  configFile)
-  nixpkgs <- readNixpkgPackageMap nixpkgsRepository Nothing
+  nixpkgs <- readNixpkgPackageMap ["-f", nixpkgsRepository, "--arg", "config", "{ allowAliases = false; }"]
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
