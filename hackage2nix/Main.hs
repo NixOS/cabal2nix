@@ -77,7 +77,7 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "control-invariants"   -- TODO: depends on "assert"
-            . over (at ("hermes")) ((fmap (set (contains "1.3.4.3") False)))  -- TODO: https://github.com/haskell/hackage-server/issues/436
+            . over (at "hermes") (fmap (set (contains "1.3.4.3") False))  -- TODO: https://github.com/haskell/hackage-server/issues/436
   hackage <- fixup <$> readHackage hackageRepository
   let
       hackagePackagesFile :: FilePath
@@ -133,7 +133,7 @@ main = do
       meta <- readPackageMeta hackageRepository pkgId
 
       let isInDefaultPackageSet :: Bool
-          isInDefaultPackageSet = maybe False (== v) (Map.lookup name generatedDefaultPackageSet)
+          isInDefaultPackageSet = (== Just v) (Map.lookup name generatedDefaultPackageSet)
 
           tarballSHA256 :: SHA256Hash
           tarballSHA256 = fromMaybe (error (display pkgId ++ ": meta data has no hash for the tarball"))
@@ -155,7 +155,7 @@ main = do
                   & metaSection.homepage .~ ""
 
           overrides :: Doc
-          overrides = fcat $ punctuate space [ disp b <> semi | b <- Set.toList ((view (dependencies . each) drv) `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
+          overrides = fcat $ punctuate space [ disp b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
         hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 
