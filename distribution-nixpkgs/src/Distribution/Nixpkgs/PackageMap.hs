@@ -3,30 +3,29 @@ module Distribution.Nixpkgs.PackageMap
   , resolve
   ) where
 
+import Control.Lens
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LBS
 import Data.Function
 import Data.List as List
 import Data.List.Split
-import qualified Data.Map.Strict as Map
 import Data.Map.Strict ( Map )
+import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Text
 import Language.Nix
 import System.Process
-import Control.Lens
 
 type PackageMap = Map Identifier (Set Path)
 
-readNixpkgPackageMap :: FilePath -> Maybe Path -> IO PackageMap
-readNixpkgPackageMap nixpkgs attrpath = fmap identifierSet2PackageMap (readNixpkgSet nixpkgs attrpath)
+readNixpkgPackageMap :: [String] -> IO PackageMap
+readNixpkgPackageMap = fmap identifierSet2PackageMap . readNixpkgSet
 
-readNixpkgSet :: FilePath -> Maybe Path -> IO (Set String)
-readNixpkgSet nixpkgs attrpath = do
-  let extraArgs = maybe [] (\p -> ["-A", display p]) attrpath
-  (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json", "-f", nixpkgs] ++ extraArgs))
+readNixpkgSet :: [String] -> IO (Set String)
+readNixpkgSet extraArgs = do
+  (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json"] ++ extraArgs))
                        { std_out = CreatePipe, env = Nothing }  -- TODO: ensure that overrides don't screw up our results
   buf <- LBS.hGetContents h
   let pkgmap :: Either String (Map String JSON.Object)
