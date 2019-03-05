@@ -14,7 +14,6 @@ import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Distribution.Text
 import Language.Nix
 import System.Process
 
