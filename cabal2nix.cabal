@@ -107,8 +107,8 @@ library
                       Distribution.Nixpkgs.Haskell.PackageSourceSpec
   other-modules:      Paths_cabal2nix
   hs-source-dirs:     src
-  build-depends:      base                 < 5
-                    , Cabal                > 2.2
+  build-depends:      base                 > 4.11
+                    , Cabal                > 2.4
                     , aeson
                     , ansi-wl-pprint
                     , bytestring
@@ -159,7 +159,7 @@ executable hackage2nix
                       Paths_cabal2nix
   hs-source-dirs:     hackage2nix
   build-depends:      base                 < 5
-                    , Cabal                > 2.2
+                    , Cabal                > 2.4
                     , aeson
                     , bytestring
                     , cabal2nix
@@ -185,7 +185,7 @@ test-suite regression-test
   main-is:            Main.hs
   hs-source-dirs:     test
   build-depends:      base
-                    , Cabal        > 2.2
+                    , Cabal        > 2.4
                     , cabal2nix
                     , containers
                     , directory

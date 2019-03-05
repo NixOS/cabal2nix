@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE CPP #-}
 
 module Main ( main ) where
 
@@ -15,9 +14,6 @@ import Data.List
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
-#if !MIN_VERSION_base(4,11,0)
-import Data.Monoid
-#endif
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.String
@@ -30,7 +26,7 @@ import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Package
-import Distribution.PackageDescription hiding ( options, buildDepends, extraLibs, buildTools, homepage )
+import Distribution.PackageDescription hiding ( options, extraLibs, buildTools, homepage )
 import Distribution.System
 import Distribution.Text
 import Distribution.Version
