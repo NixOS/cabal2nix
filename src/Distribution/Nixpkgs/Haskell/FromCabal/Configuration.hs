@@ -42,14 +42,22 @@ data Configuration = Configuration
   -- role during dependency resolution.
   , extraPackages :: [Constraint]
 
-  -- |We know that these packages won't build, so we give them an empty
-  -- meta.hydraPlatforms attribute to avoid cluttering our Hydra output with
-  -- lots of failure messages.
-  , dontDistributePackages :: Map PackageName (Set Platform)
-
   -- |This information is used by the @hackage2nix@ utility to determine the
   -- 'maintainers' for a given Haskell package.
   , packageMaintainers :: Map Identifier (Set PackageName)
+
+  -- |These packages (by design) don't support certain platforms.
+  , unsupportedPlatforms :: Map PackageName (Set Platform)
+
+  -- |These packages cannot be distributed by Hydra, i.e. because they have an
+  -- unfree license or depend on other tools that cannot be distributed for
+  -- some reason.
+  , dontDistributePackages :: Set PackageName
+
+  -- |We know that these packages won't compile, so we mark them as broken and
+  -- also disable their meta.hydraPlatforms attribute to avoid cluttering our
+  -- Hydra job with lots of failure messages.
+  , brokenPackages :: Set PackageName
   }
   deriving (Show, Generic)
 
@@ -61,8 +69,10 @@ instance FromJSON Configuration where
         <*> o .:? "core-packages" .!= mempty
         <*> o .:? "default-package-overrides" .!= mempty
         <*> o .:? "extra-packages" .!= mempty
-        <*> o .:? "dont-distribute-packages" .!= mempty
         <*> o .:? "package-maintainers" .!= mempty
+        <*> o .:? "unsupported-platforms" .!= mempty
+        <*> o .:? "dont-distribute-packages" .!= mempty
+        <*> o .:? "broken-packages" .!= mempty
   parseJSON _ = error "invalid Configuration"
 
 instance FromJSON Identifier where
@@ -87,7 +97,7 @@ assertConsistency cfg@Configuration {..} = do
   let report msg = fail ("*** configuration error: " ++ msg)
 
       maintainedPackages = Set.unions (Map.elems packageMaintainers)
-      disabledPackages = Map.keysSet dontDistributePackages
+      disabledPackages = dontDistributePackages `Set.union` brokenPackages
       disabledMaintainedPackages = maintainedPackages `Set.intersection` disabledPackages
   unless (Set.null disabledMaintainedPackages) $
     report ("disabled packages that have a maintainer: " ++ show disabledMaintainedPackages)
