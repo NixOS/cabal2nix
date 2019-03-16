@@ -109,7 +109,7 @@ library
   hs-source-dirs:     src
   build-depends:      base                 > 4.11
                     , Cabal                > 2.4
-                    , aeson
+                    , aeson                > 1
                     , ansi-wl-pprint
                     , bytestring
                     , containers

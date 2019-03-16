@@ -1,5 +1,4 @@
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
@@ -70,28 +69,11 @@ instance FromJSON Identifier where
   parseJSON (String s) = pure (review ident (T.unpack s))
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Nix identifier")
 
-#if MIN_VERSION_aeson(1,0,0)
-
 instance FromJSONKey Identifier where
   fromJSONKey = FromJSONKeyText parseKey
 
 instance FromJSONKey PackageName where
   fromJSONKey = FromJSONKeyText parseKey
-
-#elif MIN_VERSION_aeson(0,11,0)
-
-instance (FromJSON v) => FromJSON (Map Identifier v) where
-  parseJSON = fmap (Map.mapKeys parseKey) . parseJSON
-
-instance (FromJSON v) => FromJSON (Map PackageName v) where
-  parseJSON = fmap (Map.mapKeys parseKey) . parseJSON
-
-#else
-
-instance (Ord k, FromJSON k, FromJSON v) => FromJSON (Map k v) where
-  parseJSON  = fmap (Map.mapKeys parseKey) . parseJSON
-
-#endif
 
 parseKey :: FromJSON k => Text -> k
 parseKey s = either error id (parseEither parseJSON (String s))
