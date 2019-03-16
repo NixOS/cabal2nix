@@ -5,7 +5,10 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Distribution.Nixpkgs.Haskell.FromCabal.Configuration ( Configuration(..), readConfiguration, assertConsistency ) where
+module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
+  ( Configuration(..), readConfiguration, assertConsistency
+  )
+  where
 
 import Control.Exception ( throwIO )
 import Control.DeepSeq
