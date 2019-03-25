@@ -6,8 +6,8 @@ tmpfile=$(mktemp "update-stackage.XXXXXXX")
 # shellcheck disable=SC2064
 trap "rm ${tmpfile} ${tmpfile}.new" 0
 
-curl -L -s "https://www.stackage.org/lts/cabal.config" >"$tmpfile"
-version=$(sed -n "s/^--.*http:..www.stackage.org.snapshot.lts-//p" "$tmpfile")
+curl -L -s "https://stackage.org/lts/cabal.config" >"$tmpfile"
+version=$(sed -rn "s/^--.*http:..(www.)?stackage.org.snapshot.lts-//p" "$tmpfile")
 
 # Create a simple yaml version of the file.
 sed -r \
