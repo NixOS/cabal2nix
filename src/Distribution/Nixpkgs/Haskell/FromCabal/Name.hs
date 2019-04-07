@@ -105,6 +105,7 @@ libNixName "libzmq"                             = return "zeromq"
 libNixName "m"                                  = []  -- in stdenv
 libNixName "magic"                              = return "file"
 libNixName "MagickWand"                         = return "imagemagick"
+libNixName "mnl"                                = return "libmnl"
 libNixName "mpi"                                = return "openmpi"
 libNixName "ncursesw"                           = return "ncurses"
 libNixName "netsnmp"                            = return "net_snmp"
