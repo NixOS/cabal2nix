@@ -49,6 +49,10 @@ instance FromJSON PackageIdentifier where
   parseJSON (String s) = return (fromString (T.unpack s))
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell package identifier")
 
+instance FromJSON VersionRange where
+  parseJSON (String s) = return (fromString (T.unpack s))
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Cabal VersionRange")
+
 instance FromJSON Dependency where
   parseJSON (String s) = return (fromString (T.unpack s))
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell Dependency")

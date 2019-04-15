@@ -135,7 +135,7 @@ main = do
       let isInDefaultPackageSet, isHydraEnabled, isBroken :: Bool
           isInDefaultPackageSet = (== Just v) (Map.lookup name generatedDefaultPackageSet)
           isHydraEnabled = isInDefaultPackageSet && not (isBroken || name `Set.member` dontDistributePackages config)
-          isBroken = name `Set.member` brokenPackages config
+          isBroken = any (withinRange v) [ vr | Dependency pn vr <- brokenPackages config, pn == name ]
 
           droppedPlatforms :: Set Platform
           droppedPlatforms = Map.findWithDefault mempty name (unsupportedPlatforms config)

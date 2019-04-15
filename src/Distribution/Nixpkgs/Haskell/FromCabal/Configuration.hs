@@ -9,8 +9,8 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
   )
   where
 
-import Control.Exception ( throwIO )
 import Control.DeepSeq
+import Control.Exception ( throwIO )
 import Control.Lens
 import Control.Monad
 import Data.Aeson
@@ -57,7 +57,7 @@ data Configuration = Configuration
   -- |We know that these packages won't compile, so we mark them as broken and
   -- also disable their meta.hydraPlatforms attribute to avoid cluttering our
   -- Hydra job with lots of failure messages.
-  , brokenPackages :: Set PackageName
+  , brokenPackages :: [Constraint]
   }
   deriving (Show, Generic)
 
@@ -89,15 +89,13 @@ parseKey :: FromJSON k => Text -> k
 parseKey s = either error id (parseEither parseJSON (String s))
 
 readConfiguration :: FilePath -> IO Configuration
-readConfiguration path =
-  decodeFileEither path >>= either throwIO assertConsistency
+readConfiguration path = decodeFileEither path >>= either throwIO assertConsistency
 
 assertConsistency :: Monad m => Configuration -> m Configuration
 assertConsistency cfg@Configuration {..} = do
   let report msg = fail ("*** configuration error: " ++ msg)
-
       maintainedPackages = Set.unions (Map.elems packageMaintainers)
-      disabledPackages = dontDistributePackages `Set.union` brokenPackages
+      disabledPackages = dontDistributePackages `Set.union` Set.fromList (depPkgName <$> brokenPackages)
       disabledMaintainedPackages = maintainedPackages `Set.intersection` disabledPackages
   unless (Set.null disabledMaintainedPackages) $
     report ("disabled packages that have a maintainer: " ++ show disabledMaintainedPackages)
