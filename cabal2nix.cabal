@@ -112,7 +112,7 @@ library
                     , aeson                > 1
                     , ansi-wl-pprint
                     , bytestring
-                    , containers
+                    , containers           >= 0.5.9
                     , deepseq              >= 1.4
                     , directory
                     , distribution-nixpkgs >= 1.2
