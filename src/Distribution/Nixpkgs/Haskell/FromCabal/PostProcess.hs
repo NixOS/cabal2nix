@@ -291,8 +291,8 @@ darcsInstallPostInstall = unlines
 xmonadPostInstall :: String
 xmonadPostInstall = unlines
   [ "postInstall = ''"
-  , "  install -D man/xmonad.1 ${!outputDoc}/share/man/man1/xmonad.1"
-  , "  install -D man/xmonad.hs ${!outputDoc}/share/doc/$name/sample-xmonad.hs"
+  , "  install -D man/xmonad.1 ''${!outputDoc}/share/man/man1/xmonad.1"
+  , "  install -D man/xmonad.hs ''${!outputDoc}/share/doc/$name/sample-xmonad.hs"
   , "'';"
   ]
 
