@@ -31,7 +31,7 @@ code to compute the hash, which obviously still causes network traffic. Run the
 utility with `--help` to see the complete list of supported command line flags.
 
 Detailed instructions how to use those generated files with Nix can be found at
-http://nixos.org/nixpkgs/manual/#users-guide-to-the-haskell-infrastructure.
+https://nixos.org/nixpkgs/manual/#how-to-create-nix-builds-for-your-own-private-haskell-packages.
 
 `cabal2nix` can also build derivations for projects from other sources than
 hackage. You only need to provide an URI that points to a cabal project. The
