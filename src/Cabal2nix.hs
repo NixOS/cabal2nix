@@ -193,7 +193,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
   cabal2nix =<< getArgs
 
 hpackOverrides :: Derivation -> Derivation
-hpackOverrides = over phaseOverrides (++ "preConfigure = \"hpack\";")
+hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
                . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
 cabal2nix' :: Options -> IO (Either Doc Derivation)
