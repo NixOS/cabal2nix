@@ -2,6 +2,8 @@
 
 set -eu -o pipefail
 
+cd "$(dirname "$0")"
+
 tmpfile=$(mktemp "update-stackage.XXXXXXX")
 # shellcheck disable=SC2064
 trap "rm ${tmpfile} ${tmpfile}.new" 0
