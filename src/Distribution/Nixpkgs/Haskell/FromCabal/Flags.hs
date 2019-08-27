@@ -45,6 +45,7 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "io-streams"         = [enable "NoInteractiveTests"]
  | name == "liquid-fixpoint"    = [enable "build-external"]
  | name == "pandoc"             = [enable "https", disable "trypandoc"]
+ | name == "pandoc-placetable"  = [enable "inlineMarkdown"]
  | name == "persistent-sqlite"  = [enable "systemlib"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
  | name == "snap-server"        = [enable "openssl"]
