@@ -15,6 +15,9 @@ and we want to check that hackage-packages.nix will be updated correctly.
 On macOS you can use [this](https://gist.github.com/dixson3/8360571) to create one
 (you can replace 60g with 4g as that should be plenty).
 
+There is a [video on YouTube](https://www.youtube.com/watch?v=qX0mgtSm360)
+that gives a thorough walk-through of these steps.
+
 #### Setup
 Replace `git@github.com:NixOS/nixpkgs.git` with a fork you have access to.
 ```
