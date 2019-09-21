@@ -38,6 +38,8 @@ instance NFData Binding where
 instance Arbitrary Binding where
   arbitrary = review binding <$> arbitrary
 
+instance CoArbitrary Binding
+
 instance Pretty Binding where
   pPrint b = case (init ps, last ps) of
                ([], i') -> if i == i'

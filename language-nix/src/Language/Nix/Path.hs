@@ -74,6 +74,8 @@ instance IsString Path where
 instance Arbitrary Path where
   arbitrary = Path <$> listOf1 arbitrary
 
+instance CoArbitrary Path
+
 -- | Use this isomorphism to construct a path from a list of identifiers, or to
 -- access that list for a given path.
 

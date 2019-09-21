@@ -54,6 +54,8 @@ instance Arbitrary Identifier where
   arbitrary = Identifier <$> listOf1 arbitraryUnicodeChar
   shrink (Identifier i) = map Identifier (shrink i)
 
+instance CoArbitrary Identifier
+
 instance Pretty Identifier where
   pPrint = view (ident . to quote . to text)
 
