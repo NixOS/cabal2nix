@@ -161,7 +161,9 @@ fetchWith (supportsRev, kind, addArgs) source = do
       ExitFailure _ -> return Nothing
       ExitSuccess   -> do
         buf <- BS.hGetContents stdoutH
-        let (l:ls) = reverse (BS.lines buf)
+        let (l,ls) = case reverse (BS.lines buf) of
+                       []     -> error "This can't happen, but GHC doesn't know that."
+                       (x:xs) -> (x,xs)
             buf'   = BS.unlines (reverse ls)
         case length ls of
           0 -> return Nothing
