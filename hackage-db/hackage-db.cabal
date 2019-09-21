@@ -3,7 +3,7 @@ version:       2.1.0
 synopsis:      Access cabal-install's Hackage database via Data.Map
 description:   This library provides convenient access to the local copy of the Hackage
                database that \"cabal update\" creates. Check out
-               https:\//github.com/peti/hackage-db/tree/master/example\/ for a collection
+               <https://github.com/peti/hackage-db/tree/master/example/> for a collection
                of simple example programs that demonstrate how to use this code.
 license:       BSD3
 license-file:  LICENSE
