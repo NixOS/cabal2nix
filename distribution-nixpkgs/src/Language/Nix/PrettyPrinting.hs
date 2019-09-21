@@ -13,7 +13,6 @@ module Language.Nix.PrettyPrinting
   , funargs
   -- * Re-exports from other modules
   , module Text.PrettyPrint.HughesPJClass
-  , Text, disp
   )
   where
 
@@ -26,7 +25,6 @@ import Data.Function
 import Data.List
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Distribution.Text ( Text, disp )
 import "pretty" Text.PrettyPrint.HughesPJClass
 
 attr :: String -> Doc -> Doc
