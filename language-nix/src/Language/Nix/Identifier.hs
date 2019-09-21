@@ -30,13 +30,13 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- methods of the 'Text' class can be used to parse and pretty-print an
 -- identifier with proper quoting:
 --
--- >>> disp (ident # "test")
+-- >>> pPrint (ident # "test")
 -- test
--- >>> disp (ident # "foo.bar")
+-- >>> pPrint (ident # "foo.bar")
 -- "foo.bar"
 --
--- prop> \str -> Just (ident # str) == simpleParse (quote str)
--- prop> \i -> Just (i :: Identifier) == simpleParse (display i)
+-- prop> \str -> Just (ident # str) == parseM "Ident" (quote str)
+-- prop> \i -> Just (i :: Identifier) == parseM "Ident" (prettyShow i)
 declareLenses [d| newtype Identifier = Identifier { ident :: String }
                     deriving (Show, Eq, Ord, IsString, Generic)
               |]

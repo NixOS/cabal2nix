@@ -23,7 +23,7 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- >>> "inherit (foo.bar) abc" :: Binding
 -- Bind (Identifier "abc") (Path [Identifier "foo",Identifier "bar",Identifier "abc"])
 --
--- prop> \b -> Just (b :: Binding) == simpleParse (display b)
+-- prop> \b -> Just (b :: Binding) == parseM "Binding" (prettyShow b)
 
 declareLenses [d| data Binding = Bind { localName :: Identifier, reference :: Path }
                     deriving (Show, Eq, Ord, Generic)

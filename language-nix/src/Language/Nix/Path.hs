@@ -16,7 +16,7 @@ import Text.Parsec.Class as P
 import Text.PrettyPrint.HughesPJClass as PP
 
 -- $setup
--- >>> import Control.Exception
+-- >>> import Control.Exception as Excpt
 
 -- | Paths are non-empty lists of identifiers in Nix.
 --
@@ -26,33 +26,33 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- Any attempt to construct the empty path throws an 'error':
 --
 -- >>> :set -XScopedTypeVariables
--- >>> either (\(_::SomeException) -> "empty paths are illegal") show <$> try (evaluate (path # []))
+-- >>> either (\(_::SomeException) -> "empty paths are illegal") show <$> Excpt.try (evaluate (path # []))
 -- "empty paths are illegal"
 --
 -- Paths can be pretty-printed and parsed with the 'Text' class:
 --
--- >>> simpleParse "foo.\"foo.bar\".bar" :: Maybe Path
--- Just (Path [Identifier "foo",Identifier "foo.bar",Identifier "bar"])
--- >>> maybe empty disp (simpleParse "foo.\"foo\".\"bar\".bar" :: Maybe Path)
+-- >>> parse "Path" "foo.\"foo.bar\".bar" :: Path
+-- Path [Identifier "foo",Identifier "foo.bar",Identifier "bar"]
+-- >>> pPrint (parse "Path" "foo.\"foo\".\"bar\".bar" :: Path)
 -- foo.foo.bar.bar
 --
--- prop> \p -> Just (p :: Path) == simpleParse (display p)
+-- prop> \p -> Just (p :: Path) == parseM "Path" (prettyShow p)
 --
 -- Paths are instances of strings and can be implicitly converted:
 --
 -- >>> :set -XOverloadedStrings
--- >>> disp $ ("yo.bar" :: Path)
+-- >>> pPrint $ ("yo.bar" :: Path)
 -- yo.bar
--- >>> disp $ ("  yo  .  bar  " :: Path)
+-- >>> pPrint $ ("  yo  .  bar" :: Path)
 -- yo.bar
 --
 -- Freaky quoted identifiers are fine throughout:
 --
--- >>> disp $ path # ["yo","b\"ar"]
+-- >>> pPrint $ path # ["yo","b\"ar"]
 -- yo."b\"ar"
--- >>> disp ("\"5ident\"" :: Path)
+-- >>> pPrint ("\"5ident\"" :: Path)
 -- "5ident"
--- >>> disp $ path # ["5ident","foo.bar","foo\nbar"]
+-- >>> pPrint $ path # ["5ident","foo.bar","foo\nbar"]
 -- "5ident"."foo.bar"."foo\nbar"
 
 declareLenses [d| newtype Path = Path [Identifier]
