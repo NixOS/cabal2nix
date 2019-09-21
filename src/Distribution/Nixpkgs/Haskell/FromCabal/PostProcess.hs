@@ -21,7 +21,7 @@ import Language.Nix
 
 postProcess :: Derivation -> Derivation
 postProcess deriv =
- foldr (.) id [ f | (Dependency n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
+ foldr (.) id [ f | (Dependency n vr _, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
  . fixGtkBuilds
  . fixBuildDependsForTools
  $ deriv

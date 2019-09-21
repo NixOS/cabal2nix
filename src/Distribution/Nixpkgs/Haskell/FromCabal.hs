@@ -58,14 +58,14 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
                           }
 
     jailbroken :: HaskellResolver -> HaskellResolver
-    jailbroken resolver (Dependency pkg _) = resolver (Dependency pkg anyVersion)
+    jailbroken resolver (Dependency pkg _ _) = resolver (Dependency pkg anyVersion mempty)
 
     withInternalLibs :: HaskellResolver -> HaskellResolver
     withInternalLibs resolver d = depPkgName d `elem` internalNames || resolver d
 
     internalNames :: [PackageName]
     internalNames =    [ unqualComponentNameToPackageName n | (n,_) <- condSubLibraries genDesc ]
-                    ++ [ unqualComponentNameToPackageName n | Just n <- libName <$> subLibraries (packageDescription genDesc) ]
+                    ++ [ unqualComponentNameToPackageName n | LSubLibName n <- libName <$> subLibraries (packageDescription genDesc) ]
 
   in case finalize (jailbroken (withInternalLibs haskellResolver)) of
     Left m -> case finalize (const True) of
@@ -119,7 +119,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     nixLicense =  either fromSPDXLicense fromCabalLicense licenseRaw
 
     resolveInHackage :: Identifier -> Binding
-    resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _) <- missingDeps ] = bindNull i
+    resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _ _) <- missingDeps ] = bindNull i
                        | otherwise = binding # (i, path # ["self",i])   -- TODO: "self" shouldn't be hardcoded.
 
     -- TODO: This is all very confusing. Haskell packages refer to the Nixpkgs
@@ -144,11 +144,11 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
       | otherwise                        = bindNull i
 
     resolveInHackageThenNixpkgs :: Identifier -> Binding
-    resolveInHackageThenNixpkgs i | haskellResolver (Dependency (mkPackageName (i^.ident)) anyVersion) = resolveInHackage i
+    resolveInHackageThenNixpkgs i | haskellResolver (Dependency (mkPackageName (i^.ident)) anyVersion mempty) = resolveInHackage i
                                   | otherwise = resolveInNixpkgs i
 
     internalLibNames :: [PackageName]
-    internalLibNames = fmap unqualComponentNameToPackageName . catMaybes $ libName <$> subLibraries
+    internalLibNames = [ unqualComponentNameToPackageName n | LSubLibName n <- libName <$> subLibraries ]
 
     doHaddockPhase :: Bool
     doHaddockPhase | not (null internalLibNames) = False
@@ -158,7 +158,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
     convertBuildInfo Cabal.BuildInfo {..} = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- targetBuildDepends, x `notElem` internalLibNames ]
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, x `notElem` internalLibNames ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
       & tool .~ Set.fromList (map resolveInHackageThenNixpkgs . concatMap buildToolNixName
@@ -166,7 +166,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 
     convertSetupBuildInfo :: Cabal.SetupBuildInfo -> Nix.BuildInfo
     convertSetupBuildInfo bi = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _) <- Cabal.setupDepends bi ]
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- Cabal.setupDepends bi ]
 
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])

@@ -112,8 +112,8 @@ instance Pretty Derivation where
   pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
-      [ attr "pname"   $ doubleQuotes $ disp (packageName _pkgid)
-      , attr "version" $ doubleQuotes $ disp (packageVersion _pkgid)
+      [ attr "pname"   $ doubleQuotes $ pPrint (packageName _pkgid)
+      , attr "version" $ doubleQuotes $ pPrint (packageVersion _pkgid)
       , pPrint _src
       , onlyIf (_subpath /= ".") $ attr "postUnpack" postUnpack
       , onlyIf (_revision > 0) $ attr "revision" $ doubleQuotes $ int _revision

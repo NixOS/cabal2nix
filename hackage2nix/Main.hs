@@ -23,6 +23,7 @@ import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration as Config
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
 import Distribution.Package
@@ -62,7 +63,7 @@ main = do
       pinfo :: ParserInfo CLI
       pinfo = info
               (   helper
-              <*> infoOption ("hackage2nix " ++ display Main.version) (long "version" <> help "Show version number")
+              <*> infoOption ("hackage2nix " ++ prettyShow Main.version) (long "version" <> help "Show version number")
               <*> cliOptions
               )
               (  fullDesc
@@ -92,7 +93,7 @@ main = do
       latestVersionSet = Map.map Set.findMax (Map.filter (not . Set.null) (Map.mapWithKey (enforcePreferredVersions preferredVersions) hackage))
 
       defaultPackageOverridesSet :: PackageSet
-      defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency name _) <- defaultPackageOverrides config ]
+      defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency name _ _) <- defaultPackageOverrides config ]
 
       generatedDefaultPackageSet :: PackageSet
       generatedDefaultPackageSet = (defaultPackageOverridesSet `Map.union` latestVersionSet) `Map.difference` corePackageSet
@@ -105,7 +106,7 @@ main = do
 
       extraPackageSet :: PackageMultiSet
       extraPackageSet = Map.unionsWith Set.union
-                          [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _) <- extraPackages config ]
+                          [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _ _) <- extraPackages config ]
 
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
@@ -115,7 +116,7 @@ main = do
                                     ]
 
       haskellResolver :: Dependency -> Bool
-      haskellResolver (Dependency name vrange)
+      haskellResolver (Dependency name vrange _)
         | Just v <- Map.lookup name corePackageSet                = v `withinRange` vrange
         | Just v <- Map.lookup name generatedDefaultPackageSet    = v `withinRange` vrange
         | otherwise                                               = False
@@ -137,7 +138,7 @@ main = do
       let isInDefaultPackageSet, isHydraEnabled, isBroken :: Bool
           isInDefaultPackageSet = (== Just v) (Map.lookup name generatedDefaultPackageSet)
           isHydraEnabled = isInDefaultPackageSet && not (isBroken || name `Set.member` dontDistributePackages config)
-          isBroken = any (withinRange v) [ vr | Dependency pn vr <- brokenPackages config, pn == name ]
+          isBroken = any (withinRange v) [ vr | Dependency pn vr _ <- brokenPackages config, pn == name ]
 
           droppedPlatforms :: Set Platform
           droppedPlatforms = Map.findWithDefault mempty name (unsupportedPlatforms config)
@@ -164,7 +165,7 @@ main = do
                   & metaSection.homepage .~ ""
 
           overrides :: Doc
-          overrides = fcat $ punctuate space [ disp b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
+          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
         hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 
@@ -204,7 +205,7 @@ resolveConstraint c = fromMaybe (error msg) . resolveConstraint' c
                       ]
 
 resolveConstraint' :: Constraint -> Hackage -> Maybe Version
-resolveConstraint' (Dependency name vrange) hackage
+resolveConstraint' (Dependency name vrange _) hackage
   | Just vset' <- Map.lookup name hackage
   , vset <- Set.filter (`withinRange` vrange) vset'
   , not (Set.null vset)         = Just (Set.findMax vset)

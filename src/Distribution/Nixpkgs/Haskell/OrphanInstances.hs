@@ -9,9 +9,12 @@ import qualified Data.Text as T
 import Data.Yaml
 import Distribution.Compiler
 import Distribution.Package
+import Distribution.Parsec
 import Distribution.System
-import Distribution.Text
+import Distribution.Pretty as Cabal
+import qualified Data.Version as Base
 import Distribution.Version
+import Language.Nix.PrettyPrinting as Nix
 
 instance NFData CompilerInfo
 instance NFData AbiTag
@@ -61,7 +64,25 @@ instance FromJSON CompilerInfo where
   parseJSON (String s) = return (unknownCompilerInfo (fromString (T.unpack s)) NoAbiTag)
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell compiler")
 
+instance Nix.Pretty Version where
+  pPrint = pretty
+
+instance Nix.Pretty PackageName where
+  pPrint = pretty
+
+instance Nix.Pretty PackageIdentifier where
+  pPrint = pretty
+
+instance Nix.Pretty CompilerId where
+  pPrint = pretty
+
+instance Nix.Pretty Platform where
+  pPrint = pretty
+
+instance Nix.Pretty Base.Version where
+  pPrint = text . Base.showVersion
+
 -- parsing tools
 
-text2isString :: Text a => String -> String -> a
-text2isString t s = fromMaybe (error ("fromString: " ++ show s ++ " is not a valid " ++ t)) (simpleParse s)
+text2isString :: Parsec a => String -> String -> a
+text2isString t s = fromMaybe (error ("fromString: " ++ show s ++ " is not a valid " ++ t)) (simpleParsec s)

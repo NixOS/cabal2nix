@@ -18,7 +18,6 @@ import Data.Monoid ( (<>) )
 import qualified Data.Set as Set
 import Data.String
 import Data.Time
-import qualified Distribution.Compat.ReadP as P
 import Distribution.Compiler
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
@@ -26,13 +25,14 @@ import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP (pkg)
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Haskell.PackageSourceSpec
 import Distribution.Nixpkgs.Meta
-import Distribution.PackageDescription ( mkFlagName, mkFlagAssignment, FlagAssignment )
 import Distribution.Package ( packageId )
+import Distribution.PackageDescription ( mkFlagName, mkFlagAssignment, FlagAssignment )
+import Distribution.Parsec as P
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
-import Distribution.Text
 import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix ( version )
@@ -94,8 +94,8 @@ options = Options
           <*> optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
           <*> switch (long "shell" <> help "generate output suitable for nix-shell")
           <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
-          <*> option (readP parse) (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith display)
-          <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith display)
+          <*> option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
+          <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith prettyShow)
           <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
           <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
           <*> pure (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
@@ -110,10 +110,8 @@ utcTimeReader = eitherReader $ \arg ->
         Nothing      -> Left $ "Cannot parse date, ISO format used ('2017-11-20T12:18:35Z'): " ++ arg
         Just utcTime -> Right utcTime
 
-readP :: P.ReadP a a -> ReadM a
-readP p = eitherReader $ \s -> case [ r' | (r',"") <- P.readP_to_S p s ] of
-                                    (r:_) -> Right r
-                                    _     -> Left ("invalid value " ++ show s)
+parseCabal :: Parsec a => ReadM a
+parseCabal = eitherReader eitherParsec
 
 -- | Replicate the normalization performed by GHC_CONVERT_CPU in GHC's aclocal.m4
 -- since the output of that is what Cabal parses.
@@ -164,7 +162,7 @@ parsePlatformParts = \case
 pinfo :: ParserInfo Options
 pinfo = info
         (   helper
-        <*> infoOption ("cabal2nix " ++ display version) (long "version" <> help "Show version number")
+        <*> infoOption ("cabal2nix " ++ prettyShow version) (long "version" <> help "Show version number")
         <*> options
         )
         (  fullDesc

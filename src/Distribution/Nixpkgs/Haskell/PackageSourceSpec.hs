@@ -11,16 +11,18 @@ import qualified Data.ByteString.Char8 as BS
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 import Data.Time
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
+import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import qualified Distribution.Package as Cabal
 import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Parsec as Cabal
-import Distribution.Parsec.Common (showPError)
-import Distribution.Text ( simpleParse, display )
+import Distribution.Parsec
 import Distribution.Version
 import qualified Hpack.Config as Hpack
 import qualified Hpack.Render as Hpack
@@ -29,8 +31,7 @@ import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMi
 import System.Exit ( exitFailure )
 import System.FilePath ( (</>), (<.>) )
 import System.IO
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
+import Text.PrettyPrint.HughesPJClass hiding ( first )
 
 data HpackUse
   = ForceHpack
@@ -107,12 +108,12 @@ fromDB hackageDBIO pkg = do
   return (ds, setCabalFileHash (DB.cabalFileSha256 vd) (DB.cabalFile vd))
  where
   pkgId :: Cabal.PackageIdentifier
-  pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParse pkg)
+  pkgId = fromMaybe (error ("invalid Haskell package id " ++ show pkg)) (simpleParsec pkg)
   name = Cabal.packageName pkgId
 
-  unknownPackageError = fail $ "No such package " ++ display pkgId ++ " in the cabal database. Did you run cabal update?"
+  unknownPackageError = fail $ "No such package " ++ prettyShow pkgId ++ " in the cabal database. Did you run cabal update?"
 
-  url = "mirror://hackage/" ++ display pkgId ++ ".tar.gz"
+  url = "mirror://hackage/" ++ prettyShow pkgId ++ ".tar.gz"
 
   version :: Version
   version = Cabal.packageVersion pkgId
@@ -175,7 +176,7 @@ sourceFromHackage optHash pkgId cabalDir = do
           exitFailure
 
 showPackageIdentifier :: Cabal.GenericPackageDescription -> String
-showPackageIdentifier pkgDesc = name ++ "-" ++ display version where
+showPackageIdentifier pkgDesc = name ++ "-" ++ prettyShow version where
   pkgId = Cabal.package . Cabal.packageDescription $ pkgDesc
   name = Cabal.unPackageName (Cabal.packageName pkgId)
   version = Cabal.packageVersion pkgId
