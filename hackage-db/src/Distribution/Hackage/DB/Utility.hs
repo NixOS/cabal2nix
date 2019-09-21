@@ -14,10 +14,10 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Data.Time.Format
-import Distribution.Text
+import Distribution.Parsec
 
-parseText :: Text a => String -> String -> a
-parseText t x = fromMaybe (throw (InvalidRepresentationOfType t x)) (simpleParse x)
+parseText :: Parsec a => String -> String -> a
+parseText t x = fromMaybe (throw (InvalidRepresentationOfType t x)) (simpleParsec x)
 
 -- | Convert the the 'EpochTime' used by the @tar@ library into a standard
 -- 'UTCTime' type.
