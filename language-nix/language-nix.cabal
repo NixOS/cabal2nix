@@ -1,41 +1,41 @@
-name:           language-nix
-version:        2.1.0.1
-synopsis:       Data types and functions to represent the Nix language
-description:    Data types and useful functions to represent and manipulate the Nix language.
-category:       Distribution, Language, Nix
-homepage:       https://github.com/peti/language-nix#readme
-bug-reports:    https://github.com/peti/language-nix/issues
-author:         Peter Simons
-maintainer:     simons@cryp.to
-license:        BSD3
-license-file:   LICENSE
-build-type:     Simple
-cabal-version:  >= 1.10
-tested-with:    GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2
-              , GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
+name:          language-nix
+version:       2.2.0
+synopsis:      Data types and functions to represent the Nix language
+description:   Data types and useful functions to represent and manipulate the Nix
+               language.
+license:       BSD3
+license-file:  LICENSE
+author:        Peter Simons
+maintainer:    simons@cryp.to
+tested-with:   GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2,
+               GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
+category:      Distribution, Language, Nix
+homepage:      https://github.com/peti/language-nix#readme
+bug-reports:   https://github.com/peti/language-nix/issues
+build-type:    Simple
+cabal-version: >= 1.10
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/peti/language-nix
 
 library
-  hs-source-dirs:
-      src
-  other-extensions: DeriveGeneric GeneralizedNewtypeDeriving NoImplicitPrelude TemplateHaskell
-  ghc-options: -Wall
-  build-depends:
-      base < 5
-    , base-compat
-    , Cabal
-    , deepseq
-    , lens
-    , pretty
-    , QuickCheck
-  exposed-modules:
-      Language.Nix
-      Language.Nix.Binding
-      Language.Nix.Identifier
-      Language.Nix.Path
-  other-modules:
-      Paths_language_nix
-  default-language: Haskell2010
+  exposed-modules:    Language.Nix
+                      Language.Nix.Binding
+                      Language.Nix.Identifier
+                      Language.Nix.Path
+  other-modules:      Paths_language_nix
+  hs-source-dirs:     src
+  build-depends:      base         < 5
+                    , QuickCheck
+                    , base-compat
+                    , deepseq
+                    , lens
+                    , parsec-class
+                    , pretty
+  default-language:   Haskell2010
+  other-extensions:   FlexibleContexts
+                      TemplateHaskell
+                      GeneralizedNewtypeDeriving
+                      DeriveGeneric
+                      NoImplicitPrelude

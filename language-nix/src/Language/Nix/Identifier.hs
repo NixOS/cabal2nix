@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -12,13 +13,13 @@ module Language.Nix.Identifier
 import Control.DeepSeq
 import Control.Lens
 import Data.Char
+import Data.Either
 import Data.String
-import Distribution.Compat.ReadP as ReadP
-import Distribution.Text
 import GHC.Generics ( Generic )
 import Prelude.Compat
 import Test.QuickCheck
-import Text.PrettyPrint as PP
+import Text.Parsec.Class as P
+import Text.PrettyPrint.HughesPJClass as PP
 
 -- | Identifiers in Nix are essentially strings. They can be constructed
 -- (and viewed) with the 'ident' isomorphism. For the sake of convenience,
@@ -53,39 +54,38 @@ instance Arbitrary Identifier where
   arbitrary = Identifier <$> arbitrary
   shrink (Identifier i) = map Identifier (shrink i)
 
-instance Text Identifier where
-  disp = view (ident . to quote . to text)
-  parse = parseQuotedIdentifier <++ parseSimpleIdentifier
+instance Pretty Identifier where
+  pPrint = view (ident . to quote . to text)
 
--- | 'ReadP' parser for simple identifiers, i.e. those that don't need
--- quoting.
-parseSimpleIdentifier :: ReadP r Identifier
+instance HasParser Identifier where
+  parser = parseQuotedIdentifier <|> parseSimpleIdentifier
+
+-- | Parsec parser for simple identifiers, i.e. those that don't need quoting.
+parseSimpleIdentifier :: CharParser st tok m Identifier
 parseSimpleIdentifier = do
   c <- satisfy (\x -> x == '_' || isAlpha x)
-  cs <- munch (\x -> x `elem` "_'-" || isAlphaNum x)
+  cs <- many (satisfy (\x -> x `elem` "_'-" || isAlphaNum x))
   return (Identifier (c:cs))
 
 -- | 'ReadP' parser for quoted identifiers, i.e. those that /do/ need
 -- quoting.
-parseQuotedIdentifier :: ReadP r Identifier
-parseQuotedIdentifier = Identifier . read . fst
-                     <$> gather (between (ReadP.char '"') (ReadP.char '"') (many qString))
+parseQuotedIdentifier :: CharParser st tok m Identifier
+parseQuotedIdentifier = Identifier . concat <$> between (P.char '"') (P.char '"') (many qString)
   where
-    qString :: ReadP r String
-    qString = quotedPair <++ munch1 (`notElem` "\\\"")
+    qString :: CharParser st tok m String
+    qString = quotedPair <|> many1 (P.noneOf "\\\"")
 
-    quotedPair :: ReadP r String
+    quotedPair :: CharParser st tok m String
     quotedPair = do
-      c1 <- ReadP.char '\\'
-      c2 <- get
+      c1 <- P.char '\\'
+      c2 <- anyChar
       return [c1,c2]
 
 -- | Checks whether a given string needs quoting when interpreted as an
 -- 'Identifier'. Simple identifiers that don't need quoting match the
 -- regular expression @^[a-zA-Z_][a-zA-Z0-9_'-]*$@.
 needsQuoting :: String -> Bool
-needsQuoting s = null r || not (any (null . snd) r)
-  where r = readP_to_S parseSimpleIdentifier s
+needsQuoting = isLeft . runParser (parseSimpleIdentifier >> eof) () ""
 
 -- | Helper function to quote a given identifier string if necessary.
 --

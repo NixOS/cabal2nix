@@ -8,13 +8,12 @@ import Control.DeepSeq
 import Control.Lens
 import Data.Maybe
 import Data.String
-import Distribution.Compat.ReadP as ReadP
-import Distribution.Text
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 import Prelude.Compat
 import Test.QuickCheck
-import Text.PrettyPrint as PP
+import Text.Parsec.Class as P
+import Text.PrettyPrint.HughesPJClass as PP
 
 -- $setup
 -- >>> import Control.Exception
@@ -63,12 +62,14 @@ declareLenses [d| newtype Path = Path [Identifier]
 instance NFData Path where
   rnf (Path p) = rnf p
 
-instance Text Path where
-  disp p = hcat $ punctuate (PP.char '.') (map disp (p^.path))
-  parse = review path <$> sepBy (skipSpaces >> parse) (skipSpaces >> ReadP.char '.')
+instance Pretty Path where
+  pPrint p = hcat $ punctuate (PP.char '.') (map pPrint (p^.path))
+
+instance HasParser Path where
+  parser = review path <$> (spaces >> parser) `sepBy` (spaces >> P.char '.')
 
 instance IsString Path where
-  fromString s = fromMaybe (error ("invalid Nix path: " ++ s)) (simpleParse s)
+  fromString = parse "Language.Nix.Path.Path"
 
 instance Arbitrary Path where
   arbitrary = Path <$> listOf1 arbitrary

@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -8,14 +9,13 @@ import Control.DeepSeq
 import Control.Lens
 import Data.Maybe
 import Data.String
-import Distribution.Compat.ReadP as ReadP
-import Distribution.Text
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 import Language.Nix.Path
 import Prelude.Compat
 import Test.QuickCheck
-import Text.PrettyPrint as PP
+import Text.Parsec.Class as P
+import Text.PrettyPrint.HughesPJClass as PP
 
 -- | A 'Binding' represents an identifier that refers to some other 'Path'.
 --
@@ -38,34 +38,35 @@ instance NFData Binding where
 instance Arbitrary Binding where
   arbitrary = review binding <$> arbitrary
 
-instance Text Binding where
-  disp b = case (init ps, last ps) of
-             ([], i') -> if i == i'
-                            then text "inherit" <+> disp i'
-                            else disp i <+> equals <+> disp p
-             (p', i') -> if i == i'
-                            then text "inherit" <+> parens (disp (path # p')) <+> disp i'
-                            else disp i <+> equals <+> disp p
+instance Pretty Binding where
+  pPrint b = case (init ps, last ps) of
+               ([], i') -> if i == i'
+                              then text "inherit" <+> pPrint i'
+                              else pPrint i <+> equals <+> pPrint p
+               (p', i') -> if i == i'
+                              then text "inherit" <+> parens (pPrint (path # p')) <+> pPrint i'
+                              else pPrint i <+> equals <+> pPrint p
 
-        where
-          (i, p) = view binding b
-          ps = view path p
+          where
+            (i, p) = view binding b
+            ps = view path p
 
-  parse = parseAssignment +++ parseInherit
+instance HasParser Binding where
+  parser = try parseInherit <|> parseAssignment
 
 instance IsString Binding where
-  fromString s = fromMaybe (error ("invalid Nix binding: " ++ s)) (simpleParse s)
+  fromString = parse "Language.Nix.Binding.Binding"
 
-parseAssignment :: ReadP r Binding
-parseAssignment = do l <- skipSpaces >> parse
-                     _ <- skipSpaces >> ReadP.char '='
-                     r <- skipSpaces >> parse
+parseAssignment :: CharParser st tok m Binding
+parseAssignment = do l <- spaces >> parser
+                     _ <- spaces >> P.char '='
+                     r <- spaces >> parser
                      return (binding # (l,r))
 
-parseInherit :: ReadP r Binding
-parseInherit = do _ <- skipSpaces >> ReadP.string "inherit"
-                  p <- option [] $ between (skipSpaces >> ReadP.char '(')
-                                           (skipSpaces >> ReadP.char ')')
-                                           (skipSpaces >> view path <$> parse)
-                  i <- skipSpaces >> parse
+parseInherit :: CharParser st tok m Binding
+parseInherit = do _ <- spaces >> P.string "inherit" >> lookAhead (P.space <|> P.char '(')
+                  p <- option [] $ try $ between (spaces >> P.char '(')
+                                                 (spaces >> P.char ')')
+                                                 (spaces >> view path <$> parser)
+                  i <- spaces >> parser
                   return (binding # (i, path # (p ++ [i])))
