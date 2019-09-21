@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Binding ( Binding, binding, localName, reference ) where
@@ -12,7 +11,6 @@ import Data.String
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 import Language.Nix.Path
-import Prelude.Compat
 import Test.QuickCheck
 import Text.Parsec.Class as P
 import Text.PrettyPrint.HughesPJClass as PP

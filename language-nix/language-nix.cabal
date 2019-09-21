@@ -25,10 +25,9 @@ library
                     Language.Nix.Path
   other-modules:    Paths_language_nix
   hs-source-dirs:   src
-  build-depends:    base < 5, QuickCheck, base-compat, deepseq, lens, parsec-class, pretty
+  build-depends:    base < 5, QuickCheck, deepseq, lens, parsec-class, pretty
   default-language: Haskell2010
   other-extensions: FlexibleContexts
                     TemplateHaskell
                     GeneralizedNewtypeDeriving
                     DeriveGeneric
-                    NoImplicitPrelude

@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Identifier
@@ -16,7 +15,6 @@ import Data.Char
 import Data.Either
 import Data.String
 import GHC.Generics ( Generic )
-import Prelude.Compat
 import Test.QuickCheck
 import Text.Parsec.Class as P
 import Text.PrettyPrint.HughesPJClass as PP hiding ( (<>) )

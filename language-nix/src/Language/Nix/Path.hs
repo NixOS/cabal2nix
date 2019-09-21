@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Path ( Path, path ) where
@@ -10,7 +9,6 @@ import Data.Maybe
 import Data.String
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
-import Prelude.Compat
 import Test.QuickCheck
 import Text.Parsec.Class as P
 import Text.PrettyPrint.HughesPJClass as PP
