@@ -8,8 +8,9 @@ module Distribution.Hackage.DB.Utility where
 
 import Distribution.Hackage.DB.Errors
 
-import Control.Exception
 import Codec.Archive.Tar.Entry as Tar
+import Control.Exception
+import Control.Monad.Fail
 import Data.Maybe
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
@@ -40,5 +41,5 @@ toEpochTime = floor . utcTimeToPOSIXSeconds
 -- >>> parseIso8601 "2018-12-21T13:17:40Z"
 -- 2018-12-21 13:17:40 UTC
 
-parseIso8601 :: Monad m => String -> m UTCTime
+parseIso8601 :: MonadFail m => String -> m UTCTime
 parseIso8601 = parseTimeM False defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%SZ"))

@@ -9,7 +9,7 @@ license:       BSD3
 license-file:  LICENSE
 author:        Peter Simons, Alexander Altman, Ben James
 maintainer:    Peter Simons <simons@cryp.to>
-tested-with:   GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
+tested-with:   GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1
 category:      Distribution
 homepage:      https://github.com/peti/hackage-db#readme
 bug-reports:   https://github.com/peti/hackage-db/issues
@@ -35,7 +35,7 @@ library
                     Distribution.Hackage.DB.Utility
   other-modules:    Paths_hackage_db
   hs-source-dirs:   src
-  build-depends:    base        >= 3 && < 5
+  build-depends:    base        >= 4.9 && < 5
                   , Cabal       > 3
                   , aeson
                   , bytestring
