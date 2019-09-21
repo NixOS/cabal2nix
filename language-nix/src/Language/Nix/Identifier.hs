@@ -19,7 +19,7 @@ import GHC.Generics ( Generic )
 import Prelude.Compat
 import Test.QuickCheck
 import Text.Parsec.Class as P
-import Text.PrettyPrint.HughesPJClass as PP
+import Text.PrettyPrint.HughesPJClass as PP hiding ( (<>) )
 
 -- | Identifiers in Nix are essentially strings. They can be constructed
 -- (and viewed) with the 'ident' isomorphism. For the sake of convenience,
@@ -51,7 +51,7 @@ instance NFData Identifier where
   rnf (Identifier str) = rnf str
 
 instance Arbitrary Identifier where
-  arbitrary = Identifier <$> arbitrary
+  arbitrary = Identifier <$> listOf1 arbitraryUnicodeChar
   shrink (Identifier i) = map Identifier (shrink i)
 
 instance Pretty Identifier where
@@ -70,10 +70,14 @@ parseSimpleIdentifier = do
 -- | 'ReadP' parser for quoted identifiers, i.e. those that /do/ need
 -- quoting.
 parseQuotedIdentifier :: CharParser st tok m Identifier
-parseQuotedIdentifier = Identifier . concat <$> between (P.char '"') (P.char '"') (many qString)
+parseQuotedIdentifier = Identifier <$> qstring
   where
-    qString :: CharParser st tok m String
-    qString = quotedPair <|> many1 (P.noneOf "\\\"")
+    qstring :: CharParser st tok m String
+    qstring = do txt <- between (P.char '"') (P.char '"') (many qtext)
+                 return (read ('"' : concat txt <> ['"']))
+
+    qtext :: CharParser st tok m String
+    qtext = quotedPair <|> many1 (P.noneOf "\\\"")
 
     quotedPair :: CharParser st tok m String
     quotedPair = do
