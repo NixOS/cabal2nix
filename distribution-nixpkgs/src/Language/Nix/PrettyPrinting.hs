@@ -54,7 +54,15 @@ bool True  = text "true"
 bool False = text "false"
 
 string :: String -> Doc
-string = doubleQuotes . text
+string = doubleQuotes . quoteString
+
+quoteString :: String -> Doc
+quoteString []          = mempty
+quoteString ['\\']      = text "\\\\"
+quoteString ('\\':x:xs)
+  | x `elem` "\"rn$\\t" = text ['\\',x] <> quoteString xs
+  | otherwise           = text "\\\\" <> quoteString (x:xs)
+quoteString (x:xs)      = char x <> quoteString xs
 
 prepunctuate :: Doc -> [Doc] -> [Doc]
 prepunctuate _ []     = []
