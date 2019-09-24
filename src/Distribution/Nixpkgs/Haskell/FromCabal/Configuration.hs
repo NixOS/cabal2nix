@@ -9,10 +9,13 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Configuration
   )
   where
 
+import Prelude hiding ( fail )
+
 import Control.DeepSeq
 import Control.Exception ( throwIO )
 import Control.Lens
-import Control.Monad
+import Control.Monad hiding ( fail )
+import Control.Monad.Fail
 import Data.Aeson
 import Data.Map as Map
 import Data.Set as Set
@@ -91,7 +94,7 @@ parseKey s = either error id (parseEither parseJSON (String s))
 readConfiguration :: FilePath -> IO Configuration
 readConfiguration path = decodeFileEither path >>= either throwIO assertConsistency
 
-assertConsistency :: Monad m => Configuration -> m Configuration
+assertConsistency :: MonadFail m => Configuration -> m Configuration
 assertConsistency cfg@Configuration {..} = do
   let report msg = fail ("*** configuration error: " ++ msg)
       maintainedPackages = Set.unions (Map.elems packageMaintainers)
