@@ -29,6 +29,7 @@ libNixName "appindicator-0.1"                   = return "libappindicator-gtk2"
 libNixName "appindicator3-0.1"                  = return "libappindicator-gtk3"
 libNixName "asound"                             = return "alsaLib"
 libNixName "b2"                                 = return "libb2"
+libNixName "boost_context"                      = return "boost"
 libNixName "bz2"                                = return "bzip2"
 libNixName "c++"                                = []  -- What is that?
 libNixName "cairo-gobject"                      = return "cairo"
