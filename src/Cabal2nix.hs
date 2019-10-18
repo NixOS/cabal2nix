@@ -136,6 +136,7 @@ ghcConvertOS os = case os of
   "watchos"       -> "ios"
   "tvos"          -> "ios"
   "linux-android" -> "linux-android"
+  "linux-androideabi" -> "linux-androideabi"
   _ | "linux-" `isPrefixOf` os -> "linux"
   _ -> fromMaybe os $ listToMaybe
     [prefix | prefix <- osPrefixes, prefix `isPrefixOf` os]
