@@ -27,16 +27,16 @@ direct `http://host/path/pkg.cabal` URL can be provided, as well as a
 `file:///local/path/pkg.cabal` URI that doesn't depend on network access.
 However, if the source hash is not already in `cabal2nix`'s cache or provided
 using the `--sha256` option, `cabal2nix` still needs to download the source
-code to compute the hash, which obviously still causes network traffic. Run the
-utility with `--help` to see the complete list of supported command line flags.
+code to compute the hash, which still causes network traffic. Run the utility
+with `--help` to see the complete list of supported command-line flags.
 
-Detailed instructions how to use those generated files with Nix can be found at
+Detailed instructions on how to use those generated files with Nix can be found at
 https://nixos.org/nixpkgs/manual/#how-to-create-nix-builds-for-your-own-private-haskell-packages.
 
 `cabal2nix` can also build derivations for projects from other sources than
-hackage. You only need to provide an URI that points to a cabal project. The
-most common usecase for this is probably to generate a derivation for a project
-on the local file system:
+Hackage. You only need to provide a URI that points to a cabal project. The
+most common use-case for this is probably to generate a derivation for a
+project on the local file system:
 
     $ cabal get mtl-2.2.1 && cd mtl-2.2.1
     $ cabal2nix .
