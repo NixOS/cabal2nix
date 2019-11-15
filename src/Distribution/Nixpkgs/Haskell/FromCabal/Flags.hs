@@ -4,6 +4,7 @@ module Distribution.Nixpkgs.Haskell.FromCabal.Flags ( configureCabalFlags ) wher
 
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 
+import Data.Char
 import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.Version
@@ -57,7 +58,10 @@ configureCabalFlags' (PackageIdentifier name version)
  | otherwise                    = []
 
 enable :: String -> (FlagName,Bool)
-enable name = (mkFlagName name, True)
+enable name = (mkFlagName' name, True)
 
 disable :: String -> (FlagName,Bool)
-disable name = (mkFlagName name, False)
+disable name = (mkFlagName' name, False)
+
+mkFlagName' :: String -> FlagName
+mkFlagName' = mkFlagName . map toLower
