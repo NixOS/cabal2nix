@@ -151,6 +151,7 @@ hooks =
   , ("pandoc < 2.6", pandocPre26Overrides)
   , ("pandoc >= 2.6", pandocOverrides)
   , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/369
+  , ("pandoc-placetable", set (libraryDepends . haskell . contains (self "pandoc")) True) -- https://github.com/NixOS/nixpkgs/issues/73392
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
   , ("proto-lens-protobuf-types", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("proto-lens-protoc", set (libraryDepends . tool . contains (pkg "protobuf")) True)
