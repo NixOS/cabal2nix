@@ -84,7 +84,6 @@ library
                     , transformers
                     , yaml
   default-language:   Haskell2010
-  default-extensions: MonadFailDesugaring
   other-extensions:   MultiParamTypeClasses
                       ScopedTypeVariables
                       FlexibleInstances
@@ -102,7 +101,6 @@ executable cabal2nix
   hs-source-dirs:     cabal2nix
   build-depends:      base, cabal2nix
   default-language:   Haskell2010
-  default-extensions: MonadFailDesugaring
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints
 
@@ -129,7 +127,6 @@ executable hackage2nix
                     , optparse-applicative
                     , pretty               >= 1.1.2
   default-language:   Haskell2010
-  default-extensions: MonadFailDesugaring
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-maxN16
 
@@ -150,7 +147,6 @@ test-suite regression-test
                     , tasty
                     , tasty-golden
   default-language:   Haskell2010
-  default-extensions: MonadFailDesugaring
   build-tools:        cabal2nix
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints -threaded -with-rtsopts=-K64K
