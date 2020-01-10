@@ -45,7 +45,7 @@ sed -r \
 
 # Drop the previous configuration ...
 # shellcheck disable=SC1004
-sed -e '/# LTS Haskell/,/^$/c \TODO\
+sed -e '/  # LTS Haskell/,/^$/c \TODO\
 '   -i nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml
 
 # ... and replace it with the new one.
