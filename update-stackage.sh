@@ -25,6 +25,7 @@ sed -r \
 sed -r \
     -e '/ cabal-install /d' \
     -e '/ cabal2nix /d' \
+    -e '/ cabal2spec /d' \
     -e '/ distribution-nixpkgs /d' \
     -e '/ git-annex /d' \
     -e '/ hindent /d' \
