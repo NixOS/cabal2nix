@@ -13,6 +13,7 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
+import Distribution.Nixpkgs.License
 import Distribution.Package
 import Distribution.System
 import Distribution.Text
@@ -78,7 +79,7 @@ hooks =
   , ("alsa-core", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("bindings-lxc", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
-  , ("bustle", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("bustle", bustleOverrides)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
   , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [self "mtl", self "parsec"]))) -- https://github.com/haskell/cabal/issues/5391
   , ("cabal-helper", set doCheck False) -- https://github.com/DanielG/cabal-helper/issues/17
@@ -400,3 +401,9 @@ pandocOverrides = set phaseOverrides postInstall
                           , "  mv \"man/\"*.1 $out/share/man/man1/"
                           , "'';"
                           ]
+
+bustleOverrides :: Derivation -> Derivation
+bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True
+                . set (executableDepends . pkgconfig . contains "gio-unix = null") False
+                . set (metaSection . license) (Known "stdenv.lib.licenses.lgpl21Plus")
+                . set (metaSection . hydraPlatforms) allKnownPlatforms
