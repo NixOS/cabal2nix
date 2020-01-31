@@ -16,6 +16,7 @@ configureCabalFlags' :: PackageIdentifier -> [(FlagName,Bool)]
 configureCabalFlags' (PackageIdentifier name version)
  | name == "accelerate-examples"= [disable "opencl"]
  | name == "arithmoi"           = [disable "llvm"]
+ | name == "bustle"             = [disable "hgettext"] -- https://gitlab.freedesktop.org/bustle/bustle/issues/13
  | name == "cabal-plan"         = [enable "exe"]
  | name == "cassava"            = [disable "bytestring--lt-0_10_4"]
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
