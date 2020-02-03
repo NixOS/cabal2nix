@@ -256,7 +256,7 @@ gfPhaseOverrides = unlines
   , "  sed -i \"s|numJobs (bf bi)++||\" ./Setup.hs"
     -- Parallel compilation fails. Disable it.
   , "'';"
-  , "preBuild = ''export LD_LIBRARY_PATH=`pwd`/dist/build:$LD_LIBRARY_PATH'';"
+  , "preBuild = ''export LD_LIBRARY_PATH=`pwd`/dist/build''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH'';"
     -- The build step itself, after having built the library, needs to be able
     -- to find the library it just built in order to compile grammar files.
   ]
