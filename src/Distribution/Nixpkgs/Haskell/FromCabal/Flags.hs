@@ -28,10 +28,10 @@ configureCabalFlags' (PackageIdentifier name version)
                                   , enable "dbus"
                                   , disable "debuglocks"
                                   , enable "magicmime"
-                                  , disable "networkbsd"
+                                  , enable "networkbsd"
                                   , enable "pairing"
                                   , enable "production"
-                                  , enable "s3"
+                                  , disable "s3"   -- aws does not compile: https://github.com/aristidb/aws/issues/264
                                   , enable "torrentparser"
                                   , enable "webapp"
                                   , enable "webdav"
