@@ -31,7 +31,7 @@ configureCabalFlags' (PackageIdentifier name version)
                                   , enable "networkbsd"
                                   , enable "pairing"
                                   , enable "production"
-                                  , disable "s3"   -- aws does not compile: https://github.com/aristidb/aws/issues/264
+                                  , enable "s3"
                                   , enable "torrentparser"
                                   , enable "webapp"
                                   , enable "webdav"
