@@ -110,7 +110,7 @@ executable hackage2nix
                       Paths_cabal2nix
   hs-source-dirs:     hackage2nix
   build-depends:      base                 < 5
-                    , Cabal                > 2.4
+                    , Cabal
                     , aeson
                     , bytestring
                     , cabal2nix
@@ -135,7 +135,7 @@ test-suite regression-test
   main-is:            Main.hs
   hs-source-dirs:     test
   build-depends:      base
-                    , Cabal        > 2.4
+                    , Cabal
                     , cabal2nix
                     , containers
                     , directory
