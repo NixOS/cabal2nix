@@ -15,7 +15,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
 
 import Control.DeepSeq
 import Control.Lens
-import Data.List
+import Data.List ( isPrefixOf )
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Set.Lens

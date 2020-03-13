@@ -10,7 +10,7 @@ import Control.Monad
 import Control.Monad.Par.Combinator
 import Control.Monad.Par.IO
 import Control.Monad.Trans ( liftIO )
-import Data.List
+import Data.List ( intercalate )
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe

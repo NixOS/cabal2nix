@@ -11,7 +11,7 @@ module Cabal2nix
 import Control.Exception ( bracket )
 import Control.Lens
 import Control.Monad
-import Data.List
+import Data.List ( intercalate, isPrefixOf )
 import Data.List.Split
 import Data.Maybe ( fromMaybe, isJust, listToMaybe )
 import Data.Monoid ( (<>) )
