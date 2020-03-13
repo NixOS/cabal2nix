@@ -14,7 +14,6 @@ import Control.Monad
 import Data.List ( intercalate, isPrefixOf )
 import Data.List.Split
 import Data.Maybe ( fromMaybe, isJust, listToMaybe )
-import Data.Monoid ( (<>) )
 import qualified Data.Set as Set
 import Data.String
 import Data.Time
