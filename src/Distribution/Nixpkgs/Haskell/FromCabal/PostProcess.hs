@@ -73,7 +73,8 @@ fixBuildDependsForTools = foldr (.) id
 hooks :: [(Dependency, Derivation -> Derivation)]
 hooks =
   [ ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
-  , ("Agda >= 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
+  , ("Agda >= 2.5 && < 2.6", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
+  , ("Agda >= 2.6", set (executableDepends . tool . contains (pkg "emacs")) True)
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
   , ("alex",  set (executableDepends . tool . contains (self "happy")) True)
   , ("alsa-core", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
