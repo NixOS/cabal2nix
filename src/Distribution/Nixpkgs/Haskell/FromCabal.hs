@@ -7,6 +7,7 @@ module Distribution.Nixpkgs.Haskell.FromCabal
   ) where
 
 import Control.Lens
+import Data.Char ( isSpace )
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -105,7 +106,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                              then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
                              else "")
     & metaSection .~ ( Nix.nullMeta
-                     & Nix.homepage .~ fromShortText homepage
+                     & Nix.homepage .~ strip isSpace (fromShortText homepage)
                      & Nix.description .~ fromShortText synopsis
                      & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nix.allKnownPlatforms
@@ -171,3 +172,6 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])
+
+strip :: (Char -> Bool) -> String -> String
+strip p = reverse . dropWhile p . reverse . dropWhile p
