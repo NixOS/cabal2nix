@@ -8,6 +8,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Bifunctor
 import qualified Data.ByteString.Char8 as BS
+import Data.Foldable ( toList )
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
@@ -261,7 +262,7 @@ runParseGenericPackageDescription
   -> BS.ByteString
   -> Either String Cabal.GenericPackageDescription
 runParseGenericPackageDescription fpath
-  = first (unlines . fmap (showPError fpath) . snd)
+  = first (unlines . map (showPError fpath) . toList . snd)
   . snd . runParseResult
   . parseGenericPackageDescription
 

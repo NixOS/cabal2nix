@@ -31,6 +31,7 @@ import Distribution.Types.ExeDependency as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
 import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
+import Distribution.Utils.ShortText ( fromShortText )
 import Distribution.Version
 import Language.Nix
 
@@ -104,8 +105,8 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                              then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
                              else "")
     & metaSection .~ ( Nix.nullMeta
-                     & Nix.homepage .~ homepage
-                     & Nix.description .~ synopsis
+                     & Nix.homepage .~ fromShortText homepage
+                     & Nix.description .~ fromShortText synopsis
                      & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nix.allKnownPlatforms
                      & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nix.allKnownPlatforms else Set.empty)
