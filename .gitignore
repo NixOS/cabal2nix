@@ -26,5 +26,5 @@ TAGS
 
 # hackage2nix ususally needs those two repositories around
 
-/hackage/*
-/nixpkgs/*
+/hackage/
+/nixpkgs/
