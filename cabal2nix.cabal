@@ -61,7 +61,9 @@ library
   other-modules:      Paths_cabal2nix
   hs-source-dirs:     src
   build-depends:      base                 > 4.11
-                    , Cabal                == 3.2.*
+                    -- When changing the Cabal version, ensure that it builds
+                    -- with all installation methods mentioned in the README!
+                    , Cabal                >= 3.0
                     , aeson                > 1
                     , ansi-wl-pprint
                     , bytestring

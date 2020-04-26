@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -106,8 +107,13 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                              then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
                              else "")
     & metaSection .~ ( Nix.nullMeta
+#if MIN_VERSION_Cabal(3,2,0)
                      & Nix.homepage .~ strip isSpace (fromShortText homepage)
                      & Nix.description .~ fromShortText synopsis
+#else
+                     & Nix.homepage .~ strip isSpace homepage
+                     & Nix.description .~ synopsis
+#endif
                      & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nix.allKnownPlatforms
                      & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nix.allKnownPlatforms else Set.empty)

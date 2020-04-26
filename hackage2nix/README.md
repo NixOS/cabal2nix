@@ -43,6 +43,10 @@ git clone https://github.com/NixOS/cabal2nix.git
 cd cabal2nix
 git clone git@github.com:NixOS/nixpkgs.git # replace this with your fork
 git clone https://github.com/commercialhaskell/all-cabal-hashes.git --branch hackage hackage
+# For high reproducibility and pinned nixpkgs for native dependencies
+# (you can leave `--nix` off on NixOS, or if you don't have nix installed):
+stack --nix build
+# Alternatively, to use Cabal's resolver:
 cabal install
 ```
 

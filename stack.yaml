@@ -1,0 +1,14 @@
+resolver: lts-15.9 # When changing this: Ensure the nixpkgs path below has the matching GHC!
+packages:
+- .
+nix:
+  path:
+    # Recent `nixos-unstable` branch; this branch is
+    # guaranteed to have binary cache results.
+    # The chosen nixpkgs commit must provide the GHC version
+    # chosen in the `resolver` field above.
+    - nixpkgs=https://github.com/NixOS/nixpkgs/archive/22a3bf9fb9edad917fb6cd1066d58b5e426ee975.tar.gz
+  # Native packages that cabal2nix and its dependencies need:
+  packages:
+    - openssl
+    - zlib
