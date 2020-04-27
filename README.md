@@ -59,3 +59,25 @@ contains the derivation as the source repository.
 * directory
 * source archive (zip, tar.gz, ...) from http or https URL or local file.
 * git, mercurial, svn or bazaar repository
+
+## `hackage2nix`
+
+This repository also contains, in the [`hackage2nix/`](./hackage2nix) directory,
+the tool to update the Haskell packages in
+[nixpkgs](https://github.com/NixOS/nixpkgs). It has its own README there.
+
+## Building
+
+For ease of contribution, we support these methods to build `cabal2nix`:
+
+* `stack build` if you have [_Stack_](http://haskellstack.org/)
+  * The Stack build can use system dependencies from a pinned nixpkgs
+    version for increased reproducibility (see [`stack.yaml`](./stack.yaml)).
+    On NixOS this happens automatically.
+    On non-NixOS, use `stack --nix build` for that.
+* `cabal install` if you have [_cabal-install_](https://www.haskell.org/cabal/)
+  installed
+* TODO: Add a build method that requires only `nix` preinstalled,
+  also pins nixpkgs, and is thus fully reproducible.
+
+When making changes, please ensure that all these methods continue to work.
