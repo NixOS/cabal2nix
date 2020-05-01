@@ -27,7 +27,7 @@ author:             Peter Simons, Andres Loeh, Benno Fünfstück, Mateusz Kowalc
                     gebbert, laMudri, Александр Цамутали
 maintainer:         Peter Simons <simons@cryp.to>
 stability:          stable
-tested-with:        GHC == 8.6.5, GHC == 8.8.3, GHC == 8.10.1
+tested-with:        GHC == 8.8.3, GHC == 8.10.1
 category:           Distribution, Nix
 homepage:           https://github.com/nixos/cabal2nix#readme
 bug-reports:        https://github.com/nixos/cabal2nix/issues
