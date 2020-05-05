@@ -78,6 +78,7 @@ main = do
             . Map.delete "som"                  -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
             . Map.delete "control-invariants"   -- TODO: depends on "assert"
+            . Map.delete "ConcurrentUtils"      -- TODO: depends on "assert"
             . Map.delete "with"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "telega"               -- TODO: depends on "with"
             . over (at "hermes") (fmap (set (contains "1.3.4.3") False))  -- TODO: https://github.com/haskell/hackage-server/issues/436
