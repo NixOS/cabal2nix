@@ -160,7 +160,7 @@ sourceFromHackage optHash pkgId cabalDir = do
       seq (length hash) $
       urlDerivationSource url hash <$ writeFile cacheFile hash
     UnknownHash -> do
-      maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", []) (Source url "" UnknownHash cabalDir))
+      maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", Nothing, []) (Source url "" UnknownHash cabalDir))
       case maybeHash of
         Just hash ->
           seq (length hash) $
