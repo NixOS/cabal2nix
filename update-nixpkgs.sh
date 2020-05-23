@@ -33,8 +33,11 @@ cd ..
 # This command needs a recent development version of cabal-install. I don't
 # think this works properly in version 2.0.0.0 already.
 cabal -v0 new-run hackage2nix -- --nixpkgs="$PWD/nixpkgs" +RTS -M4G -RTS
+cabal -v0 new-run cabal2nix "https://github.com/NixOS/cabal2nix/archive/$cabal2nix.tar.gz" | sed -e 's/version = ".*"/version = "'"$(git log -1 --date=short --format=%cd)"'"/' > nixpkgs/pkgs/development/haskell-modules/cabal2nix-latest
 
 cd nixpkgs
+nix-prefetch-github commercialhaskell all-cabal-hashes --rev "$hackage" > nixpkgs/pkgs/data/misc/hackage/pin.json
+git add pkgs/data/misc/hackage
 git add pkgs/development/haskell-modules
 if [ -n "$(git status --porcelain)" ]; then
   cat <<EOF | git commit -n -q -F -
