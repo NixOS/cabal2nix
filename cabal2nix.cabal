@@ -112,7 +112,7 @@ executable hackage2nix
                       Paths_cabal2nix
   hs-source-dirs:     hackage2nix
   build-depends:      base                 < 5
-                    , Cabal
+                    , Cabal                == 3.2.*
                     , aeson
                     , bytestring
                     , cabal2nix
