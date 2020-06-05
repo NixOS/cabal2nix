@@ -15,6 +15,8 @@
 ** TODO Read blog post at https://mpickering.github.io/ide/posts/20
 ** TODO Try out ghccemacs
 
+** TODO Participate in https://zfoh.ch/zurihac2020/
+
 * [9/11] 2020-05-29
 ** DONE Fix evaluation errors
 
