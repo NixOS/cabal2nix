@@ -1,0 +1,15 @@
+{ mkDerivation, base, colour, diagrams-cairo, diagrams-lib
+, directory, either-unwrap, filepath, parsec, ParsecTools, stdenv
+, StockholmAlignment, SVGFonts, text, vector
+}:
+mkDerivation {
+  pname = "BioHMM";
+  version = "1.2.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base colour diagrams-cairo diagrams-lib directory either-unwrap
+    filepath parsec ParsecTools StockholmAlignment SVGFonts text vector
+  ];
+  description = "Libary for Hidden Markov Models in HMMER3 format";
+  license = stdenv.lib.licenses.gpl3;
+}

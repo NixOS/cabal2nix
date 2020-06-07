@@ -8,7 +8,6 @@ module Distribution.Nixpkgs.Haskell.FromCabal
   ) where
 
 import Control.Lens
-import Data.Char ( isSpace )
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -108,11 +107,11 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                              else "")
     & metaSection .~ ( Nix.nullMeta
 #if MIN_VERSION_Cabal(3,2,0)
-                     & Nix.homepage .~ strip isSpace (fromShortText homepage)
-                     & Nix.description .~ fromShortText synopsis
+                     & Nix.homepage .~ stripRedundanceSpaces (fromShortText homepage)
+                     & Nix.description .~ stripRedundanceSpaces (fromShortText synopsis)
 #else
-                     & Nix.homepage .~ strip isSpace homepage
-                     & Nix.description .~ synopsis
+                     & Nix.homepage .~ stripRedundanceSpaces homepage
+                     & Nix.description .~ stripRedundanceSpaces synopsis
 #endif
                      & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nix.allKnownPlatforms
@@ -179,5 +178,5 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])
 
-strip :: (Char -> Bool) -> String -> String
-strip p = reverse . dropWhile p . reverse . dropWhile p
+stripRedundanceSpaces :: String -> String
+stripRedundanceSpaces = unwords . words
