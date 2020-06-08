@@ -40,6 +40,8 @@ import System.IO ( hFlush, hPutStrLn, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi, render, prettyShow )
 
+{-# ANN module ("HLint: ignore Use Just" :: String) #-}
+
 data Options = Options
   { optSha256 :: Maybe String
   , optMaintainer :: [String]
