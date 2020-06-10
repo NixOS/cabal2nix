@@ -1,6 +1,14 @@
 #+TITLE: Stream TODO Notes
 
-* [8/9] 2020-06-05
+* [0/6] 2020-06-12
+** TODO Fix evaluation errors
+** TODO Fix failing builds
+** TODO Update list of broken builds
+** TODO Update all-cabal-hashes reference.
+** TODO Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** TODO Nix docker image is broken: https://github.com/NixOS/docker/issues/21
+
+* [9/11] 2020-06-05
 ** DONE Fix evaluation errors
 ** DONE Fix failing builds
 ** DONE Update list of broken builds
@@ -14,8 +22,8 @@
 ** DONE https://github.com/NixOS/nixpkgs/pull/89450
 ** TODO Read blog post at https://mpickering.github.io/ide/posts/20
 ** TODO Try out ghccemacs
+** DONE Participate in https://zfoh.ch/zurihac2020/
 
-** TODO Participate in https://zfoh.ch/zurihac2020/
 
 * [9/11] 2020-05-29
 ** DONE Fix evaluation errors
