@@ -1,14 +1,22 @@
 #+TITLE: Stream TODO Notes
 
-* [0/6] 2020-06-12
-** TODO Fix evaluation errors
+* [5/8] 2020-06-12
+** DONE Fix evaluation errors
 ** TODO Fix failing builds
-** TODO Update list of broken builds
-** TODO Update all-cabal-hashes reference.
-** TODO Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
-** TODO Nix docker image is broken: https://github.com/NixOS/docker/issues/21
+   - [ ] cabal2nix
+   - [ ] stack
+   - [ ] xmobar
+** DONE Update list of broken builds
+** DONE Update all-cabal-hashes reference.
+** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** DONE Nix docker image is broken: https://github.com/NixOS/docker/issues/21
 
-* [9/11] 2020-06-05
+** TODO Pass --ipid=$out flag to configure stage
+** TODO Report build errors to Rickard
+
+   : nar upload failed: sha256-BjRZm/wHU72pHWKB0KzjrdKrU+51WE8r1crCVUll/xo= try 2: Internal Server Error
+
+* [9/9] 2020-06-05
 ** DONE Fix evaluation errors
 ** DONE Fix failing builds
 ** DONE Update list of broken builds
@@ -20,8 +28,8 @@
    hnix still compiles.
 
 ** DONE https://github.com/NixOS/nixpkgs/pull/89450
-** TODO Read blog post at https://mpickering.github.io/ide/posts/20
-** TODO Try out ghccemacs
+** Read blog post at https://mpickering.github.io/ide/posts/20
+** Try out ghccemacs
 ** DONE Participate in https://zfoh.ch/zurihac2020/
 
 
