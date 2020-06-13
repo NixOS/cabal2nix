@@ -30,16 +30,13 @@ executable cabal2nix-from-file
   hs-source-dirs:   src
   build-depends:    base                 > 4.11 && < 5
                   , Cabal                > 3.0 && < 3.3
-                  , ansi-wl-pprint       >= 0.6.9 && < 0.7
-                  , cabal2nix            == 2.15.*
+                  , cabal2nix            >= 2.15.5 && < 3
                   , containers           >= 0.6.2.1 && < 0.7
-                  , distribution-nixpkgs >= 1.3.1 && < 1.4
                   , language-nix         >= 2.2.0 && < 2.3
                   , lens                 >= 4.19.2 && < 4.20
                   , optparse-applicative >= 0.15.1.0 && < 0.16
                   , pretty               >= 1.1.3.6 && < 1.2
                   , split                >= 0.2.3.4 && < 0.3
-                  , time                 >= 1.9.3 && < 1.10
   default-language: Haskell2010
 
 -- test-suite regression-test
