@@ -1,0 +1,10 @@
+{ mkDerivation, base, containers, stdenv, validity }:
+mkDerivation {
+  pname = "validity-containers";
+  version = "0.2.0.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base containers validity ];
+  homepage = "https://github.com/NorfairKing/validity#readme";
+  description = "Validity instances for containers";
+  license = stdenv.lib.licenses.mit;
+}

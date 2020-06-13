@@ -1,0 +1,185 @@
+name:               ChasingBottoms
+version:            1.3.1.3
+license:            MIT
+license-file:       LICENCE
+copyright:          Copyright (c) Nils Anders Danielsson 2004-2017.
+author:             Nils Anders Danielsson
+maintainer:         http://www.cse.chalmers.se/~nad/
+synopsis:           For testing partial and infinite values.
+description:
+  Do you ever feel the need to test code involving bottoms (e.g. calls to
+  the @error@ function), or code involving infinite values? Then this
+  library could be useful for you.
+  .
+  It is usually easy to get a grip on bottoms by showing a value and
+  waiting to see how much gets printed before the first exception is
+  encountered. However, that quickly gets tiresome and is hard to automate
+  using e.g. QuickCheck
+  (<http://www.cse.chalmers.se/~rjmh/QuickCheck/>). With this library you
+  can do the tests as simply as the following examples show.
+  .
+  Testing explicitly for bottoms:
+  .
+  > > isBottom (head [])
+  > True
+  .
+  > > isBottom bottom
+  > True
+  .
+  > > isBottom (\_ -> bottom)
+  > False
+  .
+  > > isBottom (bottom, bottom)
+  > False
+  .
+  Comparing finite, partial values:
+  .
+  > > ((bottom, 3) :: (Bool, Int)) ==! (bottom, 2+5-4)
+  > True
+  .
+  > > ((bottom, bottom) :: (Bool, Int)) <! (bottom, 8)
+  > True
+  .
+  Showing partial and infinite values (@\\\/!@ is join and @\/\\!@ is meet):
+  .
+  > > approxShow 4 $ (True, bottom) \/! (bottom, 'b')
+  > "Just (True, 'b')"
+  .
+  > > approxShow 4 $ (True, bottom) /\! (bottom, 'b')
+  > "(_|_, _|_)"
+  .
+  > > approxShow 4 $ ([1..] :: [Int])
+  > "[1, 2, 3, _"
+  .
+  > > approxShow 4 $ (cycle [bottom] :: [Bool])
+  > "[_|_, _|_, _|_, _"
+  .
+  Approximately comparing infinite, partial values:
+  .
+  > > approx 100 [2,4..] ==! approx 100 (filter even [1..] :: [Int])
+  > True
+  .
+  > > approx 100 [2,4..] /=! approx 100 (filter even [bottom..] :: [Int])
+  > True
+  .
+  The code above relies on the fact that @bottom@, just as @error
+  \"...\"@, @undefined@ and pattern match failures, yield
+  exceptions. Sometimes we are dealing with properly non-terminating
+  computations, such as the following example, and then it can be nice to
+  be able to apply a time-out:
+  .
+  > > timeOut' 1 (reverse [1..5])
+  > Value [5,4,3,2,1]
+  .
+  > > timeOut' 1 (reverse [1..])
+  > NonTermination
+  .
+  The time-out functionality can be used to treat \"slow\" computations as
+  bottoms:
+  .
+  @
+  \> let tweak = Tweak &#x7b; approxDepth = Just 5, timeOutLimit = Just 2 &#x7d;
+  \> semanticEq tweak (reverse [1..], [1..]) (bottom :: [Int], [1..] :: [Int])
+  True
+  @
+  .
+  @
+  \> let tweak = noTweak &#x7b; timeOutLimit = Just 2 &#x7d;
+  \> semanticJoin tweak (reverse [1..], True) ([] :: [Int], bottom)
+  Just ([],True)
+  @
+  .
+  This can of course be dangerous:
+  .
+  @
+  \> let tweak = noTweak &#x7b; timeOutLimit = Just 0 &#x7d;
+  \> semanticEq tweak (reverse [1..100000000]) (bottom :: [Integer])
+  True
+  @
+  .
+  Timeouts can also be applied to @IO@ computations:
+  .
+  > > let primes () = unfoldr (\(x:xs) -> Just (x, filter ((/= 0) . (`mod` x)) xs)) [2..]
+  > > timeOutMicro 100 (print $ primes ())
+  > [2,NonTermination
+  > > timeOutMicro 10000 (print $ take 10 $ primes ())
+  > [2,3,5,7,11,13,17,19,23,29]
+  > Value ()
+  .
+  For the underlying theory and a larger example involving use of
+  QuickCheck, see the article \"Chasing Bottoms, A Case Study in Program
+  Verification in the Presence of Partial and Infinite Values\"
+  (<http://www.cse.chalmers.se/~nad/publications/danielsson-jansson-mpc2004.html>).
+  .
+  The code has been tested using GHC. Most parts can probably be
+  ported to other Haskell compilers, but this would require some work.
+  The @TimeOut@ functions require preemptive scheduling, and most of
+  the rest requires @Data.Generics@; @isBottom@ only requires
+  exceptions, though.
+category:           Testing
+tested-with:        GHC == 6.12.3,
+                    GHC == 7.0.4,
+                    GHC == 7.4.2,
+                    GHC == 7.6.3,
+                    GHC == 7.8.4,
+                    GHC == 7.10.3,
+                    GHC == 8.0.2,
+                    GHC == 8.2.1
+cabal-version:      >= 1.9.2
+build-type:         Simple
+
+source-repository head
+  type:     darcs
+  location: http://www.cse.chalmers.se/~nad/repos/ChasingBottoms/
+
+library
+    exposed-modules:
+        Test.ChasingBottoms,
+        Test.ChasingBottoms.Approx,
+        Test.ChasingBottoms.ApproxShow,
+        Test.ChasingBottoms.ContinuousFunctions,
+        Test.ChasingBottoms.IsBottom,
+        Test.ChasingBottoms.Nat,
+        Test.ChasingBottoms.SemanticOrd,
+        Test.ChasingBottoms.TimeOut
+
+    other-modules: Test.ChasingBottoms.IsType
+
+    build-depends: QuickCheck >= 2.3 && < 2.11,
+                   mtl >= 2 && < 2.3,
+                   base >= 4.2 && < 4.11,
+                   containers >= 0.3 && < 0.6,
+                   random >= 1.0 && < 1.2,
+                   syb >= 0.1.0.2 && < 0.8
+
+test-suite ChasingBottomsTestSuite
+    type:          exitcode-stdio-1.0
+
+    main-is:       Test/ChasingBottoms/Tests.hs
+
+    other-modules: Test.ChasingBottoms.Approx,
+                   Test.ChasingBottoms.Approx.Tests,
+                   Test.ChasingBottoms.ApproxShow,
+                   Test.ChasingBottoms.ApproxShow.Tests,
+                   Test.ChasingBottoms.ContinuousFunctions,
+                   Test.ChasingBottoms.ContinuousFunctions.Tests,
+                   Test.ChasingBottoms.IsBottom,
+                   Test.ChasingBottoms.IsBottom.Tests,
+                   Test.ChasingBottoms.IsType,
+                   Test.ChasingBottoms.IsType.Tests,
+                   Test.ChasingBottoms.Nat,
+                   Test.ChasingBottoms.Nat.Tests,
+                   Test.ChasingBottoms.SemanticOrd,
+                   Test.ChasingBottoms.SemanticOrd.Tests,
+                   Test.ChasingBottoms.TestUtilities,
+                   Test.ChasingBottoms.TestUtilities.Generators,
+                   Test.ChasingBottoms.TimeOut
+                   Test.ChasingBottoms.TimeOut.Tests
+
+    build-depends: QuickCheck >= 2.3 && < 2.11,
+                   mtl >= 2 && < 2.3,
+                   base >= 4.2 && < 4.11,
+                   containers >= 0.3 && < 0.6,
+                   random >= 1.0 && < 1.2,
+                   syb >= 0.1.0.2 && < 0.8,
+                   array >= 0.3 && < 0.6

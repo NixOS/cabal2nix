@@ -1,0 +1,15 @@
+{ mkDerivation, array, base, bytestring, containers, deepseq
+, hashable, stdenv, text, unordered-containers, vector
+}:
+mkDerivation {
+  pname = "strict-types";
+  version = "0.1.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    array base bytestring containers deepseq hashable text
+    unordered-containers vector
+  ];
+  homepage = "https://github.com/pepeiborra/strict-types";
+  description = "A type level predicate ranging over strict types";
+  license = stdenv.lib.licenses.bsd3;
+}

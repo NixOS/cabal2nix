@@ -1,0 +1,38 @@
+name:                envelope
+version:             0.2.2.0
+synopsis:            Defines generic 'Envelope' type to wrap reponses from a JSON API.
+description:         Please see README.md
+homepage:            https://github.com/cdepillabout/envelope#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Dennis Gosnell
+maintainer:          cdep.illabout@gmail.com
+copyright:           2016-2017 Dennis Gosnell
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Web.Envelope
+  build-depends:       base >= 4.8 && < 5
+                     , aeson >= 0.11
+                     , http-api-data >= 0.3
+                     , mtl >= 2.2
+                     , text >= 1.2
+  default-language:    Haskell2010
+
+test-suite envelope-doctest
+  type:                exitcode-stdio-1.0
+  main-is:             DocTest.hs
+  hs-source-dirs:      test
+  build-depends:       base
+                     , doctest
+                     , Glob
+  default-language:    Haskell2010
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+
+source-repository head
+  type:     git
+  location: git@github.com:cdepillabout/envelope.git

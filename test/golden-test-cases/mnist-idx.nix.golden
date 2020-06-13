@@ -1,0 +1,13 @@
+{ mkDerivation, base, binary, bytestring, directory, hspec, stdenv
+, vector
+}:
+mkDerivation {
+  pname = "mnist-idx";
+  version = "0.1.2.8";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base binary bytestring vector ];
+  testHaskellDepends = [ base binary directory hspec vector ];
+  homepage = "https://github.com/kryoxide/mnist-idx/";
+  description = "Read and write IDX data that is used in e.g. the MNIST database.";
+  license = stdenv.lib.licenses.lgpl3;
+}

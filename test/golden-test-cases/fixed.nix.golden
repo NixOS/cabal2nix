@@ -1,0 +1,10 @@
+{ mkDerivation, base, stdenv }:
+mkDerivation {
+  pname = "fixed";
+  version = "0.2.1.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base ];
+  homepage = "http://github.com/ekmett/fixed";
+  description = "Signed 15.16 precision fixed point arithmetic";
+  license = stdenv.lib.licenses.bsd3;
+}

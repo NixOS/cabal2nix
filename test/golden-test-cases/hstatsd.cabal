@@ -1,0 +1,24 @@
+name:                   hstatsd
+version:                0.1
+stability:              quick-hack
+
+cabal-version:          >= 1.2
+build-type:             Simple
+
+author:                 James Cook <mokus@deepbondi.net>
+maintainer:             James Cook <mokus@deepbondi.net>
+license:                PublicDomain
+homepage:               https://github.com/mokus0/hstatsd
+
+category:               System
+synopsis:               Quick and dirty statsd interface
+description:            Quick and dirty statsd interface
+
+Library
+  hs-source-dirs:       src
+  exposed-modules:      Network.StatsD
+  build-depends:        base >= 3 && < 5,
+                        bytestring,
+                        mtl,
+                        network,
+                        text

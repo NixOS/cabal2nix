@@ -1,0 +1,21 @@
+{ mkDerivation, aeson, base, containers, errors, hspec
+, http-api-data, http-client, http-client-tls, megaparsec, mtl
+, servant, servant-client, stdenv, text, time, transformers
+}:
+mkDerivation {
+  pname = "slack-web";
+  version = "0.2.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson base containers errors http-api-data http-client
+    http-client-tls megaparsec mtl servant servant-client text time
+    transformers
+  ];
+  testHaskellDepends = [
+    aeson base containers errors hspec http-api-data megaparsec text
+    time
+  ];
+  homepage = "https://github.com/jpvillaisaza/slack-web";
+  description = "Bindings for the Slack web API";
+  license = stdenv.lib.licenses.mit;
+}

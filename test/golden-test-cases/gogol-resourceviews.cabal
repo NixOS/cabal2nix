@@ -1,0 +1,61 @@
+name:                  gogol-resourceviews
+version:               0.3.0
+synopsis:              Google Compute Engine Instance Groups SDK.
+homepage:              https://github.com/brendanhay/gogol
+bug-reports:           https://github.com/brendanhay/gogol/issues
+license:               OtherLicense
+license-file:          LICENSE
+author:                Brendan Hay
+maintainer:            Brendan Hay <brendan.g.hay@gmail.com>
+copyright:             Copyright (c) 2015-2016 Brendan Hay
+category:              Network, Google, Cloud
+build-type:            Simple
+cabal-version:         >= 1.10
+extra-source-files:    README.md src/.gitkeep
+
+description:
+    The Resource View API allows users to create and manage logical sets of
+    Google Compute Engine instances.
+    .
+    /Warning:/ This is an experimental prototype/preview release which is still
+    under exploratory development and not intended for public use, caveat emptor!
+    .
+    This library is compatible with version @v1beta2@
+    of the API.
+    .
+    Labels:
+    .
+    * Limited Availability
+
+source-repository head
+    type:     git
+    location: git://github.com/brendanhay/gogol.git
+
+library
+    default-language:  Haskell2010
+    hs-source-dirs:    src gen
+
+    ghc-options:       -Wall
+
+    exposed-modules:
+          Network.Google.Resource.ResourceViews.ZoneOperations.Get
+        , Network.Google.Resource.ResourceViews.ZoneOperations.List
+        , Network.Google.Resource.ResourceViews.ZoneViews.AddResources
+        , Network.Google.Resource.ResourceViews.ZoneViews.Delete
+        , Network.Google.Resource.ResourceViews.ZoneViews.Get
+        , Network.Google.Resource.ResourceViews.ZoneViews.GetService
+        , Network.Google.Resource.ResourceViews.ZoneViews.Insert
+        , Network.Google.Resource.ResourceViews.ZoneViews.List
+        , Network.Google.Resource.ResourceViews.ZoneViews.ListResources
+        , Network.Google.Resource.ResourceViews.ZoneViews.RemoveResources
+        , Network.Google.Resource.ResourceViews.ZoneViews.SetService
+        , Network.Google.ResourceViews
+        , Network.Google.ResourceViews.Types
+
+    other-modules:
+          Network.Google.ResourceViews.Types.Product
+        , Network.Google.ResourceViews.Types.Sum
+
+    build-depends:
+          gogol-core == 0.3.0.*
+        , base       >= 4.7 && < 5

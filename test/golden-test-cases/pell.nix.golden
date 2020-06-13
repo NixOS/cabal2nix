@@ -1,0 +1,16 @@
+{ mkDerivation, arithmoi, base, Cabal, cabal-test-quickcheck
+, containers, primes, QuickCheck, stdenv
+}:
+mkDerivation {
+  pname = "pell";
+  version = "0.1.1.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ arithmoi base containers ];
+  testHaskellDepends = [
+    arithmoi base Cabal cabal-test-quickcheck containers primes
+    QuickCheck
+  ];
+  homepage = "https://github.com/brunjlar/pell";
+  description = "Package to solve the Generalized Pell Equation";
+  license = stdenv.lib.licenses.mit;
+}

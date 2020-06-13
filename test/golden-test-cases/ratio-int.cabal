@@ -1,0 +1,25 @@
+name:              ratio-int
+version:           0.1.2
+license:           BSD3
+author:            Raphael Javaux <raphaeljavaux[at]gmail.com>
+maintainer:        Raphael Javaux <raphaeljavaux[at]gmail.com>
+synopsis:          Fast specialisation of Data.Ratio for Int.
+description:       Fast specialisation of Data.Ratio for Int.
+                   .
+                   Runs about ten times faster than Data.Int while being half
+                   as fast as floating-point types.
+category:          Math
+cabal-version:     >= 1.9.2
+build-type:        Simple
+homepage:          https://github.com/RaphaelJ/ratio-int
+
+library
+    exposed-modules:    Data.RatioInt
+
+    ghc-options:        -Wall -O2
+
+    build-depends: base                          >= 4           && < 5
+
+source-repository head
+  type:     git
+  location: https://github.com/RaphaelJ/ratio-int

@@ -1,0 +1,45 @@
+name:
+  deque
+version:
+  0.2
+synopsis:
+  Double-ended queue
+description:
+  An implementation of Double-Ended Queue (aka Dequeue or Deque)
+  based on the head-tail linked list.
+homepage:
+  https://github.com/nikita-volkov/deque
+bug-reports:
+  https://github.com/nikita-volkov/deque/issues
+author:
+  Nikita Volkov <nikita.y.volkov@mail.ru>
+maintainer:
+  Nikita Volkov <nikita.y.volkov@mail.ru>
+copyright:
+  (c) 2016, Nikita Volkov
+license:
+  MIT
+license-file:
+  LICENSE
+build-type:
+  Simple
+cabal-version:
+  >=1.10
+
+source-repository head
+  type:
+    git
+  location:
+    git://github.com/nikita-volkov/deque.git
+
+library
+  hs-source-dirs:
+    library
+  default-extensions:
+    DeriveFunctor, StandaloneDeriving
+  default-language:
+    Haskell2010
+  exposed-modules:
+    Deque
+  build-depends:
+    base >= 4.6 && < 5

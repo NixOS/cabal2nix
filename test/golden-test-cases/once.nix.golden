@@ -1,0 +1,14 @@
+{ mkDerivation, base, containers, hashable, stdenv
+, template-haskell, unordered-containers
+}:
+mkDerivation {
+  pname = "once";
+  version = "0.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base containers hashable template-haskell unordered-containers
+  ];
+  homepage = "https://anonscm.debian.org/cgit/users/kaction-guest/haskell-once.git";
+  description = "memoization for IO actions and functions";
+  license = stdenv.lib.licenses.gpl3;
+}

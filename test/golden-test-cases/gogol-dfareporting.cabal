@@ -1,0 +1,249 @@
+name:                  gogol-dfareporting
+version:               0.3.0
+synopsis:              Google DCM/DFA Reporting And Trafficking SDK.
+homepage:              https://github.com/brendanhay/gogol
+bug-reports:           https://github.com/brendanhay/gogol/issues
+license:               OtherLicense
+license-file:          LICENSE
+author:                Brendan Hay
+maintainer:            Brendan Hay <brendan.g.hay@gmail.com>
+copyright:             Copyright (c) 2015-2016 Brendan Hay
+category:              Network, Google, Cloud
+build-type:            Simple
+cabal-version:         >= 1.10
+extra-source-files:    README.md src/.gitkeep
+
+description:
+    Manages your DoubleClick Campaign Manager ad campaigns and reports.
+    .
+    /Warning:/ This is an experimental prototype/preview release which is still
+    under exploratory development and not intended for public use, caveat emptor!
+    .
+    This library is compatible with version @v2.7@
+    of the API.
+
+source-repository head
+    type:     git
+    location: git://github.com/brendanhay/gogol.git
+
+library
+    default-language:  Haskell2010
+    hs-source-dirs:    src gen
+
+    ghc-options:       -Wall
+
+    exposed-modules:
+          Network.Google.DFAReporting
+        , Network.Google.DFAReporting.Types
+        , Network.Google.Resource.DFAReporting.AccountActiveAdSummaries.Get
+        , Network.Google.Resource.DFAReporting.AccountPermissionGroups.Get
+        , Network.Google.Resource.DFAReporting.AccountPermissionGroups.List
+        , Network.Google.Resource.DFAReporting.AccountPermissions.Get
+        , Network.Google.Resource.DFAReporting.AccountPermissions.List
+        , Network.Google.Resource.DFAReporting.AccountUserProFiles.Get
+        , Network.Google.Resource.DFAReporting.AccountUserProFiles.Insert
+        , Network.Google.Resource.DFAReporting.AccountUserProFiles.List
+        , Network.Google.Resource.DFAReporting.AccountUserProFiles.Patch
+        , Network.Google.Resource.DFAReporting.AccountUserProFiles.Update
+        , Network.Google.Resource.DFAReporting.Accounts.Get
+        , Network.Google.Resource.DFAReporting.Accounts.List
+        , Network.Google.Resource.DFAReporting.Accounts.Patch
+        , Network.Google.Resource.DFAReporting.Accounts.Update
+        , Network.Google.Resource.DFAReporting.Ads.Get
+        , Network.Google.Resource.DFAReporting.Ads.Insert
+        , Network.Google.Resource.DFAReporting.Ads.List
+        , Network.Google.Resource.DFAReporting.Ads.Patch
+        , Network.Google.Resource.DFAReporting.Ads.Update
+        , Network.Google.Resource.DFAReporting.AdvertiserGroups.Delete
+        , Network.Google.Resource.DFAReporting.AdvertiserGroups.Get
+        , Network.Google.Resource.DFAReporting.AdvertiserGroups.Insert
+        , Network.Google.Resource.DFAReporting.AdvertiserGroups.List
+        , Network.Google.Resource.DFAReporting.AdvertiserGroups.Patch
+        , Network.Google.Resource.DFAReporting.AdvertiserGroups.Update
+        , Network.Google.Resource.DFAReporting.Advertisers.Get
+        , Network.Google.Resource.DFAReporting.Advertisers.Insert
+        , Network.Google.Resource.DFAReporting.Advertisers.List
+        , Network.Google.Resource.DFAReporting.Advertisers.Patch
+        , Network.Google.Resource.DFAReporting.Advertisers.Update
+        , Network.Google.Resource.DFAReporting.Browsers.List
+        , Network.Google.Resource.DFAReporting.CampaignCreativeAssociations.Insert
+        , Network.Google.Resource.DFAReporting.CampaignCreativeAssociations.List
+        , Network.Google.Resource.DFAReporting.Campaigns.Get
+        , Network.Google.Resource.DFAReporting.Campaigns.Insert
+        , Network.Google.Resource.DFAReporting.Campaigns.List
+        , Network.Google.Resource.DFAReporting.Campaigns.Patch
+        , Network.Google.Resource.DFAReporting.Campaigns.Update
+        , Network.Google.Resource.DFAReporting.ChangeLogs.Get
+        , Network.Google.Resource.DFAReporting.ChangeLogs.List
+        , Network.Google.Resource.DFAReporting.Cities.List
+        , Network.Google.Resource.DFAReporting.ConnectionTypes.Get
+        , Network.Google.Resource.DFAReporting.ConnectionTypes.List
+        , Network.Google.Resource.DFAReporting.ContentCategories.Delete
+        , Network.Google.Resource.DFAReporting.ContentCategories.Get
+        , Network.Google.Resource.DFAReporting.ContentCategories.Insert
+        , Network.Google.Resource.DFAReporting.ContentCategories.List
+        , Network.Google.Resource.DFAReporting.ContentCategories.Patch
+        , Network.Google.Resource.DFAReporting.ContentCategories.Update
+        , Network.Google.Resource.DFAReporting.Conversions.Batchinsert
+        , Network.Google.Resource.DFAReporting.Countries.Get
+        , Network.Google.Resource.DFAReporting.Countries.List
+        , Network.Google.Resource.DFAReporting.CreativeAssets.Insert
+        , Network.Google.Resource.DFAReporting.CreativeFieldValues.Delete
+        , Network.Google.Resource.DFAReporting.CreativeFieldValues.Get
+        , Network.Google.Resource.DFAReporting.CreativeFieldValues.Insert
+        , Network.Google.Resource.DFAReporting.CreativeFieldValues.List
+        , Network.Google.Resource.DFAReporting.CreativeFieldValues.Patch
+        , Network.Google.Resource.DFAReporting.CreativeFieldValues.Update
+        , Network.Google.Resource.DFAReporting.CreativeFields.Delete
+        , Network.Google.Resource.DFAReporting.CreativeFields.Get
+        , Network.Google.Resource.DFAReporting.CreativeFields.Insert
+        , Network.Google.Resource.DFAReporting.CreativeFields.List
+        , Network.Google.Resource.DFAReporting.CreativeFields.Patch
+        , Network.Google.Resource.DFAReporting.CreativeFields.Update
+        , Network.Google.Resource.DFAReporting.CreativeGroups.Get
+        , Network.Google.Resource.DFAReporting.CreativeGroups.Insert
+        , Network.Google.Resource.DFAReporting.CreativeGroups.List
+        , Network.Google.Resource.DFAReporting.CreativeGroups.Patch
+        , Network.Google.Resource.DFAReporting.CreativeGroups.Update
+        , Network.Google.Resource.DFAReporting.Creatives.Get
+        , Network.Google.Resource.DFAReporting.Creatives.Insert
+        , Network.Google.Resource.DFAReporting.Creatives.List
+        , Network.Google.Resource.DFAReporting.Creatives.Patch
+        , Network.Google.Resource.DFAReporting.Creatives.Update
+        , Network.Google.Resource.DFAReporting.DimensionValues.Query
+        , Network.Google.Resource.DFAReporting.DirectorySiteContacts.Get
+        , Network.Google.Resource.DFAReporting.DirectorySiteContacts.List
+        , Network.Google.Resource.DFAReporting.DirectorySites.Get
+        , Network.Google.Resource.DFAReporting.DirectorySites.Insert
+        , Network.Google.Resource.DFAReporting.DirectorySites.List
+        , Network.Google.Resource.DFAReporting.DynamicTargetingKeys.Delete
+        , Network.Google.Resource.DFAReporting.DynamicTargetingKeys.Insert
+        , Network.Google.Resource.DFAReporting.DynamicTargetingKeys.List
+        , Network.Google.Resource.DFAReporting.EventTags.Delete
+        , Network.Google.Resource.DFAReporting.EventTags.Get
+        , Network.Google.Resource.DFAReporting.EventTags.Insert
+        , Network.Google.Resource.DFAReporting.EventTags.List
+        , Network.Google.Resource.DFAReporting.EventTags.Patch
+        , Network.Google.Resource.DFAReporting.EventTags.Update
+        , Network.Google.Resource.DFAReporting.Files.Get
+        , Network.Google.Resource.DFAReporting.Files.List
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.Delete
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.Generatetag
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.Get
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.Insert
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.List
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.Patch
+        , Network.Google.Resource.DFAReporting.FloodlightActivities.Update
+        , Network.Google.Resource.DFAReporting.FloodlightActivityGroups.Get
+        , Network.Google.Resource.DFAReporting.FloodlightActivityGroups.Insert
+        , Network.Google.Resource.DFAReporting.FloodlightActivityGroups.List
+        , Network.Google.Resource.DFAReporting.FloodlightActivityGroups.Patch
+        , Network.Google.Resource.DFAReporting.FloodlightActivityGroups.Update
+        , Network.Google.Resource.DFAReporting.FloodlightConfigurations.Get
+        , Network.Google.Resource.DFAReporting.FloodlightConfigurations.List
+        , Network.Google.Resource.DFAReporting.FloodlightConfigurations.Patch
+        , Network.Google.Resource.DFAReporting.FloodlightConfigurations.Update
+        , Network.Google.Resource.DFAReporting.InventoryItems.Get
+        , Network.Google.Resource.DFAReporting.InventoryItems.List
+        , Network.Google.Resource.DFAReporting.LandingPages.Delete
+        , Network.Google.Resource.DFAReporting.LandingPages.Get
+        , Network.Google.Resource.DFAReporting.LandingPages.Insert
+        , Network.Google.Resource.DFAReporting.LandingPages.List
+        , Network.Google.Resource.DFAReporting.LandingPages.Patch
+        , Network.Google.Resource.DFAReporting.LandingPages.Update
+        , Network.Google.Resource.DFAReporting.Languages.List
+        , Network.Google.Resource.DFAReporting.Metros.List
+        , Network.Google.Resource.DFAReporting.MobileCarriers.Get
+        , Network.Google.Resource.DFAReporting.MobileCarriers.List
+        , Network.Google.Resource.DFAReporting.OperatingSystemVersions.Get
+        , Network.Google.Resource.DFAReporting.OperatingSystemVersions.List
+        , Network.Google.Resource.DFAReporting.OperatingSystems.Get
+        , Network.Google.Resource.DFAReporting.OperatingSystems.List
+        , Network.Google.Resource.DFAReporting.OrderDocuments.Get
+        , Network.Google.Resource.DFAReporting.OrderDocuments.List
+        , Network.Google.Resource.DFAReporting.Orders.Get
+        , Network.Google.Resource.DFAReporting.Orders.List
+        , Network.Google.Resource.DFAReporting.PlacementGroups.Get
+        , Network.Google.Resource.DFAReporting.PlacementGroups.Insert
+        , Network.Google.Resource.DFAReporting.PlacementGroups.List
+        , Network.Google.Resource.DFAReporting.PlacementGroups.Patch
+        , Network.Google.Resource.DFAReporting.PlacementGroups.Update
+        , Network.Google.Resource.DFAReporting.PlacementStrategies.Delete
+        , Network.Google.Resource.DFAReporting.PlacementStrategies.Get
+        , Network.Google.Resource.DFAReporting.PlacementStrategies.Insert
+        , Network.Google.Resource.DFAReporting.PlacementStrategies.List
+        , Network.Google.Resource.DFAReporting.PlacementStrategies.Patch
+        , Network.Google.Resource.DFAReporting.PlacementStrategies.Update
+        , Network.Google.Resource.DFAReporting.Placements.Generatetags
+        , Network.Google.Resource.DFAReporting.Placements.Get
+        , Network.Google.Resource.DFAReporting.Placements.Insert
+        , Network.Google.Resource.DFAReporting.Placements.List
+        , Network.Google.Resource.DFAReporting.Placements.Patch
+        , Network.Google.Resource.DFAReporting.Placements.Update
+        , Network.Google.Resource.DFAReporting.PlatformTypes.Get
+        , Network.Google.Resource.DFAReporting.PlatformTypes.List
+        , Network.Google.Resource.DFAReporting.PostalCodes.Get
+        , Network.Google.Resource.DFAReporting.PostalCodes.List
+        , Network.Google.Resource.DFAReporting.Projects.Get
+        , Network.Google.Resource.DFAReporting.Projects.List
+        , Network.Google.Resource.DFAReporting.Regions.List
+        , Network.Google.Resource.DFAReporting.RemarketingListShares.Get
+        , Network.Google.Resource.DFAReporting.RemarketingListShares.Patch
+        , Network.Google.Resource.DFAReporting.RemarketingListShares.Update
+        , Network.Google.Resource.DFAReporting.RemarketingLists.Get
+        , Network.Google.Resource.DFAReporting.RemarketingLists.Insert
+        , Network.Google.Resource.DFAReporting.RemarketingLists.List
+        , Network.Google.Resource.DFAReporting.RemarketingLists.Patch
+        , Network.Google.Resource.DFAReporting.RemarketingLists.Update
+        , Network.Google.Resource.DFAReporting.Reports.CompatibleFields.Query
+        , Network.Google.Resource.DFAReporting.Reports.Delete
+        , Network.Google.Resource.DFAReporting.Reports.Files.Get
+        , Network.Google.Resource.DFAReporting.Reports.Files.List
+        , Network.Google.Resource.DFAReporting.Reports.Get
+        , Network.Google.Resource.DFAReporting.Reports.Insert
+        , Network.Google.Resource.DFAReporting.Reports.List
+        , Network.Google.Resource.DFAReporting.Reports.Patch
+        , Network.Google.Resource.DFAReporting.Reports.Run
+        , Network.Google.Resource.DFAReporting.Reports.Update
+        , Network.Google.Resource.DFAReporting.Sites.Get
+        , Network.Google.Resource.DFAReporting.Sites.Insert
+        , Network.Google.Resource.DFAReporting.Sites.List
+        , Network.Google.Resource.DFAReporting.Sites.Patch
+        , Network.Google.Resource.DFAReporting.Sites.Update
+        , Network.Google.Resource.DFAReporting.Sizes.Get
+        , Network.Google.Resource.DFAReporting.Sizes.Insert
+        , Network.Google.Resource.DFAReporting.Sizes.List
+        , Network.Google.Resource.DFAReporting.SubAccounts.Get
+        , Network.Google.Resource.DFAReporting.SubAccounts.Insert
+        , Network.Google.Resource.DFAReporting.SubAccounts.List
+        , Network.Google.Resource.DFAReporting.SubAccounts.Patch
+        , Network.Google.Resource.DFAReporting.SubAccounts.Update
+        , Network.Google.Resource.DFAReporting.TargetableRemarketingLists.Get
+        , Network.Google.Resource.DFAReporting.TargetableRemarketingLists.List
+        , Network.Google.Resource.DFAReporting.TargetingTemplates.Get
+        , Network.Google.Resource.DFAReporting.TargetingTemplates.Insert
+        , Network.Google.Resource.DFAReporting.TargetingTemplates.List
+        , Network.Google.Resource.DFAReporting.TargetingTemplates.Patch
+        , Network.Google.Resource.DFAReporting.TargetingTemplates.Update
+        , Network.Google.Resource.DFAReporting.UserProFiles.Get
+        , Network.Google.Resource.DFAReporting.UserProFiles.List
+        , Network.Google.Resource.DFAReporting.UserRolePermissionGroups.Get
+        , Network.Google.Resource.DFAReporting.UserRolePermissionGroups.List
+        , Network.Google.Resource.DFAReporting.UserRolePermissions.Get
+        , Network.Google.Resource.DFAReporting.UserRolePermissions.List
+        , Network.Google.Resource.DFAReporting.UserRoles.Delete
+        , Network.Google.Resource.DFAReporting.UserRoles.Get
+        , Network.Google.Resource.DFAReporting.UserRoles.Insert
+        , Network.Google.Resource.DFAReporting.UserRoles.List
+        , Network.Google.Resource.DFAReporting.UserRoles.Patch
+        , Network.Google.Resource.DFAReporting.UserRoles.Update
+        , Network.Google.Resource.DFAReporting.VideoFormats.Get
+        , Network.Google.Resource.DFAReporting.VideoFormats.List
+
+    other-modules:
+          Network.Google.DFAReporting.Types.Product
+        , Network.Google.DFAReporting.Types.Sum
+
+    build-depends:
+          gogol-core == 0.3.0.*
+        , base       >= 4.7 && < 5

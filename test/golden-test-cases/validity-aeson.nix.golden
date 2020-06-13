@@ -1,0 +1,15 @@
+{ mkDerivation, aeson, base, stdenv, validity, validity-scientific
+, validity-text, validity-unordered-containers, validity-vector
+}:
+mkDerivation {
+  pname = "validity-aeson";
+  version = "0.1.0.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson base validity validity-scientific validity-text
+    validity-unordered-containers validity-vector
+  ];
+  homepage = "https://github.com/NorfairKing/validity#readme";
+  description = "Validity instances for aeson";
+  license = stdenv.lib.licenses.mit;
+}

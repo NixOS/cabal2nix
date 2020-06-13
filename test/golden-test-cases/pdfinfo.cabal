@@ -1,0 +1,30 @@
+name:                pdfinfo
+version:             1.5.4
+synopsis:            Wrapper around the pdfinfo command.
+description:         Just a wrapper around the pdfinfo command (for collecting PDF file info). See man pdfinfo.
+license:             BSD3
+license-file:        LICENSE
+author:              Chris Done
+maintainer:          chrisdone@gmail.com
+copyright:           2013 Chris Done
+category:            Text
+build-type:          Simple
+cabal-version:       >=1.8
+homepage:            https://github.com/chrisdone/pdfinfo
+
+source-repository head
+  type:              git
+  location:          git@github.com:chrisdone/pdfinfo.git
+
+library
+  ghc-options:       -O2 -Wall
+  exposed-modules:   Text.PDF.Info
+  hs-source-dirs:    src/
+  build-depends:     base >= 4 && < 5,
+                     old-locale,
+                     time >= 1.1,
+                     time-locale-compat,
+                     process-extras,
+                     text,
+                     -- mtl-2.1 contains a severe bug
+                     mtl >= 1.1 && < 2.1 || >= 2.1.1

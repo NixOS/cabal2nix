@@ -1,0 +1,17 @@
+{ mkDerivation, base, base-compat, bytestring, deepseq, hspec
+, hspec-discover, QuickCheck, stdenv, transformers
+}:
+mkDerivation {
+  pname = "haddock-library";
+  version = "1.4.5";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base bytestring deepseq transformers ];
+  testHaskellDepends = [
+    base base-compat bytestring deepseq hspec QuickCheck transformers
+  ];
+  testToolDepends = [ hspec-discover ];
+  doHaddock = false;
+  homepage = "http://www.haskell.org/haddock/";
+  description = "Library exposing some functionality of Haddock";
+  license = stdenv.lib.licenses.bsd3;
+}

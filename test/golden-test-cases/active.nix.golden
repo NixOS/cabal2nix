@@ -1,0 +1,16 @@
+{ mkDerivation, base, lens, linear, QuickCheck, semigroupoids
+, semigroups, stdenv, vector
+}:
+mkDerivation {
+  pname = "active";
+  version = "0.2.0.13";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base lens linear semigroupoids semigroups vector
+  ];
+  testHaskellDepends = [
+    base lens linear QuickCheck semigroupoids semigroups vector
+  ];
+  description = "Abstractions for animation";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,49 @@
+name:                emailaddress
+version:             0.2.0.0
+synopsis:            Wrapper around email-validate library adding instances for common type classes.
+description:         Please see README.md
+homepage:            https://github.com/cdepillabout/emailaddress#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Dennis Gosnell
+maintainer:          cdep.illabout@gmail.com
+copyright:           2016 Dennis Gosnell
+category:            Text
+build-type:          Simple
+extra-source-files:  README.md
+                   , CHANGELOG.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Text.EmailAddress
+  other-modules:       Text.EmailAddress.Internal
+  build-depends:       base >= 4.6 && < 5
+                     , aeson >= 0.9
+                     , bifunctors >= 5
+                     , bytestring >= 0.9
+                     , email-validate >= 2
+                     , http-api-data >= 0.2
+                     , opaleye >= 0.4
+                     , path-pieces >= 0.2
+                     , persistent >= 2
+                     , postgresql-simple >= 0.5
+                     , product-profunctors >= 0.6
+                     , profunctors >= 0.5
+                     , text >= 1.2
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+
+test-suite emailaddress-doctest
+  type:                exitcode-stdio-1.0
+  main-is:             DocTest.hs
+  hs-source-dirs:      test
+  build-depends:       base
+                     , doctest
+                     , Glob
+  default-language:    Haskell2010
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+
+source-repository head
+  type:     git
+  location: git@github.com:cdepillabout/emailaddress.git

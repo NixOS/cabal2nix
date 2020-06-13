@@ -1,0 +1,108 @@
+name:                expiring-cache-map
+version:             0.0.6.1
+synopsis:            General purpose simple caching.
+description:         
+    A simple general purpose shared state cache map with automatic expiration 
+    of values, for caching the results of accessing a resource such as reading 
+    a file. With variations for Ord and Hashable keys using "Data.Map.Strict"
+    and "Data.HashMap.Strict", respectively.
+
+homepage:            https://github.com/elblake/expiring-cache-map
+bug-reports:         https://github.com/elblake/expiring-cache-map/issues
+license:             BSD3
+license-file:        LICENSE
+author:              Edward L. Blake
+maintainer:          edwardlblake@gmail.com
+copyright:           (c) 2014 Edward L. Blake
+category:            Caching
+build-type:          Simple
+cabal-version:       >=1.8
+
+extra-source-files:
+    README.md
+
+library
+  exposed-modules:
+    Caching.ExpiringCacheMap.OrdECM
+    Caching.ExpiringCacheMap.HashECM
+    Caching.ExpiringCacheMap.Internal.Internal
+    Caching.ExpiringCacheMap.Internal.Types
+    Caching.ExpiringCacheMap.Types
+    Caching.ExpiringCacheMap.Utils.TestSequence
+    Caching.ExpiringCacheMap.Utils.Types
+  -- other-modules:       
+  build-depends:       
+    base == 4.*,
+    containers >= 0.5.0.0,
+    hashable >= 1.0.1.1,
+    unordered-containers >= 0.2.0.0
+
+test-suite test-threads
+    type: exitcode-stdio-1.0
+    hs-source-dirs: . tests
+    main-is: TestWithThreads.hs
+    build-depends:
+      base,
+      bytestring >= 0.10.0.0,
+      time >= 1.0,
+      containers >= 0.5.0.0,
+      hashable >= 1.0.1.1,
+      unordered-containers >= 0.2.0.0
+    other-modules:
+      TestHashECMWithThreads
+      TestHashECMWithThreadsInvalidating
+      TestOrdECMWithThreads
+      TestOrdECMWithThreadsInvalidating
+      Caching.ExpiringCacheMap.Internal.Internal
+
+test-suite test-sequence
+    type: exitcode-stdio-1.0
+    hs-source-dirs: . tests
+    main-is: TestWithTestSequence.hs
+    build-depends:
+      base,
+      bytestring >= 0.10.0.0,
+      containers >= 0.5.0.0,
+      hashable >= 1.0.1.1,
+      unordered-containers >= 0.2.0.0
+    other-modules:
+      TestECMWithTestSequenceCommon
+      TestECMWithTestSequenceCommonInvalidating
+      TestHashECMWithTestSequence
+      TestHashECMWithTestSequenceInvalidating
+      TestOrdECMWithTestSequence
+      TestOrdECMWithTestSequenceInvalidating
+
+test-suite invalidate-test
+    type: exitcode-stdio-1.0
+    hs-source-dirs: . tests
+    main-is: InvalidateTest.hs
+    build-depends:
+      base,
+      bytestring >= 0.10.0.0,
+      time >= 1.0,
+      containers >= 0.5.0.0,
+      hashable >= 1.0.1.1,
+      unordered-containers >= 0.2.0.0
+    other-modules:
+      InvalidateTestCommon
+      InvalidateTestHashECM
+      InvalidateTestOrdECM
+      Caching.ExpiringCacheMap.Internal.Internal
+
+test-suite invalidate-cache-test
+    type: exitcode-stdio-1.0
+    hs-source-dirs: . tests
+    main-is: InvalidateCacheTest.hs
+    build-depends:
+      base,
+      bytestring >= 0.10.0.0,
+      time >= 1.0,
+      containers >= 0.5.0.0,
+      hashable >= 1.0.1.1,
+      unordered-containers >= 0.2.0.0
+    other-modules:
+      InvalidateCacheTestCommon
+      InvalidateCacheTestHashECM
+      InvalidateCacheTestOrdECM
+      Caching.ExpiringCacheMap.Internal.Internal

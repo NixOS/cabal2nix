@@ -1,0 +1,17 @@
+{ mkDerivation, base, bytestring, containers, data-accessor
+, network, network-transport, network-transport-tests, stdenv
+}:
+mkDerivation {
+  pname = "network-transport-tcp";
+  version = "0.6.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base bytestring containers data-accessor network network-transport
+  ];
+  testHaskellDepends = [
+    base bytestring network network-transport network-transport-tests
+  ];
+  homepage = "http://haskell-distributed.github.com";
+  description = "TCP instantiation of Network.Transport";
+  license = stdenv.lib.licenses.bsd3;
+}

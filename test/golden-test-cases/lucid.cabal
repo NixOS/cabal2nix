@@ -1,0 +1,75 @@
+name:                lucid
+version:             2.9.9
+synopsis:            Clear to write, read and edit DSL for HTML
+description:         Clear to write, read and edit DSL for HTML. See the 'Lucid' module
+                     for description and documentation.
+homepage:            https://github.com/chrisdone/lucid
+license:             BSD3
+license-file:        LICENSE
+author:              Chris Done
+maintainer:          chrisdone@gmail.com, oleg.grenrus@iki.fi
+copyright:           2014-2017 Chris Done
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.8
+extra-source-files:  README.md, CHANGELOG.md
+tested-with:         GHC==7.4.2,GHC==7.6.3,GHC==7.8.4,GHC==7.10.3,GHC==8.0.2,GHC==8.2.1
+
+library
+  hs-source-dirs:    src/
+  ghc-options:       -Wall -O2
+  exposed-modules:   Lucid
+                     Lucid.Base
+                     Lucid.Html5
+                     Lucid.Bootstrap
+  build-depends:     base >= 4.5 && <5
+                   , blaze-builder
+                   , bytestring
+                   , containers
+                   , hashable
+                   , mmorph
+                   , mtl
+                   , text
+                   , transformers
+                   , unordered-containers
+  if !impl(ghc >= 8.0)
+    build-depends:   semigroups
+
+test-suite test
+    type: exitcode-stdio-1.0
+    main-is: Main.hs
+    hs-source-dirs: test
+    other-modules: Example1
+    build-depends: base,
+                   lucid,
+                   HUnit,
+                   hspec,
+                   parsec,
+                   bifunctors,
+                   text,
+                   mtl
+
+benchmark bench
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   benchmarks
+  main-is:          Main.hs
+  other-modules:    HtmlBenchmarks
+  build-depends:    base,
+                    deepseq,
+                    criterion,
+                    blaze-builder,
+                    text,
+                    bytestring,
+                    lucid
+  ghc-options:      -O2
+
+benchmark bench-io
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   benchmarks
+  main-is:          IO.hs
+  build-depends:    base,
+                    criterion,
+                    transformers,
+                    text,
+                    lucid
+  ghc-options:      -O2

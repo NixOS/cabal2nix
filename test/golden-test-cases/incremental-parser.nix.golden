@@ -1,0 +1,19 @@
+{ mkDerivation, base, bytestring, checkers, criterion, deepseq
+, monoid-subclasses, QuickCheck, stdenv, tasty, tasty-quickcheck
+, text
+}:
+mkDerivation {
+  pname = "incremental-parser";
+  version = "0.2.5.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base monoid-subclasses ];
+  testHaskellDepends = [
+    base checkers monoid-subclasses QuickCheck tasty tasty-quickcheck
+  ];
+  benchmarkHaskellDepends = [
+    base bytestring criterion deepseq monoid-subclasses text
+  ];
+  homepage = "https://github.com/blamario/incremental-parser";
+  description = "Generic parser library capable of providing partial results from partial input";
+  license = "GPL";
+}

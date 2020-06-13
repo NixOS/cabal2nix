@@ -1,0 +1,94 @@
+-- This file has been generated from package.yaml by hpack version 0.15.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           giphy-api
+version:        0.5.2.0
+synopsis:       Giphy HTTP API wrapper and CLI search tool.
+description:    Please see README.md
+category:       Web
+homepage:       http://github.com/passy/giphy-api#readme
+author:         Pascal Hartig
+maintainer:     Pascal Hartig <phartig@rdrei.net>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    changelog.md
+    README.md
+    stack.yaml
+    test/fixtures/random_response.json
+    test/fixtures/search_response.json
+    test/fixtures/translate_response.json
+
+flag buildSample
+  description: Build the sample application.
+  manual: True
+  default: False
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-monomorphism-restriction -fwarn-unused-do-bind
+  build-depends:
+      base >= 4.7 && < 5
+    , text
+    , network-uri
+    , aeson
+    , containers
+    , microlens
+    , microlens-th
+    , mtl
+    , servant >= 0.9
+    , servant-client >= 0.9
+    , transformers
+    , http-api-data
+    , http-client
+    , http-client-tls
+  exposed-modules:
+      Web.Giphy
+  other-modules:
+      Paths_giphy_api
+  default-language: Haskell2010
+
+executable giphy-search
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-monomorphism-restriction -fwarn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >= 4.7 && < 5
+    , text
+    , network-uri
+  if flag(buildSample)
+    build-depends:
+        giphy-api
+      , lens
+      , optparse-applicative
+  else
+    buildable: False
+  other-modules:
+      Sample
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-monomorphism-restriction -fwarn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >= 4.7 && < 5
+    , text
+    , network-uri
+    , giphy-api
+    , aeson
+    , basic-prelude
+    , bytestring
+    , containers
+    , directory
+    , hspec
+    , lens
+  default-language: Haskell2010

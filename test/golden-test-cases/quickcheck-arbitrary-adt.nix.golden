@@ -1,0 +1,15 @@
+{ mkDerivation, base, hspec, lens, QuickCheck, stdenv
+, template-haskell, transformers
+}:
+mkDerivation {
+  pname = "quickcheck-arbitrary-adt";
+  version = "0.2.0.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base QuickCheck ];
+  testHaskellDepends = [
+    base hspec lens QuickCheck template-haskell transformers
+  ];
+  homepage = "https://github.com/plow-technologies/quickcheck-arbitrary-adt#readme";
+  description = "Generic typeclasses for generating arbitrary ADTs";
+  license = stdenv.lib.licenses.bsd3;
+}

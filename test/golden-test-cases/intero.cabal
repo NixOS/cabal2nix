@@ -1,0 +1,116 @@
+name:
+  intero
+version:
+  0.1.24
+synopsis:
+  Complete interactive development program for Haskell
+license:
+  BSD3
+homepage:
+  https://github.com/commercialhaskell/intero
+license-file:
+  LICENSE
+author:
+  Chris Done, The University of Glasgow
+maintainer:
+  chrisdone@fpcomplete.com
+copyright:
+  2016 FP Complete,
+  2016 Chris Done,
+  2012 Kazu Yamamoto,
+  2008 Claus Reinke,
+  2005 The University of Glasgow
+category:
+  Development
+build-type:
+  Simple
+cabal-version:
+  >= 1.14
+stability:
+  Stable
+extra-source-files:
+  cbits/HsVersions.h
+  cbits/PosixSource.h
+  CHANGELOG
+  README.md
+data-files:
+  elisp/*.el
+source-repository head
+  type:
+    git
+  location:
+    git://github.com/commercialhaskell/intero.git
+
+executable intero
+  default-language:
+    Haskell2010
+  main-is:
+    Main.hs
+  ghc-options:
+    -Wall -O2 -threaded -rtsopts
+  include-dirs:
+    cbits/
+  hs-source-dirs:
+    src/
+  c-sources:
+    cbits/hschooks.c
+  cpp-options:
+    -DGHCI
+  cc-options:
+    -fPIC
+  other-modules:
+    InteractiveUI
+    GhciMonad
+    GhciTags
+    GhciTypes
+    GhciInfo
+    GhciFind
+    Paths_intero
+  build-depends:
+    base < 5,
+    array,
+    bytestring,
+    directory,
+    filepath,
+    -- We permit any 8.0.1.* or 8.0.2.* or 8.2.1
+    ghc >= 7.8 && <= 8.2.2,
+    ghc-paths,
+    haskeline,
+    process,
+    transformers,
+    syb,
+    containers,
+    time
+
+  if impl(ghc>=8.0.1)
+    build-depends:
+      ghci,
+      ghc-boot-th
+
+  if os(windows)
+    build-depends:
+      Win32
+  else
+    build-depends:
+      unix
+    ghc-options:
+      -dynamic
+
+test-suite intero-test
+  default-language:
+    Haskell2010
+  type:
+    exitcode-stdio-1.0
+  hs-source-dirs:
+    src/test
+  main-is:
+    Main.hs
+  build-depends:
+    base,
+    hspec,
+    temporary,
+    process,
+    transformers,
+    directory,
+    regex-compat,
+    filepath

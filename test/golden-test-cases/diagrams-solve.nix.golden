@@ -1,0 +1,15 @@
+{ mkDerivation, base, deepseq, stdenv, tasty, tasty-hunit
+, tasty-quickcheck
+}:
+mkDerivation {
+  pname = "diagrams-solve";
+  version = "0.1.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base ];
+  testHaskellDepends = [
+    base deepseq tasty tasty-hunit tasty-quickcheck
+  ];
+  homepage = "http://projects.haskell.org/diagrams";
+  description = "Pure Haskell solver routines used by diagrams";
+  license = stdenv.lib.licenses.bsd3;
+}

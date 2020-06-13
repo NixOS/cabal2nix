@@ -1,0 +1,44 @@
+-- http://www.haskell.org/cabal/release/cabal-latest/doc/users-guide/
+name:                binary-bits
+version:             0.5
+synopsis:            Bit parsing/writing on top of binary.
+description:         Bit parsing/writing on top of binary. Provides functions to
+                     read and write bits to and from 8\/16\/32\/64 words.
+license:             BSD3
+license-file:        LICENSE
+author:              Lennart Kolmodin <kolmodin@gmail.com>
+maintainer:          Lennart Kolmodin <kolmodin@gmail.com>
+category:            Data, Parsing
+build-type:          Simple
+
+cabal-version:       >=1.10
+
+source-repository head
+  type: git
+  location: git://github.com/kolmodin/binary-bits.git
+
+library
+  build-depends: base==4.*, binary >= 0.6.0.0, bytestring
+
+  other-extensions: RankNTypes, MagicHash, BangPatterns, CPP
+
+  exposed-modules:     Data.Binary.Bits ,
+                       Data.Binary.Bits.Put ,
+                       Data.Binary.Bits.Get
+
+  default-language:    Haskell98
+
+  ghc-options: -O2 -Wall
+
+test-suite qc
+  type: exitcode-stdio-1.0
+  main-is: BitsQC.hs
+  default-language:    Haskell98
+
+  build-depends: base==4.*, binary >= 0.6.0.0, bytestring,
+                 QuickCheck>=2, random,
+                 test-framework,
+                 test-framework-quickcheck2
+
+  other-extensions: RankNTypes, MagicHash, BangPatterns, CPP,
+                    FlexibleInstances, FlexibleContexts, TupleSections

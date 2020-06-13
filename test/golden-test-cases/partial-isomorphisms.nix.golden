@@ -1,0 +1,10 @@
+{ mkDerivation, base, stdenv, template-haskell }:
+mkDerivation {
+  pname = "partial-isomorphisms";
+  version = "0.2.2.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base template-haskell ];
+  homepage = "http://www.informatik.uni-marburg.de/~rendel/unparse";
+  description = "Partial isomorphisms";
+  license = stdenv.lib.licenses.bsd3;
+}

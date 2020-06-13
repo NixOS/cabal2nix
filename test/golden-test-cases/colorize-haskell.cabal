@@ -1,0 +1,33 @@
+name:           colorize-haskell
+version:        1.0.1
+license:        BSD3
+license-file:   LICENSE
+author:         Iavor S. Diatchki
+maintainer:     iavor.diatchki@gmail.com
+homepage:       http://github.com/yav/colorize-haskell
+build-type:     Simple
+cabal-version:  >= 1.2
+synopsis:       Highligt Haskell source
+description:    Highligt Haskell source
+category:       Development
+
+library
+  build-depends:
+    base >= 3 && < 5,
+    haskell-lexer,
+    ansi-terminal
+  exposed-modules:
+    Language.Haskell.Colorize
+  ghc-options:
+    -Wall -O2
+
+
+executable hscolor
+    main-is:         Main.hs
+    -- because we cannot depend on self:
+    build-depends:
+      base >= 3 && < 5,
+      haskell-lexer,
+      ansi-terminal
+    ghc-options:     -Wall -O2
+

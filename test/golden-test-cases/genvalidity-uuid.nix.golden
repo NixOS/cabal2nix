@@ -1,0 +1,17 @@
+{ mkDerivation, base, genvalidity, genvalidity-hspec, hspec
+, QuickCheck, stdenv, uuid, validity, validity-uuid
+}:
+mkDerivation {
+  pname = "genvalidity-uuid";
+  version = "0.0.0.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base genvalidity QuickCheck uuid validity validity-uuid
+  ];
+  testHaskellDepends = [
+    base genvalidity genvalidity-hspec hspec QuickCheck uuid
+  ];
+  homepage = "https://github.com/NorfairKing/validity#readme";
+  description = "GenValidity support for UUID";
+  license = stdenv.lib.licenses.mit;
+}

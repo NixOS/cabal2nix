@@ -1,0 +1,71 @@
+name:                yahoo-finance-api
+version:             0.2.0.3
+synopsis:            Read quotes from Yahoo Finance API.
+description:
+  Haskell wrapper for the stock APIs provided by Yahoo Finance.
+  .
+  __UPDATE__: It appears that yahoo disabled the quote API used by this
+  pakcage.  This package is no longer usable.  See
+  <https://github.com/cdepillabout/yahoo-finance-api/issues/5 this issue>.
+homepage:            https://github.com/cdepillabout/yahoo-finance-api
+license:             BSD3
+license-file:        LICENSE
+author:              Dennis Gosnell, James M.C. Haver II
+maintainer:          cdep.illabout@gmail.com, mchaver@gmail.com
+copyright:           2016 Dennis Gosnell
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Web.Yahoo.Finance.YQL
+                       Web.Yahoo.Finance.YQL.Internal.API
+                       Web.Yahoo.Finance.YQL.Internal.Types
+  build-depends:       base  >= 4.7 && < 5
+                     , aeson 
+                     , either
+                     , http-api-data
+                     , http-client
+                     , mtl
+                     , servant        >= 0.4
+                     , servant-client >= 0.4
+                     , text
+                     , time
+                     , transformers
+                     , vector
+  default-language:    Haskell2010
+  ghc-options:         -Wall -fwarn-incomplete-uni-patterns -fwarn-incomplete-record-updates -fwarn-monomorphism-restriction
+
+test-suite yahoo-finance-api-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  other-modules:       Web.Yahoo.FinanceSpec
+  build-depends:       base
+                     , either
+                     , hspec
+                     , yahoo-finance-api
+                     , http-client
+                     , http-client-tls
+                     , mtl
+                     , safe
+                     , servant
+                     , servant-client
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+test-suite yahoo-finance-api-doctest
+  type:                exitcode-stdio-1.0
+  main-is:             DocTest.hs
+  hs-source-dirs:      test
+  build-depends:       base
+                     , doctest >= 0.11
+                     , Glob    >= 0.7
+  default-language:    Haskell2010
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+
+source-repository head
+  type:     git
+  location: https://github.com/cdepillabout/yahoo-finance-api

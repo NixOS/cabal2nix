@@ -1,0 +1,17 @@
+{ mkDerivation, base, binary, bytestring, cereal, data-endian
+, parsers, semigroups, split, stdenv, tasty, tasty-quickcheck
+}:
+mkDerivation {
+  pname = "data-serializer";
+  version = "0.3.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base binary bytestring cereal data-endian parsers semigroups split
+  ];
+  testHaskellDepends = [
+    base binary bytestring cereal tasty tasty-quickcheck
+  ];
+  homepage = "https://github.com/mvv/data-serializer";
+  description = "Common API for serialization libraries";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,27 @@
+{ mkDerivation, base, commutative, composition, containers
+, contravariant, criterion, hashable, keys, mtl, QuickCheck
+, quickcheck-instances, semigroupoids, semigroups, stdenv, tasty
+, tasty-hunit, tasty-quickcheck, transformers, transformers-base
+, unordered-containers, witherable
+}:
+mkDerivation {
+  pname = "sets";
+  version = "0.0.5.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base commutative composition containers contravariant hashable keys
+    mtl QuickCheck semigroupoids semigroups transformers
+    transformers-base unordered-containers witherable
+  ];
+  testHaskellDepends = [
+    base commutative containers contravariant QuickCheck
+    quickcheck-instances tasty tasty-hunit tasty-quickcheck
+    unordered-containers
+  ];
+  benchmarkHaskellDepends = [
+    base commutative containers contravariant criterion
+    unordered-containers
+  ];
+  description = "Ducktyped set interface for Haskell containers";
+  license = stdenv.lib.licenses.mit;
+}

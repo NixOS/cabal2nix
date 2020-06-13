@@ -1,0 +1,14 @@
+{ mkDerivation, base, containers, srcloc, stdenv, text
+, transformers
+}:
+mkDerivation {
+  pname = "mainland-pretty";
+  version = "0.6.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base containers srcloc text transformers
+  ];
+  homepage = "https://github.com/mainland/mainland-pretty";
+  description = "Pretty printing designed for printing source code";
+  license = stdenv.lib.licenses.bsd3;
+}

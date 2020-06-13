@@ -1,0 +1,26 @@
+name:                iso639
+version:             0.1.0.3
+synopsis:            ISO-639-1 language codes 
+homepage:            https://github.com/HugoDaniel/iso639
+bug-reports:         https://github.com/HugoDaniel/iso639/issues
+description:
+    .
+    ISO-639-1 language codes mapping to Haskell datatypes 
+    .
+    The code is generated from the <http://www.loc.gov/standards/iso639-2/php/English_list.php official site> using haskell-src-exts in an extra file included in the .tar.gz.
+    .
+    Special thanks to Petter Bergman for the suggestions and bug fixing
+    .
+license:             BSD3
+license-file:        LICENSE
+author:              HugoDaniel
+maintainer:          mr.hugo.gomes@gmail.com
+copyright:           2013-2014 Hugo Daniel Gomes
+category:            Data
+build-type:          Simple
+extra-source-files:  generator/Generate.hs
+cabal-version:       >=1.8
+
+library
+  exposed-modules:     Data.LanguageCodes
+  build-depends:       base >=4.6 && <5

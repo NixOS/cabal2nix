@@ -1,0 +1,12 @@
+{ mkDerivation, base, directory, stdenv, text }:
+mkDerivation {
+  pname = "unlit";
+  version = "0.4.0.0";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base directory text ];
+  executableHaskellDepends = [ base directory text ];
+  description = "Tool to convert literate code between styles or to code";
+  license = stdenv.lib.licenses.bsd3;
+}

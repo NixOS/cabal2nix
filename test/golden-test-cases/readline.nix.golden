@@ -1,0 +1,10 @@
+{ mkDerivation, base, ncurses, process, readline, stdenv }:
+mkDerivation {
+  pname = "readline";
+  version = "1.0.3.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base process ];
+  librarySystemDepends = [ ncurses readline ];
+  description = "An interface to the GNU readline library";
+  license = "GPL";
+}

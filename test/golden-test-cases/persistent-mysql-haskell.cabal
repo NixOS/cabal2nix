@@ -1,0 +1,66 @@
+name:            persistent-mysql-haskell
+version:         0.3.6
+license:         MIT
+license-file:    LICENSE
+author:          Naushadh <naushadh@protonmail.com>, Felipe Lessa <felipe.lessa@gmail.com>, Michael Snoyman
+maintainer:      Naushadh <naushadh@protonmail.com>
+synopsis:        A pure haskell backend for the persistent library using MySQL database server.
+category:        Database, Yesod
+cabal-version:   >= 1.8
+build-type:      Simple
+homepage:        http://www.yesodweb.com/book/persistent
+bug-reports:     https://github.com/naushadh/persistent/issues
+description:
+    This package contains a backend for persistent using the
+    MySQL database server.  Internally it uses the @mysql-haskell@
+    package in order to access the database. See README.md for more.
+    .
+    This package supports only MySQL 5.1 and above.  However, it
+    has been tested only on MySQL 5.5.
+    Only the InnoDB storage engine is officially supported.
+    .
+    Known problems:
+    .
+    * This package does not support statements inside other
+      statements.
+extra-source-files: ChangeLog.md, README.md
+
+library
+    build-depends:   base                  >= 4.6      && < 5
+                   , transformers          >= 0.2.1
+                   , persistent            >= 2.6.1    && < 3
+                   , containers            >= 0.2
+                   , bytestring            >= 0.9
+                   , text                  >= 0.11.0.6
+                   , monad-control         >= 0.2
+                   , aeson                 >= 0.6.2
+                   , conduit               >= 0.5.3
+                   , resourcet             >= 0.4.10
+                   , monad-logger
+                   , resource-pool
+                   , mysql-haskell         >= 0.8.0.0 && < 1.0
+                   -- keep the following in sync with @mysql-haskell@ .cabal
+                   , io-streams            >= 1.2     && < 2.0
+                   , time                  >= 1.5.0
+                   , network               >= 2.3     && < 3.0
+                   , tls                   >= 1.3.5   && < 1.5
+    exposed-modules: Database.Persist.MySQL
+    other-modules:   Database.Persist.MySQLConnectInfoShowInstance
+    ghc-options:     -Wall
+
+executable persistent-mysql-haskell-example
+  hs-source-dirs:    example
+  main-is:           Main.hs
+  ghc-options:       -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:     base                  >= 4.6    && < 5
+                   , persistent            >= 2.6.1  && < 3
+                   , monad-logger
+                   , persistent-template
+                   , persistent-mysql-haskell
+                   , transformers          >= 0.2.1
+
+source-repository head
+  type:     git
+  location: git://github.com/naushadh/persistent.git
+  branch:   persistent-mysql-haskell
+  subdir:   persistent-mysql-haskell

@@ -1,0 +1,20 @@
+{ mkDerivation, array, base, bifunctors, bytestring, cassava
+, conduit, conduit-extra, containers, criterion, mtl, QuickCheck
+, stdenv, text
+}:
+mkDerivation {
+  pname = "cassava-conduit";
+  version = "0.4.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    array base bifunctors bytestring cassava conduit conduit-extra
+    containers mtl text
+  ];
+  testHaskellDepends = [
+    base bytestring cassava conduit conduit-extra QuickCheck text
+  ];
+  benchmarkHaskellDepends = [ base criterion ];
+  homepage = "https://github.com/domdere/cassava-conduit";
+  description = "Conduit interface for cassava package";
+  license = stdenv.lib.licenses.bsd3;
+}

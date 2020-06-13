@@ -1,0 +1,147 @@
+name:                functor-classes-compat
+version:             1
+synopsis:            Data.Functor.Classes instances for core packages
+description:
+  "Data.Functor.Classes" instances for core packages:
+  .
+  * containers
+  .
+  * vector
+  .
+  * unordered-containers
+homepage:            https://github.com/phadej/functor-classes-compat#readme
+bug-reports:         https://github.com/phadej/functor-classes-compat/issues
+license:             BSD3
+license-file:        LICENSE
+author:              Oleg Grenrus <oleg.grenrus@iki.fi>
+maintainer:          Oleg Grenrus <oleg.grenrus@iki.fi>
+copyright:           2016 Oleg Grenrus
+category:            Data
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+tested-with:
+  GHC==7.4.2,
+  GHC==7.6.3,
+  GHC==7.8.4,
+  GHC==7.10.3,
+  GHC==8.0.1,
+  GHC==8.0.2
+
+flag base-transformers-1
+  description: Together with base-transformers-1 pick: base >= 4.9, transformers < 0.4, 0.4.*, or >= 0.5. See cabal file for precise assignments.
+  manual: False
+  default: True
+
+flag base-transformers-2
+  description: See base-transformers-1 flag
+  manual: False
+  default: True
+
+flag vector
+  description: 'vector >= 0.12'
+  manual: False
+  default: True
+
+flag containers
+  description: 'containers >= 0.5.9.1'
+  manual: False
+  default: True
+
+flag unordered-containers
+  description: 'unordered-containers >= 0.2.8.0'
+  manual: False
+  default: True
+
+source-repository head
+  type:     git
+  location: https://github.com/phadej/functor-classes-compat
+
+library
+  exposed-modules:
+    Data.Map.Functor.Classes
+    Data.Set.Functor.Classes
+    Data.IntMap.Functor.Classes
+    Data.Vector.Functor.Classes
+    Data.HashSet.Functor.Classes
+    Data.HashMap.Functor.Classes
+  default-language:    Haskell2010
+  ghc-options: -Wall
+
+  build-depends:  hashable >=1.0.1.1 && <1.3
+
+  -- base and transformer dependencies:
+  -- t t: base >= 4.9
+  -- t f: transformers >= 0.5
+  -- f t: transformers < 0.4
+  -- f f: transformers == 0.4.*
+  --
+  -- The order is chosen so 'f f' combination is only requiring src-old
+  if flag(base-transformers-1)
+    if flag(base-transformers-2)
+      build-depends: base         >=4.9 && <4.10
+    else
+      build-depends: base         >= 4.5 && <4.9,
+                     transformers >= 0.5 && <0.6
+  else
+    if flag(base-transformers-2)
+      -- we don't really care about transformers version, as long as it <0.4
+      -- to make flag selection deterministic
+      build-depends: base                >= 4.5 && <4.9,
+                     transformers        <  0.4,
+                     transformers-compat >= 0.5 && <0.6
+    else
+      build-depends: base                >= 4.5 && <4.9,
+                     transformers        >= 0.4 && <0.5
+
+
+  -- containers
+  if flag(containers)
+    build-depends: containers >= 0.5.9.1 && <0.6
+    if flag(base-transformers-1) && flag(base-transformers-2)
+        hs-source-dirs: src-none/containers
+    else
+      if !flag(base-transformers-1) && !flag(base-transformers-2)
+        hs-source-dirs: src-implicit/containers
+      else
+        hs-source-dirs: src-explicit/containers
+  else
+    build-depends: containers >= 0.4 && <0.5.9.1
+    if !flag(base-transformers-1) && !flag(base-transformers-2)
+      hs-source-dirs: src-implicit/containers
+    else
+      hs-source-dirs: src-explicit/containers
+
+  -- unordered-containers
+  if flag(unordered-containers)
+    build-depends: unordered-containers >= 0.2.8.0 && <0.3
+    if flag(base-transformers-1) && flag(base-transformers-2)
+        hs-source-dirs: src-none/unordered-containers
+    else
+      if !flag(base-transformers-1) && !flag(base-transformers-2)
+        hs-source-dirs: src-implicit/unordered-containers
+      else
+        hs-source-dirs: src-explicit/unordered-containers
+  else
+    build-depends: unordered-containers >= 0.2.7.1 && <0.2.8.0
+    if !flag(base-transformers-1) && !flag(base-transformers-2)
+      hs-source-dirs: src-implicit/unordered-containers
+    else
+      hs-source-dirs: src-explicit/unordered-containers
+
+  -- vector
+  if flag(vector)
+    build-depends: vector >= 0.12 && <0.13
+    if flag(base-transformers-1) && flag(base-transformers-2)
+        hs-source-dirs: src-none/vector
+    else
+      if !flag(base-transformers-1) && !flag(base-transformers-2)
+        hs-source-dirs: src-implicit/vector
+      else
+        hs-source-dirs: src-explicit/vector
+  else
+    build-depends: vector >= 0.11.0.0 && <0.12
+    if !flag(base-transformers-1) && !flag(base-transformers-2)
+      hs-source-dirs: src-implicit/vector
+    else
+      hs-source-dirs: src-explicit/vector

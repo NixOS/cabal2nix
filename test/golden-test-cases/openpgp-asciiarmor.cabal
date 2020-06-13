@@ -1,0 +1,62 @@
+Name:                openpgp-asciiarmor
+Version:             0.1
+Synopsis:            OpenPGP (RFC4880) ASCII Armor codec
+Description:         OpenPGP (RFC4880) ASCII Armor codec
+Homepage:            http://floss.scru.org/openpgp-asciiarmor
+License:             OtherLicense
+License-file:        LICENSE
+Author:              Clint Adams
+Maintainer:          Clint Adams <clint@debian.org>
+Copyright:           2012, Clint Adams
+Category:            Codec, Data
+Build-type:          Simple
+Extra-source-files: tests/suite.hs
+  , tests/data/msg1.asc
+  , tests/data/msg1a.asc
+  , tests/data/msg1b.asc
+  , tests/data/msg1c.asc
+  , tests/data/msg1.gpg
+  , tests/data/msg2.asc
+  , tests/data/msg2.pgp
+  , tests/data/msg3
+  , tests/data/msg3.asc
+  , tests/data/msg3.sig
+  , tests/data/msg4
+  , tests/data/msg4.asc
+  , tests/data/msg4.sig
+
+Cabal-version:       >= 1.10
+
+
+Library
+  Exposed-modules:     Codec.Encryption.OpenPGP.ASCIIArmor
+                     , Codec.Encryption.OpenPGP.ASCIIArmor.Decode
+                     , Codec.Encryption.OpenPGP.ASCIIArmor.Encode
+                     , Codec.Encryption.OpenPGP.ASCIIArmor.Types
+  Other-Modules: Data.Digest.CRC24
+               , Codec.Encryption.OpenPGP.ASCIIArmor.Multipart
+               , Codec.Encryption.OpenPGP.ASCIIArmor.Utils
+  Build-depends: attoparsec
+               , base                  > 4       && < 5
+               , base64-bytestring
+               , bytestring
+               , cereal
+  default-language: Haskell98
+
+
+Test-Suite tests
+  type:       exitcode-stdio-1.0
+  main-is:    tests/suite.hs
+  Build-depends: attoparsec
+               , base                  > 4       && < 5
+               , base64-bytestring
+               , bytestring
+               , cereal
+               , HUnit
+               , test-framework
+               , test-framework-hunit
+  default-language: Haskell98
+
+source-repository head
+  type:     git
+  location: git://git.debian.org/users/clint/openpgp-asciiarmor.git

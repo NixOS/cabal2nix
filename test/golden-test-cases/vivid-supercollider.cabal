@@ -1,0 +1,69 @@
+name:                vivid-supercollider
+version:             0.3.0.0
+synopsis:
+  Implementation of SuperCollider server specifications
+description:
+  An interface-agnostic implementation of specs for
+  SuperCollider server types and commands.
+   - Server Command Reference
+   - Synth Definition File Format
+  .
+  Note this is an in-progress (incomplete) implementation. Currently only the
+  server commands needed for the \"vivid\" package are supported.
+license:             GPL
+author:              Tom Murphy
+maintainer:          Tom Murphy
+-- copyright:           
+category:            Audio, Music, Sound
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  exposed-modules:
+      Vivid.SC.Server.Commands
+    , Vivid.SC.Server.Types
+    , Vivid.SC.SynthDef.Types
+    , Vivid.SC.SynthDef.Literally
+  -- other-modules:       
+  other-extensions:
+      ScopedTypeVariables
+    , LambdaCase
+    , OverloadedStrings
+    , NoMonomorphismRestriction
+    , NoUndecidableInstances
+    , ViewPatterns
+  build-depends:
+      base >3 && <5
+    , vivid-osc >=0.3 && <0.4
+    -- todo: replace completely with cereal:
+    , binary
+      -- >=0.8 && <0.9
+    , bytestring
+      -- >=0.10 && <0.11
+    , utf8-string
+      -- >=1.0 && <1.1
+    , split
+      -- >=0.2 && <0.3
+    , cereal
+      -- >=0.5 && <0.6
+  -- hs-source-dirs:      
+  default-language:    Haskell2010
+
+test-suite vivid-sc-tests
+  hs-source-dirs: test
+  main-is: Test.hs
+  type: exitcode-stdio-1.0
+  build-depends:
+      base >3 && <5
+    , vivid-supercollider
+
+    -- todo: remove binary?:
+    , binary
+    , bytestring
+    , cereal
+    , microspec >=0.1 && <0.2
+    , QuickCheck
+       -- >=2.9 && <2.10
+    , utf8-string
+    , vivid-osc
+  default-language: Haskell2010

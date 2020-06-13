@@ -1,0 +1,52 @@
+name:               cabal2nix-v3
+version:            3.0.20200613
+synopsis:           Convert Cabal files into Nix build instructions.
+description:
+  Convert Cabal files into Nix build instructions. Users of Nix can install the latest
+  version by running:
+  .
+  > nix-env -i cabal2nix
+license:            BSD3
+license-file:       LICENSE
+author:             Peter Simons
+maintainer:         simons@cryp.to
+stability:          stable
+tested-with:        GHC == 8.8.3, GHC == 8.10.1
+category:           Distribution, Nix
+homepage:           https://github.com/nixos/cabal2nix#readme
+bug-reports:        https://github.com/nixos/cabal2nix/issues
+build-type:         Simple
+extra-source-files: test/golden-test-cases/*.cabal
+                    test/golden-test-cases/*.nix.golden
+cabal-version:      >= 1.10
+
+source-repository head
+  type:     git
+  location: git://github.com/nixos/cabal2nix.git
+
+executable cabal2nix-from-file
+  default-language:   Haskell2010
+  main-is:            Main.hs
+  hs-source-dirs:     src
+  build-depends:      base > 4.11 && < 5, cabal2nix == 2.15.*
+
+-- test-suite regression-test
+--   type:               exitcode-stdio-1.0
+--   main-is:            Main.hs
+--   hs-source-dirs:     test
+--   build-depends:      base
+--                     , Cabal
+--                     , cabal2nix
+--                     , containers
+--                     , directory
+--                     , filepath
+--                     , language-nix
+--                     , lens
+--                     , pretty
+--                     , process      > 1.2
+--                     , tasty
+--                     , tasty-golden
+--   default-language:   Haskell2010
+--   build-tools:        cabal2nix
+--   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+--                       -Wredundant-constraints -threaded -with-rtsopts=-K64K

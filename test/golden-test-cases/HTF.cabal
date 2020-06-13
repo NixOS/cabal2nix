@@ -1,0 +1,197 @@
+Name:             HTF
+Version:          0.13.2.2
+License:          LGPL
+License-File:     LICENSE
+Copyright:        (c) 2005-2015 Stefan Wehr
+Author:           Stefan Wehr <wehr@factisresearch.com>
+Maintainer:       Stefan Wehr <wehr@factisresearch.com>
+Stability:        Beta
+Category:         Testing
+Synopsis:         The Haskell Test Framework
+Homepage:         https://github.com/skogsbaer/HTF/
+Bug-Reports:      https://github.com/skogsbaer/HTF/issues
+Description:
+
+    The Haskell Test Framework (/HTF/ for short) lets you define unit
+    tests (<http://hunit.sourceforge.net>), QuickCheck properties
+    (<http://www.cs.chalmers.se/~rjmh/QuickCheck/>), and black box
+    tests in an easy and convenient way. HTF uses a custom
+    preprocessor that collects test definitions automatically.
+    Furthermore, the preprocessor allows HTF to report failing
+    test cases with exact file name and line number information.
+    Additionally, HTF tries to produce highly readable output
+    for failing tests: for example, it colors and pretty prints expected and
+    actual results and provides a diff between the two values.
+
+    .
+
+    The documentation of the "Test.Framework.Tutorial" module
+    provides a tutorial for HTF. There is also a slightly out-dated
+    blog article (<http://factisresearch.blogspot.de/2011/10/new-version-of-htf-with-diffs-colors.html>)
+    demonstrating HTF's coloring, pretty-printing and diff functionality.
+
+Build-Type:       Simple
+Cabal-Version:    >= 1.10
+Extra-Source-Files:
+  README.md
+  TODO.org
+  ChangeLog
+  tests/bbt/should_fail/BBTArgs
+  tests/bbt/should_fail/*.err
+  tests/bbt/should_fail/*.out
+  tests/bbt/should_fail/*.x
+  tests/bbt/should_pass/*.in
+  tests/bbt/should_pass/*.err
+  tests/bbt/should_pass/*.out
+  tests/bbt/should_pass/*.x
+  tests/bbt/Skip/BBTArgs
+  tests/bbt/Skip/some_unknown_but_skipped_file.x
+  tests/bbt/Verbose/BBTArgs
+  tests/bbt/Verbose/not_ok_because_stdout1.out
+  tests/bbt/Verbose/not_ok_because_stdout1.x
+  tests/Foo/test.h
+  tests/Tutorial.hs
+  tests/run-bbt.sh
+  tests/compile-errors/Foo.h
+  tests/compile-errors/run-tests.sh
+  tests/compile-errors/Test1.hs
+  tests/compile-errors/Test2.hs
+  tests/compile-errors/Test3.hs
+  tests/compile-errors/Test4.hs
+  sample/LICENSE
+  sample/Main.hs
+  sample/MyPkg/A.hs
+  sample/MyPkg/B.hs
+  sample/README
+  sample/sample-HTF.cabal
+  sample/Setup.hs
+  sample/TestMain.hs
+  sample/bbt-dir/should-fail/BBTArgs
+  sample/bbt-dir/should-fail/z.err
+  sample/bbt-dir/should-fail/z.num
+  sample/bbt-dir/should-pass/x.num
+  sample/bbt-dir/should-pass/x.out
+  scripts/local-htfpp
+  scripts/run-sample
+
+Source-Repository head
+  Type:           git
+  Location:       http://github.com/skogsbaer/HTF.git
+
+Executable htfpp
+  Main-Is:          HTFPP.hs
+  Build-Depends:    HUnit,
+                    array,
+                    base == 4.*,
+                    cpphs >= 1.19,
+                    directory >= 1.0,
+                    mtl >= 1.1,
+                    old-time >= 1.0,
+                    random >= 1.0,
+                    text,
+                    HTF
+  Other-Modules:
+    Paths_HTF
+    Test.Framework.Location
+    Test.Framework.Preprocessor
+  Default-language:  Haskell2010
+
+Library
+  Build-Depends:    Diff >= 0.3,
+                    HUnit >= 1.2.5,
+                    QuickCheck >= 2.3,
+                    aeson < 0.10 || >= 0.11,
+                    array,
+                    base == 4.*,
+                    base64-bytestring,
+                    bytestring >= 0.9,
+                    containers >= 0.5,
+                    cpphs >= 1.19,
+                    haskell-src,
+                    directory >= 1.0,
+                    lifted-base >= 0.1,
+                    monad-control >= 0.3,
+                    mtl >= 1.1,
+                    old-time >= 1.0,
+                    pretty >= 1.0,
+                    process >= 1.0,
+                    random >= 1.0,
+                    regex-compat >= 0.92,
+                    text >= 0.11,
+                    time,
+                    vector,
+                    xmlgen >= 0.6
+  if !os(windows)
+    Build-Depends:   unix >= 2.4
+  Exposed-Modules:
+    Test.Framework
+    Test.Framework.HUnitWrapper
+    Test.Framework.TestManager
+    Test.Framework.TestInterface
+    Test.Framework.TestTypes
+    Test.Framework.TestReporter
+    Test.Framework.History
+    Test.Framework.CmdlineOptions
+    Test.Framework.QuickCheckWrapper
+    Test.Framework.BlackBoxTest
+    Test.Framework.Location
+    Test.Framework.Tutorial
+    Test.Framework.Pretty
+    Test.Framework.JsonOutput
+    Test.Framework.XmlOutput
+    Test.Framework.ThreadPool
+    Test.Framework.AssertM
+    Test.Framework.Colors
+    Test.Framework.PrettyHaskell
+    Test.Framework.Preprocessor
+  Other-Modules:
+    Test.Framework.Utils
+    Test.Framework.Diff
+    Test.Framework.Process
+  Default-language:  Haskell2010
+  Ghc-Options: -W -fwarn-unused-imports -fwarn-unused-binds -fwarn-unused-matches -fwarn-unused-do-bind -fwarn-wrong-do-bind
+
+Test-Suite MiscTests
+  Main-is:           MiscTest.hs
+  Type:              exitcode-stdio-1.0
+  Hs-Source-Dirs:    tests
+  Build-depends:     HTF,
+                     HUnit,
+                     base == 4.*,
+                     mtl,
+                     random
+  Default-language:  Haskell2010
+
+Test-Suite TestHTF
+  Main-is:           TestHTF.hs
+  Hs-Source-Dirs:    tests, tests/real-bbt
+  Type:              exitcode-stdio-1.0
+  Build-depends:     HTF,
+                     aeson >= 0.6,
+                     aeson-pretty,
+                     base == 4.*,
+                     bytestring >= 0.9,
+                     directory >= 1.0,
+                     filepath >= 1.1,
+                     process >= 1.0,
+                     random,
+                     regex-compat >= 0.92,
+                     template-haskell,
+                     temporary >= 1.1,
+                     text >= 0.11,
+                     unordered-containers >= 0.2
+  Default-language:  Haskell2010
+  Other-Modules:
+    Foo.A, Foo.B, TestHTFHunitBackwardsCompatible, FailFast, MaxCurTime,
+    MaxPrevTime, PrevFactor, SortByPrevTime, UniqTests1, UniqTests2, Quasi,
+    Tutorial, Repeat
+
+Test-Suite TestThreadPools
+  Main-is:           ThreadPoolTest.hs
+  Type:              exitcode-stdio-1.0
+  Hs-Source-Dirs:    tests
+  Build-depends:     HTF,
+                     base == 4.*,
+                     mtl,
+                     random
+  Default-language:  Haskell2010

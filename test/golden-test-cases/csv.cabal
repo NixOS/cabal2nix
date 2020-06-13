@@ -1,0 +1,23 @@
+Name:                csv
+Version:             0.1.2
+Category:            Text
+Synopsis:            CSV loader and dumper
+cabal-version:       >= 1.4
+build-type:          Simple
+Description:         CSV loader and dumper
+        .
+        This library parses and dumps documents that are formatted 
+        according to RFC 4180, \"The common Format and MIME Type for
+        Comma-Separated Values (CSV) Files\". This format is used, among
+        many other things, as a lingua franca for spreadsheets, and for
+        certain web services.
+Copyright:           Jaap Weel, 2007
+License:             MIT
+License-file:        COPYING
+Author:              Jaap Weel <weel@ugcs.caltech.edu>
+Maintainer:          Jaap Weel <weel@ugcs.caltech.edu>
+
+Library
+    Build-Depends:       base, parsec, filepath
+    build-depends:       base >= 2 && < 5
+    Exposed-modules:     Text.CSV

@@ -1,0 +1,201 @@
+name:                nvim-hs
+version:             0.2.5
+synopsis:            Haskell plugin backend for neovim
+description:
+  This package provides a plugin provider for neovim. It allows you to write
+  plugins for one of the great editors of our time in the best programming
+  language of our time! ;-)
+  .
+  You should find all the documentation you need inside the "Neovim" module.
+  Most other modules are considered internal, so don't be annoyed if using
+  things from there may break your code!
+  .
+  The following modules may also be of interest and they should not change
+  their API: "Neovim.Quickfix"
+  .
+  If you want to write unit tests that interact with neovim, "Neovim.Test"
+  provides some useful functions for that.
+  .
+  If you are keen to debug /nvim-hs/ or a module you are writing, take a look
+  at the "Neovim.Debug" module.
+  .
+  If you spot any errors or if you have great ideas, feel free to open an issue
+  on github.
+homepage:            https://github.com/neovimhaskell/nvim-hs
+license:             Apache-2.0
+license-file:        LICENSE
+author:              Sebastian Witte
+maintainer:          woozletoff@gmail.com
+copyright:           Copyright 2017 Sebastian Witte <woozletoff@gmail.com>
+category:            Editor
+build-type:          Simple
+cabal-version:       >=1.18
+tested-with:         GHC == 7.10.3, GHC == 8.0.2
+extra-source-files:    nvim-hs-devel.sh
+                     , test-files/compile-error-for-quickfix-test1
+                     , test-files/compile-error-for-quickfix-test2
+                     , test-files/compile-error-for-quickfix-test3
+                     , test-files/compile-error-for-quickfix-test4
+                     , test-files/compile-error-for-quickfix-test5
+                     , test-files/compile-error-for-quickfix-test6
+                     , test-files/hello
+                     , apiblobs/0.1.7.msgpack
+                     , apiblobs/0.2.0.msgpack
+                     , api
+
+extra-doc-files:       CHANGELOG.md
+                     , README.md
+                     , apiblobs/README.md
+
+source-repository head
+    type:            git
+    location:        https://github.com/neovimhaskell/nvim-hs
+
+executable nvim-hs
+  main-is:              Main.hs
+  hs-source-dirs:       executable
+  default-language:     Haskell2010
+  build-depends:        base >=4.6 && <5, nvim-hs, data-default
+  ghc-options:          -threaded -rtsopts -with-rtsopts=-N
+
+library
+  exposed-modules:      Neovim
+                      , Neovim.Quickfix
+                      , Neovim.Plugin.ConfigHelper
+                      , Neovim.Debug
+                      , Neovim.Test
+  -- Note that every module below this is considered internal and if you have to
+  -- import it somewhere in your code and you think it should be generally
+  -- available , you should open a ticket about inclusion in the export list of
+  -- the Neovim module. Since we are still in a prototyping stage, every user of
+  -- this library should have the freedom to do what she wants.
+                      , Neovim.API.String
+                      , Neovim.Classes
+                      , Neovim.Compat.Megaparsec
+                      , Neovim.Config
+                      , Neovim.Context
+                      , Neovim.Context.Internal
+                      , Neovim.Exceptions
+                      , Neovim.Plugin
+                      , Neovim.Plugin.Classes
+                      , Neovim.Plugin.Internal
+                      , Neovim.Plugin.IPC
+                      , Neovim.Plugin.IPC.Classes
+                      , Neovim.Log
+                      , Neovim.Main
+                      , Neovim.RPC.Classes
+                      , Neovim.RPC.Common
+                      , Neovim.RPC.EventHandler
+                      , Neovim.RPC.FunctionCall
+                      , Neovim.RPC.SocketReader
+                      , Neovim.Plugin.Startup
+                      , Neovim.Util
+                      , Neovim.Plugin.ConfigHelper.Internal
+                      , Neovim.API.Parser
+                      , Neovim.API.TH
+  other-extensions:     DeriveGeneric
+  build-depends:        base >=4.6 && < 5
+                      , ansi-wl-pprint
+                      , bytestring
+                      , cereal
+                      , cereal-conduit >= 0.7.3
+                      , conduit
+
+                      -- sinkHandle flushed after every yield in the releases
+                      -- [1.1.2, 1.1.17) and in release 1.2.2 an API was added
+                      -- to flush manually, so any other version probably does
+                      -- not work unless you set NoBuffering on the handle (see #61)
+                      -- I think having NoBuffering on TCP-Handles is kind of
+                      -- ridicilous, so the version range [1.1.17, 1.2.2) is
+                      -- simply excluded
+                      , conduit-extra >= 1.1.2 && < 1.1.17 || >= 1.2.2
+
+                      , containers
+                      , data-default
+                      , deepseq >= 1.1 && < 1.5
+                      , directory
+                      , dyre
+                      , exceptions
+                      , filepath
+                      , foreign-store
+                      , hslogger
+                      , messagepack >= 0.5.4
+                      , monad-control
+                      , network
+                      , lifted-base
+                      , mtl >= 2.2.1 && < 2.3
+                      , optparse-applicative
+                      , time-locale-compat
+                      , megaparsec
+                      , process
+                      , resourcet
+                      , setenv >= 0.1.1.3
+                      , stm
+                      , streaming-commons
+                      , template-haskell
+                      , text
+                      , time
+                      , transformers
+                      , transformers-base
+                      , utf8-string
+                      , void
+  hs-source-dirs:       library
+  default-language:     Haskell2010
+  ghc-options:          -Wall
+
+
+test-suite hspec
+  type:                 exitcode-stdio-1.0
+  hs-source-dirs:       test-suite
+  main-is:              Spec.hs
+  default-language:     Haskell2010
+  build-depends:        base >= 4.6 && < 5
+                      , nvim-hs
+
+                      , hspec ==2.*
+                      , hspec-discover
+                      , QuickCheck >=2.6
+
+                      , ansi-wl-pprint
+                      , bytestring
+                      , cereal
+                      , cereal-conduit
+                      , conduit
+                      , conduit-extra
+                      , containers
+                      , data-default
+                      , directory
+                      , dyre
+                      , exceptions
+                      , filepath
+                      , foreign-store
+                      , hslogger
+                      , lifted-base
+                      , mtl
+                      , messagepack
+                      , time-locale-compat
+                      , network
+                      , optparse-applicative
+                      , megaparsec
+                      , process
+                      , resourcet
+                      , setenv >= 0.1.1.3
+                      , stm
+                      , streaming-commons
+                      , text
+                      , template-haskell
+                      , time
+                      , transformers
+                      , transformers-base
+                      , utf8-string
+                      , HUnit
+
+  other-modules:        Neovim.API.THSpec
+                      , Neovim.API.THSpecFunctions
+                      , Neovim.EmbeddedRPCSpec
+                      , Neovim.Plugin.ClassesSpec
+                      , Neovim.Plugin.ConfigHelperSpec
+                      , Neovim.RPC.SocketReaderSpec
+
+  ghc-options:          -threaded -rtsopts -with-rtsopts=-N
+

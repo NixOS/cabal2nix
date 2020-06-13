@@ -1,0 +1,83 @@
+name:                mnist-idx
+
+version:             0.1.2.8
+
+-- A short (one-line) description of the package.
+synopsis:            Read and write IDX data that is used in e.g. the MNIST database.
+
+-- A longer description of the package.
+description:         This package provides functionality to read and write data in the IDX
+                     binary format. This format is relevant for machine learning applications,
+                     like the MNIST handwritten digit database.
+
+-- URL for the project homepage or repository.
+homepage:            https://github.com/kryoxide/mnist-idx/
+
+-- The license under which the package is released.
+license:             LGPL-3
+
+-- The file containing the license text.
+license-file:        LICENSE
+
+-- The package author(s).
+author:              Christof Schramm
+
+-- An email address to which users can send suggestions, bug reports, and 
+-- patches.
+maintainer:          christof.schramm@campus.lmu.de
+
+-- A copyright notice.
+-- copyright:           
+
+category:            Data
+
+build-type:          Simple
+
+-- Extra files to be distributed with the package, such as examples or a 
+-- README.
+-- extra-source-files:  
+
+-- Constraint on the version of Cabal needed to build this package.
+cabal-version:       >= 1.10
+
+source-repository head
+  type:              git
+  location:          https://github.com/kryoxide/mnist-idx/
+
+library
+  -- Modules exported by the library.
+  exposed-modules: Data.IDX
+                   Data.IDX.Internal
+  
+  -- Modules included in this library but not exported.
+  -- other-modules:
+  
+  -- LANGUAGE extensions used by modules in this package.
+  -- other-extensions:    
+  
+  -- Other library packages from which modules are imported.
+  default-language:    Haskell2010
+  build-depends:       base >=4.6 && <5,
+                       binary >= 0.7 && < 0.9,
+                       vector >= 0.10 && < 0.13,
+                       bytestring >= 0.10 && < 0.11 
+  -- Directories containing source files.
+  hs-source-dirs:      src
+  
+  -- Base language which the package is written in.
+  default-language:    Haskell2010
+
+test-suite tests
+
+  type:                exitcode-stdio-1.0
+
+  hs-source-dirs:      test
+
+  main-is:             Main.hs
+
+  build-depends:       base >= 4.6
+                     , hspec >= 1.9
+                     , vector >= 0.10 && < 0.13
+                     , binary >= 0.7 && < 0.9
+                     , directory >= 1.2 && < 1.4
+                     , mnist-idx

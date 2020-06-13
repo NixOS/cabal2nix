@@ -1,0 +1,66 @@
+name:          splice
+version:       0.6.1.1
+stability:     stable on all operating systems
+synopsis:      Cross-platform Socket to Socket Data Splicing
+description:   A library that implements most efficient socket to socket
+               data transfer loops for proxy servers on all operating systems.
+               .
+               On GNU/Linux, it exports the zero-copy system call @c_splice()@
+               (<http://en.wikipedia.org/wiki/Splice_(system_call)#Requirements>)
+               in @System.IO.Splice.Linux@.
+               .
+               On other operating systems, it only exports a portable Haskell
+               implementation.
+               .
+               A unified sockets API for all operating systems is available in
+               @Network.Socket.Splice@.
+               .
+               [Version Scheme]
+               Major-@/R/@-ewrite . New-@/F/@-unctionality . @/I/@-mprovementAndBugFixes . @/P/@-ackagingOnly
+               .
+               * @PackagingOnly@ changes are made for quality assurance reasons.
+               
+copyright:     Copyright © 2012 Cetin Sert
+license:       BSD3
+license-file:  LICENSE
+author:        Cetin Sert <fusion@corsis.eu>, Corsis Research
+maintainer:    Cetin Sert <fusion@corsis.eu>, Corsis Research
+homepage:      http://corsis.github.com/splice/
+bug-reports:   http://github.com/corsis/splice/issues
+category:      System, Network
+build-type:    Simple
+cabal-version: >= 1.6
+
+
+source-repository head
+    type:      git
+    location:  git://github.com/corsis/splice.git
+
+
+flag portable
+    description: force portable 'splice' implementation on GNU\/Linux
+    default    : True
+
+
+flag llvm
+    description: compile via LLVM
+    default    : False
+
+
+library
+    hs-source-dirs:      src
+    exposed-modules:     Network.Socket.Splice
+    other-modules:       Network.Socket.Splice.Internal
+    build-depends:       base    >= 4 && <= 5,
+                         network -any
+
+    if os(linux) && !flag(portable)
+      exposed-modules:   System.IO.Splice.Linux
+      build-depends:     unix    >= 2 && <= 4
+      cpp-options:       -DLINUX_SPLICE
+
+      
+    ghc-options:         -Wall -O2
+
+    if flag(llvm)
+      ghc-options:       -fllvm -optlo-O3

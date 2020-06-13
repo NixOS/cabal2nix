@@ -1,0 +1,26 @@
+{ mkDerivation, async, atomic-primops, base, bifunctors, containers
+, criterion-plus, deepseq, hashable, mwc-random, primitive
+, QuickCheck, stdenv, stm, stm-containers, stm-stats
+, test-framework, test-framework-quickcheck2, text, transformers
+, unordered-containers, vector
+}:
+mkDerivation {
+  pname = "ttrie";
+  version = "0.1.2.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    atomic-primops base hashable primitive stm
+  ];
+  testHaskellDepends = [
+    base containers hashable QuickCheck stm test-framework
+    test-framework-quickcheck2
+  ];
+  benchmarkHaskellDepends = [
+    async base bifunctors containers criterion-plus deepseq mwc-random
+    primitive stm stm-containers stm-stats text transformers
+    unordered-containers vector
+  ];
+  homepage = "http://github.com/mcschroeder/ttrie";
+  description = "Contention-free STM hash map";
+  license = stdenv.lib.licenses.mit;
+}

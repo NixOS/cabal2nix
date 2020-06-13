@@ -1,0 +1,13 @@
+{ mkDerivation, base, stdenv }:
+mkDerivation {
+  pname = "cpu";
+  version = "0.1.2";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [ base ];
+  homepage = "http://github.com/vincenthz/hs-cpu";
+  description = "Cpu information and properties helpers";
+  license = stdenv.lib.licenses.bsd3;
+}

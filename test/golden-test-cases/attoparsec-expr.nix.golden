@@ -1,0 +1,9 @@
+{ mkDerivation, attoparsec, base, stdenv }:
+mkDerivation {
+  pname = "attoparsec-expr";
+  version = "0.1.1.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ attoparsec base ];
+  description = "Port of parsec's expression parser to attoparsec";
+  license = stdenv.lib.licenses.bsd3;
+}

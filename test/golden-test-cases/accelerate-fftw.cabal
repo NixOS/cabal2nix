@@ -1,0 +1,41 @@
+Name:             accelerate-fftw
+Version:          1.0
+License:          BSD3
+License-File:     LICENSE
+Author:           Henning Thielemann <haskell@henning-thielemann.de>
+Maintainer:       Henning Thielemann <haskell@henning-thielemann.de>
+Homepage:         http://hub.darcs.net/thielema/accelerate-fftw/
+Category:         Math
+Synopsis:         Accelerate frontend to the FFTW library (Fourier transform)
+Description:
+  An interface to the Fastest Fourier Transform in the West (FFTW)
+  for the @accelerate@ framework.
+Tested-With:      GHC==7.8.3
+Cabal-Version:    >=1.14
+Build-Type:       Simple
+
+Source-Repository this
+  Tag:         1.0
+  Type:        darcs
+  Location:    http://hub.darcs.net/thielema/accelerate-fftw/
+
+Source-Repository head
+  Type:        darcs
+  Location:    http://hub.darcs.net/thielema/accelerate-fftw/
+
+Library
+  Build-Depends:
+    fft >=0.1.7 && <0.2,
+    carray >=0.1.5 && <0.2,
+    storable-complex >=0.2.1 && <0.3,
+    accelerate-io >=1.0 && <1.1,
+    accelerate >=1.0 && <1.2,
+    base >=4.5 && <4.11
+
+  GHC-Options:      -Wall -fwarn-missing-import-lists
+  Hs-Source-Dirs:   src
+  Default-Language: Haskell98
+  Exposed-Modules:
+    Data.Array.Accelerate.FFTW.Manifest
+  Other-Modules:
+    Data.Array.Accelerate.CArray.Conversion

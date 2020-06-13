@@ -1,0 +1,45 @@
+name:                stb-image-redux
+version:             0.2.1.2
+synopsis:            Image loading and writing microlibrary
+description:         See <https://github.com/typedrat/stb-image-redux/blob/master/README.md>.
+homepage:            https://github.com/typedrat/stb-image-redux#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Alexis Williams
+maintainer:          alexis@typedr.at
+copyright:           Copyright: (c) 2017 Alexis Williams
+category:            Graphics
+build-type:          Simple
+extra-source-files:  test/jellybeans.tga test/jellybeans.bmp test/jellybeans-flipped.bmp stb/stb_image.h stb/stb_image_write.h
+cabal-version:       >=1.10
+
+library
+    hs-source-dirs:      src
+    exposed-modules:     Data.STBImage
+    other-modules:       Data.STBImage.Color
+                       , Data.STBImage.ColorTypes
+                       , Data.STBImage.Immutable
+    build-depends:       base       >= 4.8       && < 5
+                       , vector     >= 0.10.12.3 && < 0.13
+    c-sources:           src/stb_image.c
+                       , src/stb_image_write.c
+    include-dirs:        stb
+    cc-options:          -DSTBI_NO_HDR -DSTBI_NO_LINEAR -DSTBI_FAILURE_USERMSG
+    default-language:    Haskell2010
+
+
+test-suite stb-image-redux-tests
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  other-modules:       Data.STBImageSpec
+  build-depends:       base
+                     , stb-image-redux
+                     , vector     >= 0.10.12.3 && < 0.13
+                     , hspec      >= 2.1.5     && < 2.5
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+    type:     git
+    location: https://github.com/typedrat/stb-image-redux

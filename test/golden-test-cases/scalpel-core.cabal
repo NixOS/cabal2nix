@@ -1,0 +1,87 @@
+name:                scalpel-core
+version:             0.5.1
+synopsis:            A high level web scraping library for Haskell.
+description:
+    Scalpel core provides a subset of the scalpel web scraping library that is
+    intended to have lightweight dependencies and to be free of all non-Haskell
+    dependencies.
+homepage:            https://github.com/fimad/scalpel
+license:             Apache-2.0
+license-file:        LICENSE
+author:              Will Coster
+maintainer:          willcoster@gmail.com
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+
+extra-source-files:
+  README.md CHANGELOG.md
+
+source-repository head
+  type:     git
+  location: https://github.com/fimad/scalpel.git
+
+source-repository this
+  type:     git
+  location: https://github.com/fimad/scalpel.git
+  tag:      v0.5.1
+
+library
+  other-extensions:
+          FlexibleInstances
+      ,   FunctionalDependencies
+  other-modules:
+          Text.HTML.Scalpel.Internal.Scrape
+      ,   Text.HTML.Scalpel.Internal.Scrape.StringLike
+      ,   Text.HTML.Scalpel.Internal.Select
+      ,   Text.HTML.Scalpel.Internal.Select.Combinators
+      ,   Text.HTML.Scalpel.Internal.Select.Types
+  exposed-modules:
+      Text.HTML.Scalpel.Core
+  hs-source-dirs:   src/
+  default-language: Haskell2010
+  build-depends:
+          base          >= 4.6 && < 5
+      ,   bytestring
+      ,   containers
+      ,   data-default
+      ,   fail
+      ,   regex-base
+      ,   regex-tdfa
+      ,   tagsoup       >= 0.12.2
+      ,   text
+      ,   vector
+  default-extensions:
+          ParallelListComp
+      ,   PatternGuards
+  ghc-options: -W
+
+test-suite lib-tests
+  type:             exitcode-stdio-1.0
+  main-is:          TestMain.hs
+  hs-source-dirs:   tests/
+  default-language: Haskell2010
+  build-depends:
+          HUnit
+      ,   base          >= 4.6 && < 5
+      ,   regex-base
+      ,   regex-tdfa
+      ,   scalpel-core
+      ,   tagsoup
+  default-extensions:
+          ParallelListComp
+      ,   PatternGuards
+  ghc-options: -W
+
+benchmark bench
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  hs-source-dirs:   benchmarks
+  main-is:          Main.hs
+  build-depends:
+         base           >=4.7 && <5
+      ,  criterion      >=1.1
+      ,  scalpel-core
+      ,  tagsoup
+      ,  text
+  ghc-options: -Wall

@@ -1,0 +1,48 @@
+name:                blosum
+version:             0.1.1.4
+synopsis:            BLOSUM generator
+description:         Generates BLOSUMs for use with finding the degree of amino acid conservation.
+homepage:            http://github.com/GregorySchwartz/blosum#readme
+license:             GPL-2
+license-file:        LICENSE
+author:              Gregory W. Schwartz
+maintainer:          gregory.schwartz@drexel.edu
+copyright:           Copyright 2016 Gregory W. Schwartz
+category:            Bioinformatics
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Types
+                     , Utility
+                     , Cluster
+                     , Matrix
+                     , Print
+  build-depends:       base >= 4.9 && < 5
+                     , containers
+                     , text
+                     , text-show
+                     , fasta
+                     , lens
+  default-language:    Haskell2010
+
+executable blosum
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -O2
+  build-depends:       base
+                     , blosum
+                     , containers
+                     , fasta
+                     , text
+                     , split
+                     , pipes
+                     , pipes-text
+                     , optparse-applicative >=0.13
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/GregorySchwartz/blosum

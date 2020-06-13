@@ -1,0 +1,10 @@
+{ mkDerivation, base, mtl, stdenv }:
+mkDerivation {
+  pname = "indentation-core";
+  version = "0.0.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base mtl ];
+  homepage = "https://bitbucket.org/adamsmd/indentation";
+  description = "Indentation sensitive parsing combinators core library";
+  license = stdenv.lib.licenses.bsd3;
+}

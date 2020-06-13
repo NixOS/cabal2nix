@@ -1,0 +1,10 @@
+{ mkDerivation, base, bytestring, entropy, stdenv }:
+mkDerivation {
+  pname = "crypto-random-api";
+  version = "0.2.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base bytestring entropy ];
+  homepage = "http://github.com/vincenthz/hs-crypto-random-api";
+  description = "Simple random generators API for cryptography related code";
+  license = stdenv.lib.licenses.bsd3;
+}

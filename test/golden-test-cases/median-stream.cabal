@@ -1,0 +1,38 @@
+name:                median-stream
+version:             0.7.0.0
+synopsis:            Constant-time queries for the median of a stream of numeric
+                     data.
+description:         Uses the two-heap approach to support O(lg n) insertions
+                     and O(1) queries for the median.
+homepage:            https://github.com/caneroj1/median-stream#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Joe Canero
+maintainer:          jmc41493@gmail.com
+copyright:           Copyright: (c) 2016 Joe Canero
+category:            Data
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Data.MedianStream
+  build-depends:       base >= 4.7 && < 5
+                     , heap >= 1.0
+  default-language:    Haskell2010
+
+test-suite median-stream-test
+  type:                exitcode-stdio-1.0
+  other-modules:       Utils
+  hs-source-dirs:      test
+                     , utils
+  main-is:             Spec.hs
+  build-depends:       base
+                     , median-stream
+                     , QuickCheck
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/caneroj1/median-stream

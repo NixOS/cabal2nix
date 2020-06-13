@@ -1,0 +1,76 @@
+name:          discrimination
+category:      Data, Sorting
+version:       0.3
+license:       BSD3
+cabal-version: >= 1.10
+license-file:  LICENSE
+author:        Edward A. Kmett
+maintainer:    Edward A. Kmett <ekmett@gmail.com>
+stability:     experimental
+homepage:      http://github.com/ekmett/discrimination/
+bug-reports:   http://github.com/ekmett/discrimination/issues
+copyright:     Copyright (C) 2014-2015 Edward A. Kmett
+build-type:    Simple
+tested-with:   GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.1
+synopsis:      Fast generic linear-time sorting, joins and container construction.
+description:
+  This package provides fast, generic, linear-time discrimination and sorting.
+  .
+  The techniques applied are based on <http://www.diku.dk/hjemmesider/ansatte/henglein/papers/henglein2011a.pdf multiple> <http://www.diku.dk/hjemmesider/ansatte/henglein/papers/henglein2011c.pdf papers> and <https://www.youtube.com/watch?v=sz9ZlZIRDAg talks> by <http://www.diku.dk/hjemmesider/ansatte/henglein/ Fritz Henglein>.
+
+extra-source-files:
+  .gitignore
+  README.markdown
+  CHANGELOG.markdown
+  HLint.hs
+
+source-repository head
+  type: git
+  location: git://github.com/ekmett/discrimination.git
+
+library
+  default-language: Haskell2010
+  ghc-options: -Wall -O2
+  hs-source-dirs: src
+
+  exposed-modules:
+    Data.Discrimination
+    Data.Discrimination.Class
+    Data.Discrimination.Grouping
+    Data.Discrimination.Internal
+    Data.Discrimination.Internal.SmallArray
+    Data.Discrimination.Internal.WordMap
+    Data.Discrimination.Sorting
+
+  build-depends:
+    array         >= 0.5    && < 0.6,
+    base          >= 4.8    && < 5,
+    containers    >= 0.4    && < 0.6,
+    contravariant >= 1.3.1  && < 2,
+    deepseq       >= 1.3    && < 1.5,
+    ghc-prim,
+    hashable      >= 1.2    && < 1.3,
+    primitive     >= 0.6    && < 0.7,
+    profunctors   >= 5      && < 6,
+    promises      >= 0.2    && < 0.4,
+    semigroups    >= 0.16.2 && < 1,
+    transformers  >= 0.2    && < 0.6,
+    transformers-compat >= 0.3 && < 1,
+    vector        >= 0.10   && < 0.13,
+    void          >= 0.5    && < 1
+
+benchmark wordmap
+  type:             exitcode-stdio-1.0
+  main-is:          wordmap.hs
+  ghc-options:      -Wall -O2 -threaded 
+  hs-source-dirs:   benchmarks
+  default-language: Haskell2010
+  build-depends:
+    base >= 4.9,
+    containers,
+    criterion,
+    deepseq,
+    discrimination,
+    ghc-prim,
+    unordered-containers,
+    primitive

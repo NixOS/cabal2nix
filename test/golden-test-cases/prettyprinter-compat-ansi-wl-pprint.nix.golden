@@ -1,0 +1,14 @@
+{ mkDerivation, base, prettyprinter, prettyprinter-ansi-terminal
+, stdenv, text
+}:
+mkDerivation {
+  pname = "prettyprinter-compat-ansi-wl-pprint";
+  version = "1.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base prettyprinter prettyprinter-ansi-terminal text
+  ];
+  homepage = "http://github.com/quchen/prettyprinter";
+  description = "Drop-in compatibility package to migrate from »ansi-wl-pprint« to »prettyprinter«";
+  license = stdenv.lib.licenses.bsd2;
+}

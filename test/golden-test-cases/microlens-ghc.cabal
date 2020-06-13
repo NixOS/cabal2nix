@@ -1,0 +1,44 @@
+name:                microlens-ghc
+version:             0.4.8.0
+synopsis:            microlens + array, bytestring, containers, transformers
+description:
+  Use this package instead of <http://hackage.haskell.org/package/microlens microlens> if you don't mind depending on all dependencies here – @Lens.Micro.GHC@ reexports everything from @Lens.Micro@ and additionally provides orphan instances of microlens classes for packages coming with GHC (<http://hackage.haskell.org/package/array array>, <http://hackage.haskell.org/package/bytestring bytestring>, <http://hackage.haskell.org/package/containers containers>, <http://hackage.haskell.org/package/transfromers transformers>).
+  .
+  The minor and major versions of microlens-ghc are incremented whenever the minor and major versions of microlens are incremented, so you can depend on the exact version of microlens-ghc without specifying the version of microlens you need.
+  .
+  This package is a part of the <http://hackage.haskell.org/package/microlens microlens> family; see the readme <https://github.com/aelve/microlens#readme on Github>.
+license:             BSD3
+license-file:        LICENSE
+author:              Edward Kmett, Artyom
+maintainer:          Artyom <yom@artyom.me>
+homepage:            http://github.com/aelve/microlens
+bug-reports:         http://github.com/aelve/microlens/issues
+category:            Data, Lenses
+build-type:          Simple
+extra-source-files:
+  CHANGELOG.md
+cabal-version:       >=1.10
+
+source-repository head
+  type:                git
+  location:            git://github.com/aelve/microlens.git
+
+library
+  exposed-modules:     Lens.Micro.GHC
+                       Lens.Micro.GHC.Internal
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       array >=0.3.0.2 && <0.6
+                     , base >=4.5 && <5
+                     , bytestring >=0.9.1.10 && <0.11
+                     , containers >=0.4.0 && <0.6
+                     , microlens ==0.4.8.*
+                     , transformers >=0.2 && <0.6
+
+  ghc-options:
+    -Wall -fwarn-tabs
+    -O2 -fdicts-cheap -funbox-strict-fields
+    -fmax-simplifier-iterations=10
+
+  hs-source-dirs:      src
+  default-language:    Haskell2010

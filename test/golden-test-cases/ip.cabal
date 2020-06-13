@@ -1,0 +1,124 @@
+name: ip
+version: 1.1.1
+synopsis: Library for IP and MAC addresses
+homepage: https://github.com/andrewthad/haskell-ip#readme
+license: BSD3
+license-file: LICENSE
+author: Andrew Martin
+maintainer: andrew.thaddeus@gmail.com
+copyright: 2016 Andrew Martin
+category: web
+build-type: Simple
+cabal-version: >=1.10
+description:
+  The `ip` package provides types and functions for dealing with
+  IPv4 addresses, CIDR blocks, and MAC addresses. We provide instances
+  for typeclasses found in commonly used packages like `aeson`, `vector`,
+  and `hashable`. We also provide `Parser`s for working with attoparsec.
+  .
+  Notably, this package does not overload functions by introducing any
+  typeclasses of its own. Neither does it prefix functions with the name
+  of the type that they work on. Instead, functions of the same name are
+  exported by several different modules, and it is expected that end users
+  disambiguate by importing these modules qualified.
+  .
+  The only module intended to be imported unqualified is `Net.Types`. The
+  types in this package should not conflict with the types in
+  any other commonly used packages.
+  .
+  The following packages are intended to be used with this package:
+  .
+  * `yesod-ip`: Provides orphan instances needed to work with yesod and
+    persistent. Also, provides a `yesod-form` helper.
+
+library
+  hs-source-dirs: src
+  exposed-modules:
+    Net.Mac
+    Net.IPv4
+    Net.IPv4.Range
+    Net.IPv6
+    Net.IP
+    Net.Types
+  other-modules:
+    Data.Word.Synthetic.Word12
+    Data.Text.Builder.Fixed
+    Data.Text.Builder.Variable
+    Data.Text.Builder.Common.Internal
+    Data.ByteString.Builder.Fixed
+  build-depends:
+      base >= 4.8  && < 5
+    , attoparsec >= 0.13 && < 0.14
+    , aeson >= 0.9  && < 1.3
+    , hashable >= 1.2  && < 1.3
+    , text >= 1.2  && < 1.3
+    , bytestring >= 0.10 && < 0.11
+    , vector >= 0.11 && < 0.13
+    , primitive >= 0.6 && < 0.7
+  -- if impl(ghcjs)
+  --   build-depends: ghcjs-base >= 0.2 && < 0.3
+  ghc-options: -Wall -O2
+  default-language: Haskell2010
+
+test-suite test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Test.hs
+  build-depends:
+      base
+    , ip
+    , test-framework
+    , test-framework-quickcheck2
+    , QuickCheck
+    , quickcheck-classes >= 0.3 && < 0.4
+    , text
+    , bytestring
+    , HUnit
+    , test-framework-hunit
+    , attoparsec
+  other-modules:
+    Naive
+    IPv4Text1
+    IPv4Text2
+    IPv4ByteString1
+    -- IPv4TextVariableBuilder
+  ghc-options: -Wall -O2
+  default-language: Haskell2010
+
+test-suite doctest
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Doctests.hs
+  build-depends:
+      base
+    , ip
+    , doctest >= 0.10
+    , QuickCheck
+  default-language:    Haskell2010
+
+benchmark criterion
+  type: exitcode-stdio-1.0
+  build-depends:
+      base
+    , ip
+    , criterion
+    , text
+    , bytestring
+    , attoparsec
+  other-modules:
+    Naive
+    IPv4Text1
+    IPv4Text2
+    IPv4DecodeText1
+    IPv4DecodeText2
+    IPv4ByteString1
+    IPv4TextVariableBuilder
+  ghc-options: -Wall -O2
+  default-language: Haskell2010
+  hs-source-dirs: test
+  main-is: Bench.hs
+
+source-repository head
+  type: git
+  location: https://github.com/andrewthad/haskell-ip
+

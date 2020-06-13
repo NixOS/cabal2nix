@@ -1,0 +1,19 @@
+{ mkDerivation, base, bytestring, containers, explicit-exception
+, extensible-exceptions, sample-frame, sox, stdenv, storablevector
+, transformers, utility-ht
+}:
+mkDerivation {
+  pname = "soxlib";
+  version = "0.0.3";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base bytestring containers explicit-exception extensible-exceptions
+    sample-frame storablevector transformers utility-ht
+  ];
+  libraryPkgconfigDepends = [ sox ];
+  homepage = "http://www.haskell.org/haskellwiki/Sox";
+  description = "Write, read, convert audio signals using libsox";
+  license = stdenv.lib.licenses.bsd3;
+}

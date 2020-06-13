@@ -1,0 +1,15 @@
+{ mkDerivation, base, criterion, deepseq, primitive, stdenv, tasty
+, tasty-hunit, tasty-quickcheck, vector
+}:
+mkDerivation {
+  pname = "matrices";
+  version = "0.4.5";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base deepseq primitive vector ];
+  testHaskellDepends = [
+    base tasty tasty-hunit tasty-quickcheck vector
+  ];
+  benchmarkHaskellDepends = [ base criterion vector ];
+  description = "native matrix based on vector";
+  license = stdenv.lib.licenses.bsd3;
+}

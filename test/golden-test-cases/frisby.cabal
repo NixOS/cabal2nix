@@ -1,0 +1,37 @@
+name:                frisby
+version:             0.2.2
+cabal-version:       >=1.6
+license:             BSD3
+copyright:           John Meacham (2006)
+author:              John Meacham <john@repetae.net>
+maintainer:          Ben Gamari <ben@smart-cactus.org>
+stability:           experimental
+homepage:            http://repetae.net/computer/frisby/
+homepage:            http://repetae.net/computer/frisby/
+package-url:         http://repetae.net/repos/frisby
+synopsis:            Linear time composable parser for PEG grammars
+description:         frisby is a parser library that can parse arbitrary PEG
+                     grammars in linear time. Unlike other parsers of PEG grammars,
+                     frisby need not be supplied with all possible rules up front,
+                     allowing composition of smaller parsers.
+                     .
+                     PEG parsers are never ambiguous and allow infinite lookahead
+                     with no backtracking penalty. Since PEG parsers can look ahead
+                     arbitrarily, they can easily express rules such as the maximal
+                     munch rule used in lexers, meaning no separate lexer is needed.
+                     .
+                     In addition to many standard combinators, frisby provides
+                     routines to translate standard regex syntax into frisby parsers.
+extra-source-files:  Changelog.md
+category:            Text
+tested-with:         GHC == 7.6.*, GHC == 7.8.*, GHC == 7.10.*, GHC == 8.0.*, GHC == 8.2.*
+license-file:        LICENSE
+build-type:          Simple
+
+library
+  exposed-modules:     Text.Parsers.Frisby, Text.Parsers.Frisby.Char
+  build-depends:       base>=4 && <5, containers, mtl, array, semigroups
+
+source-repository head
+  type:     git
+  location: https://github.com/bgamari/frisby

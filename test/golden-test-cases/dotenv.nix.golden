@@ -1,0 +1,27 @@
+{ mkDerivation, base, base-compat, directory, exceptions, hspec
+, hspec-megaparsec, megaparsec, optparse-applicative, process
+, stdenv, text, transformers, yaml
+}:
+mkDerivation {
+  pname = "dotenv";
+  version = "0.5.2.1";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [
+    base base-compat directory exceptions megaparsec process text
+    transformers yaml
+  ];
+  executableHaskellDepends = [
+    base base-compat megaparsec optparse-applicative process text
+    transformers yaml
+  ];
+  testHaskellDepends = [
+    base base-compat directory exceptions hspec hspec-megaparsec
+    megaparsec process text transformers yaml
+  ];
+  homepage = "https://github.com/stackbuilders/dotenv-hs";
+  description = "Loads environment variables from dotenv files";
+  license = stdenv.lib.licenses.mit;
+}

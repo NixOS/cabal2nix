@@ -1,0 +1,30 @@
+Name: data-endian
+Version: 0.1.1
+Category: Data
+Stability: experimental
+Synopsis: Endian-sensitive data
+Description:
+  This package provides helpers for converting endian-sensitive data.
+
+Homepage: https://github.com/mvv/data-endian
+Bug-Reports: https://github.com/mvv/data-endian/issues
+
+Author: Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+Maintainer: Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+Copyright: 2011-2016 Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+License: BSD3
+License-File: LICENSE
+
+Cabal-Version: >= 1.6.0
+Build-Type: Simple
+
+Source-Repository head
+  Type: git
+  Location: https://github.com/mvv/data-endian.git
+
+Library
+  Build-Depends: base >= 4 && < 5
+  Hs-Source-Dirs: src
+  GHC-Options: -Wall
+  Exposed-Modules:
+    Data.Endian

@@ -1,0 +1,171 @@
+name:                relational-query
+version:             0.11.0.0
+synopsis:            Typeful, Modular, Relational, algebraic query engine
+description:         This package contiains typeful relation structure and
+                     relational-algebraic query building DSL which can
+                     translate into SQL query.
+                     Supported query features are below:
+                     - Type safe query building
+                     - Restriction, Join, Aggregation
+                     - Modularized relations
+                     - Typed placeholders
+homepage:            http://khibino.github.io/haskell-relational-record/
+license:             BSD3
+license-file:        LICENSE
+author:              Kei Hibino
+maintainer:          ex8k.hibino@gmail.com
+copyright:           Copyright (c) 2013-2017 Kei Hibino
+category:            Database
+build-type:          Simple
+cabal-version:       >=1.10
+tested-with:           GHC == 8.2.1
+                     , GHC == 8.0.1, GHC == 8.0.2
+                     , GHC == 7.10.1, GHC == 7.10.2, GHC == 7.10.3
+                     , GHC == 7.8.1, GHC == 7.8.2, GHC == 7.8.3, GHC == 7.8.4
+                     , GHC == 7.6.1, GHC == 7.6.2, GHC == 7.6.3
+                     , GHC == 7.4.1, GHC == 7.4.2
+extra-source-files:  ChangeLog.md
+
+library
+  exposed-modules:
+                       Database.Relational.Arrow
+
+                       Database.Relational
+                       Database.Relational.Table
+                       Database.Relational.SimpleSql
+                       Database.Relational.Pure
+                       Database.Relational.Pi
+                       Database.Relational.Pi.Unsafe
+                       Database.Relational.Constraint
+                       Database.Relational.Context
+                       Database.Relational.Config
+                       Database.Relational.SqlSyntax
+                       Database.Relational.Record
+                       Database.Relational.ProjectableClass
+                       Database.Relational.Projectable
+                       Database.Relational.Projectable.Unsafe
+                       Database.Relational.Projectable.Instances
+                       Database.Relational.TupleInstances
+                       Database.Relational.Monad.BaseType
+                       Database.Relational.Monad.Class
+                       Database.Relational.Monad.Trans.Ordering
+                       Database.Relational.Monad.Trans.Aggregating
+                       Database.Relational.Monad.Trans.Restricting
+                       Database.Relational.Monad.Trans.Join
+                       Database.Relational.Monad.Trans.Config
+                       Database.Relational.Monad.Trans.Assigning
+                       Database.Relational.Monad.Type
+                       Database.Relational.Monad.Simple
+                       Database.Relational.Monad.Aggregate
+                       Database.Relational.Monad.Unique
+                       Database.Relational.Monad.Restrict
+                       Database.Relational.Monad.Assign
+                       Database.Relational.Monad.Register
+                       Database.Relational.Relation
+                       Database.Relational.Set
+                       Database.Relational.Sequence
+                       Database.Relational.Effect
+                       Database.Relational.Scalar
+                       Database.Relational.Type
+                       Database.Relational.Derives
+                       Database.Relational.TH
+
+                       Database.Relational.Compat
+                       Database.Relational.Query
+                       Database.Relational.Query.Arrow
+
+                       -- for GHC version equal or more than 8.0
+                       Database.Relational.OverloadedProjection
+                       Database.Relational.OverloadedInstances
+
+  other-modules:
+                       Database.Relational.Internal.ContextType
+                       Database.Relational.Internal.Config
+                       Database.Relational.Internal.String
+                       Database.Relational.Internal.UntypedTable
+                       Database.Relational.SqlSyntax.Types
+                       Database.Relational.SqlSyntax.Join
+                       Database.Relational.SqlSyntax.Aggregate
+                       Database.Relational.SqlSyntax.Query
+                       Database.Relational.SqlSyntax.Fold
+                       Database.Relational.SqlSyntax.Updates
+                       Database.Relational.Monad.Trans.JoinState
+                       Database.Relational.Monad.Trans.Qualify
+                       Database.Relational.InternalTH.Base
+
+                       -- for GHC version equal or more than 8.0
+                       Database.Relational.InternalTH.Overloaded
+
+  build-depends:         base <5
+                       , array
+                       , containers
+                       , transformers
+                       , time
+                       , time-locale-compat
+                       , bytestring
+                       , text
+                       , dlist
+                       , template-haskell
+                       , th-reify-compat
+                       , product-isomorphic >= 0.0.3
+                       , sql-words >=0.1.5
+                       , names-th
+                       , persistable-record >= 0.6
+  if impl(ghc == 7.4.*)
+    build-depends:        ghc-prim == 0.2.*
+
+  hs-source-dirs:      src
+  ghc-options:         -Wall -fsimpl-tick-factor=200
+
+  default-language:     Haskell2010
+
+test-suite sqls
+  build-depends:         base <5
+                       , quickcheck-simple
+                       , product-isomorphic
+                       , relational-query
+                       , containers
+                       , transformers
+  if impl(ghc == 7.4.*)
+    build-depends:        ghc-prim == 0.2.*
+
+  type:                exitcode-stdio-1.0
+  main-is:             sqlsEq.hs
+  other-modules:
+                       Lex
+                       Model
+
+  hs-source-dirs:      test
+  ghc-options:         -Wall -fsimpl-tick-factor=200
+
+  default-language:     Haskell2010
+
+test-suite sqlsArrow
+  build-depends:         base <5
+                       , quickcheck-simple
+                       , product-isomorphic
+                       , relational-query
+                       , containers
+                       , transformers
+  if impl(ghc == 7.4.*)
+    build-depends:        ghc-prim == 0.2.*
+
+  type:                exitcode-stdio-1.0
+  main-is:             sqlsEqArrow.hs
+  other-modules:
+                       Lex
+                       Model
+
+  hs-source-dirs:      test
+  ghc-options:         -Wall
+
+  default-language:     Haskell2010
+
+
+source-repository head
+  type:       git
+  location:   https://github.com/khibino/haskell-relational-record
+
+source-repository head
+  type:       mercurial
+  location:   https://bitbucket.org/khibino/haskell-relational-record

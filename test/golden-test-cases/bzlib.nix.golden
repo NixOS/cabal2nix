@@ -1,0 +1,10 @@
+{ mkDerivation, base, bytestring, bzip2, stdenv }:
+mkDerivation {
+  pname = "bzlib";
+  version = "0.5.0.5";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base bytestring ];
+  librarySystemDepends = [ bzip2 ];
+  description = "Compression and decompression in the bzip2 format";
+  license = stdenv.lib.licenses.bsd3;
+}

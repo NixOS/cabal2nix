@@ -1,0 +1,624 @@
+name:                vty
+version:             5.19.1
+license:             BSD3
+license-file:        LICENSE
+author:              AUTHORS
+maintainer:          Jonathan Daugherty (cygnus@foobox.com)
+homepage:            https://github.com/jtdaugherty/vty
+category:            User Interfaces
+synopsis:            A simple terminal UI library
+description:
+  vty is terminal GUI library in the niche of ncurses. It is intended to
+  be easy to use, have no confusing corner cases, and good support for
+  common terminal types.
+  .
+  See the @vty-examples@ package as well as the program
+  @test/interactive_terminal_test.hs@ included in the @vty@ package for
+  examples on how to use the library.
+  .
+  Import the "Graphics.Vty" convenience module to get access to the core
+  parts of the library.
+  .
+  &#169; 2006-2007 Stefan O'Rear; BSD3 license.
+  .
+  &#169; Corey O'Connor; BSD3 license.
+  .
+  &#169; Jonathan Daugherty; BSD3 license.
+cabal-version:       >= 1.18
+build-type:          Simple
+extra-doc-files:     README.md,
+                     AUTHORS,
+                     CHANGELOG.md,
+                     LICENSE
+tested-with:         GHC >= 7.6.2
+
+source-repository head
+  type: git
+  location: https://github.com/jtdaugherty/vty.git
+
+library
+  default-language:    Haskell2010
+  build-depends:       base >= 4.8 && < 5,
+                       blaze-builder >= 0.3.3.2 && < 0.5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       directory,
+                       filepath >= 1.0 && < 2.0,
+                       microlens,
+                       microlens-mtl,
+                       microlens-th,
+                       -- required for nice installation with yi
+                       hashable >= 1.2,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       parallel >= 2.2 && < 3.3,
+                       parsec >= 2 && < 4,
+                       stm,
+                       terminfo >= 0.3 && < 0.5,
+                       transformers >= 0.3.0.0,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+  exposed-modules:     Graphics.Vty
+                       Graphics.Vty.Attributes
+                       Graphics.Vty.Config
+                       Graphics.Vty.Error
+                       Graphics.Vty.Image
+                       Graphics.Vty.Inline
+                       Graphics.Vty.Inline.Unsafe
+                       Graphics.Vty.Input
+                       Graphics.Vty.Input.Events
+                       Graphics.Vty.Picture
+                       Graphics.Vty.Output
+                       Graphics.Text.Width
+                       -- the modules below are only meant to be used by the tests.
+                       Codec.Binary.UTF8.Debug
+                       Data.Terminfo.Parse
+                       Data.Terminfo.Eval
+                       Graphics.Vty.Debug
+                       Graphics.Vty.DisplayAttributes
+                       Graphics.Vty.Image.Internal
+                       Graphics.Vty.Input.Classify
+                       Graphics.Vty.Input.Classify.Types
+                       Graphics.Vty.Input.Classify.Parse
+                       Graphics.Vty.Input.Loop
+                       Graphics.Vty.Input.Mouse
+                       Graphics.Vty.Input.Focus
+                       Graphics.Vty.Input.Paste
+                       Graphics.Vty.Input.Terminfo
+                       Graphics.Vty.PictureToSpans
+                       Graphics.Vty.Span
+                       Graphics.Vty.Output.Mock
+                       Graphics.Vty.Output.Interface
+                       Graphics.Vty.Output.XTermColor
+                       Graphics.Vty.Output.TerminfoBased
+
+  other-modules:       Graphics.Vty.Attributes.Color
+                       Graphics.Vty.Attributes.Color240
+                       Graphics.Vty.Debug.Image
+                       Graphics.Vty.Input.Terminfo.ANSIVT
+
+  c-sources:           cbits/gwinsz.c
+                       cbits/set_term_timing.c
+                       cbits/mk_wcwidth.c
+
+  include-dirs:        cbits
+
+  hs-source-dirs:      src
+
+  default-extensions:  ScopedTypeVariables
+                       ForeignFunctionInterface
+
+  ghc-options:         -O2 -funbox-strict-fields -Wall -fspec-constr -fspec-constr-count=10
+
+  ghc-prof-options:    -O2 -funbox-strict-fields -caf-all -Wall -fspec-constr -fspec-constr-count=10
+
+  cc-options:          -O2
+
+executable vty-mode-demo
+  main-is:             ModeDemo.hs
+  hs-source-dirs:      demos
+
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+  ghc-options:         -threaded
+
+  build-depends:       vty,
+                       base >= 4.8 && < 5,
+                       containers,
+                       microlens,
+                       microlens-mtl,
+                       mtl >= 1.1.1.0 && < 2.3
+
+executable vty-demo
+  main-is:             Demo.hs
+  hs-source-dirs:      demos
+
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+  ghc-options:         -threaded
+
+  build-depends:       vty,
+                       base >= 4.8 && < 5,
+                       containers,
+                       microlens,
+                       microlens-mtl,
+                       mtl >= 1.1.1.0 && < 2.3
+
+test-suite verify-attribute-ops
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+  type:                detailed-0.9
+  hs-source-dirs:      test
+  test-module:         VerifyAttributeOps
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-using-mock-terminal
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyUsingMockTerminal
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Prelude
+                       Verify.Graphics.Vty.Picture
+                       Verify.Graphics.Vty.Image
+                       Verify.Graphics.Vty.Span
+                       Verify.Graphics.Vty.Output
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       terminfo >= 0.3 && < 0.5,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-terminal
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyOutput
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Prelude
+                       Verify.Graphics.Vty.Picture
+                       Verify.Graphics.Vty.Image
+                       Verify.Graphics.Vty.Span
+                       Verify.Graphics.Vty.Output
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       terminfo >= 0.3 && < 0.5,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-display-attributes
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyDisplayAttributes
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.DisplayAttributes
+                       Verify.Graphics.Vty.Prelude
+                       Verify.Graphics.Vty.Picture
+                       Verify.Graphics.Vty.Image
+                       Verify.Graphics.Vty.Span
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-empty-image-props
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyEmptyImageProps
+
+  other-modules:       Verify
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-eval-terminfo-caps
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyEvalTerminfoCaps
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Output
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       blaze-builder >= 0.3.3.2 && < 0.5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       terminfo >= 0.3 && < 0.5,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-image-ops
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyImageOps
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Image
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-image-trans
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyImageTrans
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Image
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-inline
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyInline
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Output
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-parse-terminfo-caps
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyParseTerminfoCaps
+
+  other-modules:       Verify
+                       Verify.Data.Terminfo.Parse
+                       Verify.Graphics.Vty.Output
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       terminfo >= 0.3 && < 0.5,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-simple-span-generation
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifySimpleSpanGeneration
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Prelude
+                       Verify.Graphics.Vty.Picture
+                       Verify.Graphics.Vty.Image
+                       Verify.Graphics.Vty.Span
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+
+test-suite verify-crop-span-generation
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyCropSpanGeneration
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Prelude
+                       Verify.Graphics.Vty.Picture
+                       Verify.Graphics.Vty.Image
+                       Verify.Graphics.Vty.Span
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+
+test-suite verify-layers-span-generation
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyLayersSpanGeneration
+
+  other-modules:       Verify
+                       Verify.Graphics.Vty.Attributes
+                       Verify.Graphics.Vty.Prelude
+                       Verify.Graphics.Vty.Picture
+                       Verify.Graphics.Vty.Image
+                       Verify.Graphics.Vty.Span
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-utf8-width
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                detailed-0.9
+
+  hs-source-dirs:      test
+
+  test-module:         VerifyUtf8Width
+
+  other-modules:       Verify
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+test-suite verify-using-mock-input
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                exitcode-stdio-1.0
+
+  hs-source-dirs:      test
+
+  main-is:             VerifyUsingMockInput.hs
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       QuickCheck >= 2.7,
+                       smallcheck == 1.*,
+                       quickcheck-assertions >= 0.1.1,
+                       test-framework == 0.8.*,
+                       test-framework-smallcheck == 0.2.*,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       microlens,
+                       microlens-mtl,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       stm,
+                       terminfo >= 0.3 && < 0.5,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+  ghc-options:         -threaded -Wall
+
+test-suite verify-config
+  default-language:    Haskell2010
+  default-extensions:  ScopedTypeVariables
+
+  type:                exitcode-stdio-1.0
+
+  hs-source-dirs:      test
+
+  main-is:             VerifyConfig.hs
+
+  build-depends:       vty,
+                       Cabal >= 1.20,
+                       HUnit,
+                       QuickCheck >= 2.7,
+                       smallcheck == 1.*,
+                       quickcheck-assertions >= 0.1.1,
+                       test-framework == 0.8.*,
+                       test-framework-smallcheck == 0.2.*,
+                       test-framework-hunit,
+                       random >= 1.0 && < 1.2,
+                       base >= 4.8 && < 5,
+                       bytestring,
+                       containers,
+                       deepseq >= 1.1 && < 1.5,
+                       microlens,
+                       microlens-mtl,
+                       mtl >= 1.1.1.0 && < 2.3,
+                       string-qq,
+                       terminfo >= 0.3 && < 0.5,
+                       text >= 0.11.3,
+                       unix,
+                       utf8-string >= 0.3 && < 1.1,
+                       vector >= 0.7
+
+  ghc-options:         -threaded -Wall

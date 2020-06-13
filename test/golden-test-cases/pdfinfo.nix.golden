@@ -1,0 +1,14 @@
+{ mkDerivation, base, mtl, old-locale, process-extras, stdenv, text
+, time, time-locale-compat
+}:
+mkDerivation {
+  pname = "pdfinfo";
+  version = "1.5.4";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base mtl old-locale process-extras text time time-locale-compat
+  ];
+  homepage = "https://github.com/chrisdone/pdfinfo";
+  description = "Wrapper around the pdfinfo command";
+  license = stdenv.lib.licenses.bsd3;
+}

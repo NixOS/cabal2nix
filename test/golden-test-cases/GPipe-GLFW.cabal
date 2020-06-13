@@ -1,0 +1,51 @@
+name:           GPipe-GLFW
+version:        1.4.1.1
+cabal-version:  >=1.10
+build-type:     Simple
+author:         Patrick Redmond
+license:        MIT
+license-file:   LICENSE
+copyright:      Patrick Redmond
+category:       Graphics
+stability:      Experimental
+homepage:       https://github.com/plredmond/GPipe-GLFW
+synopsis:       GLFW OpenGL context creation for GPipe
+description:
+                GPipe-GLFW is a utility library to enable the use of GLFW as
+                the OpenGL window and context handler for GPipe. GPipe is a
+                typesafe functional API based on the conceptual model of
+                OpenGL.
+maintainer:     Patrick Redmond
+data-files:     CHANGELOG.md
+
+library
+  hs-source-dirs:      src
+  build-depends:       base                   >= 4.7 && <4.11
+                     , stm                    >= 2.4 && <2.5
+                     , containers             >= 0.5 && <0.6
+                     , async                  >= 2.1 && <2.3
+                     , GLFW-b                 >= 1.4 && <1.5
+                     , GPipe                  >= 2.2 && <2.3
+  ghc-options:         -Wall -Wno-orphans
+  default-language:    Haskell2010
+  exposed-modules:     Graphics.GPipe.Context.GLFW
+                       Graphics.GPipe.Context.GLFW.Input
+                       Graphics.GPipe.Context.GLFW.Window
+                       Graphics.GPipe.Context.GLFW.Misc
+  other-modules:       Graphics.GPipe.Context.GLFW.Calls
+                       Graphics.GPipe.Context.GLFW.Resource
+                       Graphics.GPipe.Context.GLFW.Wrappers
+                       Graphics.GPipe.Context.GLFW.Format
+                       Graphics.GPipe.Context.GLFW.Handler
+                       Graphics.GPipe.Context.GLFW.RPC
+
+source-repository head
+  type:     git
+  location: https://github.com/plredmond/GPipe-GLFW.git
+  subdir:   GPipe-GLFW
+
+source-repository this
+  type:     git
+  location: https://github.com/plredmond/GPipe-GLFW.git
+  subdir:   GPipe-GLFW
+  tag:      v1.4.1.1

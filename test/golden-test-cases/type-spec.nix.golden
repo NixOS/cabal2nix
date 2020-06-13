@@ -1,0 +1,11 @@
+{ mkDerivation, base, pretty, stdenv }:
+mkDerivation {
+  pname = "type-spec";
+  version = "0.3.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base pretty ];
+  testHaskellDepends = [ base ];
+  homepage = "https://github.com/sheyll/type-spec#readme";
+  description = "Type Level Specification by Example";
+  license = stdenv.lib.licenses.bsd3;
+}

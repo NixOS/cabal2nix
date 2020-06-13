@@ -1,0 +1,10 @@
+{ mkDerivation, base, blaze-markup, mtl, stdenv }:
+mkDerivation {
+  pname = "blaze-svg";
+  version = "0.3.6.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base blaze-markup mtl ];
+  homepage = "https://github.com/deepakjois/blaze-svg";
+  description = "SVG combinator library";
+  license = stdenv.lib.licenses.bsd3;
+}

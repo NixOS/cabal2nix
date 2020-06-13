@@ -1,0 +1,60 @@
+Name: data-serializer
+Version: 0.3.2
+Category: Data
+Stability: experimental
+Synopsis: Common API for serialization libraries
+Description:
+  This package provides a common API for serialization libraries like
+  <http://hackage.haskell.org/package/binary binary> and
+  <http://hackage.haskell.org/package/cereal cereal>.
+
+Homepage: https://github.com/mvv/data-serializer
+Bug-Reports: https://github.com/mvv/data-serializer/issues
+
+Author: Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+Maintainer: Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+Copyright: 2016 Mikhail Vorozhtsov <mikhail.vorozhtsov@gmail.com>
+License: BSD3
+License-File: LICENSE
+
+Extra-Source-Files:
+  README.md
+
+Tested-With: GHC==7.10.3, GHC==8.0.2, GHC==8.2.2
+
+Cabal-Version: >= 1.10.0
+Build-Type: Simple
+
+Source-Repository head
+  Type: git
+  Location: https://github.com/mvv/data-serializer.git
+
+Library
+  Default-Language: Haskell2010
+  Build-Depends: base >= 4.8 && < 5
+               , semigroups >= 0.18.2
+               , bytestring >= 0.10.4
+               , binary >= 0.7.2
+               , cereal >= 0.4.1
+               , data-endian >= 0.1.1
+               , parsers >= 0.12.3
+               , split >= 0.2
+  Hs-Source-Dirs: src
+  GHC-Options: -Wall
+  Exposed-Modules:
+    Data.Serializer
+    Data.Deserializer
+
+Test-Suite tests
+  Default-Language: Haskell2010
+  Type: exitcode-stdio-1.0
+  Build-Depends: base
+               , bytestring
+               , binary
+               , cereal
+               , tasty >= 0.8
+               , tasty-quickcheck >= 0.8
+               , data-serializer
+  Hs-Source-Dirs: tests
+  GHC-Options: -Wall
+  Main-Is: Tests.hs

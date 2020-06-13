@@ -1,0 +1,42 @@
+name: system-argv0
+version: 0.1.1
+license: MIT
+license-file: license.txt
+author: John Millikin <jmillikin@gmail.com>
+maintainer: John Millikin <jmillikin@gmail.com>
+build-type: Simple
+cabal-version: >= 1.6
+category: System
+stability: experimental
+homepage: https://john-millikin.com/software/haskell-filesystem/
+bug-reports: mailto:jmillikin@gmail.com
+
+synopsis: Get argv[0] as a FilePath.
+description:
+  Get @argv[0]@ as a FilePath. This is how the program was invoked, and might
+  not correspond to any actual file.
+  .
+  Use this instead of @System.Environment.getProgName@ if you want the full
+  path, and not just the last component.
+
+source-repository head
+  type: bazaar
+  location: https://john-millikin.com/branches/system-argv0/0.1/
+
+source-repository this
+  type: bazaar
+  location: https://john-millikin.com/branches/system-argv0/0.1/
+  tag: system-argv0_0.1.1
+
+library
+  hs-source-dirs: lib
+  ghc-options: -Wall -O2
+
+  build-depends:
+      base >= 4.0 && < 5.0
+    , bytestring
+    , system-filepath >= 0.3 && < 0.5
+    , text
+
+  exposed-modules:
+    System.Argv0

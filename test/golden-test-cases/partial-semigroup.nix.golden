@@ -1,0 +1,11 @@
+{ mkDerivation, base, doctest, hedgehog, stdenv }:
+mkDerivation {
+  pname = "partial-semigroup";
+  version = "0.3.0.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base ];
+  testHaskellDepends = [ base doctest hedgehog ];
+  homepage = "https://github.com/chris-martin/partial-semigroup";
+  description = "A partial binary associative operator";
+  license = stdenv.lib.licenses.asl20;
+}

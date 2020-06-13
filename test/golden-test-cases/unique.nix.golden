@@ -1,0 +1,10 @@
+{ mkDerivation, base, ghc-prim, hashable, stdenv }:
+mkDerivation {
+  pname = "unique";
+  version = "0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base ghc-prim hashable ];
+  homepage = "http://github.com/ekmett/unique/";
+  description = "Fully concurrent unique identifiers";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,30 @@
+Name:                bindings-uname
+Version:             0.1
+Synopsis:            Low-level binding to POSIX uname(3)
+Description:
+        This is a low-level binding to POSIX uname(3)
+        function. Perhaps it shoule be part of unix package.
+Category:            FFI, System
+License:             PublicDomain
+Author:              PHO <pho at cielonegro.org>
+Maintainer:          PHO <pho at cielonegro.org>
+Stability:           Experimental
+Cabal-Version:       >= 1.6
+Build-Type:          Simple
+
+Source-Repository head
+    Type: git
+    Location: git://git.cielonegro.org/bindings-uname
+
+Library
+    Build-Depends:
+        base < 5
+
+    Exposed-Modules:
+        Bindings.Uname
+
+    Extensions:
+        EmptyDataDecls, ForeignFunctionInterface
+
+    GHC-Options:
+        -Wall

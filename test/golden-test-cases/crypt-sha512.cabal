@@ -1,0 +1,60 @@
+name:                   crypt-sha512
+version:                0
+synopsis:               Pure Haskell implelementation for GNU SHA512 crypt algorithm
+description:
+  crypt() is the password encryption function.  It is based on the Data
+  Encryption Standard algorithm with variations intended (among other things) to
+  discourage use of hardware implementations of a key search.
+  .
+  This package provides a pure Haskell implementation of SHA512 crypt scheme.
+category:               Data
+license:                BSD3
+license-file:           LICENSE
+author:                 Oleg Grenrus <oleg.grenrus@iki.fi>
+maintainer:             Oleg Grenrus <oleg.grenrus@iki.fi>
+copyright:              2017 Oleg Grenrus
+homepage:               https://github.com/phadej/crypt-sha512
+bug-reports:            https://github.com/phadej/crypt-sha512
+extra-source-files:     README.md
+build-type:             Simple
+cabal-version:          >= 1.10
+tested-with:
+  GHC==7.6.3,
+  GHC==7.8.4,
+  GHC==7.10.3,
+  GHC==8.0.2,
+  GHC==8.2.1
+
+source-repository head
+  type:                 git
+  location:             git://github.com/phadej/crypt-sha512.git
+
+library
+  exposed-modules:      System.POSIX.Crypt.SHA512
+  build-depends:        base               >=4.5        && <4.11,
+                        bytestring,
+                        attoparsec         >=0.13.1.0   && <0.14,
+                        cryptohash-sha512  >=0.11.100.1 && <0.12
+  default-language:     Haskell2010
+  hs-source-dirs:       src
+  ghc-options:          -Wall
+
+test-suite example
+  if !os(linux)
+    buildable:          False
+
+  build-depends:        base,
+                        crypt-sha512,
+                        bytestring,
+                        tasty,
+                        tasty-hunit,
+                        tasty-quickcheck,
+                        quickcheck-instances
+  default-language:     Haskell2010
+  main-is:              Example.hs
+  other-modules:        System.POSIX.Crypt
+  type:                 exitcode-stdio-1.0
+  hs-source-dirs:       test
+  other-extensions:     OverloadedStrings CApiFFI
+  extra-libraries:      crypt
+  ghc-options:          -Wall

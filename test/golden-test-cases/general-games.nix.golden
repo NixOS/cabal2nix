@@ -1,0 +1,15 @@
+{ mkDerivation, base, hspec, HUnit, monad-loops, MonadRandom
+, random, random-shuffle, stdenv
+}:
+mkDerivation {
+  pname = "general-games";
+  version = "1.0.5";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base monad-loops MonadRandom random random-shuffle
+  ];
+  testHaskellDepends = [ base hspec HUnit MonadRandom ];
+  homepage = "https://github.com/cgorski/general-games";
+  description = "Library supporting simulation of a number of games";
+  license = stdenv.lib.licenses.mit;
+}

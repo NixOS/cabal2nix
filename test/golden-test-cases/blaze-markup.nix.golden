@@ -1,0 +1,17 @@
+{ mkDerivation, base, blaze-builder, bytestring, containers, HUnit
+, QuickCheck, stdenv, test-framework, test-framework-hunit
+, test-framework-quickcheck2, text
+}:
+mkDerivation {
+  pname = "blaze-markup";
+  version = "0.8.0.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base blaze-builder bytestring text ];
+  testHaskellDepends = [
+    base blaze-builder bytestring containers HUnit QuickCheck
+    test-framework test-framework-hunit test-framework-quickcheck2 text
+  ];
+  homepage = "http://jaspervdj.be/blaze";
+  description = "A blazingly fast markup combinator library for Haskell";
+  license = stdenv.lib.licenses.bsd3;
+}

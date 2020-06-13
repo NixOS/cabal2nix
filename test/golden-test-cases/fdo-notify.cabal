@@ -1,0 +1,26 @@
+name:               fdo-notify
+version:            0.3.1
+synopsis:           Desktop Notifications client
+description:
+    A library for issuing notifications using FreeDesktop.org's Desktop
+    Notifications protcol. This protocol is supported by services such
+    as Ubuntu's NotifyOSD.
+category:           Desktop
+license:            BSD3
+license-file:       LICENSE
+author:             Max Rabkin
+maintainer:         max.rabkin@gmail.com
+homepage:           http://bitbucket.org/taejo/fdo-notify/
+cabal-version:      >= 1.2.1
+build-type:         Simple
+
+extra-source-files:
+    examples/fib.hs
+
+library
+    build-depends:
+        base >= 3 && < 5
+      , containers >= 0.1
+      , dbus >= 0.10.7
+
+    exposed-modules: DBus.Notify

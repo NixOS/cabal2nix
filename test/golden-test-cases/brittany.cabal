@@ -1,0 +1,372 @@
+name:                 brittany
+version:              0.9.0.0
+synopsis:             Haskell source code formatter
+description: {
+  See <https://github.com/lspitzner/brittany/blob/master/README.md the README>.
+  .
+  If you are interested in the implementation, have a look at <https://github.com/lspitzner/brittany/blob/master/doc/implementation/theory.md this document>;
+  .
+  The implementation is documented in more detail <https://github.com/lspitzner/brittany/blob/master/doc/implementation/index.md here>.
+}
+license:              AGPL-3
+license-file:         LICENSE
+author:               Lennart Spitzner
+maintainer:           Lennart Spitzner <hexagoxel@hexagoxel.de>
+copyright:            Copyright (C) 2016-2017 Lennart Spitzner
+category:             Language
+build-type:           Simple
+cabal-version:        >=1.18
+homepage:             https://github.com/lspitzner/brittany/
+bug-reports:          https://github.com/lspitzner/brittany/issues
+extra-doc-files: {
+  ChangeLog.md
+  README.md
+  doc/implementation/*.md
+}
+extra-source-files: {
+  src-literatetests/*.blt
+}
+
+source-repository head {
+  type: git
+  location: https://github.com/lspitzner/brittany.git
+}
+
+flag brittany-dev-lib
+  description: set buildable false for anything but lib
+  default: False
+  manual: True
+
+library {
+  default-language:
+    Haskell2010
+  hs-source-dirs:
+    src
+  install-includes: {
+    srcinc/prelude.inc
+  }
+  exposed-modules: {
+    Language.Haskell.Brittany
+    Language.Haskell.Brittany.Internal
+    Language.Haskell.Brittany.Internal.Prelude
+    Language.Haskell.Brittany.Internal.PreludeUtils
+    Language.Haskell.Brittany.Internal.Types
+    Language.Haskell.Brittany.Internal.Utils
+    Language.Haskell.Brittany.Internal.Config
+    Language.Haskell.Brittany.Internal.Config.Types
+    Language.Haskell.Brittany.Internal.Config.Types.Instances
+    Paths_brittany
+  }
+  other-modules: {
+    Language.Haskell.Brittany.Internal.LayouterBasics
+    Language.Haskell.Brittany.Internal.Backend
+    Language.Haskell.Brittany.Internal.BackendUtils
+    Language.Haskell.Brittany.Internal.ExactPrintUtils
+    Language.Haskell.Brittany.Internal.Layouters.Type
+    Language.Haskell.Brittany.Internal.Layouters.Decl
+    Language.Haskell.Brittany.Internal.Layouters.Expr
+    Language.Haskell.Brittany.Internal.Layouters.Stmt
+    Language.Haskell.Brittany.Internal.Layouters.Pattern
+    Language.Haskell.Brittany.Internal.Transformations.Alt
+    Language.Haskell.Brittany.Internal.Transformations.Floating
+    Language.Haskell.Brittany.Internal.Transformations.Par
+    Language.Haskell.Brittany.Internal.Transformations.Columns
+    Language.Haskell.Brittany.Internal.Transformations.Indent
+  }
+  ghc-options: {
+    -Wall
+    -fno-warn-unused-imports
+    -fno-warn-redundant-constraints
+  }
+  build-depends:
+    { base >=4.9 && <4.11
+    , ghc >=8.0.1 && <8.3
+    , ghc-paths >=0.1.0.9 && <0.2
+    , ghc-exactprint >=0.5.3.0 && <0.6
+    , transformers >=0.5.2.0 && <0.6
+    , containers >=0.5.7.1 && <0.6
+    , mtl >=2.2.1 && <2.3
+    , text >=1.2 && <1.3
+    , multistate >=0.7.1.1 && <0.8
+    , syb >=0.6 && <0.8
+    , neat-interpolation >=0.3.2 && <0.4
+    , data-tree-print
+    , pretty >=1.1.3.3 && <1.2
+    , bytestring >=0.10.8.1 && <0.11
+    , directory >=1.2.6.2 && <1.4
+    , butcher >=1.2 && <1.3
+    , yaml >=0.8.18 && <0.9
+    , aeson >=1.0.1.0 && <1.3
+    , extra >=1.4.10 && <1.7
+    , uniplate >=1.6.12 && <1.7
+    , strict >=0.3.2 && <0.4
+    , monad-memo >=0.4.1 && <0.5
+    , unsafe >=0.0 && <0.1
+    , safe >=0.3.9 && <0.4
+    , deepseq >=1.4.2.0 && <1.5
+    , semigroups >=0.18.2 && <0.19
+    , cmdargs >=0.10.14 && <0.11
+    , czipwith >=1.0.0.0 && <1.1
+    , ghc-boot-th >=8.0.1 && <8.3
+    }
+  default-extensions: {
+    CPP
+
+    NoImplicitPrelude
+
+    GADTs
+
+    FlexibleContexts
+    FlexibleInstances
+    ScopedTypeVariables
+    MonadComprehensions
+    LambdaCase
+    MultiWayIf
+    KindSignatures
+  }
+  include-dirs:
+    srcinc
+}
+
+executable brittany
+  if flag(brittany-dev-lib) {
+    buildable: False
+  } else {
+    buildable: True
+  }
+  main-is:             Main.hs
+  other-modules: {
+    Paths_brittany
+  }
+  -- other-extensions:
+  build-depends:
+    { brittany
+    , base
+    , ghc
+    , ghc-paths
+    , ghc-exactprint
+    , transformers
+    , containers
+    , mtl
+    , text
+    , multistate
+    , syb
+    , neat-interpolation
+    , data-tree-print
+    , pretty
+    , bytestring
+    , directory
+    , butcher
+    , yaml
+    , aeson
+    , extra
+    , uniplate
+    , strict
+    , monad-memo
+    , unsafe
+    , safe
+    , deepseq
+    , semigroups
+    , cmdargs
+    , czipwith
+    , ghc-boot-th
+    , hspec >=2.4.1 && <2.5
+    , filepath >=1.4.1.0 && <1.5
+    }
+  hs-source-dirs:      src-brittany
+  default-language:    Haskell2010
+  default-extensions: {
+    CPP
+
+    NoImplicitPrelude
+
+    GADTs
+
+    FlexibleContexts
+    FlexibleInstances
+    ScopedTypeVariables
+    MonadComprehensions
+    LambdaCase
+    MultiWayIf
+    KindSignatures
+  }
+  ghc-options: {
+    -Wall
+    -fno-spec-constr
+    -fno-warn-unused-imports
+    -fno-warn-redundant-constraints
+    -rtsopts
+    -with-rtsopts "-M2G"
+  }
+
+test-suite unittests
+  if flag(brittany-dev-lib) {
+    buildable: False
+  } else {
+    buildable: True
+  }
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  build-depends:
+    { brittany
+    , base
+    , ghc
+    , ghc-paths
+    , ghc-exactprint
+    , transformers
+    , containers
+    , mtl
+    , text
+    , multistate
+    , syb
+    , neat-interpolation
+    , data-tree-print
+    , pretty
+    , bytestring
+    , directory
+    , butcher
+    , yaml
+    , aeson
+    , extra
+    , uniplate
+    , strict
+    , monad-memo
+    , unsafe
+    , safe
+    , deepseq
+    , semigroups
+    , cmdargs
+    , czipwith
+    , ghc-boot-th
+    , hspec >=2.4.1 && <2.5
+    }
+  ghc-options:      -Wall
+  main-is:          TestMain.hs
+  other-modules:    TestUtils
+                    AsymptoticPerfTests
+  hs-source-dirs:   src-unittests
+  default-extensions: {
+    CPP
+
+    NoImplicitPrelude
+
+    GADTs
+
+    FlexibleContexts
+    FlexibleInstances
+    ScopedTypeVariables
+    MonadComprehensions
+    LambdaCase
+    MultiWayIf
+    KindSignatures
+  }
+  ghc-options: {
+    -Wall
+    -fno-warn-unused-imports
+    -rtsopts
+    -with-rtsopts "-M2G"
+  }
+
+test-suite littests
+  if flag(brittany-dev-lib) {
+    buildable: False
+  } else {
+    buildable: True
+  }
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  build-depends:
+    { brittany
+    , base
+    , ghc
+    , ghc-paths
+    , ghc-exactprint
+    , transformers
+    , containers
+    , mtl
+    , text
+    , multistate
+    , syb
+    , neat-interpolation
+    , data-tree-print
+    , pretty
+    , bytestring
+    , directory
+    , butcher
+    , yaml
+    , aeson
+    , extra
+    , uniplate
+    , strict
+    , monad-memo
+    , unsafe
+    , safe
+    , deepseq
+    , semigroups
+    , cmdargs
+    , czipwith
+    , ghc-boot-th
+    , hspec >=2.4.1 && <2.5
+    , filepath
+    , parsec >=3.1.11 && <3.2
+    }
+  ghc-options:      -Wall
+  main-is:          Main.hs
+  other-modules:
+  hs-source-dirs:   src-literatetests
+  default-extensions: {
+    CPP
+
+    NoImplicitPrelude
+
+    GADTs
+
+    FlexibleContexts
+    FlexibleInstances
+    ScopedTypeVariables
+    MonadComprehensions
+    LambdaCase
+    MultiWayIf
+    KindSignatures
+  }
+  ghc-options: {
+    -Wall
+    -fno-warn-unused-imports
+    -rtsopts
+    -with-rtsopts "-M2G"
+  }
+
+test-suite libinterfacetests
+  if flag(brittany-dev-lib) {
+    buildable: False
+  } else {
+    buildable: True
+  }
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  build-depends:
+    { brittany
+    , base
+    , text
+    , transformers
+    , hspec >=2.4.1 && <2.5
+    }
+  ghc-options:      -Wall
+  main-is:          Main.hs
+  other-modules:
+  hs-source-dirs:   src-libinterfacetests
+  default-extensions: {
+    FlexibleContexts
+    FlexibleInstances
+    ScopedTypeVariables
+    MonadComprehensions
+    LambdaCase
+    MultiWayIf
+    KindSignatures
+  }
+  ghc-options: {
+    -Wall
+    -fno-warn-unused-imports
+    -rtsopts
+    -with-rtsopts "-M2G"
+  }

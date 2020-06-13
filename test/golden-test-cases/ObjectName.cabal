@@ -1,0 +1,34 @@
+name: ObjectName
+version: 1.1.0.1
+synopsis: Explicitly handled object names
+description:
+  This tiny package contains the class ObjectName, which corresponds to the
+  general notion of explicitly handled identifiers for API objects, e.g. a
+  texture object name in OpenGL or a buffer object name in OpenAL.
+homepage: https://github.com/svenpanne/ObjectName
+bug-reports: https://github.com/svenpanne/ObjectName/issues
+copyright: Copyright (C) 2014-2015 Sven Panne
+license: BSD3
+license-file: LICENSE
+author: Sven Panne
+maintainer: Sven Panne <svenpanne@gmail.com>
+category: Data
+build-type: Simple
+cabal-version: >=1.10
+extra-source-files:
+  README.md
+
+library
+  exposed-modules:
+   Data.ObjectName
+  build-depends:
+    base         >= 4   && < 5,
+    transformers >= 0.2 && < 0.6
+  default-language: Haskell2010
+  other-extensions: CPP
+  hs-Source-Dirs: src
+  ghc-options: -Wall
+
+source-repository head
+  type: git
+  location: https://github.com/haskell-opengl/ObjectName.git

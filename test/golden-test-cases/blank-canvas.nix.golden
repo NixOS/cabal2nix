@@ -1,0 +1,23 @@
+{ mkDerivation, aeson, base, base-compat, base64-bytestring
+, bytestring, colour, containers, data-default-class, directory
+, http-types, kansas-comet, mime-types, process, scotty, shake
+, stdenv, stm, text, text-show, time, transformers, unix, vector
+, wai, wai-extra, warp
+}:
+mkDerivation {
+  pname = "blank-canvas";
+  version = "0.6.1";
+  sha256 = "deadbeef";
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [
+    aeson base base-compat base64-bytestring bytestring colour
+    containers data-default-class http-types kansas-comet mime-types
+    scotty stm text text-show transformers vector wai wai-extra warp
+  ];
+  testHaskellDepends = [
+    base containers directory process shake stm text time unix vector
+  ];
+  homepage = "https://github.com/ku-fpg/blank-canvas/wiki";
+  description = "HTML5 Canvas Graphics Library";
+  license = stdenv.lib.licenses.bsd3;
+}

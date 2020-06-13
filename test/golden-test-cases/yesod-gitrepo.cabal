@@ -1,0 +1,28 @@
+name:                yesod-gitrepo
+version:             0.2.1.0
+synopsis:            Host content provided by a Git repo
+description:         See README.md
+homepage:            https://github.com/snoyberg/yesod-gitrepo
+license:             MIT
+license-file:        LICENSE
+author:              Michael Snoyman
+maintainer:          michael@snoyman.com
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+                     ChangeLog.md
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Yesod.GitRepo
+  build-depends:       base < 5
+                     , temporary >=1.2
+                     , directory
+                     , yesod-core >=1.2 && <1.5
+                     , wai >=3.0
+                     , http-types
+                     , process >=1.1
+                     , lifted-base
+                     , text
+                     , enclosed-exceptions
+  default-language:    Haskell2010

@@ -1,0 +1,14 @@
+{ mkDerivation, base, optparse-applicative, proto-lens, stdenv
+, text
+}:
+mkDerivation {
+  pname = "proto-lens-optparse";
+  version = "0.1.0.4";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base optparse-applicative proto-lens text
+  ];
+  homepage = "https://github.com/google/proto-lens";
+  description = "Adapting proto-lens to optparse-applicative ReadMs";
+  license = stdenv.lib.licenses.bsd3;
+}

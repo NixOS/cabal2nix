@@ -1,0 +1,60 @@
+name:                   lambdabot-social-plugins
+version:                5.1.0.1
+
+license:                GPL
+license-file:           LICENSE
+
+author:                 Don Stewart
+maintainer:             James Cook <mokus@deepbondi.net>
+
+category:               Development, Web
+synopsis:               Social plugins for Lambdabot
+description:            Lambdabot is an IRC bot written over several years by
+                        those on the #haskell IRC channel.
+                        .
+                        Provided plugins:
+                        .
+                        [activity] Check where and how much is lambdabot used.
+                        .
+                        [karma] Track who's been good and who's been naughty.
+                        .
+                        [poll] Let the people vote.
+                        .
+                        [seen] Track who was around when.
+                        .
+                        [tell] Leave messages for other users.
+
+homepage:               https://wiki.haskell.org/Lambdabot
+
+build-type:             Simple
+cabal-version:          >= 1.8
+tested-with:            GHC == 7.8.4, GHC == 7.10.3
+
+source-repository head
+  type:                 git
+  location:             https://github.com/lambdabot/lambdabot.git
+
+library
+  hs-source-dirs:       src
+  ghc-options:          -Wall
+                        -funbox-strict-fields
+
+  exposed-modules:      Lambdabot.Plugin.Social
+
+  other-modules:        Lambdabot.Plugin.Social.Activity
+                        Lambdabot.Plugin.Social.Karma
+                        Lambdabot.Plugin.Social.Poll
+                        Lambdabot.Plugin.Social.Seen
+                        Lambdabot.Plugin.Social.Seen.StopWatch
+                        Lambdabot.Plugin.Social.Seen.UserStatus
+                        Lambdabot.Plugin.Social.Tell
+                        Lambdabot.Util.NickEq
+
+  build-depends:        base                    >= 4.4 && < 5,
+                        binary                  >= 0.5,
+                        bytestring              >= 0.9,
+                        containers              >= 0.4,
+                        lambdabot-core          >= 5.1 && < 5.2,
+                        mtl                     >= 2,
+                        split                   >= 0.2,
+                        time                    >= 1.4

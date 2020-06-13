@@ -1,0 +1,15 @@
+{ mkDerivation, base, bytestring, chell, chell-quickcheck, deepseq
+, QuickCheck, stdenv, text
+}:
+mkDerivation {
+  pname = "system-filepath";
+  version = "0.4.13.4";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base bytestring deepseq text ];
+  testHaskellDepends = [
+    base bytestring chell chell-quickcheck QuickCheck text
+  ];
+  homepage = "https://github.com/fpco/haskell-filesystem";
+  description = "High-level, byte-based file and directory path manipulations (deprecated)";
+  license = stdenv.lib.licenses.mit;
+}

@@ -1,0 +1,39 @@
+name:                th-expand-syns
+version:             0.4.4.0
+synopsis:            Expands type synonyms in Template Haskell ASTs
+description:         Expands type synonyms in Template Haskell ASTs.
+category:            Template Haskell
+license:             BSD3
+license-file:        LICENSE
+author:              Daniel Schüssler
+maintainer:          haskell.5wlh@gishpuppy.com
+cabal-version:       >= 1.8
+build-type:          Simple
+extra-source-files:  changelog.markdown
+homepage:            https://github.com/DanielSchuessler/th-expand-syns
+tested-with:
+    GHC == 7.0.4
+    GHC == 7.2.2
+    GHC == 7.4.2
+    GHC == 7.6.3
+    GHC == 7.8.4
+    GHC == 7.10.3
+    GHC == 8.0.2
+    GHC == 8.2.2
+
+source-repository head
+ type: git
+ location: git://github.com/DanielSchuessler/th-expand-syns.git
+
+Library
+    build-depends:       base >= 4 && < 5, template-haskell < 2.14, syb, containers
+    ghc-options:
+    exposed-modules:     Language.Haskell.TH.ExpandSyns
+    other-modules:       Language.Haskell.TH.ExpandSyns.SemigroupCompat
+
+Test-Suite test-th-expand-syns
+    type:               exitcode-stdio-1.0
+    hs-source-dirs:     testing
+    main-is:            Main.hs
+    other-modules:      Util, Types
+    build-depends:      base, th-expand-syns, template-haskell

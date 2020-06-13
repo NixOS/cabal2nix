@@ -1,0 +1,69 @@
+name:          terminal-progress-bar
+version:       0.1.1.1
+cabal-version: >=1.10
+build-type:    Simple
+stability:     provisional
+author:        Roel van Dijk <vandijk.roel@gmail.com>
+maintainer:    Roel van Dijk <vandijk.roel@gmail.com>
+copyright:     2012–2014 Roel van Dijk <vandijk.roel@gmail.com>
+license:       BSD3
+license-file:  LICENSE
+category:      System, User Interfaces
+homepage:      https://github.com/roelvandijk/terminal-progress-bar
+bug-reports:   https://github.com/roelvandijk/terminal-progress-bar/issues
+synopsis:      A simple progress bar in the terminal
+description:
+  A progress bar is used to convey the progress of a task. This
+  package implements a very simple textual progress bar.
+  .
+  See the module 'System.ProgressBar' on how to use the progress bar
+  or build the package with the -fexample flag for a small example
+  program.
+  .
+  The animated progress bar depends entirely on the interpretation of
+  the carriage return character (\'\\r\'). If your terminal interprets
+  it as something else than \"move cursor to beginning of line\", the
+  animation won't work.
+
+extra-source-files: LICENSE, README.markdown
+
+source-repository head
+  type:     git
+  location: git://github.com/roelvandijk/terminal-progress-bar.git
+
+flag example
+  description: Build a small example program.
+  default: False
+
+library
+    hs-source-dirs: src
+    build-depends: base                 >= 3.0.3.1 && < 5.0
+                 , stm                  >= 2.4     && < 3.0
+                 , stm-chans            >= 3.0.0   && < 4.0
+    exposed-modules: System.ProgressBar
+    ghc-options: -Wall
+    default-language: Haskell2010
+
+test-suite test-terminal-progress-bar
+    type: exitcode-stdio-1.0
+    main-is: test.hs
+    hs-source-dirs: test
+    ghc-options: -Wall
+    build-depends: base                  >= 3.0.3.1 && < 5.0
+                 , HUnit                 >= 1.2.4.2 && < 1.6
+                 , terminal-progress-bar
+                 , test-framework        >= 0.3.3   && < 0.9
+                 , test-framework-hunit  >= 0.2.6   && < 0.4
+    default-language: Haskell2010
+
+executable example
+    main-is: example.hs
+    hs-source-dirs: .
+    ghc-options: -Wall
+    if flag(example)
+      build-depends: base                  >= 3.0.3.1 && < 5.0
+                   , terminal-progress-bar
+      buildable: True
+    else
+      buildable: False
+    default-language: Haskell2010

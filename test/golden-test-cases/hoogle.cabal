@@ -1,0 +1,142 @@
+cabal-version:      >= 1.18
+build-type:         Simple
+name:               hoogle
+version:            5.0.14
+license:            BSD3
+license-file:       LICENSE
+category:           Development
+author:             Neil Mitchell <ndmitchell@gmail.com>
+maintainer:         Neil Mitchell <ndmitchell@gmail.com>
+copyright:          Neil Mitchell 2004-2017
+synopsis:           Haskell API Search
+description:
+    Hoogle is a Haskell API search engine, which allows you to
+    search many standard Haskell libraries by either function name,
+    or by approximate type signature.
+homepage:           http://hoogle.haskell.org/
+bug-reports:        https://github.com/ndmitchell/hoogle/issues
+tested-with:        GHC==8.2.1, GHC==8.0.2, GHC==7.10.3
+extra-doc-files:
+    README.md
+    CHANGES.txt
+extra-source-files:
+    cbits/*.h
+    cbits/*.c
+data-files:
+    misc/settings.txt
+    html/*.js
+    html/*.png
+    html/*.css
+    html/*.xml
+    html/*.html
+    html/plugin/*.css
+    html/plugin/*.js
+    html/plugin/*.png
+
+source-repository head
+    type:     git
+    location: https://github.com/ndmitchell/hoogle.git
+
+flag network-uri
+    default: True
+    manual: False
+    description: Get Network.URI from the network-uri package
+
+library
+    hs-source-dirs:     src
+    default-language:   Haskell2010
+
+    if flag(network-uri)
+        build-depends: network-uri >= 2.6, network >= 2.6
+    else
+        build-depends: network-uri < 2.6, network < 2.6
+
+    build-depends:
+        QuickCheck,
+        aeson,
+        base > 4 && < 5,
+        binary,
+        bytestring,
+        cmdargs,
+        conduit,
+        conduit-extra,
+        connection,
+        containers >= 0.5,
+        deepseq,
+        directory,
+        extra >= 1.4,
+        filepath,
+        old-locale,
+        haskell-src-exts >= 1.18 && < 1.20,
+        http-conduit,
+        http-types,
+        js-flot,
+        js-jquery,
+        mmap,
+        process,
+        process-extras,
+        resourcet,
+        storable-tuple,
+        tar,
+        template-haskell,
+        text,
+        time,
+        transformers,
+        uniplate,
+        utf8-string,
+        vector,
+        wai,
+        wai-logger,
+        warp,
+        warp-tls,
+        zlib
+
+    c-sources:        cbits/text_search.c
+    include-dirs:     cbits
+    includes:         include.h
+    install-includes: include.h
+    cc-options:       -std=c99
+
+    ghc-options:      -fno-state-hack
+
+    exposed-modules:
+        Hoogle
+
+    other-modules:
+        Paths_hoogle
+        Action.CmdLine
+        Action.Generate
+        Action.Search
+        Action.Server
+        Action.Test
+        Input.Cabal
+        Input.Download
+        Input.Haddock
+        Input.Item
+        Input.Reorder
+        Input.Set
+        Input.Settings
+        Output.Items
+        Output.Names
+        Output.Tags
+        Output.Types
+        Query
+        General.Conduit
+        General.IString
+        General.Log
+        General.Store
+        General.Str
+        General.Template
+        General.Timing
+        General.Util
+        General.Web
+
+
+executable hoogle
+    main-is:            src/Main.hs
+    default-language:   Haskell2010
+    ghc-options:        -threaded
+
+    build-depends:
+        base > 4 && < 5,
+        hoogle

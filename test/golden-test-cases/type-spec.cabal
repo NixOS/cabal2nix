@@ -1,0 +1,102 @@
+name:                 type-spec
+version:              0.3.0.1
+synopsis:             Type Level Specification by Example
+description:          Please see README.md
+homepage:             https://github.com/sheyll/type-spec#readme
+license:              BSD3
+license-file:         LICENSE
+author:               Sven Heyll
+maintainer:           sven.heyll@gmail.com
+copyright:            2016 Sven Heyll
+category:             Testing
+build-type:           Simple
+extra-source-files:   examples/Main.hs
+                    , README.md
+                    , stack.yaml
+                    , .travis.yml
+cabal-version:        >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Test.TypeSpec
+                     , Test.TypeSpecCrazy
+                     , Test.TypeSpec.Core
+                     , Test.TypeSpec.Group
+                     , Test.TypeSpec.Label
+                     , Test.TypeSpec.ShouldBe
+                     , Test.TypeSpec.Internal.Apply
+                     , Test.TypeSpec.Internal.Either
+                     , Test.TypeSpec.Internal.Equality
+                     , Test.TypeSpec.Internal.Result
+  build-depends:       base >= 4.9 && < 5
+                     , pretty >= 1.1.3 && < 1.2
+  default-language:    Haskell2010
+  default-extensions:  ConstraintKinds
+                     , CPP
+                     , DataKinds
+                     , DefaultSignatures
+                     , DeriveDataTypeable
+                     , DeriveFunctor
+                     , DeriveGeneric
+                     , FlexibleInstances
+                     , FlexibleContexts
+                     , FunctionalDependencies
+                     , GADTs
+                     , GeneralizedNewtypeDeriving
+                     , KindSignatures
+                     , MultiParamTypeClasses
+                     , OverloadedStrings
+                     , PolyKinds
+                     , QuasiQuotes
+                     , RecordWildCards
+                     , RankNTypes
+                     , ScopedTypeVariables
+                     , StandaloneDeriving
+                     , TemplateHaskell
+                     , TupleSections
+                     , TypeFamilies
+                     , TypeInType
+                     , TypeOperators
+                     , TypeSynonymInstances
+                     , UndecidableInstances
+  ghc-options:       -Wall
+
+test-suite examples
+  type:                exitcode-stdio-1.0
+  ghc-options:         -Wall
+  hs-source-dirs:      examples
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.9 && < 5
+                     , type-spec
+  default-language:    Haskell2010
+  default-extensions:  ConstraintKinds
+                     , CPP
+                     , DataKinds
+                     , DefaultSignatures
+                     , DeriveDataTypeable
+                     , DeriveFunctor
+                     , DeriveGeneric
+                     , FlexibleInstances
+                     , FlexibleContexts
+                     , FunctionalDependencies
+                     , GADTs
+                     , GeneralizedNewtypeDeriving
+                     , KindSignatures
+                     , MultiParamTypeClasses
+                     , OverloadedStrings
+                     , QuasiQuotes
+                     , RecordWildCards
+                     , RankNTypes
+                     , ScopedTypeVariables
+                     , StandaloneDeriving
+                     , TemplateHaskell
+                     , TupleSections
+                     , TypeFamilies
+                     , TypeInType
+                     , TypeOperators
+                     , TypeSynonymInstances
+
+source-repository head
+  type:     git
+  location: https://github.com/sheyll/type-spec

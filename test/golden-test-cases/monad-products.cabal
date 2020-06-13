@@ -1,0 +1,30 @@
+name:          monad-products
+category:      Control, Monads
+version:       4.0.1
+license:       BSD3
+cabal-version: >= 1.6
+license-file:  LICENSE
+author:        Edward A. Kmett
+maintainer:    Edward A. Kmett <ekmett@gmail.com>
+stability:     provisional
+homepage:      http://github.com/ekmett/monad-products
+bug-reports:   http://github.com/ekmett/monad-products/issues
+copyright:     Copyright (C) 2011-2013 Edward A. Kmett
+synopsis:      Monad products
+description:   Monad products
+build-type:    Simple
+extra-source-files: .travis.yml CHANGELOG.md .gitignore
+
+source-repository head
+  type: git
+  location: git://github.com/ekmett/monad-products.git
+
+library
+  build-depends:
+    base          >= 4 && < 5,
+    semigroupoids >= 4 && < 6
+
+  exposed-modules:
+    Control.Monad.Product
+
+  ghc-options: -Wall

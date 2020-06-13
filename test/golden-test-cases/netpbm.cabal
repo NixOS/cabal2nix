@@ -1,0 +1,166 @@
+name:          netpbm
+version:       1.0.2
+license:       MIT
+copyright:     2013 Niklas Hambüchen <mail@nh2.me>
+author:        Niklas Hambüchen <mail@nh2.me>
+maintainer:    Niklas Hambüchen <mail@nh2.me>
+category:      Codec, Graphics
+build-type:    Simple
+stability:     experimental
+tested-With:   GHC==7.4.2
+cabal-version: >= 1.10
+homepage:      https://github.com/nh2/haskell-netpbm
+bug-Reports:   https://github.com/nh2/haskell-netpbm/issues
+synopsis:      Loading PBM, PGM, PPM image files
+description:
+  This package contains pure Haskell parsers for the netpbm image formats: PBM, PGM and PPM, for both ASCII and binary encodings.
+  .
+  All netpbm image formats are implemented (P1 - P6).
+  .
+  The current implementation parses PPM images at around 10 MB/s on a Core i5-2520M.
+  .
+  CHANGELOG
+  .
+  Version 1.0.1
+  .
+  * Added required Vector imports necessary for deriving Unbox instances.
+  .
+  Version 1.0.0
+  .
+  * Use storable instead of unboxed vectors to allow easier integration with Ptr based APIs.
+
+extra-source-files:
+  test/ppms/SIPI-16.ppm
+  test/ppms/SIPI-convert-16.pgm
+  test/ppms/SIPI-convert-plain-16.pbm
+  test/ppms/SIPI-convert-plain-16.pgm
+  test/ppms/SIPI-convert-plain-16.ppm
+  test/ppms/SIPI-convert-plain.pbm
+  test/ppms/SIPI-convert-plain.pgm
+  test/ppms/SIPI-convert-plain.ppm
+  test/ppms/SIPI-convert.pbm
+  test/ppms/SIPI-convert.pgm
+  test/ppms/SIPI.ppm
+  test/ppms/SIPI.tiff
+  test/ppms/SOURCES
+  test/ppms/bad/gitlogo-comment-in-magic-number.ppm
+  test/ppms/bad/gitlogo-comment-user-error-no-space-after-magic.ppm
+  test/ppms/bad/gitlogo-comment-user-error.ppm
+  test/ppms/bad/gitlogo-comment-without-following-extra-newline-before-data-block.ppm
+  test/ppms/bad/gitlogo-garbage-in-numbers.ppm
+  test/ppms/bad/gitlogo-not-enough-data.ppm
+  test/ppms/bad/gitlogo-value-bigger-than-maxval.ppm
+  test/ppms/bad/gitlogo-width--1.ppm
+  test/ppms/bad/pbm-plain-from-spec-multiple-no-space-before-junk.pbm
+  test/ppms/gimp.ppm
+  test/ppms/gitlogo-16bit-created-by-simg_convert_-16be_gitlogo.ppm_output.ppm
+  test/ppms/gitlogo-comment-after-magic-number.ppm
+  test/ppms/gitlogo-comment-is-data.ppm
+  test/ppms/gitlogo-comments.ppm
+  test/ppms/gitlogo-double.ppm
+  test/ppms/gitlogo-only-spaces-in-header.ppm
+  test/ppms/gitlogo.ppm
+  test/ppms/graceful/face.ppm
+  test/ppms/graceful/gitlogo-double-with-whitespace-in-between.ppm
+  test/ppms/graceful/gitlogo-one-and-a-half.ppm
+  test/ppms/image.ppm
+  test/ppms/internet/set1/boxes_1.ppm
+  test/ppms/internet/set1/boxes_2.ppm
+  test/ppms/internet/set1/house_1.ppm
+  test/ppms/internet/set1/house_2.ppm
+  test/ppms/internet/set1/moreboxes_1.ppm
+  test/ppms/internet/set1/moreboxes_2.ppm
+  test/ppms/internet/set1/sign_1.ppm
+  test/ppms/internet/set1/sign_2.ppm
+  test/ppms/internet/set1/stop_1.ppm
+  test/ppms/internet/set1/stop_2.ppm
+  test/ppms/internet/set1/synth_1.ppm
+  test/ppms/internet/set1/synth_2.ppm
+  test/ppms/internet/set1/tree_1.ppm
+  test/ppms/internet/set1/tree_2.ppm
+  test/ppms/internet/set1/west_1.ppm
+  test/ppms/internet/set1/west_2.ppm
+  test/ppms/internet/set2/comments.pgm
+  test/ppms/internet/set2/half.pgm
+  test/ppms/internet/set2/half.ppm
+  test/ppms/internet/set2/mandrill.pgm
+  test/ppms/internet/set2/mandrill.ppm
+  test/ppms/internet/set3/balloons.pgm
+  test/ppms/internet/set3/birch.pnm
+  test/ppms/internet/set3/cathedral.pnm
+  test/ppms/internet/set3/checkers.pnm
+  test/ppms/internet/set3/circle_ascii.pbm
+  test/ppms/internet/set3/columns.pgm
+  test/ppms/internet/set3/cotton.pnm
+  test/ppms/internet/set3/feep.pbm
+  test/ppms/internet/set3/feep.pgm
+  test/ppms/internet/set3/feep.ppm
+  test/ppms/internet/set3/fish_tile.pnm
+  test/ppms/internet/set3/garnet.pnm
+  test/ppms/internet/set3/oak.pnm
+  test/ppms/internet/set3/quilt.pnm
+  test/ppms/internet/set3/snail.ppm
+  test/ppms/internet/set3/tracks.pgm
+  test/ppms/obj10__0-from-coil-100-invalid-since-16-bit-little-endian.ppm
+  test/ppms/pbm-plain-from-spec-multiple-but-treated-as-junk.pbm
+  test/ppms/pbm-plain-from-spec.pbm
+  test/ppms/pgm-plain-made-up-from-pbm-spec.pgm
+  test/ppms/testgrid.pbm
+  test/ppms/testimg.ppm
+  test/ppms/weird/gitlogo-comments-everywhere.ppm
+  test/ppms/weird/gitlogo-width-0.ppm
+
+
+source-repository head
+  type:      git
+  location:  git://github.com/nh2/haskell-netpbm.git
+
+
+library
+  exposed-modules:
+    Graphics.Netpbm
+  build-depends:
+      base < 5
+    , attoparsec >= 0.10
+    , attoparsec-binary >= 0.2
+    , bytestring >= 0.9
+    , storable-record >= 0.0.2.5
+    , unordered-containers >= 0.1.3.0
+    , vector >= 0.7
+    , vector-th-unbox >= 0.2.0.1
+  hs-source-dirs:
+    src
+  default-language: Haskell2010
+  ghc-options: -Wall
+
+
+test-Suite tests
+  default-language: Haskell2010
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test
+  main-is:
+    Main.hs
+  build-depends:
+      base >= 4
+    , netpbm
+    , bytestring >= 0.9
+    , hspec >= 1.3.0.1
+    , HUnit >= 1.2
+    , vector >= 0.7
+  ghc-options: -Wall
+
+
+benchmark bench
+  default-language: Haskell2010
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench
+  main-is:
+    Bench.hs
+  build-depends:
+      base >= 4
+    , netpbm
+    , bytestring >= 0.9
+    , criterion >= 0.6.0.0
+  ghc-options: -Wall

@@ -1,0 +1,15 @@
+{ mkDerivation, base, bytestring, gnuidn, gnutls, gsasl, libxml-sax
+, monads-tf, network, stdenv, text, transformers, xml-types
+}:
+mkDerivation {
+  pname = "network-protocol-xmpp";
+  version = "0.4.8";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base bytestring gnuidn gnutls gsasl libxml-sax monads-tf network
+    text transformers xml-types
+  ];
+  homepage = "https://john-millikin.com/software/haskell-xmpp/";
+  description = "Client library for the XMPP protocol";
+  license = stdenv.lib.licenses.gpl3;
+}

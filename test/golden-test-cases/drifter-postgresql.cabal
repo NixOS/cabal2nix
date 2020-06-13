@@ -1,0 +1,63 @@
+name:                drifter-postgresql
+version:             0.2.1
+synopsis:            PostgreSQL support for the drifter schema migration tool
+description:         Support for postgresql-simple Query migrations as well as
+                     arbitrary Haskell IO functions. Be sure to check the
+                     examples dir for a usage example.
+license:             MIT
+license-file:        LICENSE
+author:              Michael Xavier
+maintainer:          michael@michaelxavier.net
+category:            Database
+build-type:          Simple
+cabal-version:       >=1.10
+tested-with:         GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2
+extra-source-files:
+  README.md
+  changelog.md
+  examples/Example.hs
+homepage:           http://github.com/michaelxavier/drifter-postgresql
+bug-reports:        http://github.com/michaelxavier/drifter-postgresql/issues
+
+flag lib-Werror
+  default: False
+  manual: True
+
+library
+  exposed-modules:   Drifter.PostgreSQL
+  build-depends:       base >=4.8 && <5
+                     , postgresql-simple >= 0.2
+                     , containers
+                     , drifter >= 0.2
+                     , time
+                     , mtl
+                     , transformers
+                     , transformers-compat >=0.2
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+
+  if flag(lib-Werror)
+    ghc-options: -Werror
+
+  ghc-options: -Wall
+
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:     test
+  default-language:   Haskell2010
+
+  build-depends:    base
+                  , drifter
+                  , postgresql-simple
+                  , drifter-postgresql
+                  , tasty
+                  , tasty-hunit
+                  , either
+                  , text
+
+  if flag(lib-Werror)
+    ghc-options: -Werror
+
+  ghc-options: -Wall

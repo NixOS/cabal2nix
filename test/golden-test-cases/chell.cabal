@@ -1,0 +1,88 @@
+name: chell
+version: 0.4.0.2
+license: MIT
+license-file: license.txt
+author: John Millikin <john@john-millikin.com>
+maintainer: John Millikin <john@john-millikin.com>
+build-type: Simple
+cabal-version: >= 1.6
+category: Testing
+bug-reports: mailto:jmillikin@gmail.com
+homepage: https://john-millikin.com/software/chell/
+
+synopsis: A simple and intuitive library for automated testing.
+description:
+  Chell is a simple and intuitive library for automated testing. It natively
+  supports assertion-based testing, and can use companion libraries
+  such as @chell-quickcheck@ to support more complex testing strategies.
+  .
+  An example test suite, which verifies the behavior of artithmetic operators.
+  .
+  @
+  &#x7b;-\# LANGUAGE TemplateHaskell \#-&#x7d;
+  .
+  import Test.Chell
+  .
+  tests_Math :: Suite
+  tests_Math = suite \"math\"
+  &#x20;   [ test_Addition
+  &#x20;   , test_Subtraction
+  &#x20;   ]
+  .
+  test_Addition :: Test
+  test_Addition = assertions \"addition\" $ do
+  &#x20;   $expect (equal (2 + 1) 3)
+  &#x20;   $expect (equal (1 + 2) 3)
+  .
+  test_Subtraction :: Test
+  test_Subtraction = assertions \"subtraction\" $ do
+  &#x20;   $expect (equal (2 - 1) 1)
+  &#x20;   $expect (equal (1 - 2) (-1))
+  .
+  main :: IO ()
+  main = defaultMain [tests_Math]
+  @
+  .
+  @
+  $ ghc --make chell-example.hs
+  $ ./chell-example
+  PASS: 2 tests run, 2 tests passed
+  @
+
+source-repository head
+  type: git
+  location: https://john-millikin.com/code/chell/
+
+source-repository this
+  type: git
+  location: https://john-millikin.com/code/chell/
+  tag: chell_0.4.0.2
+
+flag color-output
+  description: Enable colored output in test results
+  default: True
+
+library
+  ghc-options: -Wall
+
+  build-depends:
+      base >= 4.1 && < 5.0
+    , bytestring >= 0.9
+    , options >= 1.0 && < 2.0
+    , patience >= 0.1 && < 0.2
+    , random >= 1.0
+    , template-haskell >= 2.3
+    , text
+    , transformers >= 0.2
+
+  if flag(color-output)
+    build-depends:
+        ansi-terminal >= 0.5 && < 0.8
+
+  exposed-modules:
+    Test.Chell
+
+  other-modules:
+    Test.Chell.Main
+    Test.Chell.Output
+    Test.Chell.Types

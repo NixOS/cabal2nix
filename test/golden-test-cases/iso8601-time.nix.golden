@@ -1,0 +1,11 @@
+{ mkDerivation, base, hspec, HUnit, stdenv, time }:
+mkDerivation {
+  pname = "iso8601-time";
+  version = "0.1.4";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base time ];
+  testHaskellDepends = [ base hspec HUnit time ];
+  homepage = "https://github.com/nh2/iso8601-time";
+  description = "Convert to/from the ISO 8601 time format";
+  license = stdenv.lib.licenses.mit;
+}

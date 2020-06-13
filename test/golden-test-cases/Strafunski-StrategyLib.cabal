@@ -1,0 +1,59 @@
+name:                Strafunski-StrategyLib
+version:             5.0.0.10
+synopsis:            Library for strategic programming
+description:         This is a version of the StrategyLib library originally shipped with Strafunski, Cabalized and updated to newer versions of GHC. A description of much of StrategyLib can be found in the paper "Design Patterns for Functional Strategic Programming."
+license:             BSD3
+license-file:        LICENSE
+author:              Ralf Laemmel, Joost Visser
+maintainer:          darmanithird@gmail.com,alan.zimm@gmail.com
+category:            Generics
+build-type:          Simple
+cabal-version:       >=1.8
+
+source-repository head
+  type:              git
+  location:          https://github.com/jkoppel/Strafunski-StrategyLib
+
+
+library
+
+  Extensions:
+        OverlappingInstances,
+        FlexibleInstances,
+        FlexibleContexts,
+        UndecidableInstances,
+        MultiParamTypeClasses,
+        FunctionalDependencies,
+        Rank2Types
+
+  exposed-modules:
+        Control.Monad.Run,
+        Data.Generics.Strafunski.StrategyLib.ChaseImports,
+        Data.Generics.Strafunski.StrategyLib.ContainerTheme,
+        Data.Generics.Strafunski.StrategyLib.EffectTheme,
+        Data.Generics.Strafunski.StrategyLib.FixpointTheme,
+        Data.Generics.Strafunski.StrategyLib.FlowTheme,
+        Data.Generics.Strafunski.StrategyLib.KeyholeTheme,
+        Data.Generics.Strafunski.StrategyLib.MetricsTheme,
+        Data.Generics.Strafunski.StrategyLib.MonadicFunctions,
+        Data.Generics.Strafunski.StrategyLib.MoreMonoids,
+        Data.Generics.Strafunski.StrategyLib.NameTheme,
+        Data.Generics.Strafunski.StrategyLib.OverloadingTheme,
+        Data.Generics.Strafunski.StrategyLib.PathTheme,
+        Data.Generics.Strafunski.StrategyLib.RefactoringTheme,
+        Data.Generics.Strafunski.StrategyLib.StrategyInfix,
+        Data.Generics.Strafunski.StrategyLib.StrategyLib,
+        Data.Generics.Strafunski.StrategyLib.StrategyPrelude,
+        Data.Generics.Strafunski.StrategyLib.TraversalTheme,
+        Data.Generics.Strafunski.StrategyLib.Models.Deriving.StrategyPrimitives,
+        Data.Generics.Strafunski.StrategyLib.Models.Deriving.TermRep
+  
+--   other-modules:       
+
+  build-depends:
+        base > 4.4 && < 4.10,
+        mtl > 2.2,
+        syb > 0.3 && < 4.1,
+        directory > 1.1 && < 1.4,
+        transformers >= 0.2
+  

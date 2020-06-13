@@ -1,0 +1,69 @@
+-- This file has been generated from package.yaml by hpack version 0.17.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           eventful-sqlite
+version:        0.2.0
+synopsis:       SQLite implementations for eventful
+description:    SQLite implementations for eventful
+category:       Database,Eventsourcing,SQLite
+stability:      experimental
+homepage:       https://github.com/jdreaver/eventful#readme
+bug-reports:    https://github.com/jdreaver/eventful/issues
+maintainer:     David Reaver
+license:        MIT
+license-file:   LICENSE.md
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    CHANGELOG.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/jdreaver/eventful
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base >= 4.9 && < 5
+    , eventful-core
+    , eventful-sql-common
+    , aeson
+    , bytestring
+    , mtl
+    , persistent
+    , text
+    , uuid
+  exposed-modules:
+      Eventful.Store.Sqlite
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      tests
+      src
+  ghc-options: -Wall
+  build-depends:
+      base >= 4.9 && < 5
+    , eventful-core
+    , eventful-sql-common
+    , aeson
+    , bytestring
+    , mtl
+    , persistent
+    , text
+    , uuid
+    , hspec
+    , HUnit
+    , eventful-test-helpers
+    , persistent-sqlite
+  other-modules:
+      Eventful.Store.SqliteSpec
+      Eventful.Store.Sqlite
+  default-language: Haskell2010

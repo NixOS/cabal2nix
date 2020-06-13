@@ -1,0 +1,15 @@
+{ mkDerivation, aeson, base, HUnit, lens, split, stdenv
+, template-haskell, text
+}:
+mkDerivation {
+  pname = "api-field-json-th";
+  version = "0.1.0.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson base lens split template-haskell text
+  ];
+  testHaskellDepends = [ aeson base HUnit lens ];
+  homepage = "https://github.com/nakaji-dayo/api-field-json-th";
+  description = "option of aeson's deriveJSON";
+  license = stdenv.lib.licenses.bsd3;
+}

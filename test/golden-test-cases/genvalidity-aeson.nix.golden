@@ -1,0 +1,21 @@
+{ mkDerivation, aeson, base, genvalidity, genvalidity-hspec
+, genvalidity-scientific, genvalidity-text
+, genvalidity-unordered-containers, genvalidity-vector, hspec
+, QuickCheck, stdenv, validity, validity-aeson
+}:
+mkDerivation {
+  pname = "genvalidity-aeson";
+  version = "0.1.0.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson base genvalidity genvalidity-scientific genvalidity-text
+    genvalidity-unordered-containers genvalidity-vector QuickCheck
+    validity validity-aeson
+  ];
+  testHaskellDepends = [
+    aeson base genvalidity genvalidity-hspec hspec
+  ];
+  homepage = "https://github.com/NorfairKing/validity#readme";
+  description = "GenValidity support for aeson";
+  license = stdenv.lib.licenses.mit;
+}

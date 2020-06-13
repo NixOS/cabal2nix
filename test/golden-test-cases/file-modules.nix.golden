@@ -1,0 +1,21 @@
+{ mkDerivation, async, base, directory, filepath, haskell-src-exts
+, MissingH, regex-compat, regex-pcre, stdenv
+}:
+mkDerivation {
+  pname = "file-modules";
+  version = "0.1.2.4";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    async base directory filepath haskell-src-exts MissingH
+    regex-compat regex-pcre
+  ];
+  executableHaskellDepends = [
+    async base directory filepath haskell-src-exts MissingH
+    regex-compat regex-pcre
+  ];
+  homepage = "https://github.com/yamadapc/stack-run-auto";
+  description = "Takes a Haskell source-code file and outputs its modules";
+  license = stdenv.lib.licenses.mit;
+}

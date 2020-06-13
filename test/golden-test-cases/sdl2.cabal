@@ -1,0 +1,452 @@
+name:                sdl2
+version:             2.3.0
+synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.4+).
+description:
+  This package contains bindings to the SDL 2 library, in both high- and
+  low-level forms:
+  .
+  The 'SDL' namespace contains high-level bindings, where enumerations are split
+  into sum types, and we perform automatic error-checking.
+  .
+  The 'SDL.Raw' namespace contains an almost 1-1 translation of the C API into
+  Haskell FFI calls. As such, this does not contain sum types nor error
+  checking. Thus this namespace is suitable for building your own abstraction
+  over SDL, but is not recommended for day-to-day programming.
+
+license:             BSD3
+license-file:        LICENSE
+author:              Gabríel Arthúr Pétursson, Oliver Charles
+maintainer:          gabriel@system.is, ollie@ocharles.org.uk
+copyright:           Copyright © 2013-2017  Gabríel Arthúr Pétursson
+category:            Graphics
+build-type:          Simple
+cabal-version:       >= 1.10
+
+extra-source-files:
+  ChangeLog.md,
+  cbits/sdlhelper.c,
+  include/sdlhelper.h
+
+data-files:
+  examples/lazyfoo/*.bmp
+  examples/twinklebear/*.bmp
+
+source-repository head
+  type:     git
+  location: https://github.com/haskell-game/sdl2.git
+
+-- source-repository this
+--   type:     git
+--   location: https://github.com/haskell-game/sdl2.git
+--  tag:      2.0.0
+
+flag examples
+  description:       Build examples (except opengl-example)
+  default:           False
+
+flag opengl-example
+  description:       Build opengl-example
+  default:           False
+
+flag no-linear
+  description:       Do not depend on 'linear' library
+  default:           False
+  manual:            True
+
+library
+  -- ghc-options: -Wall
+
+  exposed-modules:
+    SDL
+    SDL.Audio
+    SDL.Event
+    SDL.Exception
+    SDL.Filesystem
+    SDL.Hint
+    SDL.Init
+    SDL.Input
+    SDL.Input.GameController
+    SDL.Input.Joystick
+    SDL.Input.Keyboard
+    SDL.Input.Keyboard.Codes
+    SDL.Input.Mouse
+    SDL.Power
+    SDL.Time
+    SDL.Vect
+    SDL.Video
+    SDL.Video.OpenGL
+    SDL.Video.Renderer
+
+    SDL.Internal.Exception
+    SDL.Internal.Numbered
+    SDL.Internal.Types
+    SDL.Internal.Vect
+
+    SDL.Raw
+    SDL.Raw.Audio
+    SDL.Raw.Basic
+    SDL.Raw.Enum
+    SDL.Raw.Error
+    SDL.Raw.Event
+    SDL.Raw.Filesystem
+    SDL.Raw.Haptic
+    SDL.Raw.Platform
+    SDL.Raw.Power
+    SDL.Raw.Thread
+    SDL.Raw.Timer
+    SDL.Raw.Types
+    SDL.Raw.Video
+
+  other-modules:
+    Data.Bitmask
+
+  hs-source-dirs:
+    src/
+
+  c-sources:
+    cbits/sdlhelper.c
+
+  include-dirs:
+    include
+
+  includes:
+    SDL.h
+    sdlhelper.h
+
+  extra-libraries:
+    SDL2
+
+  pkgconfig-depends:
+    sdl2 >= 2.0.4
+
+  build-depends:
+    base >= 4.7 && < 5,
+    bytestring >= 0.10.4.0 && < 0.11,
+    exceptions >= 0.4 && < 0.9,
+    StateVar >= 1.1.0.0 && < 1.2,
+    text >= 1.1.0.0 && < 1.3,
+    transformers >= 0.2 && < 0.6,
+    vector >= 0.10.9.0 && < 0.13
+
+  if flag(no-linear)
+    cpp-options: -Dnolinear
+  else
+    build-depends:
+      linear >= 1.10.1.2 && < 1.21
+
+  default-language:
+    Haskell2010
+
+  if os(windows)
+    cpp-options: -D_SDL_main_h
+
+executable lazyfoo-lesson-01
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson01.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson01
+
+executable lazyfoo-lesson-02
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson02.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson02
+
+executable lazyfoo-lesson-03
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson03.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson03
+
+executable lazyfoo-lesson-04
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson04.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson04
+
+executable lazyfoo-lesson-05
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson05.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson05
+
+executable lazyfoo-lesson-07
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson07.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson07
+
+executable lazyfoo-lesson-08
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson08.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson08
+
+executable lazyfoo-lesson-09
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson09.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson09
+
+executable lazyfoo-lesson-10
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson10.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson10
+
+executable lazyfoo-lesson-11
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson11.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson11
+
+executable lazyfoo-lesson-12
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson12.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson12
+
+executable lazyfoo-lesson-13
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson13.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson13
+
+executable lazyfoo-lesson-14
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson14.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson14
+
+executable lazyfoo-lesson-15
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson15.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson15
+
+executable lazyfoo-lesson-17
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson17.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson17
+
+executable lazyfoo-lesson-18
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson18.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson18
+
+executable lazyfoo-lesson-19
+  if flag(examples)
+    build-depends: base, vector, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson19.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson19
+
+executable lazyfoo-lesson-20
+  if flag(examples)
+    build-depends: base, vector, sdl2
+  else
+    buildable: False
+
+  -- Not buildable until someone with a haptic device can help out!
+  buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson20.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson20
+
+executable lazyfoo-lesson-43
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson43.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson43
+
+executable twinklebear-lesson-01
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/twinklebear
+  main-is: Lesson01.hs
+  default-language: Haskell2010
+  ghc-options: -main-is TwinkleBear.Lesson01
+
+executable twinklebear-lesson-02
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/twinklebear
+  main-is: Lesson02.hs
+  default-language: Haskell2010
+  ghc-options: -main-is TwinkleBear.Lesson02
+
+executable twinklebear-lesson-04
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/twinklebear
+  main-is: Lesson04.hs
+  default-language: Haskell2010
+  ghc-options: -main-is TwinkleBear.Lesson04
+
+executable twinklebear-lesson-04a
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/twinklebear
+  main-is: Lesson04a.hs
+  default-language: Haskell2010
+  ghc-options: -main-is TwinkleBear.Lesson04a
+
+executable twinklebear-lesson-05
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples/twinklebear
+  main-is: Lesson05.hs
+  default-language: Haskell2010
+  ghc-options: -main-is TwinkleBear.Lesson05
+
+executable audio-example
+  if flag(examples)
+    build-depends: base, vector, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: AudioExample.hs
+  default-language: Haskell2010
+  ghc-options: -main-is AudioExample -threaded
+
+executable eventwatch-example
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: EventWatch.hs
+  default-language: Haskell2010
+  ghc-options: -main-is EventWatch
+
+executable userevent-example
+  if flag(examples)
+    build-depends: base, text, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: UserEvents.hs
+  default-language: Haskell2010
+  ghc-options: -main-is UserEvents
+
+executable opengl-example
+  if flag(opengl-example)
+    build-depends: base, OpenGL, bytestring, vector, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: OpenGLExample.hs
+  default-language: Haskell2010
+  ghc-options: -main-is OpenGLExample

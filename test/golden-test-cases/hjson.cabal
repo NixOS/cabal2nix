@@ -1,0 +1,19 @@
+Name: hjson
+Version: 1.3.2
+Synopsis: JSON parsing library
+Category: Text
+Description: JSON parsing library with simple and sane API
+License: BSD3
+License-file: COPYING
+Author: Voker57
+Maintainer: voker57@gmail.com
+Build-type: Simple
+Cabal-version: >= 1.6
+
+Source-repository head
+    Type: git
+    Location: git://git.bitcheese.net/hjson
+
+library
+ Exposed-Modules: Text.HJson, Text.HJson.Pretty
+ Build-Depends: base >= 4 && < 5, parsec >= 3.0.0, containers

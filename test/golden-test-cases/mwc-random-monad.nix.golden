@@ -1,0 +1,13 @@
+{ mkDerivation, base, monad-primitive, mwc-random, primitive
+, stdenv, transformers, vector
+}:
+mkDerivation {
+  pname = "mwc-random-monad";
+  version = "0.7.3.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base monad-primitive mwc-random primitive transformers vector
+  ];
+  description = "Monadic interface for mwc-random";
+  license = stdenv.lib.licenses.bsd3;
+}

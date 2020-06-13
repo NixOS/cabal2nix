@@ -1,0 +1,52 @@
+Name: pipes-safe
+Version: 2.2.6
+Cabal-Version: >=1.8.0.2
+Build-Type: Simple
+License: BSD3
+License-File: LICENSE
+Extra-Source-Files: README.md changelog.md
+Copyright: 2013, 2014 Gabriel Gonzalez
+Author: Gabriel Gonzalez
+Maintainer: Gabriel439@gmail.com
+Tested-With: GHC == 7.4.2, GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.2, GHC == 8.0.1
+Bug-Reports: https://github.com/Gabriel439/Haskell-Pipes-Safe-Library/issues
+Synopsis: Safety for the pipes ecosystem
+Description:
+    This package adds resource management and exception handling to the @pipes@
+    ecosystem.
+    .
+    Notable features include:
+    .
+    * /Resource Safety/: Guarantee finalization using @finally@, @bracket@ and
+      more
+    .
+    * /Exception Safety/: Even against asynchronous exceptions!
+    .
+    * /Laziness/: Only acquire resources when you need them
+    .
+    * /Promptness/: Finalize resources early when you are done with them
+    .
+    * /Native Exception Handling/: Catch and resume from exceptions inside pipes
+    .
+    * /No Buy-in/: Mix resource-safe pipes with unmanaged pipes using @hoist@
+Category: Control, Pipes, Error Handling
+Source-Repository head
+    Type: git
+    Location: https://github.com/Gabriel439/Haskell-Pipes-Safe-Library
+
+Library
+    Build-Depends:
+        base              >= 4       && < 5  ,
+        containers        >= 0.3.0.0 && < 0.6,
+        exceptions        >= 0.6     && < 0.9,
+        mtl               >= 2.1     && < 2.3,
+        transformers      >= 0.2.0.0 && < 0.6,
+        transformers-base >= 0.4.4   && < 0.5,
+        monad-control     >= 1.0.0.4 && < 1.1,
+        primitive         >= 0.6.2.0 && < 0.7,
+        pipes             >= 4.3.0   && < 4.4
+    Exposed-Modules:
+        Pipes.Safe,
+        Pipes.Safe.Prelude
+    HS-Source-Dirs: src
+    GHC-Options: -O2 -Wall

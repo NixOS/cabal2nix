@@ -1,0 +1,15 @@
+{ mkDerivation, base, math-functions, primitive, stdenv, time
+, vector
+}:
+mkDerivation {
+  pname = "mwc-random";
+  version = "0.13.6.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base math-functions primitive time vector
+  ];
+  doCheck = false;
+  homepage = "https://github.com/bos/mwc-random";
+  description = "Fast, high quality pseudo random number generation";
+  license = stdenv.lib.licenses.bsd3;
+}

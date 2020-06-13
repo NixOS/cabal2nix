@@ -1,0 +1,134 @@
+name:          fgl
+version:       5.5.4.0
+license:       BSD3
+license-file:  LICENSE
+author:        Martin Erwig, Ivan Lazar Miljenovic
+maintainer:    Ivan.Miljenovic@gmail.com
+category:      Data Structures, Graphs
+synopsis:      Martin Erwig's Functional Graph Library
+
+description:   {
+An inductive representation of manipulating graph data structures.
+.
+Original website can be found at <http://web.engr.oregonstate.edu/~erwig/fgl/haskell>.
+}
+cabal-version: >= 1.10
+build-type:    Simple
+extra-source-files:
+               ChangeLog
+
+tested-with:   GHC == 7.0.4, GHC == 7.2.2, GHC == 7.4.2, GHC == 7.6.3,
+               GHC == 7.8.4, GHC == 7.10.2, GHC == 8.0.1, GHC == 8.1.*
+
+source-repository head
+    type:         git
+    location:     https://github.com/haskell/fgl.git
+
+flag containers042 {
+    manual:  False
+    default: True
+}
+
+library {
+    default-language: Haskell98
+
+    exposed-modules:
+        Data.Graph.Inductive.Internal.Heap,
+        Data.Graph.Inductive.Internal.Queue,
+        Data.Graph.Inductive.Internal.RootPath,
+        Data.Graph.Inductive.Internal.Thread,
+        Data.Graph.Inductive.Basic,
+        Data.Graph.Inductive.Example,
+        Data.Graph.Inductive.Graph,
+        Data.Graph.Inductive.Monad,
+        Data.Graph.Inductive.NodeMap,
+        Data.Graph.Inductive.PatriciaTree,
+        Data.Graph.Inductive.Query,
+        Data.Graph.Inductive.Tree,
+        Data.Graph.Inductive.Monad.IOArray,
+        Data.Graph.Inductive.Monad.STArray,
+        Data.Graph.Inductive.Query.ArtPoint,
+        Data.Graph.Inductive.Query.BCC,
+        Data.Graph.Inductive.Query.BFS,
+        Data.Graph.Inductive.Query.DFS,
+        Data.Graph.Inductive.Query.Dominators,
+        Data.Graph.Inductive.Query.GVD,
+        Data.Graph.Inductive.Query.Indep,
+        Data.Graph.Inductive.Query.MST,
+        Data.Graph.Inductive.Query.MaxFlow,
+        Data.Graph.Inductive.Query.MaxFlow2,
+        Data.Graph.Inductive.Query.Monad,
+        Data.Graph.Inductive.Query.SP,
+        Data.Graph.Inductive.Query.TransClos,
+        Data.Graph.Inductive
+
+    other-modules:
+        Paths_fgl
+
+    build-depends:    base < 5
+                    , transformers
+                    , array
+
+    if flag(containers042)
+        build-depends:    containers >= 0.4.2
+                        , deepseq >= 1.1.0.0 && < 1.5
+    else
+        build-depends:    containers < 0.4.2
+
+    if impl(ghc >= 7.2) && impl(ghc < 7.6)
+        build-depends:
+            ghc-prim
+
+    ghc-options:      -Wall
+
+}
+
+test-suite fgl-tests {
+    default-language: Haskell98
+
+    type:             exitcode-stdio-1.0
+
+    build-depends:    fgl
+                    , base
+                    , QuickCheck >= 2.8 && < 2.10
+                    , hspec >= 2.1 && < 2.5
+                    , containers
+
+    hs-source-dirs:   test
+                      fgl-arbitrary
+
+    main-is:          TestSuite.hs
+
+    other-modules:    Data.Graph.Inductive.Arbitrary
+                    , Data.Graph.Inductive.Graph.Properties
+                    , Data.Graph.Inductive.Proxy
+                    , Data.Graph.Inductive.Query.Properties
+
+    ghc-options:      -Wall
+
+}
+
+benchmark fgl-benchmark {
+    if flag(containers042)
+        buildable:    True
+    else
+        buildable:    False
+
+    default-language: Haskell98
+
+    type:             exitcode-stdio-1.0
+
+    hs-source-dirs:   test
+
+    main-is:          benchmark.hs
+
+    other-modules:    Data.Graph.Inductive.Proxy
+
+    build-depends:    fgl
+                    , base
+                    , microbench
+                    , deepseq
+
+    ghc-options:      -Wall
+
+}

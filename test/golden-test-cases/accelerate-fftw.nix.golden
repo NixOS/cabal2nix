@@ -1,0 +1,14 @@
+{ mkDerivation, accelerate, accelerate-io, base, carray, fft
+, stdenv, storable-complex
+}:
+mkDerivation {
+  pname = "accelerate-fftw";
+  version = "1.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    accelerate accelerate-io base carray fft storable-complex
+  ];
+  homepage = "http://hub.darcs.net/thielema/accelerate-fftw/";
+  description = "Accelerate frontend to the FFTW library (Fourier transform)";
+  license = stdenv.lib.licenses.bsd3;
+}

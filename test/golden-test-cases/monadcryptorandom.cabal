@@ -1,0 +1,41 @@
+name:           monadcryptorandom
+version:        0.7.1
+license:        BSD3
+license-file:   LICENSE
+copyright:      Thomas DuBuisson <thomas.dubuisson@gmail.com>
+author:         Thomas DuBuisson <thomas.dubuisson@gmail.com>
+maintainer:     Thomas DuBuisson <thomas.dubuisson@gmail.com>
+description:    A monad for using CryptoRandomGen
+synopsis:       A monad for using CryptoRandomGen
+category:       Control, Cryptography
+homepage:       https://github.com/TomMD/monadcryptorandom
+stability:      stable
+build-type:     Simple
+cabal-version:  >= 1.6
+tested-with:    GHC == 6.12.1,
+                GHC == 7.0.4,
+                GHC == 7.2.2,
+                GHC == 7.4.2
+                GHC == 7.6.3,
+                GHC == 7.8.2,
+                GHC == 7.10.3
+Data-Files:
+extra-source-files:
+
+Library
+  Build-Depends: base == 4.*,
+                 bytestring >= 0.9 && < 0.11,
+                 crypto-api >= 0.2,
+                 exceptions >= 0.8 && <0.9,
+                 transformers >= 0.2,
+                 mtl >= 2.0 && < 2.3,
+                 transformers-compat >= 0.3,
+                 tagged >= 0.2
+  ghc-options:
+  hs-source-dirs:
+  exposed-modules: Control.Monad.CryptoRandom
+
+source-repository head
+  type:     git
+  location: https://github.com/TomMD/monadcryptorandom
+

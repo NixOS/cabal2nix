@@ -1,0 +1,70 @@
+name:                indentation-parsec
+version:             0.0.0.1
+synopsis:            Indentation sensitive parsing combinators for Parsec
+description:         Indentation sensitive parsing combinators for Parsec
+                     .                     
+                     See
+                     .
+                         __Michael D. Adams and Ömer S. Ağacan__.
+                         Indentation-sensitive parsing for Parsec.
+                         In /Proceedings of the 2014 ACM SIGPLAN Symposium on Haskell/,
+                         Haskell ’14, pages 121–132.
+                         ACM, New York, NY, USA, September 2014. ISBN 978-1-4503-3041-1.
+                         <http://dx.doi.org/10.1145/2633357.2633369 doi:10.1145/2633357.2633369>.
+                     .
+                     This package provides indentation combinators for
+                     Parsec.  For Trifecta, install
+                     indentation-trifecta.  For backward compatability
+                     or to install both, install indentation.
+
+
+license:             BSD3
+license-file:        LICENSE
+author:              Michael D. Adams <http://michaeldadams.org/>
+maintainer:          Ömer Sinan Ağacan <omeragacan@gmail.com>
+                     Aleksey Kliger <aleksey@lambdageek.org>
+category:            Parsing
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  CHANGELOG.md
+                     src/Text/Parsec/Indentation/Examples/*.hs
+
+homepage:            https://bitbucket.org/adamsmd/indentation
+bug-reports:         https://bitbucket.org/adamsmd/indentation/issues
+tested-with:         GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1, GHC == 8.2.1
+
+source-repository head
+  type:                git
+  location:            https://bitbucket.org/adamsmd/indentation.git
+
+library
+  hs-source-dirs:      src
+  build-depends:       base >=4.6 && <4.12,
+                       mtl >=2.1,
+                       indentation-core == 0.0.0.1,
+                       parsec >=3.1.5
+  exposed-modules:     Text.Parsec.Indentation
+                     , Text.Parsec.Indentation.Char
+                     , Text.Parsec.Indentation.Token
+
+  default-language:    Haskell2010
+
+  ghc-options:         -Wall
+
+test-suite test-indentation
+  default-language:
+    Haskell2010
+  type:
+    exitcode-stdio-1.0
+  hs-source-dirs:
+    tests
+  main-is:          all-tests.hs
+  build-depends:
+      parsec
+  other-modules:
+      ParensParsec
+  build-depends:
+      base >= 4 && < 5
+    , tasty >= 0.10
+    , tasty-hunit >= 0.9
+    , indentation-parsec

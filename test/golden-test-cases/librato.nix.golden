@@ -1,0 +1,17 @@
+{ mkDerivation, aeson, attoparsec, base, bytestring, either
+, http-client, http-conduit, http-types, mtl, resourcet, stdenv
+, text, unordered-containers, uri-templater, vector
+}:
+mkDerivation {
+  pname = "librato";
+  version = "0.2.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson attoparsec base bytestring either http-client http-conduit
+    http-types mtl resourcet text unordered-containers uri-templater
+    vector
+  ];
+  homepage = "https://github.com/SaneTracker/librato";
+  description = "Bindings to the Librato API";
+  license = stdenv.lib.licenses.mit;
+}

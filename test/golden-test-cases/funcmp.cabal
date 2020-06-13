@@ -1,0 +1,92 @@
+-- Copyright (c) 2005-2010 Peter Simons
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Name:                   funcmp
+Version:                1.8
+License:                GPL-3
+License-File:           COPYING
+Author:                 Meik Hellmund, Ralf Hinze, Joachim Korittky,
+                        Marco Kuhlmann, Ferenc Wágner, Peter Simons,
+                        Robin Green
+Maintainer:             Peter Simons <simons@cryp.to>
+Homepage:               http://savannah.nongnu.org/projects/funcmp/
+Bug-Reports:            http://savannah.nongnu.org/bugs/?func=additem&group=funcmp
+Category:               Graphics
+Synopsis:               Functional MetaPost
+Description:            Functional MetaPost is a Haskell frontend to the
+                        MetaPost language by John Hobby. Users write their
+                        graphics as Haskell programs, which then emit MetaPost
+                        code that can be compiled into encapsulated PostScript
+                        files and smoothly included into e.g. LaTeX.
+                        .
+                        A collection of useful examples how to use Functional
+                        MetaPost can be found in the user's manual at
+                        <http://download.savannah.nongnu.org/releases/funcmp/Manual_eng.ps>. The
+                        document doesn't offer very much detail in terms of
+                        explanations, but the code samples are quite helpful.
+                        .
+                        Further documentation can be found in the original
+                        thesis that describes the implementation. The text is
+                        available in German at
+                        <http://download.savannah.nongnu.org/releases/funcmp/Thesis.ps> and in
+                        English at
+                        <http://download.savannah.nongnu.org/releases/funcmp/Thesis_eng.ps>.
+                        .
+                        Last but not least, there is a tutorial that offers many
+                        helpful examples available in German at
+                        <http://download.savannah.nongnu.org/releases/funcmp/Tutorial.ps> and in
+                        English at
+                        <http://download.savannah.nongnu.org/releases/funcmp/Tutorial_eng.ps>.
+Cabal-Version:          >= 1.6
+Build-Type:             Simple
+Tested-With:            GHC >= 6.10.4 && <= 7.10.1
+
+Data-files:             doc/FMPMain.hs
+                        doc/Manual.lhs
+                        doc/Manual_eng.lhs
+                        doc/README.doc
+                        doc/Tutorial.lhs
+                        doc/Tutorial_eng.lhs
+                        doc/fmp.ini
+                        doc/lhs2TeX.fmt
+                        texmf/FuncMP.mp
+                        texmf/fmp1.mf
+                        texmf/fmp24.mf
+                        texmf/fmp8.mf
+
+Source-Repository head
+  Type:                 git
+  Location:             git://git.savannah.nongnu.org/funcmp.git
+
+Library
+  Build-Depends:        base >= 3 && <= 5, process >= 1.0.1.1, filepath
+  Exposed-Modules:      FMP
+                        FMP.Canvas
+                        FMP.Color
+                        FMP.Core
+                        FMP.File
+                        FMP.Frames
+                        FMP.Matrix
+                        FMP.PP
+                        FMP.Picture
+                        FMP.RedBlack
+                        FMP.Resolve
+                        FMP.Symbols
+                        FMP.Syntax
+                        FMP.Term
+                        FMP.Tree
+                        FMP.Turtle
+                        FMP.Types
+  Other-Modules:        Paths_funcmp

@@ -1,0 +1,57 @@
+name: network-protocol-xmpp
+version: 0.4.8
+license: GPL-3
+license-file: license.txt
+author: John Millikin <jmillikin@gmail.com>, Stephan Maka <stephan@spaceboyz.net>
+maintainer: John Millikin <jmillikin@gmail.com>
+build-type: Simple
+cabal-version: >= 1.6
+category: Network
+stability: experimental
+homepage: https://john-millikin.com/software/haskell-xmpp/
+bug-reports: mailto:jmillikin@gmail.com
+
+synopsis: Client library for the XMPP protocol.
+description:
+
+source-repository head
+  type: git
+  location: https://john-millikin.com/code/haskell-xmpp/
+
+source-repository this
+  type: git
+  location: https://john-millikin.com/code/haskell-xmpp/
+  tag: network-protocol-xmpp_0.4.8
+
+library
+  ghc-options: -Wall -O2
+  hs-source-dirs: lib
+
+  build-depends:
+      base >= 4.0 && < 5.0
+    , bytestring >= 0.9
+    , gnuidn >= 0.2 && < 0.3
+    , gnutls >= 0.1.4 && < 0.3
+    , gsasl >= 0.3 && < 0.4
+    , libxml-sax >= 0.7 && < 0.8
+    , monads-tf >= 0.1 && < 0.2
+    , network >= 2.2
+    , text >= 0.10
+    , transformers >= 0.2
+    , xml-types >= 0.3 && < 0.4
+
+  exposed-modules:
+    Network.Protocol.XMPP
+
+  other-modules:
+    Network.Protocol.XMPP.Client
+    Network.Protocol.XMPP.Client.Authentication
+    Network.Protocol.XMPP.Client.Features
+    Network.Protocol.XMPP.Component
+    Network.Protocol.XMPP.Connections
+    Network.Protocol.XMPP.ErrorT
+    Network.Protocol.XMPP.Handle
+    Network.Protocol.XMPP.JID
+    Network.Protocol.XMPP.Monad
+    Network.Protocol.XMPP.Stanza
+    Network.Protocol.XMPP.XML

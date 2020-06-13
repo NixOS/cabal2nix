@@ -1,0 +1,245 @@
+name:                minio-hs
+version:             0.3.2
+synopsis:            A Minio Haskell Library for Amazon S3 compatible cloud
+                     storage.
+description:         The Minio Haskell client library provides simple APIs to
+                     access Minio, Amazon S3 and other API compatible cloud
+                     storage servers.
+homepage:            https://github.com/minio/minio-hs#readme
+license:             Apache-2.0
+license-file:        LICENSE
+author:              Aditya Manthramurthy, Krishnan Parthasarathi
+maintainer:          dev@minio.io
+category:            Network, AWS, Object Storage
+build-type:          Simple
+stability:           Experimental
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+  exposed-modules:     Network.Minio
+                     , Network.Minio.S3API
+  other-modules:       Lib.Prelude
+                     , Network.Minio.API
+                     , Network.Minio.Data
+                     , Network.Minio.Data.ByteString
+                     , Network.Minio.Data.Crypto
+                     , Network.Minio.Data.Time
+                     , Network.Minio.Errors
+                     , Network.Minio.ListOps
+                     , Network.Minio.PresignedOperations
+                     , Network.Minio.PutObject
+                     , Network.Minio.Sign.V4
+                     , Network.Minio.Utils
+                     , Network.Minio.XmlGenerator
+                     , Network.Minio.XmlParser
+  build-depends:       base >= 4.7 && < 5
+                     , protolude >= 0.1.6
+                     , aeson
+                     , async
+                     , base64-bytestring
+                     , bytestring
+                     , case-insensitive
+                     , conduit
+                     , conduit-combinators
+                     , conduit-extra
+                     , containers
+                     , cryptonite
+                     , cryptonite-conduit
+                     , data-default
+                     , exceptions
+                     , filepath
+                     , http-client
+                     , http-conduit
+                     , http-types
+                     , lifted-async
+                     , lifted-base
+                     , memory
+                     , monad-control
+                     , resourcet
+                     , text
+                     , text-format
+                     , time
+                     , transformers
+                     , transformers-base
+                     , vector
+                     , xml-conduit
+  default-language:    Haskell2010
+  default-extensions:  FlexibleContexts
+                     , FlexibleInstances
+                     , BangPatterns
+                     , MultiParamTypeClasses
+                     , MultiWayIf
+                     , NoImplicitPrelude
+                     , OverloadedStrings
+                     , RankNTypes
+                     , ScopedTypeVariables
+                     , TypeFamilies
+                     , TupleSections
+
+Flag live-test
+  Default: True
+  Manual: True
+
+test-suite minio-hs-live-server-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test, src
+  main-is:             LiveServer.hs
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+  default-extensions:  BangPatterns
+                     , FlexibleContexts
+                     , FlexibleInstances
+                     , OverloadedStrings
+                     , NoImplicitPrelude
+                     , MultiParamTypeClasses
+                     , MultiWayIf
+                     , ScopedTypeVariables
+                     , RankNTypes
+                     , TupleSections
+                     , TypeFamilies
+  other-modules:       Lib.Prelude
+                     , Network.Minio
+                     , Network.Minio.API
+                     , Network.Minio.Data
+                     , Network.Minio.Data.ByteString
+                     , Network.Minio.Data.Crypto
+                     , Network.Minio.Data.Time
+                     , Network.Minio.Errors
+                     , Network.Minio.ListOps
+                     , Network.Minio.PresignedOperations
+                     , Network.Minio.PutObject
+                     , Network.Minio.S3API
+                     , Network.Minio.Sign.V4
+                     , Network.Minio.Utils
+                     , Network.Minio.Utils.Test
+                     , Network.Minio.API.Test
+                     , Network.Minio.XmlGenerator
+                     , Network.Minio.XmlGenerator.Test
+                     , Network.Minio.XmlParser
+                     , Network.Minio.XmlParser.Test
+  build-depends:       base
+                     , minio-hs
+                     , protolude >= 0.1.6
+                     , aeson
+                     , async
+                     , base64-bytestring
+                     , bytestring
+                     , case-insensitive
+                     , conduit
+                     , conduit-combinators
+                     , conduit-extra
+                     , containers
+                     , cryptonite
+                     , cryptonite-conduit
+                     , data-default
+                     , directory
+                     , exceptions
+                     , filepath
+                     , http-client
+                     , http-conduit
+                     , http-types
+                     , lifted-async
+                     , lifted-base
+                     , memory
+                     , monad-control
+                     , QuickCheck
+                     , resourcet
+                     , tasty
+                     , tasty-hunit
+                     , tasty-quickcheck
+                     , tasty-smallcheck
+                     , temporary
+                     , text
+                     , text-format
+                     , time
+                     , transformers
+                     , transformers-base
+                     , vector
+                     , xml-conduit
+  if !flag(live-test)
+    buildable: False
+
+test-suite minio-hs-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test, src
+  main-is:             Spec.hs
+  build-depends:       base
+                     , minio-hs
+                     , protolude >= 0.1.6
+                     , aeson
+                     , async
+                     , base64-bytestring
+                     , bytestring
+                     , case-insensitive
+                     , conduit
+                     , conduit-combinators
+                     , conduit-extra
+                     , containers
+                     , cryptonite
+                     , cryptonite-conduit
+                     , data-default
+                     , directory
+                     , exceptions
+                     , filepath
+                     , http-client
+                     , http-conduit
+                     , http-types
+                     , lifted-async
+                     , lifted-base
+                     , memory
+                     , monad-control
+                     , QuickCheck
+                     , resourcet
+                     , tasty
+                     , tasty-hunit
+                     , tasty-quickcheck
+                     , tasty-smallcheck
+                     , temporary
+                     , text
+                     , text-format
+                     , time
+                     , transformers
+                     , transformers-base
+                     , vector
+                     , xml-conduit
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+  default-extensions:  BangPatterns
+                     , FlexibleContexts
+                     , FlexibleInstances
+                     , OverloadedStrings
+                     , NoImplicitPrelude
+                     , MultiParamTypeClasses
+                     , MultiWayIf
+                     , ScopedTypeVariables
+                     , RankNTypes
+                     , TupleSections
+                     , TypeFamilies
+  other-modules:       Lib.Prelude
+                     , Network.Minio
+                     , Network.Minio.API
+                     , Network.Minio.Data
+                     , Network.Minio.Data.ByteString
+                     , Network.Minio.Data.Crypto
+                     , Network.Minio.Data.Time
+                     , Network.Minio.Errors
+                     , Network.Minio.ListOps
+                     , Network.Minio.PresignedOperations
+                     , Network.Minio.PutObject
+                     , Network.Minio.S3API
+                     , Network.Minio.Sign.V4
+                     , Network.Minio.Utils
+                     , Network.Minio.Utils.Test
+                     , Network.Minio.API.Test
+                     , Network.Minio.XmlGenerator
+                     , Network.Minio.XmlGenerator.Test
+                     , Network.Minio.XmlParser
+                     , Network.Minio.XmlParser.Test
+
+
+source-repository head
+  type:     git
+  location: https://github.com/minio/minio-hs

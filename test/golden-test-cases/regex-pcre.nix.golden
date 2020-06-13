@@ -1,0 +1,15 @@
+{ mkDerivation, array, base, bytestring, containers, pcre
+, regex-base, stdenv
+}:
+mkDerivation {
+  pname = "regex-pcre";
+  version = "0.94.4";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    array base bytestring containers regex-base
+  ];
+  librarySystemDepends = [ pcre ];
+  homepage = "http://hackage.haskell.org/package/regex-pcre";
+  description = "Replaces/Enhances Text.Regex";
+  license = stdenv.lib.licenses.bsd3;
+}

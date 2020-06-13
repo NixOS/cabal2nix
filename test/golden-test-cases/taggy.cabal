@@ -1,0 +1,140 @@
+name:                taggy
+version:             0.2.1
+synopsis:            Efficient and simple HTML/XML parsing library
+description:         
+  /taggy/ is a simple package for parsing HTML (and should work with XML)
+  written on top of the <http://hackage.haskell.org/package/attoparsec attoparsec>
+  library, which makes it one of the most efficient (space and time consumption wise)
+  on hackage.
+  .
+  This is the root module of /taggy/. It reexports everything
+  from the package. See each module's docs for details about
+  the functions and types involved in /taggy/.
+  .
+  While we've been testing the parser on /many/ pages, it may still
+  be a bit rough around the edges. Let us know on <http://github.com/alpmestan/taggy/issues github>
+  if you have any problem.
+  .
+  If you like to look at your HTML through
+  various optical instruments, feel free to take a look at
+  the companion <http://hackage.haskell.org/package/taggy-lens taggy-lens>
+  package we've put up together. It makes HTML parsing a piece of cake.
+  .
+  If you want to parse a document as list of tags
+  and go through it as some kind of stream by just picking
+  what you need, head to "Text.Taggy.Parser" and take
+  a look at 'Text.Taggy.Parser.taggyWith' and
+  'Text.Taggy.Parser.run'.
+  .
+  If you want to parse the document as a DOM tree and
+  traverse it to find the information you need,
+  use 'Text.Taggy.DOM.parseDOM'. This is especially useful
+  when used in conjunction with <http://hackage.haskell.org/package/taggy-lens taggy-lens>.
+  .
+  If you build some HTML manually
+  or just transform some existing DOM tree
+  and want to turn it into a 'Data.Text.Lazy.Text'
+  head to "Text.Taggy.Renderer" and look at 'Text.Taggy.Renderer.render'.
+homepage:            http://github.com/alpmestan/taggy
+license:             BSD3
+license-file:        LICENSE
+author:              Alp Mestanogullari, Vikram Verma
+maintainer:          alpmestan@gmail.com
+copyright:           2014 Alp Mestanogullari, Vikram Verma
+category:            Text, Web
+build-type:          Simple
+extra-source-files:  html_files/*.html
+data-files:          html_files/*.html
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Text.Taggy,
+                       Text.Taggy.DOM,
+                       Text.Taggy.Entities,
+                       Text.Taggy.Parser,
+                       Text.Taggy.Renderer
+                       Text.Taggy.Types
+  other-modules:
+  build-depends:       base >=4.6 && <5,
+                       blaze-html >= 0.7,
+                       blaze-markup >= 0.6,
+                       text >= 1,
+                       attoparsec >=0.11,
+                       vector >=0.7,
+                       unordered-containers >= 0.2
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options:         -Wall -O2 -fno-warn-unused-do-bind -funbox-strict-fields
+  -- ghc-prof-options:    -Wall -O2 -fno-warn-unused-do-bind -funbox-strict-fields -prof -auto-all
+
+executable taggy
+  main-is:             taggy.hs
+  hs-source-dirs:      example
+  build-depends:       base >=4.5 && <5,
+                       text >= 1,
+                       attoparsec >=0.12,
+                       taggy
+  ghc-options:         -Wall -O2 -fno-warn-unused-do-bind
+  -- ghc-prof-options:    -Wall -prof -auto-all -O2 -fno-warn-unused-do-bind -rtsopts "-with-rtsopts=-sstderr -p"
+  default-language:    Haskell2010
+
+benchmark taggytagsoup
+  main-is:           vs-tagsoup.hs
+  hs-source-dirs:    bench
+  ghc-options:       -O2 -funbox-strict-fields
+  type:              exitcode-stdio-1.0
+  build-depends:     base >= 4 && < 5,
+                     text >=1,
+                     attoparsec >=0.12,
+                     taggy,
+                     tagsoup,
+                     criterion,
+                     vector
+  default-language:  Haskell2010
+
+test-suite unit
+  type:
+      exitcode-stdio-1.0
+  ghc-options:
+      -Wall -fno-warn-unused-do-bind
+  hs-source-dirs:
+      src, tests/unit
+  main-is:
+      Spec.hs
+  build-depends:
+      base    == 4.*
+    , blaze-html
+    , blaze-markup
+    , text
+    , hspec
+    , hspec-attoparsec
+    , vector
+    , attoparsec
+    , unordered-containers
+  default-language:
+      Haskell2010
+
+test-suite integration
+  type:
+      exitcode-stdio-1.0
+  ghc-options:
+      -Wall -fno-warn-unused-do-bind
+  hs-source-dirs:
+      src, tests/integration
+  main-is:
+      Main.hs
+  build-depends:
+      base    == 4.*
+    , blaze-html
+    , blaze-markup
+    , directory
+    , text
+    , hspec >= 1.11
+    , hspec-attoparsec
+    , vector
+    , attoparsec
+    , unordered-containers
+  other-modules:
+    Paths_taggy
+  default-language:
+      Haskell2010

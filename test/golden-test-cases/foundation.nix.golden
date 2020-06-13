@@ -1,0 +1,12 @@
+{ mkDerivation, base, basement, gauge, ghc-prim, stdenv }:
+mkDerivation {
+  pname = "foundation";
+  version = "0.0.17";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base basement ghc-prim ];
+  testHaskellDepends = [ base basement ];
+  benchmarkHaskellDepends = [ base basement gauge ];
+  homepage = "https://github.com/haskell-foundation/foundation";
+  description = "Alternative prelude with batteries and no dependencies";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,74 @@
+name:            http-link-header
+version:         1.0.3
+synopsis:        A parser and writer for the HTTP Link header as specified in RFC 5988 "Web Linking".
+description:     https://github.com/myfreeweb/http-link-header
+category:        Web
+homepage:        https://github.com/myfreeweb/http-link-header
+author:          Greg V
+copyright:       2014-2016 Greg V <greg@unrelenting.technology>
+maintainer:      greg@unrelenting.technology
+license:         PublicDomain
+license-file:    UNLICENSE
+build-type:      Simple
+cabal-version:   >= 1.10
+extra-source-files:
+    README.md
+tested-with:
+    GHC == 8.0.1
+
+source-repository head
+    type: git
+    location: git://github.com/myfreeweb/http-link-header.git
+
+library
+    build-depends:
+        base >= 4.3.0.0 && < 5
+      , text
+      , bytestring
+      , errors
+      , network-uri
+      , http-api-data
+      , attoparsec
+      , bytestring-conversion
+    default-language: Haskell2010
+    exposed-modules:
+        Network.HTTP.Link
+        Network.HTTP.Link.Types
+        Network.HTTP.Link.Parser
+        Network.HTTP.Link.Writer
+    ghc-options: -Wall
+    hs-source-dirs: library
+
+test-suite tests
+    build-depends:
+        base >= 4.3.0.0 && < 5
+      , text
+      , http-link-header
+      , hspec
+      , QuickCheck
+      , hspec-attoparsec
+    default-language: Haskell2010
+    ghc-options: -threaded -fhpc -Wall
+    hs-source-dirs: test-suite
+    main-is: Spec.hs
+    other-modules:
+        Network.HTTP.Link.ParserSpec
+        Network.HTTP.Link.WriterSpec
+        Network.HTTP.LinkSpec
+    type: exitcode-stdio-1.0
+
+benchmark benchmarks
+    build-depends:
+        base >= 4.3.0.0 && < 5
+      , text
+      , http-link-header
+      , directory
+      , network-uri
+      , transformers
+      , criterion
+    default-language: Haskell2010
+    hs-source-dirs: benchmark
+    main-is: Bench.hs
+    other-modules: ParserBench
+                   WriterBench
+    type: exitcode-stdio-1.0

@@ -1,0 +1,85 @@
+Name:                   sets
+Version:                0.0.5.2
+Author:                 Athan Clark <athan.clark@gmail.com>
+Maintainer:             Athan Clark <athan.clark@gmail.com>
+License:                MIT
+License-File:           LICENSE
+Synopsis:               Ducktyped set interface for Haskell containers.
+Description:            Includes overloaded functions for common set operations. See @Data.Set.Class@.
+Cabal-Version:          >= 1.10
+Build-Type:             Simple
+Category:               Data, Math
+
+Library
+  Default-Language:     Haskell2010
+  HS-Source-Dirs:       src
+  GHC-Options:          -Wall
+  Exposed-Modules:      Data.Set.Class
+                        Data.Set.Unordered.Unique
+                        Data.Set.Unordered.Many
+                        Data.Set.Ordered.Unique
+                        Data.Set.Ordered.Unique.With
+                        Data.Set.Ordered.Unique.Finite
+                        Data.Set.Ordered.Many
+                        Data.Set.Ordered.Many.With
+  Build-Depends:        base >= 4.6 && < 5
+                      , containers
+                      , unordered-containers
+                      , hashable
+                      , commutative >= 0.0.1.4
+                      , composition
+                      , contravariant
+--                      , invariant
+                      , witherable
+                      , keys
+                      , semigroups
+                      , semigroupoids
+                      , mtl
+                      , transformers
+                      , transformers-base
+                      , QuickCheck
+
+Test-Suite spec
+  Type:                 exitcode-stdio-1.0
+  Default-Language:     Haskell2010
+  Hs-Source-Dirs:       test
+  Ghc-Options:          -Wall -threaded
+  Main-Is:              Main.hs
+  Other-Modules:        Data.SetSpec
+  Build-Depends:        base
+                      , sets
+                      , tasty
+                      , tasty-quickcheck
+                      , tasty-hunit
+                      , QuickCheck
+                      , quickcheck-instances
+                      , containers
+                      , unordered-containers
+                      , contravariant
+                      , commutative
+
+
+Benchmark bench
+  Type:                 exitcode-stdio-1.0
+  Default-Language:     Haskell2010
+  Hs-Source-Dirs:       bench
+  Ghc-Options:          -Wall -threaded
+  Main-Is:              Profile.hs
+  Other-Modules:        Data.Set.Data
+                        Data.Map.Data
+                        Data.IntSet.Data
+                        Data.IntMap.Data
+                        Data.Set.Ordered.Many.Data
+                        Data.Set.Unordered.Many.Data
+                        Data.Set.Unordered.Unique.Data
+  Build-Depends:        base
+                      , sets
+                      , containers
+                      , unordered-containers
+                      , commutative
+                      , contravariant
+                      , criterion
+
+Source-Repository head
+  Type:                 git
+  Location:             https://github.com/athanclark/sets.git

@@ -1,0 +1,276 @@
+Name:                highlighting-kate
+Version:             0.6.4
+Cabal-Version:       >= 1.10
+Build-Type:          Simple
+Category:            Text
+Synopsis:            Syntax highlighting
+Description:         highlighting-kate is a syntax highlighting library
+                     with support for nearly one hundred languages. The syntax
+                     parsers are automatically generated from Kate
+                     syntax descriptions (<http://kate-editor.org/>),
+                     so any syntax supported by Kate can be added.
+                     An (optional) command-line program is provided, along
+                     with a utility for generating new parsers from Kate
+                     XML syntax descriptions.
+
+                     __This library has been deprecated.
+                     Please use skylighting instead.__
+
+License:             GPL
+License-file:        LICENSE
+Author:              John MacFarlane
+Maintainer:          jgm@berkeley.edu
+Homepage:            http://github.com/jgm/highlighting-kate
+Extra-Source-Files:  README.md
+                     changelog
+                     Makefile
+                     ParseSyntaxFiles.hs
+                     Text/Highlighting/Kate/Syntax.hs.in
+                     css/hk-espresso.css
+                     css/hk-kate.css
+                     css/hk-pyg.css
+                     css/hk-tango.css
+                     xml/language.dtd
+                     xml/*.xml
+                     xml/*.xml.patch
+                     tests/abc.ada
+                     tests/abc.ada.html
+                     tests/abc.agda
+                     tests/abc.agda.html
+                     tests/abc.c
+                     tests/abc.c.html
+                     tests/abc.clojure
+                     tests/abc.clojure.html
+                     tests/abc.cpp
+                     tests/abc.cpp.html
+                     tests/abc.cs
+                     tests/abc.cs.html
+                     tests/abc.d
+                     tests/abc.d.html
+                     tests/abc.fortran
+                     tests/abc.fortran.html
+                     tests/abc.go
+                     tests/abc.go.html
+                     tests/abc.haskell
+                     tests/abc.haskell.html
+                     tests/abc.java
+                     tests/abc.java.html
+                     tests/abc.javascript
+                     tests/abc.javascript.html
+                     tests/abc.julia
+                     tests/abc.julia.html
+                     tests/abc.kotlin
+                     tests/abc.kotlin.html
+                     tests/abc.lisp
+                     tests/abc.lisp.html
+                     tests/abc.matlab
+                     tests/abc.matlab.html
+                     tests/abc.ocaml
+                     tests/abc.ocaml.html
+                     tests/abc.perl
+                     tests/abc.perl.html
+                     tests/abc.php
+                     tests/abc.php.html
+                     tests/abc.prolog
+                     tests/abc.prolog.html
+                     tests/abc.python
+                     tests/abc.python.html
+                     tests/abc.r
+                     tests/abc.r.html
+                     tests/abc.ruby
+                     tests/abc.ruby.html
+                     tests/abc.scala
+                     tests/abc.scala.html
+                     tests/abc.scheme
+                     tests/abc.scheme.html
+                     tests/abc.tcl
+                     tests/abc.tcl.html
+                     tests/archive.rhtml
+                     tests/archive.rhtml.html
+                     tests/life.lua
+                     tests/life.lua.html
+Flag executable
+  Description:       Build the highlighting-kate executable.
+  Default:           False
+Flag pcre-light
+  Description:       Use the pcre-light library instead of regex-pcre-builtin
+  Default:           False
+
+Source-repository head
+  type:          git
+  location:      git://github.com/jgm/highlighting-kate.git
+
+Library
+  Build-Depends:     base >= 4.4 && < 5, containers,
+                     parsec, mtl, blaze-html >= 0.4.2 && < 0.10,
+                     utf8-string
+  if flag(pcre-light)
+    Build-depends:   pcre-light >= 0.4 && < 0.5, bytestring
+    cpp-options:     -D_PCRE_LIGHT
+  else
+    Build-depends:   regex-pcre-builtin >= 0.94.4.8.8.35
+  Exposed-Modules:   Text.Highlighting.Kate
+                     Text.Highlighting.Kate.Syntax
+                     Text.Highlighting.Kate.Types
+                     Text.Highlighting.Kate.Styles
+                     Text.Highlighting.Kate.Format.HTML
+                     Text.Highlighting.Kate.Format.LaTeX
+  Other-Modules:     Text.Highlighting.Kate.Common
+                     Paths_highlighting_kate
+                     Text.Highlighting.Kate.Syntax.Abc
+                     Text.Highlighting.Kate.Syntax.Actionscript
+                     Text.Highlighting.Kate.Syntax.Ada
+                     Text.Highlighting.Kate.Syntax.Agda
+                     Text.Highlighting.Kate.Syntax.Alert
+                     Text.Highlighting.Kate.Syntax.Alert_indent
+                     Text.Highlighting.Kate.Syntax.Apache
+                     Text.Highlighting.Kate.Syntax.Asn1
+                     Text.Highlighting.Kate.Syntax.Asp
+                     Text.Highlighting.Kate.Syntax.Ats
+                     Text.Highlighting.Kate.Syntax.Awk
+                     Text.Highlighting.Kate.Syntax.Bash
+                     Text.Highlighting.Kate.Syntax.Bibtex
+                     Text.Highlighting.Kate.Syntax.Boo
+                     Text.Highlighting.Kate.Syntax.C
+                     Text.Highlighting.Kate.Syntax.Changelog
+                     Text.Highlighting.Kate.Syntax.Clojure
+                     Text.Highlighting.Kate.Syntax.Cmake
+                     Text.Highlighting.Kate.Syntax.Coffee
+                     Text.Highlighting.Kate.Syntax.Coldfusion
+                     Text.Highlighting.Kate.Syntax.Commonlisp
+                     Text.Highlighting.Kate.Syntax.Cpp
+                     Text.Highlighting.Kate.Syntax.Cs
+                     Text.Highlighting.Kate.Syntax.Css
+                     Text.Highlighting.Kate.Syntax.Curry
+                     Text.Highlighting.Kate.Syntax.D
+                     Text.Highlighting.Kate.Syntax.Diff
+                     Text.Highlighting.Kate.Syntax.Djangotemplate
+                     Text.Highlighting.Kate.Syntax.Dockerfile
+                     Text.Highlighting.Kate.Syntax.Dot
+                     Text.Highlighting.Kate.Syntax.Doxygen
+                     Text.Highlighting.Kate.Syntax.Doxygenlua
+                     Text.Highlighting.Kate.Syntax.Dtd
+                     Text.Highlighting.Kate.Syntax.Eiffel
+                     Text.Highlighting.Kate.Syntax.Elixir
+                     Text.Highlighting.Kate.Syntax.Email
+                     Text.Highlighting.Kate.Syntax.Erlang
+                     Text.Highlighting.Kate.Syntax.Fasm
+                     Text.Highlighting.Kate.Syntax.Fortran
+                     Text.Highlighting.Kate.Syntax.Fsharp
+                     Text.Highlighting.Kate.Syntax.Gcc
+                     Text.Highlighting.Kate.Syntax.Glsl
+                     Text.Highlighting.Kate.Syntax.Gnuassembler
+                     Text.Highlighting.Kate.Syntax.Go
+                     Text.Highlighting.Kate.Syntax.Hamlet
+                     Text.Highlighting.Kate.Syntax.Haskell
+                     Text.Highlighting.Kate.Syntax.Haxe
+                     Text.Highlighting.Kate.Syntax.Html
+                     Text.Highlighting.Kate.Syntax.Idris
+                     Text.Highlighting.Kate.Syntax.Ini
+                     Text.Highlighting.Kate.Syntax.Isocpp
+                     Text.Highlighting.Kate.Syntax.Java
+                     Text.Highlighting.Kate.Syntax.Javadoc
+                     Text.Highlighting.Kate.Syntax.Javascript
+                     Text.Highlighting.Kate.Syntax.Json
+                     Text.Highlighting.Kate.Syntax.Jsp
+                     Text.Highlighting.Kate.Syntax.Julia
+                     Text.Highlighting.Kate.Syntax.Kotlin
+                     Text.Highlighting.Kate.Syntax.Latex
+                     Text.Highlighting.Kate.Syntax.Lex
+                     Text.Highlighting.Kate.Syntax.Lilypond
+                     Text.Highlighting.Kate.Syntax.LiterateCurry
+                     Text.Highlighting.Kate.Syntax.LiterateHaskell
+                     Text.Highlighting.Kate.Syntax.Llvm
+                     Text.Highlighting.Kate.Syntax.Lua
+                     Text.Highlighting.Kate.Syntax.M4
+                     Text.Highlighting.Kate.Syntax.Makefile
+                     Text.Highlighting.Kate.Syntax.Mandoc
+                     Text.Highlighting.Kate.Syntax.Markdown
+                     Text.Highlighting.Kate.Syntax.Mathematica
+                     Text.Highlighting.Kate.Syntax.Matlab
+                     Text.Highlighting.Kate.Syntax.Maxima
+                     Text.Highlighting.Kate.Syntax.Mediawiki
+                     Text.Highlighting.Kate.Syntax.Metafont
+                     Text.Highlighting.Kate.Syntax.Mips
+                     Text.Highlighting.Kate.Syntax.Modelines
+                     Text.Highlighting.Kate.Syntax.Modula2
+                     Text.Highlighting.Kate.Syntax.Modula3
+                     Text.Highlighting.Kate.Syntax.Monobasic
+                     Text.Highlighting.Kate.Syntax.Nasm
+                     Text.Highlighting.Kate.Syntax.Noweb
+                     Text.Highlighting.Kate.Syntax.Objectivec
+                     Text.Highlighting.Kate.Syntax.Objectivecpp
+                     Text.Highlighting.Kate.Syntax.Ocaml
+                     Text.Highlighting.Kate.Syntax.Octave
+                     Text.Highlighting.Kate.Syntax.Opencl
+                     Text.Highlighting.Kate.Syntax.Pascal
+                     Text.Highlighting.Kate.Syntax.Perl
+                     Text.Highlighting.Kate.Syntax.Php
+                     Text.Highlighting.Kate.Syntax.Pike
+                     Text.Highlighting.Kate.Syntax.Postscript
+                     Text.Highlighting.Kate.Syntax.Prolog
+                     Text.Highlighting.Kate.Syntax.Pure
+                     Text.Highlighting.Kate.Syntax.Python
+                     Text.Highlighting.Kate.Syntax.R
+                     Text.Highlighting.Kate.Syntax.Relaxng
+                     Text.Highlighting.Kate.Syntax.Relaxngcompact
+                     Text.Highlighting.Kate.Syntax.Rest
+                     Text.Highlighting.Kate.Syntax.Rhtml
+                     Text.Highlighting.Kate.Syntax.Roff
+                     Text.Highlighting.Kate.Syntax.Ruby
+                     Text.Highlighting.Kate.Syntax.Rust
+                     Text.Highlighting.Kate.Syntax.Scala
+                     Text.Highlighting.Kate.Syntax.Scheme
+                     Text.Highlighting.Kate.Syntax.Sci
+                     Text.Highlighting.Kate.Syntax.Sed
+                     Text.Highlighting.Kate.Syntax.Sgml
+                     Text.Highlighting.Kate.Syntax.Sql
+                     Text.Highlighting.Kate.Syntax.SqlMysql
+                     Text.Highlighting.Kate.Syntax.SqlPostgresql
+                     Text.Highlighting.Kate.Syntax.Tcl
+                     Text.Highlighting.Kate.Syntax.Tcsh
+                     Text.Highlighting.Kate.Syntax.Texinfo
+                     Text.Highlighting.Kate.Syntax.Verilog
+                     Text.Highlighting.Kate.Syntax.Vhdl
+                     Text.Highlighting.Kate.Syntax.Xml
+                     Text.Highlighting.Kate.Syntax.Xorg
+                     Text.Highlighting.Kate.Syntax.Xslt
+                     Text.Highlighting.Kate.Syntax.Xul
+                     Text.Highlighting.Kate.Syntax.Yacc
+                     Text.Highlighting.Kate.Syntax.Yaml
+                     Text.Highlighting.Kate.Syntax.Zsh
+  -- disable optimizations; it doesn't hurt performance much and
+  -- massively improves compilation speed and memory usage
+  Default-Language:    Haskell98
+  Ghc-Options:       -W -O0
+  Ghc-Prof-Options:  -fprof-auto-exported
+  -- the following line is needed to prevent gcc from consuming huge amounts of
+  -- memory on platforms without a native code generator:
+  Cc-Options:       -O0
+
+Executable highlighting-kate
+  Main-Is:          highlighting-kate.hs
+  Build-Depends:    base, containers, blaze-html >= 0.4.2 && < 0.10, filepath,
+                    highlighting-kate
+  Hs-Source-Dirs:   extra
+  Default-Language:    Haskell98
+  if flag(pcre-light)
+    cpp-options:     -D_PCRE_LIGHT
+  Ghc-Options:      -W -O0 -rtsopts
+  Ghc-Prof-Options:  -fprof-auto-exported
+  -- the following line is needed to prevent gcc from consuming huge amounts of
+  -- memory on platforms without a native code generator:
+  Cc-Options:       -O0
+
+  if flag(executable)
+    Buildable:      True
+  else
+    Buildable:      False
+
+test-suite test-highlighting-kate
+  Type:           exitcode-stdio-1.0
+  Main-Is:        test-highlighting-kate.hs
+  Hs-Source-Dirs: tests
+  build-depends:  base >= 4, directory, highlighting-kate, filepath,
+                  process, Diff, containers, blaze-html >= 0.4.2 && < 0.10
+  default-language: Haskell98

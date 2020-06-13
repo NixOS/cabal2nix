@@ -1,0 +1,17 @@
+{ mkDerivation, array, base, ghc-prim, integer-gmp, QuickCheck
+, smallcheck, stdenv, tasty, tasty-hunit, tasty-quickcheck
+, tasty-smallcheck
+}:
+mkDerivation {
+  pname = "integer-logarithms";
+  version = "1.0.2";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ array base ghc-prim integer-gmp ];
+  testHaskellDepends = [
+    base QuickCheck smallcheck tasty tasty-hunit tasty-quickcheck
+    tasty-smallcheck
+  ];
+  homepage = "https://github.com/phadej/integer-logarithms";
+  description = "Integer logarithms";
+  license = stdenv.lib.licenses.mit;
+}

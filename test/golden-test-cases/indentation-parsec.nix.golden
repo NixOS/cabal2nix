@@ -1,0 +1,13 @@
+{ mkDerivation, base, indentation-core, mtl, parsec, stdenv, tasty
+, tasty-hunit
+}:
+mkDerivation {
+  pname = "indentation-parsec";
+  version = "0.0.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base indentation-core mtl parsec ];
+  testHaskellDepends = [ base parsec tasty tasty-hunit ];
+  homepage = "https://bitbucket.org/adamsmd/indentation";
+  description = "Indentation sensitive parsing combinators for Parsec";
+  license = stdenv.lib.licenses.bsd3;
+}

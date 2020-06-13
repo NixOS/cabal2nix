@@ -1,0 +1,11 @@
+{ mkDerivation, base, bytestring, gsasl, stdenv, transformers }:
+mkDerivation {
+  pname = "gsasl";
+  version = "0.3.6";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base bytestring transformers ];
+  libraryPkgconfigDepends = [ gsasl ];
+  homepage = "https://john-millikin.com/software/haskell-gsasl/";
+  description = "Bindings for GNU libgsasl";
+  license = stdenv.lib.licenses.gpl3;
+}

@@ -1,0 +1,98 @@
+Name:                repa
+Version:             3.4.1.3
+License:             BSD3
+License-file:        LICENSE
+Author:              The DPH Team
+Maintainer:          Ben Lippmeier <benl@ouroborus.net>
+Build-Type:          Simple
+Cabal-Version:       >=1.6
+Stability:           experimental
+Category:            Data Structures
+Homepage:            http://repa.ouroborus.net
+Bug-reports:         http://groups.google.com/d/forum/haskell-repa
+Description:
+        Repa provides high performance, regular, multi-dimensional, shape polymorphic
+        parallel arrays. All numeric data is stored unboxed. Functions written with
+        the Repa combinators are automatically parallel provided you supply
+        +RTS -Nwhatever on the command line when running the program.
+
+Synopsis:
+        High performance, regular, shape polymorphic parallel arrays.
+
+Library
+  Build-Depends:
+        base                 >= 4.8 && < 4.11
+      , template-haskell
+      , ghc-prim
+      , vector               >= 0.11 && < 0.13
+      , bytestring           == 0.10.*
+      , QuickCheck           >= 2.8 && < 2.11
+
+  ghc-options:
+        -Wall -fno-warn-missing-signatures
+        -Odph
+        -funbox-strict-fields
+
+  if impl(ghc >= 8.0)
+    ghc-options: -fno-cpr-anal
+  else
+    ghc-options: -fcpr-off
+
+  extensions:
+        NoMonomorphismRestriction
+        ExplicitForAll
+        EmptyDataDecls
+        BangPatterns
+        TypeFamilies
+        MultiParamTypeClasses
+        FlexibleInstances
+        FlexibleContexts
+        StandaloneDeriving
+        ScopedTypeVariables
+        PatternGuards
+        ExistentialQuantification
+
+  Exposed-modules:
+        Data.Array.Repa.Eval.Gang
+        Data.Array.Repa.Operators.IndexSpace
+        Data.Array.Repa.Operators.Interleave
+        Data.Array.Repa.Operators.Mapping
+        Data.Array.Repa.Operators.Reduction
+        Data.Array.Repa.Operators.Selection
+        Data.Array.Repa.Operators.Traversal
+        Data.Array.Repa.Repr.ByteString
+        Data.Array.Repa.Repr.Cursored
+        Data.Array.Repa.Repr.Delayed
+        Data.Array.Repa.Repr.ForeignPtr
+        Data.Array.Repa.Repr.HintSmall
+        Data.Array.Repa.Repr.HintInterleave
+        Data.Array.Repa.Repr.Partitioned
+        Data.Array.Repa.Repr.Unboxed
+        Data.Array.Repa.Repr.Undefined
+        Data.Array.Repa.Repr.Vector
+        Data.Array.Repa.Specialised.Dim2
+        Data.Array.Repa.Stencil.Dim2
+        Data.Array.Repa.Arbitrary
+        Data.Array.Repa.Eval
+        Data.Array.Repa.Index
+        Data.Array.Repa.Shape
+        Data.Array.Repa.Slice
+        Data.Array.Repa.Stencil
+        Data.Array.Repa.Unsafe
+        Data.Array.Repa
+
+  Other-modules:
+        Data.Array.Repa.Eval.Chunked
+        Data.Array.Repa.Eval.Cursored
+        Data.Array.Repa.Eval.Interleaved
+        Data.Array.Repa.Eval.Elt
+        Data.Array.Repa.Eval.Target
+        Data.Array.Repa.Eval.Load
+        Data.Array.Repa.Eval.Reduction
+        Data.Array.Repa.Eval.Selection
+        Data.Array.Repa.Stencil.Base
+        Data.Array.Repa.Stencil.Template
+        Data.Array.Repa.Stencil.Partition
+        Data.Array.Repa.Base
+
+-- vim: nospell

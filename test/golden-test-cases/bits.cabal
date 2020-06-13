@@ -1,0 +1,73 @@
+name:          bits
+category:      Data, Serialization
+version:       0.5.1
+license:       BSD3
+cabal-version: >= 1.8
+license-file:  LICENSE
+author:        Edward A. Kmett
+maintainer:    Edward A. Kmett <ekmett@gmail.com>
+stability:     experimental
+homepage:      http://github.com/ekmett/bits
+bug-reports:   http://github.com/ekmett/bits/issues
+copyright:     Copyright (C) 2013 Edward A. Kmett
+build-type:    Custom
+tested-with:   GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.1
+synopsis:      Various bit twiddling and bitwise serialization primitives
+description:   Various bit twiddling and bitwise serialization primitives
+
+extra-source-files:
+  .travis.yml
+  .ghci
+  .gitignore
+  .vim.custom
+  travis/cabal-apt-install
+  travis/config
+  AUTHORS.markdown
+  README.markdown
+  CHANGELOG.markdown
+
+source-repository head
+  type: git
+  location: git://github.com/ekmett/bits.git
+
+custom-setup
+  setup-depends:
+    base          >= 4 && < 5,
+    Cabal,
+    cabal-doctest >= 1 && < 1.1
+
+-- You can disable the doctests test suite with -f-test-doctests
+flag test-doctests
+  default: True
+  manual: True
+
+library
+  build-depends:
+    base         >= 4.7      && < 5,
+    bytes        >= 0.11     && < 1,
+    mtl          >= 2.0      && < 2.3,
+    transformers >= 0.2      && < 0.6
+
+  exposed-modules:
+    Data.Bits.Coding
+    Data.Bits.Coded
+    Data.Bits.Extras
+
+  c-sources: cbits/debruijn.c
+  ghc-options: -Wall -fwarn-tabs -O2
+  hs-source-dirs: src
+
+test-suite doctests
+  type:           exitcode-stdio-1.0
+  main-is:        doctests.hs
+  ghc-options:    -Wall -threaded
+  hs-source-dirs: tests
+  c-sources:      cbits/debruijn.c
+
+  if !flag(test-doctests)
+    buildable: False
+  else
+    build-depends:
+      base,
+      bits,
+      doctest >= 0.11.1 && < 0.12

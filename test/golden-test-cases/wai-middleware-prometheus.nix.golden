@@ -1,0 +1,16 @@
+{ mkDerivation, base, bytestring, clock, data-default, doctest
+, http-types, prometheus-client, stdenv, text, wai
+}:
+mkDerivation {
+  pname = "wai-middleware-prometheus";
+  version = "0.3.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base bytestring clock data-default http-types prometheus-client
+    text wai
+  ];
+  testHaskellDepends = [ base doctest prometheus-client ];
+  homepage = "https://github.com/fimad/prometheus-haskell";
+  description = "WAI middlware for exposing http://prometheus.io metrics.";
+  license = stdenv.lib.licenses.asl20;
+}

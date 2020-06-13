@@ -1,0 +1,8 @@
+-- cabal.project
+
+packages: .
+tests: True
+
+package cabal2nix-v3
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints

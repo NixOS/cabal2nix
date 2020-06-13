@@ -1,0 +1,33 @@
+Name:           vector-mmap
+Version:        0.0.3
+License:        BSD3
+License-File:   LICENSE
+Author:         Daniel Peebles <pumpkingod@gmail.com>
+Maintainer:     Daniel Peebles <pumpkingod@gmail.com>
+Copyright:      (c) Daniel Peebles 2010
+Homepage:       http://github.com/pumpkin/vector-mmap
+Category:       Data, Data Structures
+Synopsis:       Memory map immutable and mutable vectors
+Description:
+        Memory map immutable and mutable vectors.
+
+Cabal-Version:  >= 1.8
+Build-Type:     Simple
+
+Library
+  Exposed-Modules:
+        Data.Vector.Storable.MMap
+
+  Build-Depends: base >= 2 && < 5, mmap >= 0.5.4, vector >= 0.5, primitive >= 0.2.1
+
+
+Test-Suite quickcheck
+  Type: exitcode-stdio-1.0
+  HS-Source-Dirs: test
+  Main-is: TestSuite.hs
+  build-depends: base >= 2 && < 5, vector-mmap, vector, QuickCheck, temporary
+
+
+Source-Repository head
+  Type: git
+  Location: https://github.com/copumpkin/vector-mmap

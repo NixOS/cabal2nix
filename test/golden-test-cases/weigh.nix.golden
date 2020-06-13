@@ -1,0 +1,15 @@
+{ mkDerivation, base, deepseq, mtl, process, split, stdenv
+, template-haskell, temporary
+}:
+mkDerivation {
+  pname = "weigh";
+  version = "0.0.7";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base deepseq mtl process split template-haskell temporary
+  ];
+  testHaskellDepends = [ base deepseq ];
+  homepage = "https://github.com/fpco/weigh#readme";
+  description = "Measure allocations of a Haskell functions/values";
+  license = stdenv.lib.licenses.bsd3;
+}

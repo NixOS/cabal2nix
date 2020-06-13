@@ -1,0 +1,45 @@
+name:                hformat
+version:             0.3.1.0
+synopsis:            Simple Haskell formatting
+description: String formatting
+homepage:            http://github.com/mvoidex/hformat
+license:             BSD3
+license-file:        LICENSE
+author:              Alexandr Ruchkin
+maintainer:          voidex@live.com
+category:            Text
+build-type:          Simple
+cabal-version:       >=1.10
+
+source-repository head
+  type: git
+  location: git://github.com/mvoidex/hformat.git
+
+library
+  hs-source-dirs: src
+  default-language: Haskell2010
+  ghc-options: -Wall -fno-warn-tabs
+  default-extensions: UnicodeSyntax
+  exposed-modules:
+    Text.Format
+    Text.Format.Flags
+    Text.Format.Colored
+  build-depends:
+    base >= 4.8 && < 5,
+    base-unicode-symbols >= 0.2,
+    ansi-terminal >= 0.6,
+    text >= 1.2.1
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  hs-source-dirs: tests
+  ghc-options: -threaded -Wall -fno-warn-tabs
+  default-language: Haskell2010
+  default-extensions: UnicodeSyntax
+  build-depends:
+    base >= 4.8 && < 5,
+    base-unicode-symbols >= 0.2,
+    text >= 1.2.1,
+    hspec,
+    hformat

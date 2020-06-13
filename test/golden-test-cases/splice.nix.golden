@@ -1,0 +1,10 @@
+{ mkDerivation, base, network, stdenv }:
+mkDerivation {
+  pname = "splice";
+  version = "0.6.1.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base network ];
+  homepage = "http://corsis.github.com/splice/";
+  description = "Cross-platform Socket to Socket Data Splicing";
+  license = stdenv.lib.licenses.bsd3;
+}

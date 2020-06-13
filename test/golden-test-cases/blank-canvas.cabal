@@ -1,0 +1,172 @@
+Name:                blank-canvas
+Version:             0.6.1
+Synopsis:            HTML5 Canvas Graphics Library
+
+Description:      @blank-canvas@ is a Haskell binding to the complete
+                  <https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API HTML5 Canvas API>.
+                  @blank-canvas@ allows Haskell users to write, in Haskell,
+                  interactive images onto their web browsers. @blank-canvas@
+                  gives the user a single full-window canvas, and provides
+                  many well-documented functions for rendering
+                  images.
+                  .
+                  @
+                     &#123;-&#35; LANGUAGE OverloadedStrings &#35;-&#125;
+                     module Main where
+                     import Graphics.Blank                     -- import the blank canvas
+                     .
+                     main = blankCanvas 3000 $ \\ context -> do -- start blank canvas on port 3000
+                     &#32;&#32;send context $ do                       -- send commands to this specific context
+                     &#32;&#32;&#32;&#32;moveTo(50,50)
+                     &#32;&#32;&#32;&#32;lineTo(200,100)
+                     &#32;&#32;&#32;&#32;lineWidth 10
+                     &#32;&#32;&#32;&#32;strokeStyle \"red\"
+                     &#32;&#32;&#32;&#32;stroke()                              -- this draws the ink into the canvas
+                  @
+                  .
+                  <<https://github.com/ku-fpg/blank-canvas/wiki/images/Red_Line.png>>
+                  .
+                  For more details, read the <https://github.com/ku-fpg/blank-canvas/wiki blank-canvas wiki>.
+                  .
+License:             BSD3
+License-file:        LICENSE
+Author:              Andy Gill and Ryan Scott
+Maintainer:          andygill@ku.edu
+Copyright:           Copyright (c) 2014 The University of Kansas
+Homepage:            https://github.com/ku-fpg/blank-canvas/wiki
+Bug-reports:         https://github.com/ku-fpg/blank-canvas/issues
+Category:            Graphics
+Build-type:          Simple
+Stability:           Beta
+Extra-source-files:  README.md
+                     Changelog.md
+Cabal-version:       >= 1.10
+tested-with:         GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2
+data-files:
+    static/index.html
+    static/jquery.js
+    static/jquery-json.js
+
+
+Library
+  Exposed-modules:     Graphics.Blank
+                       Graphics.Blank.Cursor
+                       Graphics.Blank.Font
+                       Graphics.Blank.GHCi
+                       Graphics.Blank.Style
+  other-modules:       Graphics.Blank.Canvas
+                       Graphics.Blank.DeviceContext
+                       Graphics.Blank.Events
+                       Graphics.Blank.Generated
+                       Graphics.Blank.JavaScript
+                       Graphics.Blank.Parser
+                       Graphics.Blank.Types
+                       Graphics.Blank.Types.CSS
+                       Graphics.Blank.Types.Cursor
+                       Graphics.Blank.Types.Font
+                       Graphics.Blank.Utils
+                       Paths_blank_canvas
+
+  default-language:    Haskell2010
+  build-depends:       aeson              >= 0.7     && < 1.3,
+                       base64-bytestring  == 1.0.*,
+                       base               >= 4.7     && < 4.11,
+                       base-compat        >= 0.8.1   && < 1,
+                       bytestring         == 0.10.*,
+                       colour             >= 2.2     && < 3.0,
+                       containers         == 0.5.*,
+                       data-default-class >= 0.0.1   && < 0.2,
+                       http-types         >= 0.8     && < 0.10,
+                       mime-types         >= 0.1.0.3 && < 0.2,
+                       kansas-comet       >= 0.4     && < 0.5,
+                       scotty             >= 0.10    && < 0.12,
+                       stm                >= 2.2     && < 2.5,
+                       text               >= 1.1     && < 1.3,
+                       text-show          >= 2       && < 4,
+                       transformers       >= 0.3     && < 0.6,
+                       wai                == 3.*,
+                       wai-extra          >= 3.0.1   && < 3.1,
+                       warp               == 3.*,
+                       vector             >= 0.10    && < 0.13
+
+  GHC-options:         -Wall
+  GHC-prof-options:    -Wall -fsimpl-tick-factor=100000
+
+
+test-suite wiki-suite
+    build-depends:    base              >= 4.7  && < 4.11,
+                      blank-canvas,
+                      containers        == 0.5.*,
+                      process           >= 1.2  && < 1.7,
+                      directory         >= 1.2,
+                      shake             >= 0.13,
+                      stm               >= 2.2  && < 2.5,
+                      text              >= 1.1  && < 1.3,
+                      time              >= 1.4  && < 1.9,
+                      unix              == 2.7.*,
+                      vector            >= 0.10 && < 0.13
+
+    default-language: Haskell2010
+    GHC-options:      -threaded -Wall
+    main-is:          Main.hs
+    hs-source-dirs:   wiki-suite
+    type:             exitcode-stdio-1.0
+    other-modules:    Arc
+                      Bezier_Curve
+                      Bounce
+                      Circle
+                      Clipping_Region
+                      Color_Fill
+                      Color_Square
+                      Custom_Shape
+                      Custom_Transform
+                      Draw_Canvas
+                      Draw_Device
+                      Draw_Image
+                      Favicon
+                      Font_Size_and_Style
+                      Get_Image_Data_URL
+                      Global_Alpha
+                      Global_Composite_Operations
+                      Grayscale
+                      Image_Crop
+                      Image_Loader
+                      Image_Size
+                      Is_Point_In_Path
+                      Key_Read
+                      Line
+                      Line_Cap
+                      Line_Color
+                      Line_Join
+                      Line_Width
+                      Linear_Gradient
+                      Load_Image_Data_URL
+                      Load_Image_Data_URL_2
+                      Miter_Limit
+                      Path
+                      Pattern
+                      Quadratic_Curve
+                      Radial_Gradient
+                      Rectangle
+                      Red_Line
+                      Rotate_Transform
+                      Rotating_Square
+                      Rounded_Corners
+                      Scale_Transform
+                      Semicircle
+                      Shadow
+                      Square
+                      Text_Align
+                      Text_Baseline
+                      Text_Color
+                      Text_Metrics
+                      Text_Stroke
+                      Text_Wrap
+                      Tic_Tac_Toe
+                      Translate_Transform
+                      Wiki
+
+
+source-repository head
+  type:     git
+  location: https://github.com/ku-fpg/blank-canvas.git

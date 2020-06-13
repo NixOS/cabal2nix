@@ -1,0 +1,14 @@
+{ mkDerivation, base, hspec, inline-c, safe-exceptions, stdenv
+, template-haskell
+}:
+mkDerivation {
+  pname = "inline-c-cpp";
+  version = "0.2.1.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base inline-c safe-exceptions template-haskell
+  ];
+  testHaskellDepends = [ base hspec inline-c safe-exceptions ];
+  description = "Lets you embed C++ code into Haskell";
+  license = stdenv.lib.licenses.mit;
+}

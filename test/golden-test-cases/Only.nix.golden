@@ -1,0 +1,9 @@
+{ mkDerivation, base, deepseq, stdenv }:
+mkDerivation {
+  pname = "Only";
+  version = "0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base deepseq ];
+  description = "The 1-tuple type or single-value \"collection\"";
+  license = stdenv.lib.licenses.bsd3;
+}

@@ -1,0 +1,13 @@
+{ mkDerivation, base, ghc-prim, hashable, primitive, stdenv, vector
+}:
+mkDerivation {
+  pname = "hashtables";
+  version = "1.2.2.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base ghc-prim hashable primitive vector
+  ];
+  homepage = "http://github.com/gregorycollins/hashtables";
+  description = "Mutable hash tables in the ST monad";
+  license = stdenv.lib.licenses.bsd3;
+}

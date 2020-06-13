@@ -1,0 +1,14 @@
+{ mkDerivation, base, deepseq, stdenv, template-haskell
+, transformers, transformers-compat
+}:
+mkDerivation {
+  pname = "tagged";
+  version = "0.8.5";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    base deepseq template-haskell transformers transformers-compat
+  ];
+  homepage = "http://github.com/ekmett/tagged";
+  description = "Haskell 98 phantom types to avoid unsafely passing dummy arguments";
+  license = stdenv.lib.licenses.bsd3;
+}

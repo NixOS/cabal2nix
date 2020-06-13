@@ -1,0 +1,57 @@
+Name:                timezone-series
+Version:             0.1.8
+Synopsis:            Enhanced timezone handling for Data.Time
+Description:         This package endows Data.Time, from the time
+                     package, with several data types and functions
+                     for enhanced processing of timezones. For one way
+                     to create timezone series, see the timezone-olson
+                     (<http://hackage.haskell.org/package/timezone-olson>)
+                     and timezone-olson-th
+                     (<http://hackage.haskell.org/package/timezone-olson-th>)
+                     packages.
+Homepage:            http://projects.haskell.org/time-ng/
+License:             BSD3
+License-file:        LICENSE
+Author:              Yitzchak Gale
+Maintainer:          yitz@sefer.org
+Copyright:           Copyright (c) 2010-2015 Yitzchak Gale. All rights reserved.
+Category:            Data
+Build-type:          Simple
+Extra-source-files:  README.md
+Cabal-version:       >=1.10
+Tested-with:         GHC > 7.4 && < 8.1
+
+Source-repository HEAD
+  type:              git
+  location:          https://github.com/ygale/timezone-series.git
+
+Flag time_pre_1_6
+  Description:       Use version < 1.6 of the time library
+  Default:           False
+
+Flag time_1_6_and_1_7
+  Description:       Use version >= 1.6 and < 1.8 of the time library
+  Default:           False
+
+Library
+  Default-language:    Haskell2010
+  Hs-source-dirs:      .
+  if flag(time_pre_1_6)
+    Hs-source-dirs:    time_pre_1_6
+  else
+    if flag(time_1_6_and_1_7)
+      Hs-source-dirs:  time_1_6_and_1_7
+    else
+      Hs-source-dirs:  time_post_1_8
+  Exposed-modules:     Data.Time.LocalTime.TimeZone.Series
+  Other-modules:       Data.Time.LocalTime.TimeZone.Internal.TimeVersion
+  Default-extensions:  DeriveDataTypeable
+  Build-depends:       base >= 4.4 && < 5
+                     , deepseq
+  if flag(time_pre_1_6)
+    Build-depends:     time >= 1.1.4 && < 1.6
+  else
+    if flag(time_1_6_and_1_7)
+      Build-depends:   time >= 1.6 && < 1.8
+    else
+      Build-depends:   time >= 1.8 && < 1.9

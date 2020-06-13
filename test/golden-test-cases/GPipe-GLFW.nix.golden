@@ -1,0 +1,12 @@
+{ mkDerivation, async, base, containers, GLFW-b, GPipe, stdenv, stm
+}:
+mkDerivation {
+  pname = "GPipe-GLFW";
+  version = "1.4.1.1";
+  sha256 = "deadbeef";
+  enableSeparateDataOutput = true;
+  libraryHaskellDepends = [ async base containers GLFW-b GPipe stm ];
+  homepage = "https://github.com/plredmond/GPipe-GLFW";
+  description = "GLFW OpenGL context creation for GPipe";
+  license = stdenv.lib.licenses.mit;
+}

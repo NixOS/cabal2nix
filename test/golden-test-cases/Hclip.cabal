@@ -1,0 +1,55 @@
+
+name:                Hclip
+
+-- The package version.  See the Haskell package versioning policy (PVP) 
+-- for standards guiding when and how versions should be incremented.
+-- http://www.haskell.org/haskellwiki/Package_versioning_policy
+-- PVP summary:      +-+------- breaking API changes
+--                   | | +----- non-breaking API additions
+--                   | | | +--- code changes with no API change
+version:             3.0.0.4
+
+synopsis:            A small cross-platform library for reading and modifying the system clipboard.
+
+homepage:            https://github.com/jetho/Hclip
+
+license:             BSD3
+
+license-file:        LICENSE
+
+author:              Jens Thomas
+
+maintainer:          jetho@gmx.de
+
+category:            System
+
+description:
+        A small cross-platform library for reading and modifying the system clipboard.
+        .
+        Hclip works on Windows, Mac OS X and Linux (but see the requirements below!).
+        .
+        Requirements:
+        .
+        * Windows: No additional requirements.
+        .
+        * Mac OS X: Requires the pbcopy and pbpaste commands, which ship with Mac OS X.
+        .
+        * Linux: Requires xclip or xsel installed.
+		
+build-type:          Simple
+
+cabal-version:       >=1.10
+
+
+library
+  exposed-modules:   System.Hclip
+  other-extensions:  CPP, DeriveDataTypeable, GADTs
+  default-language:  Haskell2010
+  build-depends:     base >= 3 && < 5, process, mtl, strict
+  if os(windows)
+    build-depends:   Win32
+
+source-repository head
+  type:              git
+  location:          git://github.com/jetho/Hclip.git
+

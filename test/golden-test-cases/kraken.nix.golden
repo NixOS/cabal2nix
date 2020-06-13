@@ -1,0 +1,13 @@
+{ mkDerivation, aeson, base, bytestring, http-client
+, http-client-tls, mtl, stdenv
+}:
+mkDerivation {
+  pname = "kraken";
+  version = "0.1.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson base bytestring http-client http-client-tls mtl
+  ];
+  description = "Kraken.io API client";
+  license = stdenv.lib.licenses.mit;
+}

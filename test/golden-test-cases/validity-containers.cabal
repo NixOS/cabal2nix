@@ -1,0 +1,33 @@
+name: validity-containers
+version: 0.2.0.0
+cabal-version: >=1.10
+build-type: Simple
+license: MIT
+license-file: LICENSE
+copyright: Copyright: (c) 2016 Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+homepage: https://github.com/NorfairKing/validity#readme
+synopsis: Validity instances for containers
+description:
+    Please see README.md
+category: Validity
+author: Tom Sydney Kerckhove
+
+source-repository head
+    type: git
+    location: https://github.com/NorfairKing/validity
+
+library
+    exposed-modules:
+        Data.Validity.Containers
+        Data.Validity.Tree
+        Data.Validity.Map
+        Data.Validity.Sequence
+        Data.Validity.Set
+    build-depends:
+        base >=4.7 && <5,
+        validity >=0.4 && <0.5,
+        containers -any
+    default-language: Haskell2010
+    hs-source-dirs: src
+

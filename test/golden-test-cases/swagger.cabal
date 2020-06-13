@@ -1,0 +1,61 @@
+name:                 swagger
+version:              0.3.0
+synopsis:             Implementation of swagger data model
+author:               Toralf Wittner
+maintainer:           Toralf Wittner <tw@dtex.org>
+copyright:            (C) 2014-2015 Toralf Wittner
+license:              OtherLicense
+license-file:         LICENSE
+category:             Data
+build-type:           Simple
+cabal-version:        >= 1.10
+
+description:
+    Implementation of Swagger specification version 1.2 as defined in
+    <https://github.com/wordnik/swagger-spec/blob/master/versions/1.2.md>
+
+source-repository head
+    type:             git
+    location:         https://gitlab.com/twittner/swagger.git
+
+library
+    default-language: Haskell2010
+    hs-source-dirs:   src
+    ghc-options:      -Wall -O2 -fwarn-tabs
+
+    exposed-modules:
+        Data.Swagger.Build.Api
+        Data.Swagger.Build.Authorisation
+        Data.Swagger.Build.Resource
+        Data.Swagger.Model.Api
+        Data.Swagger.Model.Authorisation
+        Data.Swagger.Model.Resource
+
+    other-modules:
+        Data.Swagger.Build.Util
+        Data.Swagger.Model.Util
+
+    build-depends:
+          aeson        >= 0.6
+        , base         >= 4.6    && < 5.0
+        , bytestring   >= 0.10.4
+        , text         >= 0.11
+        , time         >= 1.4
+        , transformers >= 0.3
+
+test-suite tests
+    type:             exitcode-stdio-1.0
+    default-language: Haskell2010
+    main-is:          Main.hs
+    hs-source-dirs:   test
+    ghc-options:      -threaded -Wall -O2 -fwarn-tabs
+    other-modules:    Test.Api
+
+    build-depends:
+          aeson
+        , base
+        , bytestring
+        , swagger
+        , tasty       >= 0.8
+        , tasty-hunit >= 0.8
+

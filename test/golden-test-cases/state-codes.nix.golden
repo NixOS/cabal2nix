@@ -1,0 +1,13 @@
+{ mkDerivation, aeson, base, hspec, QuickCheck, shakespeare, stdenv
+, text
+}:
+mkDerivation {
+  pname = "state-codes";
+  version = "0.1.3";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ aeson base shakespeare text ];
+  testHaskellDepends = [ aeson base hspec QuickCheck text ];
+  homepage = "https://github.com/acamino/state-codes#README";
+  description = "ISO 3166-2:US state codes and i18n names";
+  license = stdenv.lib.licenses.mit;
+}

@@ -1,0 +1,30 @@
+name:                once
+version:             0.2
+synopsis:            memoization for IO actions and functions
+description:         Please see Control.Once for examples
+homepage:            https://anonscm.debian.org/cgit/users/kaction-guest/haskell-once.git
+license:             GPL-3
+license-file:        LICENSE
+author:              Dmitry Bogatov
+maintainer:          KAction@gnu.org
+copyright:           2015,2016 Dmitry Bogatov
+category:            Data
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Control.Once
+  other-modules:       Control.Once.Internal
+                       Control.Once.TH
+                       Control.Once.Class
+  build-depends:       base >= 4.7 && < 5,
+                       containers >= 0.5,
+                       hashable >= 1.2,
+                       unordered-containers >= 0.2,
+                       template-haskell >= 2.10
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: git://anonscm.debian.org/users/kaction-guest/haskell-once.git

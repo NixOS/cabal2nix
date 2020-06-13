@@ -1,0 +1,37 @@
+-- This file has been generated from package.yaml by hpack version 0.17.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           yesod-recaptcha2
+version:        0.2.3
+synopsis:       yesod recaptcha2
+description:    recaptcha2 for yesod-form
+category:       Web
+homepage:       https://github.com/ncaq/yesod-recaptcha2#readme
+bug-reports:    https://github.com/ncaq/yesod-recaptcha2/issues
+author:         ncaq
+maintainer:     ncaq@ncaq.net
+copyright:      © ncaq
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/ncaq/yesod-recaptcha2
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >= 4.7 && < 5
+    , classy-prelude-yesod
+    , http-conduit
+    , yesod-auth
+  exposed-modules:
+      Yesod.ReCaptcha2
+  default-language: Haskell2010

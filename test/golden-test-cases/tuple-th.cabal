@@ -1,0 +1,23 @@
+Name:                tuple-th
+Version:             0.2.5
+Synopsis:            Generate (non-recursive) utility functions for tuples of statically known size
+Description:         Template Haskell functions for generating functions similar to those in Data.List for tuples of statically known size.
+License:             BSD3
+License-file:        LICENSE
+Author:              Daniel Schüssler
+Maintainer:          anotheraddress@gmx.de
+Category:            Template Haskell, Data
+Build-type:          Simple
+Cabal-version:       >=1.6
+Extra-source-files:  tests/Test.hs
+Bug-reports:         https://github.com/DanielSchuessler/tuple-th/issues
+
+Source-Repository head
+    Type: git
+    Location: git://github.com/DanielSchuessler/tuple-th.git
+
+Library
+  Exposed-modules: TupleTH     
+  Build-depends: base >= 4 && < 5, template-haskell, containers
+
+  

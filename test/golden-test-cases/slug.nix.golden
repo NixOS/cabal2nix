@@ -1,0 +1,18 @@
+{ mkDerivation, aeson, base, exceptions, hspec, http-api-data
+, path-pieces, persistent, QuickCheck, stdenv, text
+}:
+mkDerivation {
+  pname = "slug";
+  version = "0.1.7";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [
+    aeson base exceptions http-api-data path-pieces persistent
+    QuickCheck text
+  ];
+  testHaskellDepends = [
+    base exceptions hspec http-api-data path-pieces QuickCheck text
+  ];
+  homepage = "https://github.com/mrkkrp/slug";
+  description = "Type-safe slugs for Yesod ecosystem";
+  license = stdenv.lib.licenses.bsd3;
+}

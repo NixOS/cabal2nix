@@ -1,0 +1,154 @@
+name: partial-semigroup
+version: 0.3.0.2
+synopsis: A partial binary associative operator
+category: Algebra
+
+description:
+  A partial semigroup is like a semigroup, but the operator is partial. We
+  represent this in Haskell as a total function @(<>?) :: a -> a -> Maybe a@.
+
+homepage:    https://github.com/chris-martin/partial-semigroup
+bug-reports: https://github.com/chris-martin/partial-semigroup/issues
+
+author:     Chris Martin <ch.martin@gmail.com>
+maintainer: Chris Martin <ch.martin@gmail.com>
+
+license: Apache-2.0
+license-file: license.txt
+
+build-type: Simple
+cabal-version: >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/chris-martin/partial-semigroup
+
+flag semigroup-in-base
+  default: True
+  description:
+    Require a version of `base` that provides the `Data.Semigroup` and
+    `Data.List.NonEmpty` modules.
+    .
+    Disabling this flag adds a dependency on the `semigroups` package.
+
+flag identity-in-base
+  default: True
+  description:
+    Require a version of `base` that provides the `Data.Functor.Identity`
+    module.
+
+flag generics-in-base
+  default: True
+  description:
+    Require a version of `base` that provides the `GHC.Generics` module.
+    .
+    Disabling this flag removes the `Data.PartialSemigroup.Generics` module
+    from the package.
+
+flag enable-hedgehog
+  default: True
+  description:
+    Use the `hedgehog` package for tests.
+    .
+    Disabling this flag disables all of the tests that use `hedgehog`.
+
+flag enable-doctest
+  default: True
+  description:
+    Use the `doctest` package to test the code examples in Haddock comments.
+
+library
+  ghc-options: -Wall
+  default-language: Haskell2010
+  build-depends: base >=4 && <4.11
+  hs-source-dirs: src
+
+  exposed-modules: Data.PartialSemigroup
+
+  if flag(generics-in-base)
+    build-depends: base >=4.6
+    exposed-modules: Data.PartialSemigroup.Generics
+
+  if flag(identity-in-base)
+    build-depends: base >=4.8
+    cpp-options: -DIDENTITY
+
+  if flag(semigroup-in-base)
+    build-depends: base >=4.9
+  else
+    build-depends: semigroups >=0.8.4 && <1
+
+test-suite docs
+  type: exitcode-stdio-1.0
+  ghc-options: -Wall -threaded
+  default-language: Haskell2010
+  hs-source-dirs: test
+  main-is: docs.hs
+  build-depends: base >=4 && <4.11
+
+  if flag(enable-doctest)
+    build-depends: doctest >=0.11 && <0.14
+    cpp-options: -DDOCTEST
+
+test-suite examples
+  type: exitcode-stdio-1.0
+  ghc-options: -Wall -threaded
+  default-language: Haskell2010
+  hs-source-dirs: test
+  main-is: examples.hs
+
+  build-depends:
+      base >=4 && <4.11
+    , partial-semigroup
+
+  if flag(enable-hedgehog)
+    build-depends: hedgehog >=0.5 && <0.6
+    cpp-options: -DHEDGEHOG
+
+  if flag(semigroup-in-base)
+    build-depends: base >=4.9
+  else
+    build-depends: semigroups >=0.8.4 && <1
+
+test-suite properties
+  type: exitcode-stdio-1.0
+  ghc-options: -Wall -threaded
+  default-language: Haskell2010
+  hs-source-dirs: test
+  main-is: properties.hs
+  build-depends:
+      base >=4 && <4.11
+    , partial-semigroup
+
+  if flag(enable-hedgehog)
+    cpp-options: -DHEDGEHOG
+    hs-source-dirs: src-hedgehog
+    other-modules: Test.PartialSemigroup.Hedgehog
+    build-depends: hedgehog >=0.5 && <0.6
+
+  if flag(semigroup-in-base)
+    build-depends: base >=4.9
+  else
+    build-depends: semigroups >=0.8.4 && <1
+
+test-suite generics
+  type: exitcode-stdio-1.0
+  ghc-options: -Wall -threaded
+  default-language: Haskell2010
+  hs-source-dirs: test
+  main-is: generics.hs
+  build-depends:
+      base >=4 && <4.11
+    , partial-semigroup
+
+  if flag(generics-in-base)
+    if flag(enable-hedgehog)
+      cpp-options: -DHEDGEHOG
+      hs-source-dirs: src-hedgehog
+      other-modules: Test.PartialSemigroup.Hedgehog
+      build-depends: base >=4.6, hedgehog >=0.5 && <0.6
+
+    if flag(semigroup-in-base)
+      build-depends: base >=4.9
+    else
+      build-depends: semigroups >=0.8.4 && <1

@@ -1,0 +1,78 @@
+name:                io-streams-haproxy
+version:             1.0.0.2
+synopsis:            HAProxy protocol 1.5 support for io-streams
+
+description: HAProxy protocol version 1.5 support (see
+  <http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt>) for applications
+  using io-streams. The proxy protocol allows information about a networked
+  peer (like remote address and port) to be propagated through a forwarding
+  proxy that is configured to speak this protocol.
+
+homepage:            http://snapframework.com/
+license:             BSD3
+license-file:        LICENSE
+author:              Gregory Collins
+maintainer:          greg@gregorycollins.net
+copyright:           (c) 2014 Google, Inc. and CONTRIBUTORS
+category:            Network, IO-Streams
+build-type:          Simple
+extra-source-files:
+  CONTRIBUTORS,
+  cbits/byteorder.c
+
+cabal-version:       >=1.10
+Bug-Reports:         https://github.com/snapframework/io-streams-haproxy/issues
+Tested-With:         GHC == 7.4.2, GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3,
+                     GHC == 8.0.1
+
+source-repository head
+  type:     git
+  location: https://github.com/snapframework/io-streams-haproxy.git
+
+library
+  hs-source-dirs:    src
+  exposed-modules:   System.IO.Streams.Network.HAProxy
+  other-modules:     System.IO.Streams.Network.Internal.Address
+  c-sources:         cbits/byteorder.c
+
+  build-depends:     base              >= 4.5 && < 4.11,
+                     attoparsec        >= 0.7 && < 0.14,
+                     bytestring        >= 0.9 && < 0.11,
+                     io-streams        >= 1.3 && < 1.6,
+                     network           >= 2.3 && < 2.7,
+                     transformers      >= 0.3 && < 0.6
+  default-language:  Haskell2010
+
+  ghc-options:       -Wall -fwarn-tabs -funbox-strict-fields
+                     -fno-warn-unused-do-bind
+  if os(windows)
+    cpp-options:     -DWINDOWS
+    cc-options:      -DWINDOWS
+
+test-suite testsuite
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    src test
+  Main-is:           TestSuite.hs
+  Default-language:  Haskell2010
+  c-sources:         cbits/byteorder.c
+
+  ghc-options:       -Wall -fwarn-tabs -funbox-strict-fields -threaded
+                     -fno-warn-unused-do-bind
+
+  Other-modules:     System.IO.Streams.Network.HAProxy,
+                     System.IO.Streams.Network.HAProxy.Tests,
+                     System.IO.Streams.Network.Internal.Address
+
+  build-depends:     base,
+                     attoparsec,
+                     bytestring,
+                     io-streams,
+                     network,
+                     transformers,
+                     ------------------------------
+                     HUnit                      >= 1.2      && <2,
+                     test-framework             >= 0.8.0.3  && <0.9,
+                     test-framework-hunit       >= 0.2.7    && <0.4
+  if os(windows)
+    cpp-options:     -DWINDOWS
+    cc-options:      -DWINDOWS

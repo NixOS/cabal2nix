@@ -1,0 +1,43 @@
+name:                projectroot
+version:             0.2.0.1
+synopsis:            Bindings to the projectroot C logic
+description: Simple way of finding the root of a project given an
+             entry-point. This module provides bindings to the
+             <https://github.com/yamadapc/projectroot projectroot> C library
+homepage:            https://github.com/yamadapc/haskell-projectroot
+license:             MIT
+license-file:        LICENSE
+author:              Pedro Tacla Yamada
+maintainer:          tacla.yamada@gmail.com
+copyright:           Copyright (c) 2015 Pedro Tacla Yamada
+category:            System
+build-type:          Simple
+cabal-version:       >=1.10
+tested-with: GHC >= 7.6
+
+source-repository head
+  type:     git
+  location: git://github.com/yamadapc/haskell-projectroot
+
+library
+  exposed-modules:     System.Directory.ProjectRoot
+  build-depends:       base >=4 && <5
+                     , directory
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  c-sources:           ./projectroot/libprojectroot.c
+                     , ./projectroot/deps/commander/commander.c
+  install-includes:    ./projectroot/libprojectroot.h
+                     , ./projectroot/deps/commander/commander.h
+  cc-options:          -std=c99
+  include-dirs:        .
+
+test-suite hspec
+  main-is: Spec.hs
+  type: exitcode-stdio-1.0
+  build-depends: base
+               , hspec
+               , QuickCheck
+               , projectroot
+  hs-source-dirs: test
+  default-language: Haskell2010

@@ -1,0 +1,30 @@
+# ignore build Cabal build files
+
+/.cabal-sandbox
+/.ghc.environment.*
+/Setup
+/Setup.hi
+/Setup.o
+/cabal.sandbox.config
+/dist
+/dist-newstyle
+
+# vim tmp files
+
+*.swo
+*.swp
+
+# haskell-mode generates files, too
+
+TAGS
+
+# ignore stack build directory
+
+.stack-work
+/src/highlight.js
+/src/style.css
+
+# hackage2nix ususally needs those two repositories around
+
+/hackage/
+/nixpkgs/

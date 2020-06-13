@@ -1,0 +1,45 @@
+name:             nanospec
+version:          0.2.1
+license:          MIT
+license-file:     LICENSE
+copyright:        (c) 2012-2015 Simon Hengel
+author:           Simon Hengel <sol@typeful.net>
+maintainer:       Simon Hengel <sol@typeful.net>
+category:         Testing
+synopsis:         A lightweight implementation of a subset of Hspec's API
+description:      A lightweight implementation of a subset of Hspec's API with
+                  minimal dependencies.
+build-type:       Simple
+cabal-version:    >= 1.8
+
+source-repository head
+  type: git
+  location: https://github.com/hspec/nanospec
+
+library
+  exposed:
+      False
+  ghc-options:
+      -Wall
+  hs-source-dirs:
+      src
+  exposed-modules:
+      Test.Hspec
+  build-depends:
+      base >= 4 && <= 5
+
+test-suite spec
+  type:
+      exitcode-stdio-1.0
+  cpp-options:
+      -DTEST
+  ghc-options:
+      -Wall
+  hs-source-dirs:
+      src, test
+  main-is:
+      Test/HspecSpec.hs
+  build-depends:
+      base
+    , hspec >= 1.3
+    , silently >= 1.2.4

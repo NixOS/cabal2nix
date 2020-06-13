@@ -1,0 +1,21 @@
+{ mkDerivation, base, containers, directory, filepath, HUnit, hxt
+, json, mtl, parsec, regex-tdfa, stdenv, tasty, tasty-hunit
+}:
+mkDerivation {
+  pname = "katydid";
+  version = "0.1.1.0";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [
+    base containers hxt json mtl parsec regex-tdfa
+  ];
+  executableHaskellDepends = [ base mtl ];
+  testHaskellDepends = [
+    base containers directory filepath HUnit hxt json mtl parsec tasty
+    tasty-hunit
+  ];
+  homepage = "https://github.com/katydid/katydid-haskell";
+  description = "A haskell implementation of Katydid";
+  license = stdenv.lib.licenses.bsd3;
+}

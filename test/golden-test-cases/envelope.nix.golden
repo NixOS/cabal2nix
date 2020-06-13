@@ -1,0 +1,13 @@
+{ mkDerivation, aeson, base, doctest, Glob, http-api-data, mtl
+, stdenv, text
+}:
+mkDerivation {
+  pname = "envelope";
+  version = "0.2.2.0";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ aeson base http-api-data mtl text ];
+  testHaskellDepends = [ base doctest Glob ];
+  homepage = "https://github.com/cdepillabout/envelope#readme";
+  description = "Defines generic 'Envelope' type to wrap reponses from a JSON API";
+  license = stdenv.lib.licenses.bsd3;
+}

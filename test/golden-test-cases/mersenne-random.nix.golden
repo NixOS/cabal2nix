@@ -1,0 +1,10 @@
+{ mkDerivation, base, old-time, stdenv }:
+mkDerivation {
+  pname = "mersenne-random";
+  version = "1.0.0.1";
+  sha256 = "deadbeef";
+  libraryHaskellDepends = [ base old-time ];
+  homepage = "http://code.haskell.org/~dons/code/mersenne-random";
+  description = "Generate high quality pseudorandom numbers using a SIMD Fast Mersenne Twister";
+  license = stdenv.lib.licenses.bsd3;
+}

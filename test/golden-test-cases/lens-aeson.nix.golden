@@ -1,0 +1,21 @@
+{ mkDerivation, aeson, attoparsec, base, bytestring, Cabal
+, cabal-doctest, doctest, generic-deriving, lens, scientific
+, semigroups, simple-reflect, stdenv, text, unordered-containers
+, vector
+}:
+mkDerivation {
+  pname = "lens-aeson";
+  version = "1.0.2";
+  sha256 = "deadbeef";
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [
+    aeson attoparsec base bytestring lens scientific text
+    unordered-containers vector
+  ];
+  testHaskellDepends = [
+    base doctest generic-deriving semigroups simple-reflect
+  ];
+  homepage = "http://github.com/lens/lens-aeson/";
+  description = "Law-abiding lenses for aeson";
+  license = stdenv.lib.licenses.mit;
+}

@@ -1,0 +1,55 @@
+name:                avers-server
+version:             0.1.0
+synopsis:            Server implementation of the Avers API
+description:         Server implementation of the Avers API
+homepage:            http://github.com/wereHamster/avers-server
+license:             MIT
+license-file:        LICENSE
+author:              Tomas Carnecky
+maintainer:          tomas.carnecky@gmail.com
+copyright:           2016 Tomas Carnecky
+category:            Avers
+build-type:          Simple
+cabal-version:       >=1.10
+
+source-repository head
+  type:     git
+  location: https://github.com/wereHamster/avers
+
+library
+  default-language:    Haskell2010
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+
+  exposed-modules:
+     Avers.Server
+
+  other-modules:
+     Avers.Server.Authorization
+   , Avers.Server.Instances
+
+  build-depends:
+     base >= 4.7 && < 5
+   , aeson
+   , avers
+   , avers-api
+   , base64-bytestring
+   , bytestring
+   , bytestring-conversion
+   , containers
+   , cookie
+   , cryptonite
+   , http-types
+   , memory
+   , mtl
+   , resource-pool
+   , rethinkdb-client-driver
+   , servant
+   , servant-server
+   , stm
+   , text
+   , time
+   , transformers
+   , wai
+   , wai-websockets
+   , websockets
