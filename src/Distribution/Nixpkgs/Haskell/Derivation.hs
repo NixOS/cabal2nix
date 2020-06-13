@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -9,13 +8,17 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
-  , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
+  , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
   )
   where
+
+import Prelude hiding ((<>))
 
 import Control.DeepSeq
 import Control.Lens
 import Data.List ( isPrefixOf )
+import Data.Map ( Map )
+import qualified Data.Map as Map
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Set.Lens
@@ -29,10 +32,6 @@ import GHC.Generics ( Generic )
 import Language.Nix
 import Language.Nix.PrettyPrinting
 
-#if MIN_VERSION_base(4,11,0)
-import Prelude hiding ((<>))
-#endif
-
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
 -- 'PackageDescription' from Cabal.
@@ -45,6 +44,7 @@ data Derivation = MkDerivation
   , _isLibrary                  :: Bool
   , _isExecutable               :: Bool
   , _extraFunctionArgs          :: Set Binding
+  , _extraAttributes            :: Map String String
   , _setupDepends               :: BuildInfo
   , _libraryDepends             :: BuildInfo
   , _executableDepends          :: BuildInfo
@@ -77,6 +77,7 @@ nullDerivation = MkDerivation
   , _isLibrary = error "undefined Derivation.isLibrary"
   , _isExecutable = error "undefined Derivation.isExecutable"
   , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
+  , _extraAttributes = error "undefined Derivation.extraAttributes"
   , _setupDepends = error "undefined Derivation.setupDepends"
   , _libraryDepends = error "undefined Derivation.libraryDepends"
   , _executableDepends = error "undefined Derivation.executableDepends"
@@ -138,6 +139,7 @@ instance Pretty Derivation where
       , boolattr "hyperlinkSource" (not _hyperlinkSource) _hyperlinkSource
       , onlyIf (not (null _phaseOverrides)) $ vcat ((map text . lines) _phaseOverrides)
       , pPrint _metaSection
+      , vcat [ attr k (text v) | (k,v) <- Map.toList _extraAttributes ]
       ]
     , rbrace
     ]

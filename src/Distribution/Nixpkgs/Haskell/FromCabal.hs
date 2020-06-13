@@ -83,6 +83,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & isLibrary .~ isJust library
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
+    & extraAttributes .~ mempty
     & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
     & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
     & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
