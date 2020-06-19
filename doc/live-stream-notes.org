@@ -1,5 +1,39 @@
 #+TITLE: Stream TODO Notes
 
+* [4/8] 2020-06-19
+** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
+*** DONE cachix: Remove profiling override on GHC >=8.8
+
+    Currently doesn't compile on Darwin. Needs upstream fixes and possibly a
+    new release before it can be merged.
+
+    https://github.com/NixOS/nixpkgs/pull/90684
+*** DONE Fix reflex, reflex-dom and dependencies
+
+    https://github.com/NixOS/nixpkgs/pull/90260
+** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** TODO Various improvements to ./regenerate-nixpkgs.sh
+
+    The hash bang thing for nix-shell doesn't behave like we thought it would.
+
+    https://github.com/NixOS/nixpkgs/pull/90260
+
+** DONE Fix evaluation errors
+
+   We actually fixed the build of those packages:
+
+     postgresql-pure
+     hasql-queue
+     postgresql-libpq-notify
+
+   and their dependencies:
+
+     homotuple
+
+** DONE Fix failing builds
+** TODO Update list of broken builds
+** TODO Update all-cabal-hashes reference.
+** TODO Check out parcellite: http://parcellite.sourceforge.net/
 * [5/8] 2020-06-12
 ** DONE Fix evaluation errors
 ** TODO Fix failing builds
@@ -31,7 +65,6 @@
 ** Read blog post at https://mpickering.github.io/ide/posts/20
 ** Try out ghccemacs
 ** DONE Participate in https://zfoh.ch/zurihac2020/
-
 
 * [9/11] 2020-05-29
 ** DONE Fix evaluation errors
