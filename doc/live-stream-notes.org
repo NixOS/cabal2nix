@@ -37,6 +37,9 @@
 
 ** DONE Update all-cabal-hashes reference.
 ** TODO Check out parcellite: http://parcellite.sourceforge.net/
+** Remember how to run OfBorg tests locally
+
+   https://github.com/NixOS/ofborg#running-meta-checks-locally
 * [5/8] 2020-06-12
 ** DONE Fix evaluation errors
 ** TODO Fix failing builds
