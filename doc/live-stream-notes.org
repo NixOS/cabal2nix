@@ -1,6 +1,6 @@
 #+TITLE: Stream TODO Notes
 
-* [4/8] 2020-06-19
+* [6/8] 2020-06-19
 ** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
 *** DONE cachix: Remove profiling override on GHC >=8.8
 
@@ -12,7 +12,7 @@
 
     https://github.com/NixOS/nixpkgs/pull/90260
 ** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
-** TODO Various improvements to ./regenerate-nixpkgs.sh
+** DONE Various improvements to ./regenerate-nixpkgs.sh
 
     The hash bang thing for nix-shell doesn't behave like we thought it would.
 
@@ -32,7 +32,10 @@
 
 ** DONE Fix failing builds
 ** TODO Update list of broken builds
-** TODO Update all-cabal-hashes reference.
+
+   Can't do it, because Hydra hasn't finished building the package set.
+
+** DONE Update all-cabal-hashes reference.
 ** TODO Check out parcellite: http://parcellite.sourceforge.net/
 * [5/8] 2020-06-12
 ** DONE Fix evaluation errors
