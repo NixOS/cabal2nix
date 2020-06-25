@@ -1,5 +1,15 @@
 #+TITLE: Stream TODO Notes
 
+* [0/7] 2020-06-26
+** TODO Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
+** TODO Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** TODO [0/1] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
+   - [ ] fix fetching from remote archives: https://github.com/NixOS/cabal2nix/pull/455
+** TODO Fix evaluation errors.
+** TODO Fix failing builds.
+** TODO Switch git-annex to the latest version (8.20200617)
+** TODO Update list of broken builds.
+** TODO Update all-cabal-hashes reference.
 * [6/8] 2020-06-19
 ** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
 *** DONE cachix: Remove profiling override on GHC >=8.8
