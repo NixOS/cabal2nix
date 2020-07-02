@@ -129,15 +129,16 @@ main = do
       globalPackageMaintainers = Map.unionsWith Set.union [ Map.singleton p (Set.singleton m) | (m,ps) <- Map.toList (packageMaintainers config), p <- Set.toList ps ]
 
   pkgs <- runParIO $ flip parMapM (Map.toAscList db) $ \(name, vs) -> do
-    defs <- forM (Set.toAscList vs) $ \v -> liftIO $ do
+    defs <- fmap concat . forM (Set.toAscList vs) $ \v -> liftIO $ do
       let pkgId :: PackageIdentifier
           pkgId = PackageIdentifier name v
 
       (descr, cabalSHA256) <- readPackage hackageRepository pkgId
       meta <- readPackageMeta hackageRepository pkgId
 
-      let isInDefaultPackageSet, isHydraEnabled, isBroken :: Bool
+      let isInDefaultPackageSet, isInExtraPackageSet, isHydraEnabled, isBroken :: Bool
           isInDefaultPackageSet = (== Just v) (Map.lookup name generatedDefaultPackageSet)
+          isInExtraPackageSet = maybe False (Set.member v) (Map.lookup name extraPackageSet)
           isHydraEnabled = isInDefaultPackageSet && not (isBroken || name `Set.member` dontDistributePackages config)
           isBroken = any (withinRange v) [ vr | Dependency pn vr _ <- brokenPackages config, pn == name ]
 
@@ -151,8 +152,11 @@ main = do
           flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
           flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
 
-          attr :: String
-          attr = if isInDefaultPackageSet then unPackageName name else mangle pkgId
+          attrDefault :: String
+          attrDefault = unPackageName name
+
+          attrExtra :: String
+          attrExtra = mangle pkgId
 
           drv :: Derivation
           drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
@@ -167,8 +171,18 @@ main = do
 
           overrides :: Doc
           overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
-      return $ render $ nest 2 $
-        hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
+
+          renderFromAttr :: String -> String
+          renderFromAttr attr = render $ nest 2 $
+            hang (doubleQuotes (text attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
+
+          resDefault :: [ String ]
+          resDefault = [ renderFromAttr attrDefault | isInDefaultPackageSet ]
+
+          resExtra :: [ String ]
+          resExtra = [ renderFromAttr attrExtra | isInExtraPackageSet || not isInDefaultPackageSet ]
+
+      return $ resDefault ++ resExtra
 
     return (intercalate "\n\n" defs)
 
