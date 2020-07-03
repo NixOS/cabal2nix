@@ -1,18 +1,23 @@
 #+TITLE: Stream TODO Notes
 
-* [0/9] 2020-07-03
-** TODO Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
-** TODO Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
-** TODO [0/1] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
+* [8/9] 2020-07-03
+** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
+** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** DONE [0/2] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
    - [ ] fix fetching from remote archives: https://github.com/NixOS/cabal2nix/pull/455
-** TODO Fix evaluation errors.
-** TODO Fix failing builds.
-** TODO Switch git-annex to the latest version (8.20200617)
+   - [ ] hackage2nix: Always print extraVersions: https://github.com/NixOS/cabal2nix/pull/464
+** DONE Fix evaluation errors.
+** DONE Fix failing builds.
+
+   - cabal-install is broken with ghc-8.10.x
+
+** DONE Switch git-annex to the latest version (8.20200617)
 ** TODO Update list of broken builds.
-** TODO Update all-cabal-hashes reference.
-** TODO Create Hydra jobset for DoHaddockInterfaces patches
+** DONE Update all-cabal-hashes reference.
+** DONE Create Hydra jobset for DoHaddockInterfaces patches
 
    https://github.com/NixOS/nixpkgs/pull/91557#issuecomment-653442407
+   https://hydra.nixos.org/jobset/nixpkgs/pr-91557
 
 * [7/8] 2020-06-26
 ** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
