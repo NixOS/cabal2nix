@@ -2,4 +2,4 @@ packages: .
 
 package language-nix
   ghc-options:          -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
-                        -Wredundant-constraints
+                        -Wredundant-constraints -Wunused-packages
