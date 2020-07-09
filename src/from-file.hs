@@ -78,6 +78,7 @@ pinfo = info
 
 data Options = Options
   { optFlags :: [String]
+  , optTemplatePath :: FilePath
   , optCompiler :: CompilerId
   , optSystem :: Platform
   , optExtraArgs :: [String]
@@ -89,6 +90,7 @@ data Options = Options
 options :: Parser Options
 options = do
   optFlags <- many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
+  optTemplatePath <- strOption $ long "template" <> help "string template file to be used for generating the output"
   optCompiler <- option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
   optSystem <- option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith prettyShow)
   optExtraArgs <- many (strOption $ long "extra-arguments" <> help "extra parameters required for the function body")
