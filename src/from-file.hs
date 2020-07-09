@@ -69,11 +69,11 @@ parseArgs = handleParseResult . execParserPure defaultPrefs pinfo
 pinfo :: ParserInfo Options
 pinfo = info
         (   helper
-        <*> infoOption ("cabal2nix " ++ prettyShow version) (long "version" <> help "Show version number")
+        <*> infoOption ("cabal2nix-from-file " ++ prettyShow version) (long "version" <> help "Show version number")
         <*> options
         )
         (  fullDesc
-        <> header "cabal2nix converts Cabal files into build instructions for Nix."
+        <> header "cabal2nix-from-file converts Cabal files into build instructions for Nix."
         )
 
 data Options = Options
