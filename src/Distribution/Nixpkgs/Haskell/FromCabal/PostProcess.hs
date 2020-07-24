@@ -88,6 +88,7 @@ hooks =
   , ("cabal2nix > 2", cabal2nixOverrides)
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
+  , ("dhall", set doCheck False) -- attempts to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
