@@ -1,25 +1,46 @@
 #+TITLE: Stream TODO Notes
 
-* [8/9] 2020-07-03
-** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
-** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
-** DONE [0/2] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
+* [4/10] 2020-07-03
+** TODO Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
+** TODO Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** TODO [0/2] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
    - [ ] fix fetching from remote archives: https://github.com/NixOS/cabal2nix/pull/455
    - [ ] hackage2nix: Always print extraVersions: https://github.com/NixOS/cabal2nix/pull/464
+** DONE Fix evaluation errors.
+** DONE Fix failing builds.
+** DONE Update list of broken builds.
+** DONE Update all-cabal-hashes reference.
+** TODO Check out parcellite: http://parcellite.sourceforge.net/
+** TODO Pass --ipid=$out flag to configure stage
+** TODO We need a way to provide the latest hackage2nix via Nix
+
+   - Add a shell.nix file into the cabal2nix repository.
+
+   - Turn the update-nixpkgs.sh et al scripts into nix-shell scripts that
+     transparently set up their own environment in which they want to run.
+
+   - Use fetchgit and update the commit id and hash every time the git
+     repository changens. It's not pretty, but it would work. The update
+     process that updates haskell-packages.nix already could do this as well.
+
+   - Turn cabal2nix repo into a flake?
+* [8/8] 2020-07-03
+** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
+** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
 ** DONE Fix evaluation errors.
 ** DONE Fix failing builds.
 
    - cabal-install is broken with ghc-8.10.x
 
 ** DONE Switch git-annex to the latest version (8.20200617)
-** TODO Update list of broken builds.
+** DONE Update list of broken builds.
 ** DONE Update all-cabal-hashes reference.
 ** DONE Create Hydra jobset for DoHaddockInterfaces patches
 
    https://github.com/NixOS/nixpkgs/pull/91557#issuecomment-653442407
    https://hydra.nixos.org/jobset/nixpkgs/pr-91557
 
-* [7/8] 2020-06-26
+* [8/8] 2020-06-26
 ** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
 ** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
 ** DONE Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
@@ -29,10 +50,10 @@
    - array-list
 
 ** DONE Fix failing builds.
-** TODO Switch git-annex to the latest version (8.20200617)
+** DONE Switch git-annex to the latest version (8.20200617)
 ** DONE Update list of broken builds.
 ** DONE Update all-cabal-hashes reference.
-* [6/8] 2020-06-19
+* [8/8] 2020-06-19
 ** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
 *** DONE cachix: Remove profiling override on GHC >=8.8
 
@@ -63,28 +84,25 @@
      homotuple
 
 ** DONE Fix failing builds
-** TODO Update list of broken builds
+** DONE Update list of broken builds
 
    Can't do it, because Hydra hasn't finished building the package set.
 
 ** DONE Update all-cabal-hashes reference.
-** TODO Check out parcellite: http://parcellite.sourceforge.net/
 ** Remember how to run OfBorg tests locally
 
    https://github.com/NixOS/ofborg#running-meta-checks-locally
-* [5/8] 2020-06-12
+* [8/8] 2020-06-12
 ** DONE Fix evaluation errors
-** TODO Fix failing builds
-   - [ ] cabal2nix
-   - [ ] stack
-   - [ ] xmobar
+** DONE [3/3] Fix failing builds
+   - [X] cabal2nix
+   - [X] stack
+   - [X] xmobar
 ** DONE Update list of broken builds
 ** DONE Update all-cabal-hashes reference.
 ** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
 ** DONE Nix docker image is broken: https://github.com/NixOS/docker/issues/21
-
-** TODO Pass --ipid=$out flag to configure stage
-** TODO Report build errors to Rickard
+** DONE Report build errors to Rickard
 
    : nar upload failed: sha256-BjRZm/wHU72pHWKB0KzjrdKrU+51WE8r1crCVUll/xo= try 2: Internal Server Error
 
@@ -104,7 +122,7 @@
 ** Try out ghccemacs
 ** DONE Participate in https://zfoh.ch/zurihac2020/
 
-* [9/11] 2020-05-29
+* [10/10] 2020-05-29
 ** DONE Fix evaluation errors
 
    keera-hails-reactive-htmldom
@@ -146,16 +164,4 @@
    does not contain the Makefile that we use to call "make install" as part of
    our build.
 
-** TODO Write a bug report to Joey because of failing git-annex test suites
-** TODO We need a way to provide the latest hackage2nix via Nix
-
-   - Add a shell.nix file into the cabal2nix repository.
-
-   - Turn the update-nixpkgs.sh et al scripts into nix-shell scripts that
-     transparently set up their own environment in which they want to run.
-
-   - Use fetchgit and update the commit id and hash every time the git
-     repository changens. It's not pretty, but it would work. The update
-     process that updates haskell-packages.nix already could do this as well.
-
-   - Turn cabal2nix repo into a flake?
+** DONE Write a bug report to Joey because of failing git-annex test suites
