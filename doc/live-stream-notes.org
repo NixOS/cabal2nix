@@ -1,15 +1,16 @@
 #+TITLE: Stream TODO Notes
 
-* [4/10] 2020-07-03
-** TODO Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
-** TODO Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
-** TODO [0/2] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
+* [6/10] 2020-07-31
+** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
+   - [ ] Update ghcHEAD: https://github.com/NixOS/nixpkgs/pull/94321
+** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
+** DONE [0/2] Go through open cabal2nix PRs: https://github.com/nixos/cabal2nix/pulls
    - [ ] fix fetching from remote archives: https://github.com/NixOS/cabal2nix/pull/455
    - [ ] hackage2nix: Always print extraVersions: https://github.com/NixOS/cabal2nix/pull/464
 ** DONE Fix evaluation errors.
-** DONE Fix failing builds.
 ** DONE Update list of broken builds.
 ** DONE Update all-cabal-hashes reference.
+** TODO Talk to liquidhaskell upstream about build failures.
 ** TODO Check out parcellite: http://parcellite.sourceforge.net/
 ** TODO Pass --ipid=$out flag to configure stage
 ** TODO We need a way to provide the latest hackage2nix via Nix
@@ -24,6 +25,11 @@
      process that updates haskell-packages.nix already could do this as well.
 
    - Turn cabal2nix repo into a flake?
+* [4/4] 2020-07-03
+** DONE Fix evaluation errors.
+** DONE Fix failing builds.
+** DONE Update list of broken builds.
+** DONE Update all-cabal-hashes reference.
 * [8/8] 2020-07-03
 ** DONE Go through open Nixpkgs PRs and issues: https://github.com/issues?q=is%3Apr+is%3Aopen+label%3A%226.topic%3A+haskell%22+
 ** DONE Go through open cabal2nix issues: https://github.com/NixOS/cabal2nix/issues
