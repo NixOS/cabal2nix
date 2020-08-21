@@ -50,6 +50,7 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "pandoc-placetable"  = [enable "inlineMarkdown"]
  | name == "persistent-sqlite"  = [enable "systemlib"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
+ | name == "skylighting"        = [enable "executable"]
  | name == "snap-server"        = [enable "openssl"]
  | name == "stack"              = [enable "disable-git-info", enable "hide-dependency-versions", enable "supported-build"]
  | name == "xmobar"             = [enable "with_alsa", enable "with_conduit", enable "with_datezone", enable "with_dbus", enable "with_inotify", enable "with_iwlib", enable "with_mpd", enable "with_mpris", enable "with_rtsopts", enable "with_threaded", enable "with_utf8", enable "with_uvmeter", enable "with_weather", enable "with_xft", enable "with_xpm"]
