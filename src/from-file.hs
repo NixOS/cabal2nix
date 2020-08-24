@@ -11,6 +11,7 @@ import Control.Monad
 import Data.List ( intercalate, isPrefixOf )
 import Data.List.Split
 import Data.Map ( Map )
+import Data.Text.IO as Text
 import qualified Data.Map as Map
 import Data.Maybe ( fromMaybe, listToMaybe )
 import qualified Data.Set as Set
@@ -27,13 +28,65 @@ import Distribution.PackageDescription.Parsec
 import Distribution.Parsec as P
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
+import Distribution.Types.PackageId.Lens
+import Distribution.Types.PackageName
 import Distribution.Verbosity ( silent )
+import Distribution.Version
 import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix_v3 ( version )
 import System.Environment ( getArgs )
 import System.IO ( hFlush, stdout, stderr )
 import Text.PrettyPrint.HughesPJClass ( prettyShow )
+import Text.Mustache
+import Data.Aeson ( ToJSON(..) )
+import qualified Data.Aeson as Json
+import Distribution.Utils.ShortText
+
+instance ToJSON PackageName where
+
+instance ToJSON PackageIdentifier where
+
+instance ToJSON Version where
+  toJSON x = toJSON (prettyShow x)
+
+instance ToJSON ShortText where
+  toJSON x = toJSON (fromShortText x)
+
+instance ToMustache Derivation where
+  toMustache deriv = object
+    [ "pkgid" ~= (view pkgid deriv)
+    , "pname" ~> (view (pkgid . pkgName . to unPackageName) deriv)
+    ]
+--                                     , ("version", STR (view (pkgid . pkgVersion . to prettyShow) deriv))
+--                                     , ("revision", STR (view (revision . to show) deriv))
+--                                     , ("src", undefined)
+--                                     , ("subpath", undefined)
+--                                     , ("isLibrary", undefined)
+--                                     , ("isExecutable", undefined)
+--                                     , ("extraFunctionArgs", undefined)
+--                                     , ("extraAttributes", undefined)
+--                                     , ("setupDepends", undefined)
+--                                     , ("libraryDepends", undefined)
+--                                     , ("executableDepends", undefined)
+--                                     , ("testDepends", undefined)
+--                                     , ("benchmarkDepends", undefined)
+--                                     , ("configureFlags", undefined)
+--                                     , ("cabalFlags", undefined)
+--                                     , ("runHaddock", undefined)
+--                                     , ("jailbreak", undefined)
+--                                     , ("doCheck", undefined)
+--                                     , ("doBenchmark", undefined)
+--                                     , ("testTarget", undefined)
+--                                     , ("hyperlinkSource", undefined)
+--                                     , ("enableLibraryProfiling", undefined)
+--                                     , ("enableExecutableProfiling", undefined)
+--                                     , ("enableSplitObjs", undefined)
+--                                     , ("phaseOverrides", undefined)
+--                                     , ("editedCabalFile", STR (view editedCabalFile deriv))
+--                                     , ("enableSeparateDataOutput", undefined)
+--                                     , ("metaSection", undefined)
+--                                     ]
 
 {-# ANN module ("HLint: ignore Use Just" :: String) #-}
 
@@ -42,7 +95,15 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
          getArgs >>= cabal2nix
 
 cabal2nix :: [String] -> IO ()
-cabal2nix = parseArgs >=> cabal2nix' >=> putStrLn . prettyShow
+cabal2nix args = do
+  deriv <- parseArgs args >>= cabal2nix'
+  let searchSpace  = ["."]
+      templateName = "nix.mustache"
+  compiled <- automaticCompile searchSpace templateName
+  tmpl <- case compiled of
+            Left err -> fail (show err)
+            Right template -> return template
+  Text.putStr (substitute tmpl deriv)
 
 cabal2nix' :: Options -> IO Derivation
 cabal2nix' opts@Options {..} = do
@@ -78,7 +139,7 @@ pinfo = info
 
 data Options = Options
   { optFlags :: [String]
-  , optTemplatePath :: FilePath
+  , optTemplatePath :: Maybe FilePath
   , optCompiler :: CompilerId
   , optSystem :: Platform
   , optExtraArgs :: [String]
@@ -90,7 +151,7 @@ data Options = Options
 options :: Parser Options
 options = do
   optFlags <- many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
-  optTemplatePath <- strOption $ long "template" <> help "string template file to be used for generating the output"
+  optTemplatePath <- optional (strOption $ long "template" <> help "string template file to be used for generating the output")
   optCompiler <- option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
   optSystem <- option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith prettyShow)
   optExtraArgs <- many (strOption $ long "extra-arguments" <> help "extra parameters required for the function body")
