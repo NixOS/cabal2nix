@@ -335,7 +335,7 @@ stackOverrides = unlines
 -- Replace a binding for <package> to one to pkgs.gst_all_1.<package>
 giGstLibOverrides :: String -> Derivation -> Derivation
 giGstLibOverrides package
-  = over (libraryDepends . pkgconfig) (replace (pkg (ident # package)) (binding # (ident # package, path # ["pkgs","gst_all_1", ident # package])))
+  = over (libraryDepends . pkgconfig) (replace (nullBinding (ident # package)) (binding # (ident # package, path # ["pkgs","gst_all_1", ident # package])))
 
 giCairoPhaseOverrides :: Derivation -> Derivation
 giCairoPhaseOverrides = over phaseOverrides (++txt)
@@ -409,3 +409,6 @@ bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs
                 . set (executableDepends . pkgconfig . contains "gio-unix = null") False
                 . set (metaSection . license) (Known "stdenv.lib.licenses.lgpl21Plus")
                 . set (metaSection . hydraPlatforms) allKnownPlatforms
+
+nullBinding :: Identifier -> Binding
+nullBinding name = binding # (name, path # [ident # "null"])
