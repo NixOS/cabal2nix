@@ -109,7 +109,6 @@ fromSPDXLicense (SPDX.License expr) =
             SPDX.IPA -> Known "stdenv.lib.licenses.ipa"
             SPDX.IPL_1_0 -> Known "stdenv.lib.licenses.ipl10"
             SPDX.ISC -> Known "stdenv.lib.licenses.isc"
-            SPDX.JasPer_2_0 -> Known "stdenv.lib.licenses.jasper"
             SPDX.LGPL_2_0_only -> Known "stdenv.lib.licenses.lgpl2"
             SPDX.LGPL_2_0_or_later -> Known "stdenv.lib.licenses.lgpl2Plus"
             SPDX.LGPL_2_1_only -> Known "stdenv.lib.licenses.lgpl21"
