@@ -1,0 +1,4 @@
+-- cabal.project.local
+
+package *
+  ghc-options: -fwrite-ide-info
