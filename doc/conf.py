@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'haskell4nix'
-copyright = '2020, Peter Simons'
+copyright = '2020 Peter Simons'
 author = 'Peter Simons'
 
 # The full version, including alpha/beta/rc tags
@@ -48,12 +48,14 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+html_theme_options = {
+    'fixed_sidebar': False,
+    'sidebar_collapse': True,
+    'page_width': "80%",
+    'sidebar_width': "20%",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-# The document name of the “master” document, that is, the document that contains
-# the root toctree directive.
-master_doc = 'index'
