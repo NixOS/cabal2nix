@@ -3,14 +3,17 @@ Haskell Support for Nix
 =======================
 
 .. toctree::
-   :maxdepth: 4
-   :caption: Contents:
+   :hidden:
 
-   users-guide
+   nixpkgs-users-guide
+   nixpkgs-maintainers-guide
+   frequently-asked-questions
+   other-resources
 
-Indices and tables
-==================
+..
+   Indices and tables
+   ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   * :ref:`genindex`
+   * :ref:`modindex`
+   * :ref:`search`
