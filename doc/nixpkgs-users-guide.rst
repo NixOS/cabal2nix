@@ -27,13 +27,13 @@ the following command will list:
 ::
 
    $ nix-env -f "<nixpkgs>" -qaP -A haskellPackages
-   haskellPackages.a50                                             a50-0.5
-   haskellPackages.AAI                                             AAI-0.2.0.1
-   haskellPackages.abacate                                         abacate-0.0.0.0
-   haskellPackages.abc-puzzle                                      abc-puzzle-0.2.1
-   haskellPackages.abcBridge                                       abcBridge-0.15
-   haskellPackages.abcnotation                                     abcnotation-1.9.0
-   haskellPackages.abeson                                          abeson-0.1.0.1
+   haskellPackages.a50              a50-0.5
+   haskellPackages.AAI              AAI-0.2.0.1
+   haskellPackages.abacate          abacate-0.0.0.0
+   haskellPackages.abc-puzzle       abc-puzzle-0.2.1
+   haskellPackages.abcBridge        abcBridge-0.15
+   haskellPackages.abcnotation      abcnotation-1.9.0
+   haskellPackages.abeson           abeson-0.1.0.1
    [... some 14000 entries omitted  ...]
 
 To install any of those packages into your profile, refer to them by

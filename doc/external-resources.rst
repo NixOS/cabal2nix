@@ -1,6 +1,6 @@
-===============
-Other resources
-===============
+==================
+External Resources
+==================
 
 -  The Youtube video `Nix Loves
    Haskell <https://www.youtube.com/watch?v=BsBhi_r-OeE>`__ provides an

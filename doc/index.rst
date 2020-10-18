@@ -6,9 +6,9 @@ Haskell Support for Nix
    :hidden:
 
    nixpkgs-users-guide
-   nixpkgs-maintainers-guide
+   nixpkgs-developers-guide
    frequently-asked-questions
-   other-resources
+   external-resources
 
 ..
    Indices and tables

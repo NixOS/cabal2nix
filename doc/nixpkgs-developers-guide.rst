@@ -1,12 +1,26 @@
-==========================
-Nixpkgs Maintainer's Guide
-==========================
+=========================
+Nixpkgs Developer's Guide
+=========================
 
-How to Re-generate the Haskell Package Set For Nix: <https://www.youtube.com/watch?v=qX0mgtSm360>.
+`haskell4nix` Live Stream
+=========================
 
-How to Fix Broken Haskell Packages in Nix: <https://www.youtube.com/watch?v=KLhkAEk8I20>
+https://twitter.com/hashtag/Haskell4Nix?f=live
 
-See the weekly livestreams at <https://www.twitch.tv/peti343>.
+https://www.twitch.tv/peti343
+
+Fixing Broken Haskell Packages
+==============================
+
+https://www.youtube.com/watch?v=KLhkAEk8I20
+
+Re-Generating the Haskell Package Set
+=====================================
+
+https://www.youtube.com/watch?v=qX0mgtSm360
+
+Unsorted Items
+==============
 
 Hackage package derivations are found in the
 ```hackage-packages.nix`` <https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/hackage-packages.nix>`__
@@ -21,3 +35,15 @@ file to generate all the derivations.
 To modify the contents ``configuration-hackage2nix.yaml``, follow the
 instructions on
 ```hackage2nix`` <https://github.com/NixOS/cabal2nix/tree/master/hackage2nix>`__.
+
+Unsolved Design Problems
+========================
+
+.. toctree::
+   :maxdepth: 1
+
+   01-use-function-application-to-escape-override-hell
+   02-guarantee-consistent-builds-and-obsolete-overridescope
+   03-map-cabal-files-to-nix-without-information-loss
+   04-set-up-a-sufficiently-powerful-build-farm
+   05-publish-all-of-hackage
