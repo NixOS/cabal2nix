@@ -16,6 +16,10 @@ extensions = ['recommonmark']
 # templates_path = ['_templates']
 exclude_patterns = ['_build', 'slides']
 
+# This is the default in recent versions of Sphinx, but not in the version used
+# by readthedocs.io.
+master_doc = 'index'
+
 # -- Options for HTML output -------------------------------------------------
 #
 html_theme = 'alabaster'
