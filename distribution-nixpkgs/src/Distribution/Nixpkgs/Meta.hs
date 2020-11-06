@@ -94,11 +94,12 @@ nullMeta = Meta
 
 allKnownPlatforms :: Set Platform
 allKnownPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
-                                 , Platform X86_64 OSX
+                                 , Platform X86_64 OSX, Platform (OtherArch "armv7l") Linux
                                  ]
 
 fromCabalPlatform :: Platform -> String
-fromCabalPlatform (Platform I386 Linux)   = "\"i686-linux\""
-fromCabalPlatform (Platform X86_64 Linux) = "\"x86_64-linux\""
-fromCabalPlatform (Platform X86_64 OSX)   = "\"x86_64-darwin\""
-fromCabalPlatform p                       = error ("fromCabalPlatform: invalid Nix platform" ++ show p)
+fromCabalPlatform (Platform I386 Linux)                 = "\"i686-linux\""
+fromCabalPlatform (Platform X86_64 Linux)               = "\"x86_64-linux\""
+fromCabalPlatform (Platform X86_64 OSX)                 = "\"x86_64-darwin\""
+fromCabalPlatform (Platform (OtherArch "armv7l") Linux) = "\"armv7l-linux\""
+fromCabalPlatform p                                     = error ("fromCabalPlatform: invalid Nix platform" ++ show p)
