@@ -38,6 +38,7 @@ instance IsString Platform where
   fromString "i686-linux" = Platform I386 Linux
   fromString "x86_64-linux" = Platform X86_64 Linux
   fromString "x86_64-darwin" = Platform X86_64 OSX
+  fromString "armv7l-linux" = Platform (OtherArch "armv7l") Linux
   fromString s = error ("fromString: " ++ show s ++ " is not a valid platform")
 
 instance FromJSON Platform where
