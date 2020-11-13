@@ -8,8 +8,8 @@ tmpfile=$(mktemp "update-stackage.XXXXXXX")
 # shellcheck disable=SC2064
 trap "rm ${tmpfile} ${tmpfile}.new" 0
 
-curl -L -s "https://stackage.org/lts/cabal.config" >"$tmpfile"
-version=$(sed -rn "s/^--.*http:..(www.)?stackage.org.snapshot.lts-//p" "$tmpfile")
+curl -L -s "https://stackage.org/nightly/cabal.config" >"$tmpfile"
+version=$(sed -rn "s/^--.*http:..(www.)?stackage.org.snapshot.nightly-//p" "$tmpfile")
 
 # Create a simple yaml version of the file.
 sed -r \
@@ -44,10 +44,10 @@ sed -r \
 
 # Drop the previous configuration ...
 # shellcheck disable=SC1004
-sed -e '/  # LTS Haskell/,/^$/c \TODO\
+sed -e '/  # Stackage Nightly/,/^$/c \TODO\
 '   -i nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml
 
 # ... and replace it with the new one.
 sed -e "/TODO/r $tmpfile" \
-    -e "s/TODO/  # LTS Haskell $version/" \
+    -e "s/TODO/  # Stackage Nightly $version/" \
     -i nixpkgs/pkgs/development/haskell-modules/configuration-hackage2nix.yaml
