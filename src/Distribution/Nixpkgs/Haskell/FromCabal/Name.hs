@@ -42,6 +42,7 @@ libNixName "curses"                             = return "ncurses"
 libNixName "dbusmenu-glib-0.4"                  = return "libdbusmenu"
 libNixName "dbusmenu-gtk3-0.4"                  = ["libdbusmenu-gtk3", "gtk3"]
 libNixName "dl"                                 = []  -- provided by glibc
+libNixName "ff"                                 = return "libff"
 libNixName "fftw3"                              = return "fftw"
 libNixName "fftw3f"                             = return "fftwFloat"
 libNixName "gconf"                              = return "GConf"
