@@ -278,16 +278,16 @@ wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "lib
 cabalInstallPostInstall :: String
 cabalInstallPostInstall = unlines
   [ "postInstall = ''"
-  , "  mkdir $out/etc"
-  , "  mv bash-completion $out/etc/bash_completion.d"
+  , "  mkdir -p $out/share/bash-completion"
+  , "  mv bash-completion $out/share/bash-completion/completions"
   , "'';"
   ]
 
 darcsInstallPostInstall :: String
 darcsInstallPostInstall = unlines
   [ "postInstall = ''"
-  , "  mkdir -p $out/etc/bash_completion.d"
-  , "  mv contrib/darcs_completion $out/etc/bash_completion.d/darcs"
+  , "  mkdir -p $out/share/bash-completion/completions"
+  , "  mv contrib/darcs_completion $out/share/bash-completion/completions/darcs"
   , "'';"
   ]
 
