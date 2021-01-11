@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv, template-haskell }:
+{ mkDerivation, base, lib, template-haskell }:
 mkDerivation {
   pname = "partial-isomorphisms";
   version = "0.2.2.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base template-haskell ];
   homepage = "http://www.informatik.uni-marburg.de/~rendel/unparse";
   description = "Partial isomorphisms";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

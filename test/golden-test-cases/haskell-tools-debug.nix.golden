@@ -1,7 +1,7 @@
 { mkDerivation, base, filepath, ghc, ghc-paths, haskell-tools-ast
 , haskell-tools-backend-ghc, haskell-tools-builtin-refactorings
-, haskell-tools-prettyprint, haskell-tools-refactor, references
-, split, stdenv, template-haskell
+, haskell-tools-prettyprint, haskell-tools-refactor, lib
+, references, split, template-haskell
 }:
 mkDerivation {
   pname = "haskell-tools-debug";
@@ -18,5 +18,5 @@ mkDerivation {
   executableHaskellDepends = [ base ];
   homepage = "https://github.com/haskell-tools/haskell-tools";
   description = "Debugging Tools for Haskell-tools";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

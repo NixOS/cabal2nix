@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, bytestring, eventful-core
-, eventful-sql-common, eventful-test-helpers, hspec, HUnit, mtl
-, persistent, persistent-sqlite, stdenv, text, uuid
+, eventful-sql-common, eventful-test-helpers, hspec, HUnit, lib
+, mtl, persistent, persistent-sqlite, text, uuid
 }:
 mkDerivation {
   pname = "eventful-sqlite";
@@ -17,5 +17,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/jdreaver/eventful#readme";
   description = "SQLite implementations for eventful";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, exceptions, linear, SDL2
-, StateVar, stdenv, text, transformers, vector
+{ mkDerivation, base, bytestring, exceptions, lib, linear, SDL2
+, StateVar, text, transformers, vector
 }:
 mkDerivation {
   pname = "sdl2";
@@ -14,5 +14,5 @@ mkDerivation {
   librarySystemDepends = [ SDL2 ];
   libraryPkgconfigDepends = [ SDL2 ];
   description = "Both high- and low-level bindings to the SDL library (version 2.0.4+).";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

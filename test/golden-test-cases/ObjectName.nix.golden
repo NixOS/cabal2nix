@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv, transformers }:
+{ mkDerivation, base, lib, transformers }:
 mkDerivation {
   pname = "ObjectName";
   version = "1.1.0.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base transformers ];
   homepage = "https://github.com/svenpanne/ObjectName";
   description = "Explicitly handled object names";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

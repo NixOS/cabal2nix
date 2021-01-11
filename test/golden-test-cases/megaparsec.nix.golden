@@ -1,7 +1,7 @@
 { mkDerivation, base, bytestring, case-insensitive, containers
-, criterion, deepseq, hspec, hspec-expectations, mtl
-, parser-combinators, QuickCheck, scientific, stdenv, text
-, transformers, weigh
+, criterion, deepseq, hspec, hspec-expectations, lib, mtl
+, parser-combinators, QuickCheck, scientific, text, transformers
+, weigh
 }:
 mkDerivation {
   pname = "megaparsec";
@@ -18,5 +18,5 @@ mkDerivation {
   benchmarkHaskellDepends = [ base criterion deepseq text weigh ];
   homepage = "https://github.com/mrkkrp/megaparsec";
   description = "Monadic parser combinators";
-  license = stdenv.lib.licenses.bsd2;
+  license = lib.licenses.bsd2;
 }

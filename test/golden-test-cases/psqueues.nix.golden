@@ -1,8 +1,7 @@
 { mkDerivation, array, base, containers, criterion, deepseq
-, fingertree-psqueue, ghc-prim, hashable, HUnit, mtl, PSQueue
-, QuickCheck, random, stdenv, tagged, test-framework
-, test-framework-hunit, test-framework-quickcheck2
-, unordered-containers
+, fingertree-psqueue, ghc-prim, hashable, HUnit, lib, mtl, PSQueue
+, QuickCheck, random, tagged, test-framework, test-framework-hunit
+, test-framework-quickcheck2, unordered-containers
 }:
 mkDerivation {
   pname = "psqueues";
@@ -18,5 +17,5 @@ mkDerivation {
     hashable mtl PSQueue random unordered-containers
   ];
   description = "Pure priority search queues";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

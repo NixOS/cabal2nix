@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv, template-haskell, transformers }:
+{ mkDerivation, base, lib, template-haskell, transformers }:
 mkDerivation {
   pname = "monadloc";
   version = "0.7.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base template-haskell transformers ];
   homepage = "http://github.com/pepeiborra/monadloc";
   description = "A class for monads which can keep a monadic call trace";
-  license = stdenv.lib.licenses.publicDomain;
+  license = lib.licenses.publicDomain;
 }

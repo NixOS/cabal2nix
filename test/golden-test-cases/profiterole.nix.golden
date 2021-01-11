@@ -1,5 +1,5 @@
 { mkDerivation, base, containers, directory, extra, filepath
-, ghc-prof, hashable, scientific, stdenv, text
+, ghc-prof, hashable, lib, scientific, text
 }:
 mkDerivation {
   pname = "profiterole";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/ndmitchell/profiterole#readme";
   description = "Restructure GHC profile reports";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, array, base, containers, mtl, semigroups, stdenv }:
+{ mkDerivation, array, base, containers, lib, mtl, semigroups }:
 mkDerivation {
   pname = "frisby";
   version = "0.2.2";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ array base containers mtl semigroups ];
   homepage = "http://repetae.net/computer/frisby/";
   description = "Linear time composable parser for PEG grammars";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

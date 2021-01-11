@@ -1,5 +1,5 @@
-{ mkDerivation, base, containers, exceptions, monad-control, mtl
-, pipes, primitive, stdenv, transformers, transformers-base
+{ mkDerivation, base, containers, exceptions, lib, monad-control
+, mtl, pipes, primitive, transformers, transformers-base
 }:
 mkDerivation {
   pname = "pipes-safe";
@@ -10,5 +10,5 @@ mkDerivation {
     transformers transformers-base
   ];
   description = "Safety for the pipes ecosystem";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

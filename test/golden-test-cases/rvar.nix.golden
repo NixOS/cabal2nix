@@ -1,4 +1,4 @@
-{ mkDerivation, base, MonadPrompt, mtl, random-source, stdenv
+{ mkDerivation, base, lib, MonadPrompt, mtl, random-source
 , transformers
 }:
 mkDerivation {
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/mokus0/random-fu";
   description = "Random Variables";
-  license = stdenv.lib.licenses.publicDomain;
+  license = lib.licenses.publicDomain;
 }

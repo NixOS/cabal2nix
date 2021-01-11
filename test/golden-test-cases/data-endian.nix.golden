@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "data-endian";
   version = "0.1.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/mvv/data-endian";
   description = "Endian-sensitive data";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

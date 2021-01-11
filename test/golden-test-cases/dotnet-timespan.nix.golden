@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "dotnet-timespan";
   version = "0.0.1.0";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "http://github.com/YoEight/dotnet-timespan";
   description = ".NET TimeSpan";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

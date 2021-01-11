@@ -1,5 +1,5 @@
 { mkDerivation, base, blaze-html, bytestring, containers
-, data-default, deepseq, mtl, stdenv, syb, text, uniplate
+, data-default, deepseq, lib, mtl, syb, text, uniplate
 , xss-sanitize
 }:
 mkDerivation {
@@ -15,5 +15,5 @@ mkDerivation {
   executableHaskellDepends = [ base blaze-html bytestring text ];
   homepage = "http://github.com/jgm/cheapskate";
   description = "Experimental markdown processor";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, deepseq, random, stdenv
+{ mkDerivation, base, containers, deepseq, lib, random
 , template-haskell, tf-random, transformers
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base ];
   homepage = "https://github.com/nick8325/quickcheck";
   description = "Automatic testing of Haskell programs";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,9 +1,9 @@
-{ mkDerivation, base, containers, stdenv }:
+{ mkDerivation, base, containers, lib }:
 mkDerivation {
   pname = "rosezipper";
   version = "0.2";
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers ];
   description = "Generic zipper implementation for Data.Tree";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

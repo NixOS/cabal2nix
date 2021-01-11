@@ -1,6 +1,6 @@
 { mkDerivation, base, base-compat, directory, exceptions, hspec
-, hspec-megaparsec, megaparsec, optparse-applicative, process
-, stdenv, text, transformers, yaml
+, hspec-megaparsec, lib, megaparsec, optparse-applicative, process
+, text, transformers, yaml
 }:
 mkDerivation {
   pname = "dotenv";
@@ -23,5 +23,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/stackbuilders/dotenv-hs";
   description = "Loads environment variables from dotenv files";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

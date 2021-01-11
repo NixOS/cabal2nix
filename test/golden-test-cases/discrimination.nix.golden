@@ -1,6 +1,6 @@
 { mkDerivation, array, base, containers, contravariant, criterion
-, deepseq, ghc-prim, hashable, primitive, profunctors, promises
-, semigroups, stdenv, transformers, transformers-compat
+, deepseq, ghc-prim, hashable, lib, primitive, profunctors
+, promises, semigroups, transformers, transformers-compat
 , unordered-containers, vector, void
 }:
 mkDerivation {
@@ -18,5 +18,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/ekmett/discrimination/";
   description = "Fast generic linear-time sorting, joins and container construction";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

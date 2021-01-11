@@ -95,7 +95,7 @@ specifies. In case of the `conduit` example, the generated code should say:
     libraryHaskellDepends = [
       base exceptions lifted-base mmorph mtl resourcet transformers
       transformers-base
-    ] ++ stdenv.lib.optional (stdenv.lib.versionOlder ghc.version "7.9") void;
+    ] ++ lib.optional (lib.versionOlder ghc.version "7.9") void;
 
 Furthermore, Cabal flags should be mapped to boolean function arguments that
 enable/disable the underlying feature and thereby modify how the Nix expression

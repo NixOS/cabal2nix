@@ -1,4 +1,4 @@
-{ mkDerivation, base, ghc-prim, stdenv, transformers }:
+{ mkDerivation, base, ghc-prim, lib, transformers }:
 mkDerivation {
   pname = "primitive";
   version = "0.6.2.0";
@@ -7,5 +7,5 @@ mkDerivation {
   testHaskellDepends = [ base ghc-prim ];
   homepage = "https://github.com/haskell/primitive";
   description = "Primitive memory-related operations";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

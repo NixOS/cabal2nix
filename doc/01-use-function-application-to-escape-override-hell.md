@@ -60,7 +60,7 @@ defines builds for versions 0.3.13, 0.4.0, and 0.4.1. Those definitions look
 all quite similar, so we'll omit the third definition for brevity:
 
     "hslua_0_3_13" = callPackage
-      ({ mkDerivation, base, lua5_1, mtl }:
+      ({ mkDerivation, base, lib, lua5_1, mtl }:
        mkDerivation {
          pname = "hslua";
          version = "0.3.13";
@@ -70,13 +70,13 @@ all quite similar, so we'll omit the third definition for brevity:
          libraryPkgconfigDepends = [ lua5_1 ];
          testHaskellDepends = [ base ];
          description = "A Lua language interpreter embedding in Haskell";
-         license = stdenv.lib.licenses.mit;
-         hydraPlatforms = stdenv.lib.platforms.none;
+         license = lib.licenses.mit;
+         hydraPlatforms = lib.platforms.none;
        }) { inherit (pkgs) lua5_1; };
 
     "hslua" = callPackage
       ({ mkDerivation, base, bytestring, hspec, hspec-contrib, HUnit
-       , lua5_1, QuickCheck, quickcheck-instances, text
+       , lib, lua5_1, QuickCheck, quickcheck-instances, text
        }:
        mkDerivation {
          pname = "hslua";
@@ -90,7 +90,7 @@ all quite similar, so we'll omit the third definition for brevity:
            quickcheck-instances text
          ];
          description = "A Lua language interpreter embedding in Haskell";
-         license = stdenv.lib.licenses.mit;
+         license = lib.licenses.mit;
        }) { inherit (pkgs) lua5_1; };
 
 Let's go through that code step by step. The basic structure of those
@@ -124,11 +124,11 @@ is that our package set knows its final value already while we're still
 defining it! This allows for the existence of the `callPackage` function:
 
     self: let
-            callPackage = stdenv.lib.callPackageWith self;
+            callPackage = lib.callPackageWith self;
           in
             self // { ... Haskell package definitions here ... }
 
-The expression `callPackage f args` translates to `stdenv.lib.callPackageWith
+The expression `callPackage f args` translates to `lib.callPackageWith
 self f args`. [`callPackageWith`][2] then uses reflection to determine the
 names of all arguments expected by `f`. It finds those names that don't exist
 in `args` in `self` and adds them to `args` to complete the function call. In
@@ -172,7 +172,7 @@ package set use the older version instead of the latest one. Furthermore, we
 would like Hydra builds of `haskell.packages.lts-2_8.hslua` enabled. The
 original definition from `hackage-packages.nix` disabled those builds via
 
-    hydraPlatforms = stdenv.lib.platforms.none
+    hydraPlatforms = lib.platforms.none
 
 which makes sense in `haskellPackages`, because it prefers the latest version
 of the package, but the older LTS set isn't happy with that choice, so it uses
@@ -247,10 +247,10 @@ but this adds a dozen highly redundant arguments to every single definition!
 There might be clever ways around mentioning each of them explicitly, like:
 
     "hslua" =
-       { mkDerivation, base, bytestring, [... more inputs omitted ...]
+       { mkDerivation, base, bytestring, lib, [... more inputs omitted ...]
        , ...
        } @ args:
-       stdenv.lib.callPackageWith args mkDerivation {
+       lib.callPackageWith args mkDerivation {
          pname = "hslua";
          version = "0.4.1";
          [... more attributes omitted ...]

@@ -1,8 +1,8 @@
 { mkDerivation, attoparsec, base, base64-bytestring, bytestring
 , containers, cryptohash, css-syntax, directory, filemanip
-, filepath, fsnotify, hspec, hspec-smallcheck, kraken, mtl
+, filepath, fsnotify, hspec, hspec-smallcheck, kraken, lib, mtl
 , network-uri, optparse-applicative, process, smallcheck, snap-core
-, snap-server, stdenv, stm, tagsoup, text, time, transformers, unix
+, snap-server, stm, tagsoup, text, time, transformers, unix
 , unordered-containers, vector
 }:
 mkDerivation {
@@ -22,5 +22,5 @@ mkDerivation {
     smallcheck stm text time unordered-containers vector
   ];
   description = "A glorified string replacement tool";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

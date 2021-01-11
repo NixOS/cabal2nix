@@ -1,4 +1,4 @@
-{ mkDerivation, base, logging-effect, stdenv, template-haskell
+{ mkDerivation, base, lib, logging-effect, template-haskell
 , wl-pprint-text
 }:
 mkDerivation {
@@ -13,5 +13,5 @@ mkDerivation {
   executableHaskellDepends = [ base logging-effect wl-pprint-text ];
   homepage = "https://github.com/jship/logging-effect-extra#readme";
   description = "TH splices to augment log messages with file info";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

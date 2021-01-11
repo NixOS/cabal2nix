@@ -1,8 +1,8 @@
 { mkDerivation, aeson, ansi-wl-pprint, base, bifunctors, bytestring
-, comonad, directory, double-conversion, filepath, free, lens, mtl
-, parsers, scientific, semigroups, stdenv, tasty, tasty-golden
-, text, text-format, text-manipulate, trifecta
-, unordered-containers, vector
+, comonad, directory, double-conversion, filepath, free, lens, lib
+, mtl, parsers, scientific, semigroups, tasty, tasty-golden, text
+, text-format, text-manipulate, trifecta, unordered-containers
+, vector
 }:
 mkDerivation {
   pname = "ede";
@@ -21,5 +21,5 @@ mkDerivation {
   homepage = "http://github.com/brendanhay/ede";
   description = "Templating language with similar syntax and features to Liquid or Jinja2";
   license = "unknown";
-  hydraPlatforms = stdenv.lib.platforms.none;
+  hydraPlatforms = lib.platforms.none;
 }

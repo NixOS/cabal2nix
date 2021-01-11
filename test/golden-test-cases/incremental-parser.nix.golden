@@ -1,6 +1,5 @@
-{ mkDerivation, base, bytestring, checkers, criterion, deepseq
-, monoid-subclasses, QuickCheck, stdenv, tasty, tasty-quickcheck
-, text
+{ mkDerivation, base, bytestring, checkers, criterion, deepseq, lib
+, monoid-subclasses, QuickCheck, tasty, tasty-quickcheck, text
 }:
 mkDerivation {
   pname = "incremental-parser";

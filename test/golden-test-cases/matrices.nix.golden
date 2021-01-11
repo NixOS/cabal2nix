@@ -1,4 +1,4 @@
-{ mkDerivation, base, criterion, deepseq, primitive, stdenv, tasty
+{ mkDerivation, base, criterion, deepseq, lib, primitive, tasty
 , tasty-hunit, tasty-quickcheck, vector
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   benchmarkHaskellDepends = [ base criterion vector ];
   description = "native matrix based on vector";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

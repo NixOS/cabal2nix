@@ -1,4 +1,4 @@
-{ mkDerivation, base, heap, QuickCheck, stdenv }:
+{ mkDerivation, base, heap, lib, QuickCheck }:
 mkDerivation {
   pname = "median-stream";
   version = "0.7.0.0";
@@ -7,5 +7,5 @@ mkDerivation {
   testHaskellDepends = [ base QuickCheck ];
   homepage = "https://github.com/caneroj1/median-stream#readme";
   description = "Constant-time queries for the median of a stream of numeric data";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

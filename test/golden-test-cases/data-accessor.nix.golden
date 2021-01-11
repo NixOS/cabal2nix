@@ -1,4 +1,4 @@
-{ mkDerivation, array, base, containers, stdenv, transformers }:
+{ mkDerivation, array, base, containers, lib, transformers }:
 mkDerivation {
   pname = "data-accessor";
   version = "0.2.2.7";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ array base containers transformers ];
   homepage = "http://www.haskell.org/haskellwiki/Record_access";
   description = "Utilities for accessing and manipulating fields of records";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

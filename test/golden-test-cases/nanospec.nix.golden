@@ -1,4 +1,4 @@
-{ mkDerivation, base, hspec, silently, stdenv }:
+{ mkDerivation, base, hspec, lib, silently }:
 mkDerivation {
   pname = "nanospec";
   version = "0.2.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base hspec silently ];
   description = "A lightweight implementation of a subset of Hspec's API";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

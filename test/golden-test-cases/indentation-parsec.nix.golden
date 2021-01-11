@@ -1,4 +1,4 @@
-{ mkDerivation, base, indentation-core, mtl, parsec, stdenv, tasty
+{ mkDerivation, base, indentation-core, lib, mtl, parsec, tasty
 , tasty-hunit
 }:
 mkDerivation {
@@ -9,5 +9,5 @@ mkDerivation {
   testHaskellDepends = [ base parsec tasty tasty-hunit ];
   homepage = "https://bitbucket.org/adamsmd/indentation";
   description = "Indentation sensitive parsing combinators for Parsec";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

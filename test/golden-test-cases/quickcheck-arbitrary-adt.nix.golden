@@ -1,4 +1,4 @@
-{ mkDerivation, base, hspec, lens, QuickCheck, stdenv
+{ mkDerivation, base, hspec, lens, lib, QuickCheck
 , template-haskell, transformers
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/plow-technologies/quickcheck-arbitrary-adt#readme";
   description = "Generic typeclasses for generating arbitrary ADTs";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

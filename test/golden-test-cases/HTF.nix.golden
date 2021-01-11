@@ -1,7 +1,7 @@
 { mkDerivation, aeson, aeson-pretty, array, base, base64-bytestring
 , bytestring, containers, cpphs, Diff, directory, filepath
-, haskell-src, HUnit, lifted-base, monad-control, mtl, old-time
-, pretty, process, QuickCheck, random, regex-compat, stdenv
+, haskell-src, HUnit, lib, lifted-base, monad-control, mtl
+, old-time, pretty, process, QuickCheck, random, regex-compat
 , template-haskell, temporary, text, time, unix
 , unordered-containers, vector, xmlgen
 }:

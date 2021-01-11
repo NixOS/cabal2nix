@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, hexpat, hxt, stdenv }:
+{ mkDerivation, base, bytestring, hexpat, hxt, lib }:
 mkDerivation {
   pname = "hxt-expat";
   version = "9.1.1";
@@ -7,5 +7,5 @@ mkDerivation {
   homepage = "http://www.fh-wedel.de/~si/HXmlToolbox/index.html";
   description = "Expat parser for HXT";
   license = "unknown";
-  hydraPlatforms = stdenv.lib.platforms.none;
+  hydraPlatforms = lib.platforms.none;
 }

@@ -1,5 +1,5 @@
 { mkDerivation, base, bytestring, chell, chell-quickcheck, deepseq
-, QuickCheck, stdenv, text
+, lib, QuickCheck, text
 }:
 mkDerivation {
   pname = "system-filepath";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/fpco/haskell-filesystem";
   description = "High-level, byte-based file and directory path manipulations (deprecated)";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

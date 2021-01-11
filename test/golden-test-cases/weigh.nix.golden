@@ -1,4 +1,4 @@
-{ mkDerivation, base, deepseq, mtl, process, split, stdenv
+{ mkDerivation, base, deepseq, lib, mtl, process, split
 , template-haskell, temporary
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ base deepseq ];
   homepage = "https://github.com/fpco/weigh#readme";
   description = "Measure allocations of a Haskell functions/values";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

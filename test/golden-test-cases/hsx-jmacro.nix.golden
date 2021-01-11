@@ -1,5 +1,4 @@
-{ mkDerivation, base, hsp, jmacro, mtl, stdenv, text
-, wl-pprint-text
+{ mkDerivation, base, hsp, jmacro, lib, mtl, text, wl-pprint-text
 }:
 mkDerivation {
   pname = "hsx-jmacro";
@@ -10,5 +9,5 @@ mkDerivation {
   ];
   homepage = "http://www.happstack.com/";
   description = "hsp+jmacro support";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

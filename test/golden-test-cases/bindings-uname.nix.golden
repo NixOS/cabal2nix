@@ -1,9 +1,9 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "bindings-uname";
   version = "0.1";
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   description = "Low-level binding to POSIX uname(3)";
-  license = stdenv.lib.licenses.publicDomain;
+  license = lib.licenses.publicDomain;
 }

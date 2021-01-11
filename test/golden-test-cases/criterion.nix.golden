@@ -1,8 +1,8 @@
 { mkDerivation, aeson, ansi-wl-pprint, base, base-compat, binary
 , bytestring, cassava, code-page, containers, deepseq, directory
-, exceptions, filepath, Glob, HUnit, js-flot, js-jquery
+, exceptions, filepath, Glob, HUnit, js-flot, js-jquery, lib
 , microstache, mtl, mwc-random, optparse-applicative, parsec
-, QuickCheck, semigroups, statistics, stdenv, tasty, tasty-hunit
+, QuickCheck, semigroups, statistics, tasty, tasty-hunit
 , tasty-quickcheck, text, time, transformers, transformers-compat
 , vector, vector-algorithms
 }:
@@ -27,5 +27,5 @@ mkDerivation {
   ];
   homepage = "http://www.serpentine.com/criterion";
   description = "Robust, reliable performance measurement and analysis";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

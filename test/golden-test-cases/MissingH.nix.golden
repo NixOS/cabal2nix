@@ -1,7 +1,7 @@
 { mkDerivation, array, base, containers, directory
-, errorcall-eq-instance, filepath, hslogger, HUnit, mtl, network
-, old-locale, old-time, parsec, process, QuickCheck, random
-, regex-compat, stdenv, testpack, time, unix
+, errorcall-eq-instance, filepath, hslogger, HUnit, lib, mtl
+, network, old-locale, old-time, parsec, process, QuickCheck
+, random, regex-compat, testpack, time, unix
 }:
 mkDerivation {
   pname = "MissingH";
@@ -18,5 +18,5 @@ mkDerivation {
   ];
   homepage = "http://software.complete.org/missingh";
   description = "Large utility library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

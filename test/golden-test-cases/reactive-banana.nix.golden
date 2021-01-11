@@ -1,5 +1,5 @@
-{ mkDerivation, base, containers, hashable, HUnit, pqueue, psqueues
-, stdenv, test-framework, test-framework-hunit, transformers
+{ mkDerivation, base, containers, hashable, HUnit, lib, pqueue
+, psqueues, test-framework, test-framework-hunit, transformers
 , unordered-containers, vault
 }:
 mkDerivation {
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "http://wiki.haskell.org/Reactive-banana";
   description = "Library for functional reactive programming (FRP)";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

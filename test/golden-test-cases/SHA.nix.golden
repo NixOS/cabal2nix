@@ -1,4 +1,4 @@
-{ mkDerivation, array, base, binary, bytestring, QuickCheck, stdenv
+{ mkDerivation, array, base, binary, bytestring, lib, QuickCheck
 , test-framework, test-framework-quickcheck2
 }:
 mkDerivation {
@@ -13,5 +13,5 @@ mkDerivation {
     test-framework-quickcheck2
   ];
   description = "Implementations of the SHA suite of message digest functions";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

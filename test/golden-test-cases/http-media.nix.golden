@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, case-insensitive, containers
-, QuickCheck, stdenv, test-framework, test-framework-quickcheck2
+{ mkDerivation, base, bytestring, case-insensitive, containers, lib
+, QuickCheck, test-framework, test-framework-quickcheck2
 , utf8-string
 }:
 mkDerivation {
@@ -15,5 +15,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/zmthy/http-media";
   description = "Processing HTTP Content-Type and Accept headers";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

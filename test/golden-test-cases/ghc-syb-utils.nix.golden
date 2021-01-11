@@ -1,5 +1,4 @@
-{ mkDerivation, base, directory, filepath, ghc, ghc-paths, stdenv
-, syb
+{ mkDerivation, base, directory, filepath, ghc, ghc-paths, lib, syb
 }:
 mkDerivation {
   pname = "ghc-syb-utils";
@@ -9,5 +8,5 @@ mkDerivation {
   testHaskellDepends = [ base directory filepath ghc ghc-paths ];
   homepage = "http://github.com/nominolo/ghc-syb";
   description = "Scrap Your Boilerplate utilities for the GHC API";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

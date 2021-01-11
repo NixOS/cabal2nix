@@ -1,6 +1,6 @@
 { mkDerivation, aeson, attoparsec, base, bytestring, criterion
-, doctest, hashable, HUnit, primitive, QuickCheck
-, quickcheck-classes, stdenv, test-framework, test-framework-hunit
+, doctest, hashable, HUnit, lib, primitive, QuickCheck
+, quickcheck-classes, test-framework, test-framework-hunit
 , test-framework-quickcheck2, text, vector
 }:
 mkDerivation {
@@ -20,5 +20,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/andrewthad/haskell-ip#readme";
   description = "Library for IP and MAC addresses";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

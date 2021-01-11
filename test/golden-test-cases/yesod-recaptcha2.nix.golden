@@ -1,4 +1,4 @@
-{ mkDerivation, base, classy-prelude-yesod, http-conduit, stdenv
+{ mkDerivation, base, classy-prelude-yesod, http-conduit, lib
 , yesod-auth
 }:
 mkDerivation {
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/ncaq/yesod-recaptcha2#readme";
   description = "yesod recaptcha2";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

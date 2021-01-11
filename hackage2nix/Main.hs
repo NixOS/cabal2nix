@@ -175,7 +175,7 @@ main = do
   withFile hackagePackagesFile WriteMode $ \h -> do
     hPutStrLn h "/* hackage-packages.nix is an auto-generated file -- DO NOT EDIT! */"
     hPutStrLn h ""
-    hPutStrLn h "{ pkgs, stdenv, callPackage }:"
+    hPutStrLn h "{ pkgs, lib, callPackage }:"
     hPutStrLn h ""
     hPutStrLn h "self: {"
     hPutStrLn h ""

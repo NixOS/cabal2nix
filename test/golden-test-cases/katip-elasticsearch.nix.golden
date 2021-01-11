@@ -1,9 +1,9 @@
 { mkDerivation, aeson, async, base, bloodhound, bytestring
 , containers, criterion, deepseq, enclosed-exceptions, exceptions
-, http-client, http-types, katip, lens, lens-aeson
-, quickcheck-instances, random, retry, scientific, stdenv, stm
-, stm-chans, tagged, tasty, tasty-hunit, tasty-quickcheck, text
-, time, transformers, unordered-containers, uuid, vector
+, http-client, http-types, katip, lens, lens-aeson, lib
+, quickcheck-instances, random, retry, scientific, stm, stm-chans
+, tagged, tasty, tasty-hunit, tasty-quickcheck, text, time
+, transformers, unordered-containers, uuid, vector
 }:
 mkDerivation {
   pname = "katip-elasticsearch";
@@ -26,5 +26,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/Soostone/katip";
   description = "ElasticSearch scribe for the Katip logging framework";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "deque";
   version = "0.2";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/nikita-volkov/deque";
   description = "Double-ended queue";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

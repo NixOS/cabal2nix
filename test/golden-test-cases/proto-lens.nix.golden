@@ -1,5 +1,5 @@
 { mkDerivation, attoparsec, base, bytestring, containers
-, data-default-class, lens-family, parsec, pretty, stdenv, text
+, data-default-class, lens-family, lib, parsec, pretty, text
 , transformers, void
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/google/proto-lens";
   description = "A lens-based implementation of protocol buffers in Haskell";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

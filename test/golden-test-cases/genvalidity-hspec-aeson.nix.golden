@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, bytestring, deepseq, doctest
 , genvalidity, genvalidity-aeson, genvalidity-hspec
-, genvalidity-text, hspec, QuickCheck, stdenv, text
+, genvalidity-text, hspec, lib, QuickCheck, text
 }:
 mkDerivation {
   pname = "genvalidity-hspec-aeson";
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "http://cs-syd.eu";
   description = "Standard spec's for aeson-related instances";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

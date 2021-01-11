@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, chell, stdenv, system-filepath
+{ mkDerivation, base, bytestring, chell, lib, system-filepath
 , temporary, text, time, transformers, unix
 }:
 mkDerivation {
@@ -14,5 +14,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/fpco/haskell-filesystem";
   description = "Consistent filesystem interaction across GHC versions (deprecated)";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

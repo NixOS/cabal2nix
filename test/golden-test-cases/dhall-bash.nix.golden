@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, containers, dhall
-, neat-interpolation, optparse-generic, shell-escape, stdenv, text
+{ mkDerivation, base, bytestring, containers, dhall, lib
+, neat-interpolation, optparse-generic, shell-escape, text
 , text-format, trifecta, vector
 }:
 mkDerivation {
@@ -16,5 +16,5 @@ mkDerivation {
     base bytestring dhall optparse-generic text trifecta
   ];
   description = "Compile Dhall to Bash";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

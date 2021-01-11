@@ -1,5 +1,5 @@
-{ mkDerivation, base, lens, linear, QuickCheck, semigroupoids
-, semigroups, stdenv, vector
+{ mkDerivation, base, lens, lib, linear, QuickCheck, semigroupoids
+, semigroups, vector
 }:
 mkDerivation {
   pname = "active";
@@ -12,5 +12,5 @@ mkDerivation {
     base lens linear QuickCheck semigroupoids semigroups vector
   ];
   description = "Abstractions for animation";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, HUnit, stdenv, stm, stm-chans, test-framework
+{ mkDerivation, base, HUnit, lib, stm, stm-chans, test-framework
 , test-framework-hunit
 }:
 mkDerivation {
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/roelvandijk/terminal-progress-bar";
   description = "A simple progress bar in the terminal";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,5 +1,5 @@
 { mkDerivation, base, bytestring, containers, explicit-exception
-, extensible-exceptions, sample-frame, sox, stdenv, storablevector
+, extensible-exceptions, lib, sample-frame, sox, storablevector
 , transformers, utility-ht
 }:
 mkDerivation {
@@ -15,5 +15,5 @@ mkDerivation {
   libraryPkgconfigDepends = [ sox ];
   homepage = "http://www.haskell.org/haskellwiki/Sox";
   description = "Write, read, convert audio signals using libsox";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

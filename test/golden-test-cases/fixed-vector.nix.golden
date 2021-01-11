@@ -1,5 +1,4 @@
-{ mkDerivation, base, deepseq, doctest, filemanip, primitive
-, stdenv
+{ mkDerivation, base, deepseq, doctest, filemanip, lib, primitive
 }:
 mkDerivation {
   pname = "fixed-vector";
@@ -8,5 +7,5 @@ mkDerivation {
   libraryHaskellDepends = [ base deepseq primitive ];
   testHaskellDepends = [ base doctest filemanip primitive ];
   description = "Generic vectors with statically known size";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

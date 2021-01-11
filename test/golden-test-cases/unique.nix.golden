@@ -1,4 +1,4 @@
-{ mkDerivation, base, ghc-prim, hashable, stdenv }:
+{ mkDerivation, base, ghc-prim, hashable, lib }:
 mkDerivation {
   pname = "unique";
   version = "0";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ghc-prim hashable ];
   homepage = "http://github.com/ekmett/unique/";
   description = "Fully concurrent unique identifiers";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, Cabal, cabal-doctest, doctest, stdenv }:
+{ mkDerivation, base, Cabal, cabal-doctest, doctest, lib }:
 mkDerivation {
   pname = "hsyslog";
   version = "5.0.1";
@@ -10,5 +10,5 @@ mkDerivation {
   testHaskellDepends = [ base doctest ];
   homepage = "http://github.com/peti/hsyslog";
   description = "FFI interface to syslog(3) from POSIX.1-2001";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

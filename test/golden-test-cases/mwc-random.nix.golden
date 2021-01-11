@@ -1,5 +1,4 @@
-{ mkDerivation, base, math-functions, primitive, stdenv, time
-, vector
+{ mkDerivation, base, lib, math-functions, primitive, time, vector
 }:
 mkDerivation {
   pname = "mwc-random";
@@ -11,5 +10,5 @@ mkDerivation {
   doCheck = false;
   homepage = "https://github.com/bos/mwc-random";
   description = "Fast, high quality pseudo random number generation";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

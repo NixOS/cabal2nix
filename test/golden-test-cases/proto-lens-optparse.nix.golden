@@ -1,5 +1,4 @@
-{ mkDerivation, base, optparse-applicative, proto-lens, stdenv
-, text
+{ mkDerivation, base, lib, optparse-applicative, proto-lens, text
 }:
 mkDerivation {
   pname = "proto-lens-optparse";
@@ -10,5 +9,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/google/proto-lens";
   description = "Adapting proto-lens to optparse-applicative ReadMs";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

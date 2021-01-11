@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "microlens";
   version = "0.4.8.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "http://github.com/aelve/microlens";
   description = "A tiny lens library with no dependencies. If you're writing an app, you probably want microlens-platform, not this.";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

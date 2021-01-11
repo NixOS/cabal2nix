@@ -3,10 +3,10 @@
 , case-insensitive, cereal, conduit, conduit-combinators
 , conduit-extra, containers, cryptonite, data-default, directory
 , errors, filepath, http-client, http-client-tls, http-conduit
-, http-types, lifted-base, memory, monad-control, mtl, network
+, http-types, lib, lifted-base, memory, monad-control, mtl, network
 , old-locale, QuickCheck, quickcheck-instances, resourcet, safe
-, scientific, stdenv, tagged, tasty, tasty-hunit, tasty-quickcheck
-, text, time, transformers, transformers-base, unordered-containers
+, scientific, tagged, tasty, tasty-hunit, tasty-quickcheck, text
+, time, transformers, transformers-base, unordered-containers
 , utf8-string, vector, xml-conduit
 }:
 mkDerivation {
@@ -31,5 +31,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/aristidb/aws";
   description = "Amazon Web Services (AWS) for Haskell";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

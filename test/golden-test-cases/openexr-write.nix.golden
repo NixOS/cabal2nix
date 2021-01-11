@@ -1,6 +1,5 @@
 { mkDerivation, base, binary, bytestring, data-binary-ieee754
-, deepseq, directory, hspec, split, stdenv, vector, vector-split
-, zlib
+, deepseq, directory, hspec, lib, split, vector, vector-split, zlib
 }:
 mkDerivation {
   pname = "openexr-write";
@@ -13,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base bytestring directory hspec vector ];
   homepage = "https://github.com/pavolzetor/openexr-write#readme";
   description = "Library for writing images in OpenEXR HDR file format";
-  license = stdenv.lib.licenses.gpl3;
+  license = lib.licenses.gpl3;
 }

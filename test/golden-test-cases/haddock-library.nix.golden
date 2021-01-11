@@ -1,5 +1,5 @@
 { mkDerivation, base, base-compat, bytestring, deepseq, hspec
-, hspec-discover, QuickCheck, stdenv, transformers
+, hspec-discover, lib, QuickCheck, transformers
 }:
 mkDerivation {
   pname = "haddock-library";
@@ -13,5 +13,5 @@ mkDerivation {
   doHaddock = false;
   homepage = "http://www.haskell.org/haddock/";
   description = "Library exposing some functionality of Haddock";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

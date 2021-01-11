@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, hspec, QuickCheck, stdenv }:
+{ mkDerivation, base, containers, hspec, lib, QuickCheck }:
 mkDerivation {
   pname = "drawille";
   version = "0.1.2.0";
@@ -9,5 +9,5 @@ mkDerivation {
   testHaskellDepends = [ base containers hspec QuickCheck ];
   homepage = "https://github.com/yamadapc/haskell-drawille#readme";
   description = "A port of asciimoo's drawille to haskell";
-  license = stdenv.lib.licenses.gpl3;
+  license = lib.licenses.gpl3;
 }

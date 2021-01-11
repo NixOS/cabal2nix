@@ -1,6 +1,6 @@
 { mkDerivation, base, bytestring, containers, criterion
-, data-default, fail, HUnit, regex-base, regex-tdfa, stdenv
-, tagsoup, text, vector
+, data-default, fail, HUnit, lib, regex-base, regex-tdfa, tagsoup
+, text, vector
 }:
 mkDerivation {
   pname = "scalpel-core";
@@ -14,5 +14,5 @@ mkDerivation {
   benchmarkHaskellDepends = [ base criterion tagsoup text ];
   homepage = "https://github.com/fimad/scalpel";
   description = "A high level web scraping library for Haskell";
-  license = stdenv.lib.licenses.asl20;
+  license = lib.licenses.asl20;
 }

@@ -59,7 +59,7 @@ testLibrary cabalFile = do
                                   , derivHash     = "deadbeef"
                                   , derivSubmodule = Nothing
                                   }
-                       & extraFunctionArgs %~ Set.union (Set.singleton "inherit stdenv")
+                       & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
   goldenVsFileDiff
     nixFile
     (\ref new -> ["diff", "-u", ref, new])

@@ -1,5 +1,5 @@
 { mkDerivation, base, binary, deepseq, doctest, genvalidity
-, genvalidity-hspec, hspec, QuickCheck, stdenv
+, genvalidity-hspec, hspec, lib, QuickCheck
 }:
 mkDerivation {
   pname = "genvalidity-hspec-binary";
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ base doctest genvalidity hspec ];
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "Standard spec's for binary-related Instances";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

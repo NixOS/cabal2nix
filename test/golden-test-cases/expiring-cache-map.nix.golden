@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, containers, hashable, stdenv
-, time, unordered-containers
+{ mkDerivation, base, bytestring, containers, hashable, lib, time
+, unordered-containers
 }:
 mkDerivation {
   pname = "expiring-cache-map";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/elblake/expiring-cache-map";
   description = "General purpose simple caching";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

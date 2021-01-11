@@ -1,6 +1,6 @@
-{ mkDerivation, base, containers, drifter, either, mtl
-, postgresql-simple, stdenv, tasty, tasty-hunit, text, time
-, transformers, transformers-compat
+{ mkDerivation, base, containers, drifter, either, lib, mtl
+, postgresql-simple, tasty, tasty-hunit, text, time, transformers
+, transformers-compat
 }:
 mkDerivation {
   pname = "drifter-postgresql";
@@ -15,5 +15,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/michaelxavier/drifter-postgresql";
   description = "PostgreSQL support for the drifter schema migration tool";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

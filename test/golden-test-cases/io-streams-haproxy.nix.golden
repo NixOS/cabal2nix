@@ -1,6 +1,5 @@
 { mkDerivation, attoparsec, base, bytestring, HUnit, io-streams
-, network, stdenv, test-framework, test-framework-hunit
-, transformers
+, lib, network, test-framework, test-framework-hunit, transformers
 }:
 mkDerivation {
   pname = "io-streams-haproxy";
@@ -15,5 +14,5 @@ mkDerivation {
   ];
   homepage = "http://snapframework.com/";
   description = "HAProxy protocol 1.5 support for io-streams";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

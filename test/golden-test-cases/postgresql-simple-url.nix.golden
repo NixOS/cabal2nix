@@ -1,4 +1,4 @@
-{ mkDerivation, base, network-uri, postgresql-simple, split, stdenv
+{ mkDerivation, base, lib, network-uri, postgresql-simple, split
 , tasty, tasty-quickcheck
 }:
 mkDerivation {
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/futurice/postgresql-simple-url";
   description = "Parse postgres:// url into ConnectInfo";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

@@ -10,7 +10,7 @@ Cabal2nix
 For example:
 
     $ cabal2nix cabal://mtl
-    { mkDerivation, base, stdenv, transformers }:
+    { mkDerivation, base, lib, transformers }:
     mkDerivation {
       pname = "mtl";
       version = "2.2.1";
@@ -18,7 +18,7 @@ For example:
       libraryHaskellDepends = [ base transformers ];
       homepage = "http://github.com/ekmett/mtl";
       description = "Monad classes, using functional dependencies";
-      license = stdenv.lib.licenses.bsd3;
+      license = lib.licenses.bsd3;
     }
 
 Cabal files can be referred to using the magic URL `cabal://NAME-VERSION`,
@@ -40,7 +40,7 @@ project on the local file system:
 
     $ cabal get mtl-2.2.1 && cd mtl-2.2.1
     $ cabal2nix .
-    { mkDerivation, base, stdenv, transformers }:
+    { mkDerivation, base, lib, transformers }:
     mkDerivation {
       pname = "mtl";
       version = "2.2.1";
@@ -48,7 +48,7 @@ project on the local file system:
       libraryHaskellDepends = [ base transformers ];
       homepage = "http://github.com/ekmett/mtl";
       description = "Monad classes, using functional dependencies";
-      license = stdenv.lib.licenses.bsd3;
+      license = lib.licenses.bsd3;
     }
 
 This derivation will not fetch from hackage, but instead use the directory which

@@ -1,9 +1,9 @@
-{ mkDerivation, base, containers, data-default-class, stdenv }:
+{ mkDerivation, base, containers, data-default-class, lib }:
 mkDerivation {
   pname = "data-default-instances-containers";
   version = "0.0.1";
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers data-default-class ];
   description = "Default instances for types in containers";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

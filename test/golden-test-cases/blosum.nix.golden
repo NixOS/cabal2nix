@@ -1,5 +1,5 @@
-{ mkDerivation, base, containers, fasta, lens, optparse-applicative
-, pipes, pipes-text, split, stdenv, text, text-show
+{ mkDerivation, base, containers, fasta, lens, lib
+, optparse-applicative, pipes, pipes-text, split, text, text-show
 }:
 mkDerivation {
   pname = "blosum";
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/GregorySchwartz/blosum#readme";
   description = "BLOSUM generator";
-  license = stdenv.lib.licenses.gpl2;
+  license = lib.licenses.gpl2;
 }

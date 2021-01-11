@@ -1,5 +1,5 @@
-{ mkDerivation, base, criterion, groups, semigroupoids, semigroups
-, stdenv
+{ mkDerivation, base, criterion, groups, lib, semigroupoids
+, semigroups
 }:
 mkDerivation {
   pname = "monoid-extras";
@@ -8,5 +8,5 @@ mkDerivation {
   libraryHaskellDepends = [ base groups semigroupoids semigroups ];
   benchmarkHaskellDepends = [ base criterion ];
   description = "Various extra monoid-related definitions and utilities";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

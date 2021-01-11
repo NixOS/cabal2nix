@@ -1,7 +1,7 @@
 { mkDerivation, base, binary, bytestring, containers, directory
-, filepath, FontyFruity, JuicyPixels, lens, linear, mtl
-, optparse-applicative, primitive, Rasterific, scientific, stdenv
-, svg-tree, text, transformers, vector
+, filepath, FontyFruity, JuicyPixels, lens, lib, linear, mtl
+, optparse-applicative, primitive, Rasterific, scientific, svg-tree
+, text, transformers, vector
 }:
 mkDerivation {
   pname = "rasterific-svg";
@@ -19,5 +19,5 @@ mkDerivation {
     optparse-applicative Rasterific svg-tree
   ];
   description = "SVG renderer based on Rasterific";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

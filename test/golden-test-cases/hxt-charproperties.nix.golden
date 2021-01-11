@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "hxt-charproperties";
   version = "9.2.0.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/UweSchmidt/hxt";
   description = "Character properties and classes for XML and Unicode";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

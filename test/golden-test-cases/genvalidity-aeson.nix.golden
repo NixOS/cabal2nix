@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, genvalidity, genvalidity-hspec
 , genvalidity-scientific, genvalidity-text
-, genvalidity-unordered-containers, genvalidity-vector, hspec
-, QuickCheck, stdenv, validity, validity-aeson
+, genvalidity-unordered-containers, genvalidity-vector, hspec, lib
+, QuickCheck, validity, validity-aeson
 }:
 mkDerivation {
   pname = "genvalidity-aeson";
@@ -17,5 +17,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "GenValidity support for aeson";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

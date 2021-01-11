@@ -1,6 +1,6 @@
 { mkDerivation, array, async, base, blaze-builder, bytestring
-, criterion, deepseq, directory, hspec, network, process
-, QuickCheck, random, stdenv, stm, text, transformers, unix, zlib
+, criterion, deepseq, directory, hspec, lib, network, process
+, QuickCheck, random, stm, text, transformers, unix, zlib
 }:
 mkDerivation {
   pname = "streaming-commons";
@@ -19,5 +19,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/fpco/streaming-commons";
   description = "Common lower-level functions needed by various streaming data libraries";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

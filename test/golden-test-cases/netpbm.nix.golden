@@ -1,5 +1,5 @@
 { mkDerivation, attoparsec, attoparsec-binary, base, bytestring
-, criterion, hspec, HUnit, stdenv, storable-record
+, criterion, hspec, HUnit, lib, storable-record
 , unordered-containers, vector, vector-th-unbox
 }:
 mkDerivation {
@@ -14,5 +14,5 @@ mkDerivation {
   benchmarkHaskellDepends = [ base bytestring criterion ];
   homepage = "https://github.com/nh2/haskell-netpbm";
   description = "Loading PBM, PGM, PPM image files";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

@@ -1,7 +1,7 @@
 { mkDerivation, async, atomic-primops, base, bifunctors, containers
-, criterion-plus, deepseq, hashable, mwc-random, primitive
-, QuickCheck, stdenv, stm, stm-containers, stm-stats
-, test-framework, test-framework-quickcheck2, text, transformers
+, criterion-plus, deepseq, hashable, lib, mwc-random, primitive
+, QuickCheck, stm, stm-containers, stm-stats, test-framework
+, test-framework-quickcheck2, text, transformers
 , unordered-containers, vector
 }:
 mkDerivation {
@@ -22,5 +22,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/mcschroeder/ttrie";
   description = "Contention-free STM hash map";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

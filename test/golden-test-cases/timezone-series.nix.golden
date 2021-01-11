@@ -1,4 +1,4 @@
-{ mkDerivation, base, deepseq, stdenv, time }:
+{ mkDerivation, base, deepseq, lib, time }:
 mkDerivation {
   pname = "timezone-series";
   version = "0.1.8";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base deepseq time ];
   homepage = "http://projects.haskell.org/time-ng/";
   description = "Enhanced timezone handling for Data.Time";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

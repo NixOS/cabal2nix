@@ -1,4 +1,4 @@
-{ mkDerivation, base, pretty, stdenv }:
+{ mkDerivation, base, lib, pretty }:
 mkDerivation {
   pname = "type-spec";
   version = "0.3.0.1";
@@ -7,5 +7,5 @@ mkDerivation {
   testHaskellDepends = [ base ];
   homepage = "https://github.com/sheyll/type-spec#readme";
   description = "Type Level Specification by Example";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

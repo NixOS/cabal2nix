@@ -1,6 +1,6 @@
 { mkDerivation, base, containers, directory, filemanip, filepath
-, ghc, ghc-exactprint, mtl, optparse-applicative, process, refact
-, silently, stdenv, syb, tasty, tasty-expected-failure
+, ghc, ghc-exactprint, lib, mtl, optparse-applicative, process
+, refact, silently, syb, tasty, tasty-expected-failure
 , tasty-golden, temporary, transformers, unix-compat
 }:
 mkDerivation {
@@ -25,5 +25,5 @@ mkDerivation {
     unix-compat
   ];
   description = "Perform refactorings specified by the refact library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

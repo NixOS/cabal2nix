@@ -1,5 +1,4 @@
-{ mkDerivation, base, containers, deepseq, random, semigroups
-, stdenv
+{ mkDerivation, base, containers, deepseq, lib, random, semigroups
 }:
 mkDerivation {
   pname = "dpor";
@@ -10,5 +9,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/barrucadu/dejafu";
   description = "A generic implementation of dynamic partial-order reduction (DPOR) for testing arbitrary models of concurrency";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

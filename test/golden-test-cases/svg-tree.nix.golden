@@ -1,5 +1,5 @@
 { mkDerivation, attoparsec, base, bytestring, containers
-, JuicyPixels, lens, linear, mtl, scientific, stdenv, text
+, JuicyPixels, lens, lib, linear, mtl, scientific, text
 , transformers, vector, xml
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
     scientific text transformers vector xml
   ];
   description = "SVG file loader and serializer";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

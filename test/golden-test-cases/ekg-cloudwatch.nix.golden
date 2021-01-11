@@ -1,5 +1,5 @@
 { mkDerivation, amazonka, amazonka-cloudwatch, amazonka-core, base
-, bytestring, ekg-core, lens, resourcet, semigroups, stdenv, text
+, bytestring, ekg-core, lens, lib, resourcet, semigroups, text
 , time, unordered-containers
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/sellerlabs/ekg-cloudwatch#readme";
   description = "An ekg backend for Amazon Cloudwatch";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytes, Cabal, cabal-doctest, doctest, mtl
-, stdenv, transformers
+{ mkDerivation, base, bytes, Cabal, cabal-doctest, doctest, lib
+, mtl, transformers
 }:
 mkDerivation {
   pname = "bits";
@@ -10,5 +10,5 @@ mkDerivation {
   testHaskellDepends = [ base doctest ];
   homepage = "http://github.com/ekmett/bits";
   description = "Various bit twiddling and bitwise serialization primitives";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

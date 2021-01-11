@@ -1,4 +1,4 @@
-{ mkDerivation, base, directory, filepath, stdenv }:
+{ mkDerivation, base, directory, filepath, lib }:
 mkDerivation {
   pname = "hsinstall";
   version = "1.6";
@@ -9,5 +9,5 @@ mkDerivation {
   libraryHaskellDepends = [ base directory filepath ];
   executableHaskellDepends = [ base directory filepath ];
   description = "Install Haskell software";
-  license = stdenv.lib.licenses.isc;
+  license = lib.licenses.isc;
 }

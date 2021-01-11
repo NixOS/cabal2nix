@@ -1,5 +1,5 @@
 { mkDerivation, base, comonad, containers, data-default-class
-, hashable, kan-extensions, semigroupoids, semigroups, stdenv, stm
+, hashable, kan-extensions, lib, semigroupoids, semigroups, stm
 , tagged, transformers, transformers-compat, unordered-containers
 }:
 mkDerivation {
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/ekmett/pointed/";
   description = "Pointed and copointed data";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

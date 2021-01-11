@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, bzip2, stdenv }:
+{ mkDerivation, base, bytestring, bzip2, lib }:
 mkDerivation {
   pname = "bzlib";
   version = "0.5.0.5";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base bytestring ];
   librarySystemDepends = [ bzip2 ];
   description = "Compression and decompression in the bzip2 format";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

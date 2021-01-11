@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, mtl, network, stdenv, text }:
+{ mkDerivation, base, bytestring, lib, mtl, network, text }:
 mkDerivation {
   pname = "hstatsd";
   version = "0.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base bytestring mtl network text ];
   homepage = "https://github.com/mokus0/hstatsd";
   description = "Quick and dirty statsd interface";
-  license = stdenv.lib.licenses.publicDomain;
+  license = lib.licenses.publicDomain;
 }

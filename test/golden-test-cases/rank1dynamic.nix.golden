@@ -1,4 +1,4 @@
-{ mkDerivation, base, binary, HUnit, stdenv, test-framework
+{ mkDerivation, base, binary, HUnit, lib, test-framework
 , test-framework-hunit
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "http://haskell-distributed.github.com";
   description = "Like Data.Dynamic/Data.Typeable but with support for rank-1 polymorphic types";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, bifunctors, bytestring, doctest
-, email-validate, Glob, http-api-data, opaleye, path-pieces
+, email-validate, Glob, http-api-data, lib, opaleye, path-pieces
 , persistent, postgresql-simple, product-profunctors, profunctors
-, stdenv, text
+, text
 }:
 mkDerivation {
   pname = "emailaddress";
@@ -15,5 +15,5 @@ mkDerivation {
   testHaskellDepends = [ base doctest Glob ];
   homepage = "https://github.com/cdepillabout/emailaddress#readme";
   description = "Wrapper around email-validate library adding instances for common type classes";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

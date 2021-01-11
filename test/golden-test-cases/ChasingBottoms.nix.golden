@@ -1,5 +1,5 @@
-{ mkDerivation, array, base, containers, mtl, QuickCheck, random
-, stdenv, syb
+{ mkDerivation, array, base, containers, lib, mtl, QuickCheck
+, random, syb
 }:
 mkDerivation {
   pname = "ChasingBottoms";
@@ -12,5 +12,5 @@ mkDerivation {
     array base containers mtl QuickCheck random syb
   ];
   description = "For testing partial and infinite values";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, mtl, stdenv }:
+{ mkDerivation, base, lib, mtl }:
 mkDerivation {
   pname = "indentation-core";
   version = "0.0.0.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base mtl ];
   homepage = "https://bitbucket.org/adamsmd/indentation";
   description = "Indentation sensitive parsing combinators core library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

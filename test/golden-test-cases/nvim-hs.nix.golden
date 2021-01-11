@@ -1,9 +1,9 @@
 { mkDerivation, ansi-wl-pprint, base, bytestring, cereal
 , cereal-conduit, conduit, conduit-extra, containers, data-default
 , deepseq, directory, dyre, exceptions, filepath, foreign-store
-, hslogger, hspec, hspec-discover, HUnit, lifted-base, megaparsec
-, messagepack, monad-control, mtl, network, optparse-applicative
-, process, QuickCheck, resourcet, setenv, stdenv, stm
+, hslogger, hspec, hspec-discover, HUnit, lib, lifted-base
+, megaparsec, messagepack, monad-control, mtl, network
+, optparse-applicative, process, QuickCheck, resourcet, setenv, stm
 , streaming-commons, template-haskell, text, time
 , time-locale-compat, transformers, transformers-base, utf8-string
 , void
@@ -35,5 +35,5 @@ mkDerivation {
   testToolDepends = [ hspec-discover ];
   homepage = "https://github.com/neovimhaskell/nvim-hs";
   description = "Haskell plugin backend for neovim";
-  license = stdenv.lib.licenses.asl20;
+  license = lib.licenses.asl20;
 }

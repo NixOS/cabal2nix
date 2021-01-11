@@ -1,10 +1,10 @@
 { mkDerivation, aeson, base, binary, bytestring, cmdargs, conduit
 , conduit-extra, connection, containers, deepseq, directory, extra
 , filepath, haskell-src-exts, http-conduit, http-types, js-flot
-, js-jquery, mmap, network, network-uri, old-locale, process
-, process-extras, QuickCheck, resourcet, stdenv, storable-tuple
-, tar, template-haskell, text, time, transformers, uniplate
-, utf8-string, vector, wai, wai-logger, warp, warp-tls, zlib
+, js-jquery, lib, mmap, network, network-uri, old-locale, process
+, process-extras, QuickCheck, resourcet, storable-tuple, tar
+, template-haskell, text, time, transformers, uniplate, utf8-string
+, vector, wai, wai-logger, warp, warp-tls, zlib
 }:
 mkDerivation {
   pname = "hoogle";
@@ -26,5 +26,5 @@ mkDerivation {
   testTarget = "--test-option=--no-net";
   homepage = "http://hoogle.haskell.org/";
   description = "Haskell API Search";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

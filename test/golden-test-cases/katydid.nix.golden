@@ -1,5 +1,5 @@
 { mkDerivation, base, containers, directory, filepath, HUnit, hxt
-, json, mtl, parsec, regex-tdfa, stdenv, tasty, tasty-hunit
+, json, lib, mtl, parsec, regex-tdfa, tasty, tasty-hunit
 }:
 mkDerivation {
   pname = "katydid";
@@ -17,5 +17,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/katydid/katydid-haskell";
   description = "A haskell implementation of Katydid";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,6 +1,6 @@
 { mkDerivation, attoparsec, base, blaze-builder, bytestring
 , case-insensitive, conduit, conduit-extra, data-default, hspec
-, HUnit, QuickCheck, resourcet, stdenv, text, transformers
+, HUnit, lib, QuickCheck, resourcet, text, transformers
 , xml-conduit
 }:
 mkDerivation {
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/yihuang/tagstream-conduit";
   description = "streamlined html tag parser";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

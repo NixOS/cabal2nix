@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, dbus, stdenv }:
+{ mkDerivation, base, containers, dbus, lib }:
 mkDerivation {
   pname = "fdo-notify";
   version = "0.3.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base containers dbus ];
   homepage = "http://bitbucket.org/taejo/fdo-notify/";
   description = "Desktop Notifications client";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

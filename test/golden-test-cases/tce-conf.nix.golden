@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, HUnit, stdenv }:
+{ mkDerivation, base, containers, HUnit, lib }:
 mkDerivation {
   pname = "tce-conf";
   version = "1.3";
@@ -10,5 +10,5 @@ mkDerivation {
   testHaskellDepends = [ base containers HUnit ];
   homepage = "http://hub.darcs.net/dino/tce-conf";
   description = "Very simple config file reading";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,5 +1,5 @@
 { mkDerivation, base, criterion, deepseq, doctest
-, inspection-testing, lens, profunctors, QuickCheck, stdenv, tagged
+, inspection-testing, lens, lib, profunctors, QuickCheck, tagged
 }:
 mkDerivation {
   pname = "generic-lens";
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/kcsongor/generic-lens";
   description = "Generic data-structure operations exposed as lenses";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

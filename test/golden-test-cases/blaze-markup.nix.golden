@@ -1,5 +1,5 @@
 { mkDerivation, base, blaze-builder, bytestring, containers, HUnit
-, QuickCheck, stdenv, test-framework, test-framework-hunit
+, lib, QuickCheck, test-framework, test-framework-hunit
 , test-framework-quickcheck2, text
 }:
 mkDerivation {
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "http://jaspervdj.be/blaze";
   description = "A blazingly fast markup combinator library for Haskell";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

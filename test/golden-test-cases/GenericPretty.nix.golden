@@ -1,4 +1,4 @@
-{ mkDerivation, base, ghc-prim, pretty, stdenv }:
+{ mkDerivation, base, ghc-prim, lib, pretty }:
 mkDerivation {
   pname = "GenericPretty";
   version = "1.2.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ghc-prim pretty ];
   homepage = "https://github.com/RazvanRanca/GenericPretty";
   description = "A generic, derivable, haskell pretty printer";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

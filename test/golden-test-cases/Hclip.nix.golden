@@ -1,4 +1,4 @@
-{ mkDerivation, base, mtl, process, stdenv, strict }:
+{ mkDerivation, base, lib, mtl, process, strict }:
 mkDerivation {
   pname = "Hclip";
   version = "3.0.0.4";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base mtl process strict ];
   homepage = "https://github.com/jetho/Hclip";
   description = "A small cross-platform library for reading and modifying the system clipboard";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

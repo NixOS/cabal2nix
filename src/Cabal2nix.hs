@@ -238,7 +238,7 @@ processPackage Options{..} pkg = do
 --            & metaSection.platforms .~ Set.fromList optPlatform
               & doCheck &&~ optDoCheck
               & doBenchmark ||~ optDoBenchmark
-              & extraFunctionArgs %~ Set.union (Set.fromList ("inherit stdenv":map (fromString . ("inherit " ++)) optExtraArgs))
+              & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
 
       shell :: Doc
       shell = vcat

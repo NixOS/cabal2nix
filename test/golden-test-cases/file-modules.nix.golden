@@ -1,5 +1,5 @@
 { mkDerivation, async, base, directory, filepath, haskell-src-exts
-, MissingH, regex-compat, regex-pcre, stdenv
+, lib, MissingH, regex-compat, regex-pcre
 }:
 mkDerivation {
   pname = "file-modules";
@@ -17,5 +17,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/yamadapc/stack-run-auto";
   description = "Takes a Haskell source-code file and outputs its modules";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

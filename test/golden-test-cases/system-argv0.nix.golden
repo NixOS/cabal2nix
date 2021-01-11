@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, stdenv, system-filepath, text }:
+{ mkDerivation, base, bytestring, lib, system-filepath, text }:
 mkDerivation {
   pname = "system-argv0";
   version = "0.1.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base bytestring system-filepath text ];
   homepage = "https://john-millikin.com/software/haskell-filesystem/";
   description = "Get argv[0] as a FilePath";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

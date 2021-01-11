@@ -1,4 +1,4 @@
-{ mkDerivation, base, QuickCheck, stdenv }:
+{ mkDerivation, base, lib, QuickCheck }:
 mkDerivation {
   pname = "utility-ht";
   version = "0.0.14";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base QuickCheck ];
   description = "Various small helper functions for Lists, Maybes, Tuples, Functions";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

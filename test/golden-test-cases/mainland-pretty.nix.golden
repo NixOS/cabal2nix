@@ -1,5 +1,4 @@
-{ mkDerivation, base, containers, srcloc, stdenv, text
-, transformers
+{ mkDerivation, base, containers, lib, srcloc, text, transformers
 }:
 mkDerivation {
   pname = "mainland-pretty";
@@ -10,5 +9,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/mainland/mainland-pretty";
   description = "Pretty printing designed for printing source code";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

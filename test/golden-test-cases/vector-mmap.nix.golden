@@ -1,5 +1,5 @@
-{ mkDerivation, base, mmap, primitive, QuickCheck, stdenv
-, temporary, vector
+{ mkDerivation, base, lib, mmap, primitive, QuickCheck, temporary
+, vector
 }:
 mkDerivation {
   pname = "vector-mmap";
@@ -9,5 +9,5 @@ mkDerivation {
   testHaskellDepends = [ base QuickCheck temporary vector ];
   homepage = "http://github.com/pumpkin/vector-mmap";
   description = "Memory map immutable and mutable vectors";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

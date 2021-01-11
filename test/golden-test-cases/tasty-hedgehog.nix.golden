@@ -1,4 +1,4 @@
-{ mkDerivation, base, hedgehog, stdenv, tagged, tasty
+{ mkDerivation, base, hedgehog, lib, tagged, tasty
 , tasty-expected-failure
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/qfpl/tasty-hedghog";
   description = "Integrates the hedgehog testing library with the tasty testing framework";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

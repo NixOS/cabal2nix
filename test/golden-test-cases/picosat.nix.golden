@@ -1,5 +1,4 @@
-{ mkDerivation, base, containers, random, rdtsc, stdenv
-, transformers
+{ mkDerivation, base, containers, lib, random, rdtsc, transformers
 }:
 mkDerivation {
   pname = "picosat";
@@ -9,5 +8,5 @@ mkDerivation {
   testHaskellDepends = [ base containers random rdtsc transformers ];
   homepage = "https://github.com/sdiehl/haskell-picosat";
   description = "Bindings to the PicoSAT solver";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

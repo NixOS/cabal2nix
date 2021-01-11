@@ -1,6 +1,6 @@
 { mkDerivation, aeson, attoparsec, base, bytestring, either
-, http-client, http-conduit, http-types, mtl, resourcet, stdenv
-, text, unordered-containers, uri-templater, vector
+, http-client, http-conduit, http-types, lib, mtl, resourcet, text
+, unordered-containers, uri-templater, vector
 }:
 mkDerivation {
   pname = "librato";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/SaneTracker/librato";
   description = "Bindings to the Librato API";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

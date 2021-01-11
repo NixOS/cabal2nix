@@ -1,5 +1,5 @@
-{ mkDerivation, base, containers, kan-extensions, lens, mcmc-types
-, mwc-probability, pipes, primitive, stdenv, transformers
+{ mkDerivation, base, containers, kan-extensions, lens, lib
+, mcmc-types, mwc-probability, pipes, primitive, transformers
 }:
 mkDerivation {
   pname = "speedy-slice";
@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base containers mwc-probability ];
   homepage = "http://github.com/jtobin/speedy-slice";
   description = "Speedy slice sampling";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

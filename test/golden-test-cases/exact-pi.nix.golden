@@ -1,4 +1,4 @@
-{ mkDerivation, base, numtype-dk, stdenv }:
+{ mkDerivation, base, lib, numtype-dk }:
 mkDerivation {
   pname = "exact-pi";
   version = "0.4.1.2";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base numtype-dk ];
   homepage = "https://github.com/dmcclean/exact-pi/";
   description = "Exact rational multiples of pi (and integer powers of pi)";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }
