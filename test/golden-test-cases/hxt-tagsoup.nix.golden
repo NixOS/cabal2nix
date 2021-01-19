@@ -1,4 +1,4 @@
-{ mkDerivation, base, hxt, hxt-charproperties, hxt-unicode, stdenv
+{ mkDerivation, base, hxt, hxt-charproperties, hxt-unicode, lib
 , tagsoup
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   homepage = "https://github.com/UweSchmidt/hxt";
   description = "TagSoup parser for HXT";
   license = "unknown";
-  hydraPlatforms = stdenv.lib.platforms.none;
+  hydraPlatforms = lib.platforms.none;
 }

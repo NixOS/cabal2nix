@@ -1,5 +1,5 @@
-{ mkDerivation, base, binary, bytestring, QuickCheck, random
-, stdenv, test-framework, test-framework-quickcheck2
+{ mkDerivation, base, binary, bytestring, lib, QuickCheck, random
+, test-framework, test-framework-quickcheck2
 }:
 mkDerivation {
   pname = "binary-bits";
@@ -11,5 +11,5 @@ mkDerivation {
     test-framework-quickcheck2
   ];
   description = "Bit parsing/writing on top of binary";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

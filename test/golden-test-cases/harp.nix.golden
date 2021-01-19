@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "harp";
   version = "0.4.3";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/seereason/harp";
   description = "HaRP allows pattern-matching with regular expressions";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

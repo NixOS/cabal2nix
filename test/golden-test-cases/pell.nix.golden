@@ -1,5 +1,5 @@
 { mkDerivation, arithmoi, base, Cabal, cabal-test-quickcheck
-, containers, primes, QuickCheck, stdenv
+, containers, lib, primes, QuickCheck
 }:
 mkDerivation {
   pname = "pell";
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/brunjlar/pell";
   description = "Package to solve the Generalized Pell Equation";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

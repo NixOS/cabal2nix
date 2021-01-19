@@ -1,4 +1,4 @@
-{ mkDerivation, base, foldl, numhask, protolude, stdenv, tdigest
+{ mkDerivation, base, foldl, lib, numhask, protolude, tdigest
 , vector, vector-algorithms
 }:
 mkDerivation {
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/tonyday567/online";
   description = "online statistics";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, deepseq, stdenv, tasty, tasty-hunit
+{ mkDerivation, base, deepseq, lib, tasty, tasty-hunit
 , tasty-quickcheck
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "http://projects.haskell.org/diagrams";
   description = "Pure Haskell solver routines used by diagrams";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

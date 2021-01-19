@@ -1,4 +1,4 @@
-{ mkDerivation, base, HUnit, QuickCheck, stdenv, test-framework
+{ mkDerivation, base, HUnit, lib, QuickCheck, test-framework
 , test-framework-hunit, test-framework-quickcheck2
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/nushio3/unicode-show#readme";
   description = "print and show in unicode";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

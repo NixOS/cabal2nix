@@ -1,4 +1,4 @@
-{ mkDerivation, base, biocore, bytestring, stdenv }:
+{ mkDerivation, base, biocore, bytestring, lib }:
 mkDerivation {
   pname = "bioalign";
   version = "0.0.5";

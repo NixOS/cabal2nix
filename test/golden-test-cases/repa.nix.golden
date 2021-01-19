@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, ghc-prim, QuickCheck, stdenv
+{ mkDerivation, base, bytestring, ghc-prim, lib, QuickCheck
 , template-haskell, vector
 }:
 mkDerivation {
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "http://repa.ouroborus.net";
   description = "High performance, regular, shape polymorphic parallel arrays";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

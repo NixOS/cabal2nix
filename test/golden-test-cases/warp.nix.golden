@@ -1,10 +1,10 @@
 { mkDerivation, array, async, auto-update, base, blaze-builder
 , bytestring, bytestring-builder, case-insensitive, containers
 , criterion, directory, doctest, ghc-prim, hashable, hspec, HTTP
-, http-date, http-types, http2, HUnit, iproute, lifted-base
-, network, process, QuickCheck, silently, simple-sendfile, stdenv
-, stm, streaming-commons, text, time, transformers, unix
-, unix-compat, vault, wai, word8
+, http-date, http-types, http2, HUnit, iproute, lib, lifted-base
+, network, process, QuickCheck, silently, simple-sendfile, stm
+, streaming-commons, text, time, transformers, unix, unix-compat
+, vault, wai, word8
 }:
 mkDerivation {
   pname = "warp";
@@ -30,5 +30,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/yesodweb/wai";
   description = "A fast, light-weight web server for WAI applications";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

@@ -1,9 +1,9 @@
-{ mkDerivation, base, filepath, parsec, stdenv }:
+{ mkDerivation, base, filepath, lib, parsec }:
 mkDerivation {
   pname = "csv";
   version = "0.1.2";
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base filepath parsec ];
   description = "CSV loader and dumper";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

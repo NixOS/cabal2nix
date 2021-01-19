@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, basic-prelude, bytestring, containers
 , directory, hspec, http-api-data, http-client, http-client-tls
-, lens, microlens, microlens-th, mtl, network-uri, servant
-, servant-client, stdenv, text, transformers
+, lens, lib, microlens, microlens-th, mtl, network-uri, servant
+, servant-client, text, transformers
 }:
 mkDerivation {
   pname = "giphy-api";
@@ -20,5 +20,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/passy/giphy-api#readme";
   description = "Giphy HTTP API wrapper and CLI search tool";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

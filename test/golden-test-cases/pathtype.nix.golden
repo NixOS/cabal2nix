@@ -1,5 +1,5 @@
-{ mkDerivation, base, deepseq, directory, old-time, QuickCheck
-, random, stdenv, tagged, time, transformers, utility-ht
+{ mkDerivation, base, deepseq, directory, lib, old-time, QuickCheck
+, random, tagged, time, transformers, utility-ht
 }:
 mkDerivation {
   pname = "pathtype";
@@ -14,5 +14,5 @@ mkDerivation {
   testHaskellDepends = [ base random ];
   homepage = "http://hub.darcs.net/thielema/pathtype/";
   description = "Type-safe replacement for System.FilePath etc";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -2,8 +2,8 @@
 , base16-bytestring, binary, binary-orphans, byteable, bytestring
 , containers, cryptohash, deepseq, deepseq-generics, exceptions
 , file-embed, hashable, hspec, hspec-discover, http-client
-, http-client-tls, http-link-header, http-types, iso8601-time, mtl
-, network-uri, semigroups, stdenv, text, time, tls, transformers
+, http-client-tls, http-link-header, http-types, iso8601-time, lib
+, mtl, network-uri, semigroups, text, time, tls, transformers
 , transformers-compat, unordered-containers, vector
 , vector-instances
 }:
@@ -26,5 +26,5 @@ mkDerivation {
   testToolDepends = [ hspec-discover ];
   homepage = "https://github.com/phadej/github";
   description = "Access to the GitHub API, v3";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

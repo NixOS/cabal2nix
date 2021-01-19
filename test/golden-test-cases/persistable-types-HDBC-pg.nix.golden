@@ -1,6 +1,5 @@
-{ mkDerivation, base, bytestring, convertible, HDBC
-, persistable-record, relational-query-HDBC, stdenv
-, text-postgresql
+{ mkDerivation, base, bytestring, convertible, HDBC, lib
+, persistable-record, relational-query-HDBC, text-postgresql
 }:
 mkDerivation {
   pname = "persistable-types-HDBC-pg";
@@ -12,5 +11,5 @@ mkDerivation {
   ];
   homepage = "http://khibino.github.io/haskell-relational-record/";
   description = "HDBC and Relational-Record instances of PostgreSQL extended types";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

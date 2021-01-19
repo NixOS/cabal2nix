@@ -1,5 +1,5 @@
 { mkDerivation, array, base, base64-bytestring, binary, bytestring
-, containers, errors, HTF, mtl, random, stdenv, vector, zlib
+, containers, errors, HTF, lib, mtl, random, vector, zlib
 }:
 mkDerivation {
   pname = "HPDF";
@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base HTF ];
   homepage = "http://www.alpheccar.org";
   description = "Generation of PDF documents";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

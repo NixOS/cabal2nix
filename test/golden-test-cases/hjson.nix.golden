@@ -1,9 +1,9 @@
-{ mkDerivation, base, containers, parsec, stdenv }:
+{ mkDerivation, base, containers, lib, parsec }:
 mkDerivation {
   pname = "hjson";
   version = "1.3.2";
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers parsec ];
   description = "JSON parsing library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

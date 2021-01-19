@@ -2,9 +2,9 @@
 , blaze-builder, blaze-html, bytestring, case-insensitive, cereal
 , clientsession, cookie, exceptions, hoauth2, http-client
 , http-client-tls, http-conduit, http-reverse-proxy, http-types
-, optparse-simple, regex-posix, safe-exceptions, shakespeare
-, stdenv, text, unix-compat, unordered-containers, uri-bytestring
-, vault, wai, wai-app-static, wai-extra, warp, yaml
+, lib, optparse-simple, regex-posix, safe-exceptions, shakespeare
+, text, unix-compat, unordered-containers, uri-bytestring, vault
+, wai, wai-app-static, wai-extra, warp, yaml
 }:
 mkDerivation {
   pname = "wai-middleware-auth";
@@ -24,5 +24,5 @@ mkDerivation {
     base bytestring cereal clientsession optparse-simple warp
   ];
   description = "Authentication middleware that secures WAI application";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

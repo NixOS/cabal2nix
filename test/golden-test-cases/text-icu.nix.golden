@@ -1,5 +1,5 @@
 { mkDerivation, array, base, bytestring, deepseq, directory
-, ghc-prim, HUnit, icu, QuickCheck, random, stdenv, test-framework
+, ghc-prim, HUnit, icu, lib, QuickCheck, random, test-framework
 , test-framework-hunit, test-framework-quickcheck2, text
 }:
 mkDerivation {
@@ -15,5 +15,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/bos/text-icu";
   description = "Bindings to the ICU library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

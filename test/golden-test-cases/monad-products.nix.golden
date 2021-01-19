@@ -1,4 +1,4 @@
-{ mkDerivation, base, semigroupoids, stdenv }:
+{ mkDerivation, base, lib, semigroupoids }:
 mkDerivation {
   pname = "monad-products";
   version = "4.0.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base semigroupoids ];
   homepage = "http://github.com/ekmett/monad-products";
   description = "Monad products";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

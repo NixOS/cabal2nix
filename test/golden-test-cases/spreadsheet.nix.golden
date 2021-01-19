@@ -1,4 +1,4 @@
-{ mkDerivation, base, explicit-exception, stdenv, transformers
+{ mkDerivation, base, explicit-exception, lib, transformers
 , utility-ht
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "http://www.haskell.org/haskellwiki/Spreadsheet";
   description = "Read and write spreadsheets from and to CSV files in a lazy way";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

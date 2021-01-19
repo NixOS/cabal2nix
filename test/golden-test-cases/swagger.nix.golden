@@ -1,4 +1,4 @@
-{ mkDerivation, aeson, base, bytestring, stdenv, tasty, tasty-hunit
+{ mkDerivation, aeson, base, bytestring, lib, tasty, tasty-hunit
 , text, time, transformers
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ aeson base bytestring tasty tasty-hunit ];
   description = "Implementation of swagger data model";
   license = "unknown";
-  hydraPlatforms = stdenv.lib.platforms.none;
+  hydraPlatforms = lib.platforms.none;
 }

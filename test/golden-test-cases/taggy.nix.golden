@@ -1,6 +1,6 @@
 { mkDerivation, attoparsec, base, blaze-html, blaze-markup
-, criterion, directory, hspec, hspec-attoparsec, stdenv, tagsoup
-, text, unordered-containers, vector
+, criterion, directory, hspec, hspec-attoparsec, lib, tagsoup, text
+, unordered-containers, vector
 }:
 mkDerivation {
   pname = "taggy";
@@ -23,5 +23,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/alpmestan/taggy";
   description = "Efficient and simple HTML/XML parsing library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

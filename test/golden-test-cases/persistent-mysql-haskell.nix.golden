@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, bytestring, conduit, containers
-, io-streams, monad-control, monad-logger, mysql-haskell, network
-, persistent, persistent-template, resource-pool, resourcet, stdenv
-, text, time, tls, transformers
+, io-streams, lib, monad-control, monad-logger, mysql-haskell
+, network, persistent, persistent-template, resource-pool
+, resourcet, text, time, tls, transformers
 }:
 mkDerivation {
   pname = "persistent-mysql-haskell";
@@ -19,5 +19,5 @@ mkDerivation {
   ];
   homepage = "http://www.yesodweb.com/book/persistent";
   description = "A pure haskell backend for the persistent library using MySQL database server";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

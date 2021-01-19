@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "tuples-homogenous-h98";
   version = "0.1.1.0";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/ppetr/tuples-homogenous-h98";
   description = "Wrappers for n-ary tuples with Traversable and Applicative/Monad instances";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

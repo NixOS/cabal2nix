@@ -1,5 +1,5 @@
-{ mkDerivation, aeson, base, exceptions, hspec, http-api-data
-, path-pieces, persistent, QuickCheck, stdenv, text
+{ mkDerivation, aeson, base, exceptions, hspec, http-api-data, lib
+, path-pieces, persistent, QuickCheck, text
 }:
 mkDerivation {
   pname = "slug";
@@ -14,5 +14,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/mrkkrp/slug";
   description = "Type-safe slugs for Yesod ecosystem";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

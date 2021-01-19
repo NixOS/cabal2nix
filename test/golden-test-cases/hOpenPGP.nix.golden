@@ -2,10 +2,10 @@
 , base64-bytestring, bifunctors, binary, binary-conduit, byteable
 , bytestring, bzlib, conduit, conduit-extra, containers, criterion
 , crypto-cipher-types, cryptonite, data-default-class, errors
-, hashable, incremental-parser, ixset-typed, lens, memory
+, hashable, incremental-parser, ixset-typed, lens, lib, memory
 , monad-loops, nettle, network, network-uri, newtype
 , openpgp-asciiarmor, QuickCheck, quickcheck-instances, resourcet
-, securemem, semigroups, split, stdenv, tasty, tasty-hunit
+, securemem, semigroups, split, tasty, tasty-hunit
 , tasty-quickcheck, text, time, time-locale-compat, transformers
 , unordered-containers, wl-pprint-extras, zlib
 }:
@@ -45,5 +45,5 @@ mkDerivation {
   ];
   homepage = "http://floss.scru.org/hOpenPGP/";
   description = "native Haskell implementation of OpenPGP (RFC4880)";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

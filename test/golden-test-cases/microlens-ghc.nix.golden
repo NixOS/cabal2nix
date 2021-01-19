@@ -1,5 +1,5 @@
-{ mkDerivation, array, base, bytestring, containers, microlens
-, stdenv, transformers
+{ mkDerivation, array, base, bytestring, containers, lib, microlens
+, transformers
 }:
 mkDerivation {
   pname = "microlens-ghc";
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/aelve/microlens";
   description = "microlens + array, bytestring, containers, transformers";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, hspec, stdenv, system-filepath, text }:
+{ mkDerivation, base, hspec, lib, system-filepath, text }:
 mkDerivation {
   pname = "ReadArgs";
   version = "1.2.3";
@@ -10,5 +10,5 @@ mkDerivation {
   testHaskellDepends = [ base hspec system-filepath text ];
   homepage = "http://github.com/rampion/ReadArgs";
   description = "Simple command line argument parsing";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

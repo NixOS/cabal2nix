@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, stdenv, syb, template-haskell }:
+{ mkDerivation, base, containers, lib, syb, template-haskell }:
 mkDerivation {
   pname = "th-expand-syns";
   version = "0.4.4.0";
@@ -7,5 +7,5 @@ mkDerivation {
   testHaskellDepends = [ base template-haskell ];
   homepage = "https://github.com/DanielSchuessler/th-expand-syns";
   description = "Expands type synonyms in Template Haskell ASTs";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

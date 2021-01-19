@@ -1,5 +1,5 @@
-{ mkDerivation, base, binary, bytestring, cereal, data-endian
-, parsers, semigroups, split, stdenv, tasty, tasty-quickcheck
+{ mkDerivation, base, binary, bytestring, cereal, data-endian, lib
+, parsers, semigroups, split, tasty, tasty-quickcheck
 }:
 mkDerivation {
   pname = "data-serializer";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/mvv/data-serializer";
   description = "Common API for serialization libraries";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

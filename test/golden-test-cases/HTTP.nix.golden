@@ -1,7 +1,7 @@
 { mkDerivation, array, base, bytestring, case-insensitive, conduit
-, conduit-extra, deepseq, http-types, httpd-shed, HUnit, mtl
-, network, network-uri, parsec, pureMD5, split, stdenv
-, test-framework, test-framework-hunit, time, wai, warp
+, conduit-extra, deepseq, http-types, httpd-shed, HUnit, lib, mtl
+, network, network-uri, parsec, pureMD5, split, test-framework
+, test-framework-hunit, time, wai, warp
 }:
 mkDerivation {
   pname = "HTTP";
@@ -17,5 +17,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/haskell/HTTP";
   description = "A library for client-side HTTP";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

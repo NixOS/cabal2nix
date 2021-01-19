@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, mtl, stdenv, time }:
+{ mkDerivation, base, bytestring, lib, mtl, time }:
 mkDerivation {
   pname = "benchpress";
   version = "0.2.2.10";
@@ -9,5 +9,5 @@ mkDerivation {
   executableHaskellDepends = [ base bytestring ];
   homepage = "https://github.com/WillSewell/benchpress";
   description = "Micro-benchmarking with detailed statistics";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

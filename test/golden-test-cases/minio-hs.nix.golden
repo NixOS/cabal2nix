@@ -2,8 +2,8 @@
 , case-insensitive, conduit, conduit-combinators, conduit-extra
 , containers, cryptonite, cryptonite-conduit, data-default
 , directory, exceptions, filepath, http-client, http-conduit
-, http-types, lifted-async, lifted-base, memory, monad-control
-, protolude, QuickCheck, resourcet, stdenv, tasty, tasty-hunit
+, http-types, lib, lifted-async, lifted-base, memory, monad-control
+, protolude, QuickCheck, resourcet, tasty, tasty-hunit
 , tasty-quickcheck, tasty-smallcheck, temporary, text, text-format
 , time, transformers, transformers-base, vector, xml-conduit
 }:
@@ -30,5 +30,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/minio/minio-hs#readme";
   description = "A Minio Haskell Library for Amazon S3 compatible cloud storage";
-  license = stdenv.lib.licenses.asl20;
+  license = lib.licenses.asl20;
 }

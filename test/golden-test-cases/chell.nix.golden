@@ -1,5 +1,5 @@
-{ mkDerivation, ansi-terminal, base, bytestring, options, patience
-, random, stdenv, template-haskell, text, transformers
+{ mkDerivation, ansi-terminal, base, bytestring, lib, options
+, patience, random, template-haskell, text, transformers
 }:
 mkDerivation {
   pname = "chell";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://john-millikin.com/software/chell/";
   description = "A simple and intuitive library for automated testing";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

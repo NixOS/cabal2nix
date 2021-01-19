@@ -1,6 +1,6 @@
 { mkDerivation, ansi-wl-pprint, base, base-orphans, containers
 , deepseq, directory, exceptions, fclabels, filepath, ghc-prim
-, hashable, hashtables, mtl, stdenv, template-haskell, time
+, hashable, hashtables, lib, mtl, template-haskell, time
 , transformers, unique, unix, unordered-containers
 }:
 mkDerivation {
@@ -14,5 +14,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/AccelerateHS/accelerate/";
   description = "An embedded language for accelerated array processing";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

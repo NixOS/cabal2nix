@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, bifunctors, binary, deepseq, ghc-prim
-, hashable, lens, QuickCheck, stdenv, strict
+, hashable, lens, lib, QuickCheck, strict
 }:
 mkDerivation {
   pname = "strict-base-types";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/meiersi/strict-base-types";
   description = "Strict variants of the types provided in base";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

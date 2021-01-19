@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, doctest, either, Glob, hspec
-, http-api-data, http-client, http-client-tls, mtl, safe, servant
-, servant-client, stdenv, text, time, transformers, vector
+, http-api-data, http-client, http-client-tls, lib, mtl, safe
+, servant, servant-client, text, time, transformers, vector
 }:
 mkDerivation {
   pname = "yahoo-finance-api";
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/cdepillabout/yahoo-finance-api";
   description = "Read quotes from Yahoo Finance API";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

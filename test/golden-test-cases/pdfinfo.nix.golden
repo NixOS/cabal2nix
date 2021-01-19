@@ -1,4 +1,4 @@
-{ mkDerivation, base, mtl, old-locale, process-extras, stdenv, text
+{ mkDerivation, base, lib, mtl, old-locale, process-extras, text
 , time, time-locale-compat
 }:
 mkDerivation {
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/chrisdone/pdfinfo";
   description = "Wrapper around the pdfinfo command";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

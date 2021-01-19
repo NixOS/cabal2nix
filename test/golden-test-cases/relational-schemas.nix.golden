@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, containers, relational-query
-, stdenv, template-haskell, time
+{ mkDerivation, base, bytestring, containers, lib, relational-query
+, template-haskell, time
 }:
 mkDerivation {
   pname = "relational-schemas";
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "http://khibino.github.io/haskell-relational-record/";
   description = "RDBMSs' schema templates for relational-query";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, QuickCheck, split, stdenv }:
+{ mkDerivation, base, lib, QuickCheck, split }:
 mkDerivation {
   pname = "boxes";
   version = "0.1.4";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base split ];
   testHaskellDepends = [ base QuickCheck split ];
   description = "2D text pretty-printing library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

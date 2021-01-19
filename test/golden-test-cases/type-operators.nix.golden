@@ -1,4 +1,4 @@
-{ mkDerivation, base, ghc-prim, stdenv }:
+{ mkDerivation, base, ghc-prim, lib }:
 mkDerivation {
   pname = "type-operators";
   version = "0.1.0.4";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ghc-prim ];
   homepage = "https://github.com/Shou/type-operators#readme";
   description = "Various type-level operators";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,6 +1,6 @@
 { mkDerivation, attoparsec, base, base-unicode-symbols, bytestring
-, case-insensitive, directory, filepath, http-types, mtl, network
-, process, stdenv, tasty, tasty-hunit, text, transformers, wai
+, case-insensitive, directory, filepath, http-types, lib, mtl
+, network, process, tasty, tasty-hunit, text, transformers, wai
 , wai-extra, wai-websockets, warp, websockets
 }:
 mkDerivation {
@@ -19,5 +19,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/larskuhtz/wai-cors";
   description = "CORS for WAI";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

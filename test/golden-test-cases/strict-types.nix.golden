@@ -1,5 +1,5 @@
 { mkDerivation, array, base, bytestring, containers, deepseq
-, hashable, stdenv, text, unordered-containers, vector
+, hashable, lib, text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "strict-types";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/pepeiborra/strict-types";
   description = "A type level predicate ranging over strict types";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

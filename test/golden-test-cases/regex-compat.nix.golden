@@ -1,4 +1,4 @@
-{ mkDerivation, array, base, regex-base, regex-posix, stdenv }:
+{ mkDerivation, array, base, lib, regex-base, regex-posix }:
 mkDerivation {
   pname = "regex-compat";
   version = "0.95.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ array base regex-base regex-posix ];
   homepage = "http://sourceforge.net/projects/lazy-regex";
   description = "Replaces/Enhances Text.Regex";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

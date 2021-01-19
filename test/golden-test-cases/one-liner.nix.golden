@@ -1,5 +1,5 @@
 { mkDerivation, base, bifunctors, contravariant, ghc-prim, HUnit
-, profunctors, stdenv, tagged, transformers
+, lib, profunctors, tagged, transformers
 }:
 mkDerivation {
   pname = "one-liner";
@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base contravariant HUnit ];
   homepage = "https://github.com/sjoerdvisscher/one-liner";
   description = "Constraint-based generics";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

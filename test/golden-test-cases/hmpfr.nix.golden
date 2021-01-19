@@ -1,4 +1,4 @@
-{ mkDerivation, base, integer-gmp, mpfr, stdenv }:
+{ mkDerivation, base, integer-gmp, lib, mpfr }:
 mkDerivation {
   pname = "hmpfr";
   version = "0.4.3";
@@ -8,5 +8,5 @@ mkDerivation {
   librarySystemDepends = [ mpfr ];
   homepage = "https://github.com/michalkonecny/hmpfr";
   description = "Haskell binding to the MPFR library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

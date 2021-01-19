@@ -1,5 +1,5 @@
 { mkDerivation, base, binary, bytestring, containers
-, lambdabot-core, mtl, split, stdenv, time
+, lambdabot-core, lib, mtl, split, time
 }:
 mkDerivation {
   pname = "lambdabot-social-plugins";

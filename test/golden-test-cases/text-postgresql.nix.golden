@@ -1,4 +1,4 @@
-{ mkDerivation, base, dlist, QuickCheck, quickcheck-simple, stdenv
+{ mkDerivation, base, dlist, lib, QuickCheck, quickcheck-simple
 , transformers, transformers-compat
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ base QuickCheck quickcheck-simple ];
   homepage = "http://khibino.github.io/haskell-relational-record/";
   description = "Parser and Printer of PostgreSQL extended types";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

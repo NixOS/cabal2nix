@@ -1,6 +1,6 @@
-{ mkDerivation, array, base, bytestring, containers, dlist
+{ mkDerivation, array, base, bytestring, containers, dlist, lib
 , names-th, persistable-record, product-isomorphic
-, quickcheck-simple, sql-words, stdenv, template-haskell, text
+, quickcheck-simple, sql-words, template-haskell, text
 , th-reify-compat, time, time-locale-compat, transformers
 }:
 mkDerivation {
@@ -17,5 +17,5 @@ mkDerivation {
   ];
   homepage = "http://khibino.github.io/haskell-relational-record/";
   description = "Typeful, Modular, Relational, algebraic query engine";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

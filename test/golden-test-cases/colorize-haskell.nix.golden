@@ -1,4 +1,4 @@
-{ mkDerivation, ansi-terminal, base, haskell-lexer, stdenv }:
+{ mkDerivation, ansi-terminal, base, haskell-lexer, lib }:
 mkDerivation {
   pname = "colorize-haskell";
   version = "1.0.1";
@@ -9,5 +9,5 @@ mkDerivation {
   executableHaskellDepends = [ ansi-terminal base haskell-lexer ];
   homepage = "http://github.com/yav/colorize-haskell";
   description = "Highligt Haskell source";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

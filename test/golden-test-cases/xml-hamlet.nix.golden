@@ -1,5 +1,5 @@
-{ mkDerivation, base, containers, hspec, HUnit, parsec, shakespeare
-, stdenv, template-haskell, text, xml-conduit
+{ mkDerivation, base, containers, hspec, HUnit, lib, parsec
+, shakespeare, template-haskell, text, xml-conduit
 }:
 mkDerivation {
   pname = "xml-hamlet";
@@ -15,5 +15,5 @@ mkDerivation {
   ];
   homepage = "http://www.yesodweb.com/";
   description = "Hamlet-style quasiquoter for XML content";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

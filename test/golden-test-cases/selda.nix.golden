@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, exceptions, hashable, mtl
-, psqueues, stdenv, text, time, unordered-containers
+{ mkDerivation, base, bytestring, exceptions, hashable, lib, mtl
+, psqueues, text, time, unordered-containers
 }:
 mkDerivation {
   pname = "selda";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://selda.link";
   description = "Type-safe, high-level EDSL for interacting with relational databases";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

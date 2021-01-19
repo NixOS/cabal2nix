@@ -1,4 +1,4 @@
-{ mkDerivation, base, hspec, parsec, stdenv }:
+{ mkDerivation, base, hspec, lib, parsec }:
 mkDerivation {
   pname = "bbdb";
   version = "0.8";
@@ -7,5 +7,5 @@ mkDerivation {
   testHaskellDepends = [ base hspec parsec ];
   homepage = "https://github.com/henrylaxen/bbdb";
   description = "Ability to read, write, and modify BBDB files";
-  license = stdenv.lib.licenses.gpl3;
+  license = lib.licenses.gpl3;
 }

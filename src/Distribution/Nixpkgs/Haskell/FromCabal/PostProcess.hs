@@ -407,7 +407,7 @@ pandocOverrides = set phaseOverrides postInstall
 bustleOverrides :: Derivation -> Derivation
 bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True
                 . set (executableDepends . pkgconfig . contains "gio-unix = null") False
-                . set (metaSection . license) (Known "stdenv.lib.licenses.lgpl21Plus")
+                . set (metaSection . license) (Known "lib.licenses.lgpl21Plus")
                 . set (metaSection . hydraPlatforms) allKnownPlatforms
 
 nullBinding :: Identifier -> Binding

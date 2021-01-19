@@ -1,5 +1,5 @@
 { mkDerivation, attoparsec, base, base64-bytestring, bytestring
-, cereal, HUnit, stdenv, test-framework, test-framework-hunit
+, cereal, HUnit, lib, test-framework, test-framework-hunit
 }:
 mkDerivation {
   pname = "openpgp-asciiarmor";
@@ -15,5 +15,5 @@ mkDerivation {
   homepage = "http://floss.scru.org/openpgp-asciiarmor";
   description = "OpenPGP (RFC4880) ASCII Armor codec";
   license = "unknown";
-  hydraPlatforms = stdenv.lib.platforms.none;
+  hydraPlatforms = lib.platforms.none;
 }

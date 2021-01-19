@@ -1,4 +1,4 @@
-{ mkDerivation, base, HUnit, optional-args, parsec, stdenv, text
+{ mkDerivation, base, HUnit, lib, optional-args, parsec, text
 , turtle
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base HUnit parsec ];
   homepage = "https://github.com/elaye/turtle-options#readme";
   description = "Collection of command line options and parsers for these options";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,4 +1,4 @@
-{ mkDerivation, base, nix, process, stdenv }:
+{ mkDerivation, base, lib, nix, process }:
 mkDerivation {
   pname = "nix-paths";
   version = "1.0.1";
@@ -7,5 +7,5 @@ mkDerivation {
   libraryToolDepends = [ nix ];
   homepage = "https://github.com/peti/nix-paths";
   description = "Knowledge of Nix's installation directories";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

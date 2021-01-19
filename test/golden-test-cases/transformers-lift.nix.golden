@@ -1,5 +1,4 @@
-{ mkDerivation, base, stdenv, transformers, writer-cps-transformers
-}:
+{ mkDerivation, base, lib, transformers, writer-cps-transformers }:
 mkDerivation {
   pname = "transformers-lift";
   version = "0.2.0.1";
@@ -8,5 +7,5 @@ mkDerivation {
     base transformers writer-cps-transformers
   ];
   description = "Ad-hoc type classes for lifting";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

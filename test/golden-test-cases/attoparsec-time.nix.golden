@@ -1,5 +1,5 @@
 { mkDerivation, attoparsec, base, base-prelude, bytestring, Cabal
-, cabal-doctest, directory, doctest, filepath, scientific, stdenv
+, cabal-doctest, directory, doctest, filepath, lib, scientific
 , text, time
 }:
 mkDerivation {
@@ -15,5 +15,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/nikita-volkov/attoparsec-time";
   description = "Attoparsec parsers of time";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

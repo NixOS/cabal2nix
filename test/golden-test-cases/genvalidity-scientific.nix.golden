@@ -1,5 +1,5 @@
-{ mkDerivation, base, genvalidity, genvalidity-hspec, hspec
-, QuickCheck, scientific, stdenv, validity, validity-scientific
+{ mkDerivation, base, genvalidity, genvalidity-hspec, hspec, lib
+, QuickCheck, scientific, validity, validity-scientific
 }:
 mkDerivation {
   pname = "genvalidity-scientific";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "GenValidity support for Scientific";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

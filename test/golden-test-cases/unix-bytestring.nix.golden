@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, stdenv }:
+{ mkDerivation, base, bytestring, lib }:
 mkDerivation {
   pname = "unix-bytestring";
   version = "0.3.7.3";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base bytestring ];
   homepage = "http://code.haskell.org/~wren/";
   description = "Unix/Posix-specific functions for ByteStrings";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

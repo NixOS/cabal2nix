@@ -1,5 +1,5 @@
-{ mkDerivation, base, hspec, HUnit, monad-loops, MonadRandom
-, random, random-shuffle, stdenv
+{ mkDerivation, base, hspec, HUnit, lib, monad-loops, MonadRandom
+, random, random-shuffle
 }:
 mkDerivation {
   pname = "general-games";
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ base hspec HUnit MonadRandom ];
   homepage = "https://github.com/cgorski/general-games";
   description = "Library supporting simulation of a number of games";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

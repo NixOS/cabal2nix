@@ -1,5 +1,5 @@
-{ mkDerivation, base, prettyprinter, prettyprinter-ansi-terminal
-, stdenv, text
+{ mkDerivation, base, lib, prettyprinter
+, prettyprinter-ansi-terminal, text
 }:
 mkDerivation {
   pname = "prettyprinter-compat-ansi-wl-pprint";
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/quchen/prettyprinter";
   description = "Drop-in compatibility package to migrate from »ansi-wl-pprint« to »prettyprinter«";
-  license = stdenv.lib.licenses.bsd2;
+  license = lib.licenses.bsd2;
 }

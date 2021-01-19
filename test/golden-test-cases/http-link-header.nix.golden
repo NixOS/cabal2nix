@@ -1,7 +1,6 @@
 { mkDerivation, attoparsec, base, bytestring, bytestring-conversion
 , criterion, directory, errors, hspec, hspec-attoparsec
-, http-api-data, network-uri, QuickCheck, stdenv, text
-, transformers
+, http-api-data, lib, network-uri, QuickCheck, text, transformers
 }:
 mkDerivation {
   pname = "http-link-header";
@@ -19,5 +18,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/myfreeweb/http-link-header";
   description = "A parser and writer for the HTTP Link header as specified in RFC 5988 \"Web Linking\"";
-  license = stdenv.lib.licenses.publicDomain;
+  license = lib.licenses.publicDomain;
 }

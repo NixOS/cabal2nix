@@ -1,4 +1,4 @@
-{ mkDerivation, base, blaze-markup, mtl, stdenv }:
+{ mkDerivation, base, blaze-markup, lib, mtl }:
 mkDerivation {
   pname = "blaze-svg";
   version = "0.3.6.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base blaze-markup mtl ];
   homepage = "https://github.com/deepakjois/blaze-svg";
   description = "SVG combinator library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

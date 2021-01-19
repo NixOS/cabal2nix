@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, hashable, stdenv
+{ mkDerivation, base, containers, hashable, lib
 , unordered-containers, vector
 }:
 mkDerivation {
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/phadej/functor-classes-compat#readme";
   description = "Data.Functor.Classes instances for core packages";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

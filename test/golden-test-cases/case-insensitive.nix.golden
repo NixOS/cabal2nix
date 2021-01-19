@@ -1,5 +1,5 @@
 { mkDerivation, base, bytestring, criterion, deepseq, hashable
-, HUnit, stdenv, test-framework, test-framework-hunit, text
+, HUnit, lib, test-framework, test-framework-hunit, text
 }:
 mkDerivation {
   pname = "case-insensitive";
@@ -12,5 +12,5 @@ mkDerivation {
   benchmarkHaskellDepends = [ base bytestring criterion deepseq ];
   homepage = "https://github.com/basvandijk/case-insensitive";
   description = "Case insensitive string comparison";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

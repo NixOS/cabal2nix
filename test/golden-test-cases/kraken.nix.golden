@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, bytestring, http-client
-, http-client-tls, mtl, stdenv
+, http-client-tls, lib, mtl
 }:
 mkDerivation {
   pname = "kraken";
@@ -9,5 +9,5 @@ mkDerivation {
     aeson base bytestring http-client http-client-tls mtl
   ];
   description = "Kraken.io API client";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

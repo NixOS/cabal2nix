@@ -1,10 +1,10 @@
 { mkDerivation, aeson, base, blaze-builder, bytestring
 , case-insensitive, conduit, conduit-extra, connection, cookie
 , data-default-class, exceptions, hspec, http-client
-, http-client-tls, http-types, HUnit, lifted-base, monad-control
-, mtl, network, resourcet, stdenv, streaming-commons, temporary
-, text, time, transformers, utf8-string, wai, wai-conduit, warp
-, warp-tls
+, http-client-tls, http-types, HUnit, lib, lifted-base
+, monad-control, mtl, network, resourcet, streaming-commons
+, temporary, text, time, transformers, utf8-string, wai
+, wai-conduit, warp, warp-tls
 }:
 mkDerivation {
   pname = "http-conduit";
@@ -25,5 +25,5 @@ mkDerivation {
   doCheck = false;
   homepage = "http://www.yesodweb.com/book/http-conduit";
   description = "HTTP client package with conduit interface and HTTPS support";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

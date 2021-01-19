@@ -1,6 +1,5 @@
 { mkDerivation, base, bytestring, conduit, conduit-extra, directory
-, process, resourcet, safe, stdenv, terminfo, text, transformers
-, unix
+, lib, process, resourcet, safe, terminfo, text, transformers, unix
 }:
 mkDerivation {
   pname = "pager";
@@ -16,5 +15,5 @@ mkDerivation {
   executableHaskellDepends = [ base bytestring conduit-extra text ];
   homepage = "https://github.com/pharpend/pager";
   description = "Open up a pager, like 'less' or 'more'";
-  license = stdenv.lib.licenses.bsd2;
+  license = lib.licenses.bsd2;
 }

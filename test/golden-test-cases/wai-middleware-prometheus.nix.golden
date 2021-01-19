@@ -1,5 +1,5 @@
 { mkDerivation, base, bytestring, clock, data-default, doctest
-, http-types, prometheus-client, stdenv, text, wai
+, http-types, lib, prometheus-client, text, wai
 }:
 mkDerivation {
   pname = "wai-middleware-prometheus";
@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base doctest prometheus-client ];
   homepage = "https://github.com/fimad/prometheus-haskell";
   description = "WAI middlware for exposing http://prometheus.io metrics.";
-  license = stdenv.lib.licenses.asl20;
+  license = lib.licenses.asl20;
 }

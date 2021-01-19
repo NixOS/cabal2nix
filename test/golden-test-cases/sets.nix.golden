@@ -1,6 +1,6 @@
 { mkDerivation, base, commutative, composition, containers
-, contravariant, criterion, hashable, keys, mtl, QuickCheck
-, quickcheck-instances, semigroupoids, semigroups, stdenv, tasty
+, contravariant, criterion, hashable, keys, lib, mtl, QuickCheck
+, quickcheck-instances, semigroupoids, semigroups, tasty
 , tasty-hunit, tasty-quickcheck, transformers, transformers-base
 , unordered-containers, witherable
 }:
@@ -23,5 +23,5 @@ mkDerivation {
     unordered-containers
   ];
   description = "Ducktyped set interface for Haskell containers";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

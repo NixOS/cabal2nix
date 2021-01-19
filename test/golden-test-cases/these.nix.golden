@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, bifunctors, binary, containers
-, data-default-class, deepseq, hashable, keys, mtl, profunctors
-, QuickCheck, quickcheck-instances, semigroupoids, stdenv, tasty
-, tasty-quickcheck, transformers, transformers-compat
+, data-default-class, deepseq, hashable, keys, lib, mtl
+, profunctors, QuickCheck, quickcheck-instances, semigroupoids
+, tasty, tasty-quickcheck, transformers, transformers-compat
 , unordered-containers, vector, vector-instances
 }:
 mkDerivation {
@@ -20,5 +20,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/isomorphism/these";
   description = "An either-or-both data type & a generalized 'zip with padding' typeclass";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

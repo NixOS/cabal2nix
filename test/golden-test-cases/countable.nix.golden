@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, silently, stdenv, tasty
+{ mkDerivation, base, bytestring, lib, silently, tasty
 , tasty-golden, tasty-hunit
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/AshleyYakeley/countable";
   description = "Countable, Searchable, Finite, Empty classes";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,6 +1,6 @@
-{ mkDerivation, base, bytestring, containers, groundhog
+{ mkDerivation, base, bytestring, containers, groundhog, lib
 , monad-control, monad-logger, mysql, mysql-simple, resource-pool
-, resourcet, stdenv, text, time, transformers
+, resourcet, text, time, transformers
 }:
 mkDerivation {
   pname = "groundhog-mysql";
@@ -11,5 +11,5 @@ mkDerivation {
     mysql mysql-simple resource-pool resourcet text time transformers
   ];
   description = "MySQL backend for the groundhog library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

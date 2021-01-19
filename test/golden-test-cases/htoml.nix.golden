@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, bytestring, containers, criterion
-, file-embed, old-locale, parsec, stdenv, tasty, tasty-hspec
+, file-embed, lib, old-locale, parsec, tasty, tasty-hspec
 , tasty-hunit, text, time, unordered-containers, vector
 }:
 mkDerivation {
@@ -20,5 +20,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/cies/htoml";
   description = "Parser for TOML files";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

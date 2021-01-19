@@ -1,5 +1,5 @@
 { mkDerivation, base, colour, diagrams-cairo, diagrams-lib
-, directory, either-unwrap, filepath, parsec, ParsecTools, stdenv
+, directory, either-unwrap, filepath, lib, parsec, ParsecTools
 , StockholmAlignment, SVGFonts, text, vector
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
     filepath parsec ParsecTools StockholmAlignment SVGFonts text vector
   ];
   description = "Libary for Hidden Markov Models in HMMER3 format";
-  license = stdenv.lib.licenses.gpl3;
+  license = lib.licenses.gpl3;
 }

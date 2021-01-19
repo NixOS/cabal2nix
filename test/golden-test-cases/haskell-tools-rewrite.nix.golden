@@ -1,6 +1,6 @@
 { mkDerivation, base, containers, directory, filepath, ghc
-, haskell-tools-ast, haskell-tools-prettyprint, mtl, references
-, stdenv, tasty, tasty-hunit
+, haskell-tools-ast, haskell-tools-prettyprint, lib, mtl
+, references, tasty, tasty-hunit
 }:
 mkDerivation {
   pname = "haskell-tools-rewrite";
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/haskell-tools/haskell-tools";
   description = "Facilities for generating new parts of the Haskell-Tools AST";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

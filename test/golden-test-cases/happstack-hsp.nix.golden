@@ -1,5 +1,5 @@
 { mkDerivation, base, bytestring, happstack-server, harp, hsp
-, hsx2hs, mtl, stdenv, syb, text, utf8-string
+, hsx2hs, lib, mtl, syb, text, utf8-string
 }:
 mkDerivation {
   pname = "happstack-hsp";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "http://www.happstack.com/";
   description = "Support for using HSP templates in Happstack";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

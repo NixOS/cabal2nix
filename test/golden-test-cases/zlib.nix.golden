@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, QuickCheck, stdenv, tasty
+{ mkDerivation, base, bytestring, lib, QuickCheck, tasty
 , tasty-hunit, tasty-quickcheck, zlib
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
     base bytestring QuickCheck tasty tasty-hunit tasty-quickcheck
   ];
   description = "Compression and decompression in the gzip and zlib formats";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

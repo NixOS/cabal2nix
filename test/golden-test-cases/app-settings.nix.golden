@@ -1,5 +1,5 @@
-{ mkDerivation, base, containers, directory, hspec, HUnit, mtl
-, parsec, stdenv, text
+{ mkDerivation, base, containers, directory, hspec, HUnit, lib, mtl
+, parsec, text
 }:
 mkDerivation {
   pname = "app-settings";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/emmanueltouzery/app-settings";
   description = "A library to manage application settings (INI file-like)";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

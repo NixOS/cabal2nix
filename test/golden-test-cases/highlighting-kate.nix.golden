@@ -1,5 +1,5 @@
 { mkDerivation, base, blaze-html, bytestring, containers, Diff
-, directory, filepath, mtl, parsec, pcre-light, process, stdenv
+, directory, filepath, lib, mtl, parsec, pcre-light, process
 , utf8-string
 }:
 mkDerivation {

@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv, text, time }:
+{ mkDerivation, base, lib, text, time }:
 mkDerivation {
   pname = "l10n";
   version = "0.1.0.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base text time ];
   homepage = "https://github.com/louispan/l10n#readme";
   description = "Enables providing localization as typeclass instances in separate files";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

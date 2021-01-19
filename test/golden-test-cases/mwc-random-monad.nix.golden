@@ -1,5 +1,5 @@
-{ mkDerivation, base, monad-primitive, mwc-random, primitive
-, stdenv, transformers, vector
+{ mkDerivation, base, lib, monad-primitive, mwc-random, primitive
+, transformers, vector
 }:
 mkDerivation {
   pname = "mwc-random-monad";
@@ -9,5 +9,5 @@ mkDerivation {
     base monad-primitive mwc-random primitive transformers vector
   ];
   description = "Monadic interface for mwc-random";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

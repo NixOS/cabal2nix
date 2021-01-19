@@ -1,6 +1,6 @@
 { mkDerivation, AC-Vector, base, bytestring, containers, deepseq
-, directory, ghc-prim, GLUT, hPDB, IfElse, iterable, mtl, Octree
-, OpenGL, process, QuickCheck, stdenv, template-haskell, text
+, directory, ghc-prim, GLUT, hPDB, IfElse, iterable, lib, mtl
+, Octree, OpenGL, process, QuickCheck, template-haskell, text
 , text-format, time, vector
 }:
 mkDerivation {
@@ -20,5 +20,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/BioHaskell/hPDB-examples";
   description = "Examples for hPDB library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,5 +1,5 @@
-{ mkDerivation, accelerate, accelerate-io, base, carray, fft
-, stdenv, storable-complex
+{ mkDerivation, accelerate, accelerate-io, base, carray, fft, lib
+, storable-complex
 }:
 mkDerivation {
   pname = "accelerate-fftw";
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "http://hub.darcs.net/thielema/accelerate-fftw/";
   description = "Accelerate frontend to the FFTW library (Fourier transform)";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

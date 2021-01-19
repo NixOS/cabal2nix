@@ -1,6 +1,6 @@
 { mkDerivation, array, base, bifunctors, comonad, containers
-, contravariant, ghc-prim, hspec, profunctors, QuickCheck
-, semigroups, StateVar, stdenv, stm, tagged, template-haskell
+, contravariant, ghc-prim, hspec, lib, profunctors, QuickCheck
+, semigroups, StateVar, stm, tagged, template-haskell
 , th-abstraction, transformers, transformers-compat
 , unordered-containers
 }:
@@ -17,5 +17,5 @@ mkDerivation {
   testHaskellDepends = [ base hspec QuickCheck template-haskell ];
   homepage = "https://github.com/nfrisby/invariant-functors";
   description = "Haskell98 invariant functors";
-  license = stdenv.lib.licenses.bsd2;
+  license = lib.licenses.bsd2;
 }

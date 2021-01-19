@@ -1,5 +1,5 @@
 { mkDerivation, base, Cabal, containers, directory, filepath, fixed
-, half, hxt, libGL, stdenv, transformers
+, half, hxt, lib, libGL, transformers
 }:
 mkDerivation {
   pname = "gl";
@@ -13,5 +13,5 @@ mkDerivation {
   ];
   librarySystemDepends = [ libGL ];
   description = "Complete OpenGL raw bindings";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

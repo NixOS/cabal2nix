@@ -1,4 +1,4 @@
-{ mkDerivation, base, QuickCheck, stdenv, template-haskell }:
+{ mkDerivation, base, lib, QuickCheck, template-haskell }:
 mkDerivation {
   pname = "FenwickTree";
   version = "0.1.2.1";
@@ -8,5 +8,5 @@ mkDerivation {
   testHaskellDepends = [ base QuickCheck template-haskell ];
   homepage = "https://github.com/mgajda/FenwickTree";
   description = "Data structure for fast query and update of cumulative sums";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,12 +1,11 @@
 { mkDerivation, aeson, async, auto-update, base, blaze-builder
 , bytestring, containers, criterion, deepseq, directory, either
-, filepath, hostname, microlens, microlens-th, monad-control, mtl
-, old-locale, quickcheck-instances, regex-tdfa, resourcet
-, safe-exceptions, scientific, semigroups, stdenv, stm, string-conv
-, tasty, tasty-golden, tasty-hunit, tasty-quickcheck
-, template-haskell, text, time, time-locale-compat, transformers
-, transformers-base, transformers-compat, unix
-, unordered-containers
+, filepath, hostname, lib, microlens, microlens-th, monad-control
+, mtl, old-locale, quickcheck-instances, regex-tdfa, resourcet
+, safe-exceptions, scientific, semigroups, stm, string-conv, tasty
+, tasty-golden, tasty-hunit, tasty-quickcheck, template-haskell
+, text, time, time-locale-compat, transformers, transformers-base
+, transformers-compat, unix, unordered-containers
 }:
 mkDerivation {
   pname = "katip";
@@ -31,5 +30,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/Soostone/katip";
   description = "A structured logging framework";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

@@ -1,9 +1,9 @@
 { mkDerivation, aeson, base, butcher, bytestring, cmdargs
 , containers, czipwith, data-tree-print, deepseq, directory, extra
-, filepath, ghc, ghc-boot-th, ghc-exactprint, ghc-paths, hspec
+, filepath, ghc, ghc-boot-th, ghc-exactprint, ghc-paths, hspec, lib
 , monad-memo, mtl, multistate, neat-interpolation, parsec, pretty
-, safe, semigroups, stdenv, strict, syb, text, transformers
-, uniplate, unsafe, yaml
+, safe, semigroups, strict, syb, text, transformers, uniplate
+, unsafe, yaml
 }:
 mkDerivation {
   pname = "brittany";
@@ -34,5 +34,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/lspitzner/brittany/";
   description = "Haskell source code formatter";
-  license = stdenv.lib.licenses.agpl3;
+  license = lib.licenses.agpl3;
 }

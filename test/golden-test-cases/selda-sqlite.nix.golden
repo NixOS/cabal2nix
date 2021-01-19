@@ -1,5 +1,5 @@
-{ mkDerivation, base, direct-sqlite, directory, exceptions, selda
-, stdenv, text
+{ mkDerivation, base, direct-sqlite, directory, exceptions, lib
+, selda, text
 }:
 mkDerivation {
   pname = "selda-sqlite";
@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/valderman/selda";
   description = "SQLite backend for the Selda database EDSL";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

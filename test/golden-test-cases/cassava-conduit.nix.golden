@@ -1,6 +1,6 @@
 { mkDerivation, array, base, bifunctors, bytestring, cassava
-, conduit, conduit-extra, containers, criterion, mtl, QuickCheck
-, stdenv, text
+, conduit, conduit-extra, containers, criterion, lib, mtl
+, QuickCheck, text
 }:
 mkDerivation {
   pname = "cassava-conduit";
@@ -16,5 +16,5 @@ mkDerivation {
   benchmarkHaskellDepends = [ base criterion ];
   homepage = "https://github.com/domdere/cassava-conduit";
   description = "Conduit interface for cassava package";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

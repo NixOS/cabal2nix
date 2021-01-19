@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, bytestring, deepseq, doctest, Glob
-, hspec-wai, http-media, profunctors, servant, servant-client
-, servant-docs, servant-server, stdenv, tagged, tasty, tasty-hspec
+, hspec-wai, http-media, lib, profunctors, servant, servant-client
+, servant-docs, servant-server, tagged, tasty, tasty-hspec
 , tasty-hunit, text, wai
 }:
 mkDerivation {
@@ -19,5 +19,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/cdepillabout/servant-checked-exceptions";
   description = "Checked exceptions for Servant APIs";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

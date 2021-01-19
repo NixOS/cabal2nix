@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, blaze-html, bytestring, containers
-, happstack-server, jmacro, jmacro-rpc, mtl, stdenv
+, happstack-server, jmacro, jmacro-rpc, lib, mtl
 }:
 mkDerivation {
   pname = "jmacro-rpc-happstack";
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "http://hub.darcs.net/gershomb/jmacro-rpc";
   description = "Happstack backend for jmacro-rpc";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

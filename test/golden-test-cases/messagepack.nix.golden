@@ -1,5 +1,5 @@
-{ mkDerivation, base, bytestring, cereal, containers, deepseq
-, QuickCheck, stdenv, test-framework, test-framework-quickcheck2
+{ mkDerivation, base, bytestring, cereal, containers, deepseq, lib
+, QuickCheck, test-framework, test-framework-quickcheck2
 , test-framework-th
 }:
 mkDerivation {
@@ -15,5 +15,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/rodrigosetti/messagepack";
   description = "Serialize instance for Message Pack Object";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

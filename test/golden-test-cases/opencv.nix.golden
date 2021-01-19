@@ -1,8 +1,8 @@
 { mkDerivation, aeson, base, base64-bytestring, bindings-DSL
 , bytestring, Cabal, containers, criterion, data-default, deepseq
 , directory, Glob, haskell-src-exts, inline-c, inline-c-cpp
-, JuicyPixels, lens, linear, opencv3, primitive, QuickCheck, repa
-, stdenv, tasty, tasty-hunit, tasty-quickcheck, template-haskell
+, JuicyPixels, lens, lib, linear, opencv3, primitive, QuickCheck
+, repa, tasty, tasty-hunit, tasty-quickcheck, template-haskell
 , text, transformers, vector
 }:
 mkDerivation {
@@ -26,5 +26,5 @@ mkDerivation {
   hardeningDisable = [ "bindnow" ];
   homepage = "https://github.com/LumiGuide/haskell-opencv";
   description = "Haskell binding to OpenCV-3.x";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

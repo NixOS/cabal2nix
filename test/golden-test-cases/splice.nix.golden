@@ -1,4 +1,4 @@
-{ mkDerivation, base, network, stdenv }:
+{ mkDerivation, base, lib, network }:
 mkDerivation {
   pname = "splice";
   version = "0.6.1.1";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base network ];
   homepage = "http://corsis.github.com/splice/";
   description = "Cross-platform Socket to Socket Data Splicing";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

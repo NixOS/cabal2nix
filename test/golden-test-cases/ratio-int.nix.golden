@@ -1,4 +1,4 @@
-{ mkDerivation, base, stdenv }:
+{ mkDerivation, base, lib }:
 mkDerivation {
   pname = "ratio-int";
   version = "0.1.2";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base ];
   homepage = "https://github.com/RaphaelJ/ratio-int";
   description = "Fast specialisation of Data.Ratio for Int.";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

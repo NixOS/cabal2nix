@@ -1,4 +1,4 @@
-{ mkDerivation, aeson, base, HUnit, lens, split, stdenv
+{ mkDerivation, aeson, base, HUnit, lens, lib, split
 , template-haskell, text
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ aeson base HUnit lens ];
   homepage = "https://github.com/nakaji-dayo/api-field-json-th";
   description = "option of aeson's deriveJSON";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

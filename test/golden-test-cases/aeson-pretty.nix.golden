@@ -1,5 +1,5 @@
 { mkDerivation, aeson, attoparsec, base, base-compat, bytestring
-, cmdargs, scientific, stdenv, text, unordered-containers, vector
+, cmdargs, lib, scientific, text, unordered-containers, vector
 }:
 mkDerivation {
   pname = "aeson-pretty";
@@ -16,5 +16,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/informatikr/aeson-pretty";
   description = "JSON pretty-printing library and command-line tool";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

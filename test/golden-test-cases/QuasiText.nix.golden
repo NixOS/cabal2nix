@@ -1,4 +1,4 @@
-{ mkDerivation, attoparsec, base, haskell-src-meta, stdenv
+{ mkDerivation, attoparsec, base, haskell-src-meta, lib
 , template-haskell, text, th-lift-instances
 }:
 mkDerivation {
@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/mikeplus64/QuasiText";
   description = "A QuasiQuoter for Text";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

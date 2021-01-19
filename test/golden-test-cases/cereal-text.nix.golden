@@ -1,4 +1,4 @@
-{ mkDerivation, base, cereal, stdenv, text }:
+{ mkDerivation, base, cereal, lib, text }:
 mkDerivation {
   pname = "cereal-text";
   version = "0.1.0.2";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base cereal text ];
   homepage = "https://github.com/ulikoehler/cereal-text";
   description = "Data.Text instances for the cereal serialization library";
-  license = stdenv.lib.licenses.asl20;
+  license = lib.licenses.asl20;
 }

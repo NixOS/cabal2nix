@@ -1,7 +1,7 @@
 { mkDerivation, base, blaze-builder, bytestring, Cabal, containers
-, deepseq, directory, filepath, hashable, HUnit, microlens
+, deepseq, directory, filepath, hashable, HUnit, lib, microlens
 , microlens-mtl, microlens-th, mtl, parallel, parsec, QuickCheck
-, quickcheck-assertions, random, smallcheck, stdenv, stm, string-qq
+, quickcheck-assertions, random, smallcheck, stm, string-qq
 , terminfo, test-framework, test-framework-hunit
 , test-framework-smallcheck, text, transformers, unix, utf8-string
 , vector
@@ -29,5 +29,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/jtdaugherty/vty";
   description = "A simple terminal UI library";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

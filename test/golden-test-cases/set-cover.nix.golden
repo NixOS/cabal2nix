@@ -1,4 +1,4 @@
-{ mkDerivation, base, containers, enummapset, psqueues, stdenv
+{ mkDerivation, base, containers, enummapset, lib, psqueues
 , utility-ht
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "http://hub.darcs.net/thielema/set-cover/";
   description = "Solve exact set cover problems like Sudoku, 8 Queens, Soma Cube, Tetris Cube";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

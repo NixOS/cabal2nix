@@ -1,4 +1,4 @@
-{ mkDerivation, base, classy-prelude-yesod, stdenv, yesod-form }:
+{ mkDerivation, base, classy-prelude-yesod, lib, yesod-form }:
 mkDerivation {
   pname = "yesod-form-bootstrap4";
   version = "0.1.0.2";
@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base classy-prelude-yesod yesod-form ];
   homepage = "https://github.com/ncaq/yesod-form-bootstrap4#readme";
   description = "renderBootstrap4";
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

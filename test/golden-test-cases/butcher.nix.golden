@@ -1,5 +1,5 @@
 { mkDerivation, base, bifunctors, containers, deque, either, extra
-, free, microlens, microlens-th, mtl, multistate, pretty, stdenv
+, free, lib, microlens, microlens-th, mtl, multistate, pretty
 , transformers, unsafe, void
 }:
 mkDerivation {
@@ -12,5 +12,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/lspitzner/butcher/";
   description = "Chops a command or program invocation into digestable pieces";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

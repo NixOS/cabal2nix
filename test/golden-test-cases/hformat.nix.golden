@@ -1,5 +1,5 @@
 { mkDerivation, ansi-terminal, base, base-unicode-symbols, hspec
-, stdenv, text
+, lib, text
 }:
 mkDerivation {
   pname = "hformat";
@@ -11,5 +11,5 @@ mkDerivation {
   testHaskellDepends = [ base base-unicode-symbols hspec text ];
   homepage = "http://github.com/mvoidex/hformat";
   description = "Simple Haskell formatting";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }
