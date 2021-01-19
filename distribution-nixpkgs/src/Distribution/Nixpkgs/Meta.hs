@@ -43,8 +43,8 @@ import Language.Nix.PrettyPrinting
 -- description = "an example package";
 -- license = "unknown";
 -- platforms = [ "x86_64-linux" ];
--- hydraPlatforms = stdenv.lib.platforms.none;
--- maintainers = with stdenv.lib.maintainers; [ jane joe ];
+-- hydraPlatforms = lib.platforms.none;
+-- maintainers = with lib.maintainers; [ jane joe ];
 -- broken = true;
 
 data Meta = Meta
@@ -69,13 +69,13 @@ instance Pretty Meta where
     , attr "license" $ pPrint _license
     , onlyIf (_platforms /= allKnownPlatforms) $ renderPlatforms "platforms" _platforms
     , onlyIf (_hydraPlatforms /= _platforms) $ renderPlatforms "hydraPlatforms" _hydraPlatforms
-    , setattr "maintainers" (text "with stdenv.lib.maintainers;") (Set.map (view ident) _maintainers)
+    , setattr "maintainers" (text "with lib.maintainers;") (Set.map (view ident) _maintainers)
     , boolattr "broken" _broken _broken
     ]
 
 renderPlatforms :: String -> Set Platform -> Doc
 renderPlatforms field ps
-  | Set.null ps = sep [ text field <+> equals <+> text "stdenv.lib.platforms.none" <> semi ]
+  | Set.null ps = sep [ text field <+> equals <+> text "lib.platforms.none" <> semi ]
   | otherwise   = sep [ text field <+> equals <+> lbrack
                       , nest 2 $ fsep $ map text (toAscList (Set.map fromCabalPlatform ps))
                       , rbrack <> semi
