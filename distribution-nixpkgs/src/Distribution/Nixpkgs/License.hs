@@ -14,19 +14,19 @@ import GHC.Generics ( Generic )
 import Language.Nix.PrettyPrinting
 
 -- | The representation for licenses used in Nix derivations. Known
--- licenses are Nix expressions -- such as @stdenv.lib.licenses.bsd3@
+-- licenses are Nix expressions -- such as @lib.licenses.bsd3@
 -- --, so their exact \"name\" is not generally known, because the path
--- to @stdenv@ depends on the context defined in the expression. In
+-- to @lib@ depends on the context defined in the expression. In
 -- Cabal expressions, for example, the BSD3 license would have to be
--- referred to as @self.stdenv.lib.licenses.bsd3@. Other expressions,
+-- referred to as @self.lib.licenses.bsd3@. Other expressions,
 -- however, use different paths to the @licenses@ record. Because of tat
 -- situation, the library cannot provide an abstract data type that
 -- encompasses all known licenses. Instead, the @License@ type just
 -- distinguishes references to known and unknown licenses. The
 -- difference between the two is in the way they are pretty-printed:
 --
--- > > putStrLn (display (Known "stdenv.lib.license.gpl2"))
--- > stdenv.lib.license.gpl2
+-- > > putStrLn (display (Known "lib.license.gpl2"))
+-- > lib.license.gpl2
 -- >
 -- > > putStrLn (display (Unknown (Just "GPL")))
 -- > "GPL"
