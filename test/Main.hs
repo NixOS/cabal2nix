@@ -93,7 +93,7 @@ testExecutable exe cabalFile = do
     (\ref new -> ["diff", "-u", ref, new])
     goldenFile
     nixFile
-    (callCommand (unwords ["env LANG=en_US.UTF-8", exe, "--sha256=deadbeef", "--system=x86_64-linux", "--compiler=ghc-8.2", "--", cabalFile, ">"++nixFile]))
+    (callCommand (unwords ["env LANG=C.UTF-8", exe, "--sha256=deadbeef", "--system=x86_64-linux", "--compiler=ghc-8.2", "--", cabalFile, ">"++nixFile]))
 
 -------------------------------------------------------------------------------
 -- * Helper functions
