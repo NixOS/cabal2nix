@@ -4,7 +4,7 @@ Cabal2nix
 [![hackage release](https://img.shields.io/hackage/v/cabal2nix.svg?label=hackage)](http://hackage.haskell.org/package/cabal2nix)
 [![stackage LTS package](http://stackage.org/package/cabal2nix/badge/lts)](http://stackage.org/lts/package/cabal2nix)
 [![stackage Nightly package](http://stackage.org/package/cabal2nix/badge/nightly)](http://stackage.org/nightly/package/cabal2nix)
-[![travis build status](https://img.shields.io/travis/NixOS/cabal2nix/master.svg?label=travis+build)](https://travis-ci.org/NixOS/cabal2nix)
+![Continous Integration](https://github.com/NixOS/cabal2nix/workflows/Haskell-CI/badge.svg)
 
 `cabal2nix` converts a single Cabal file into a single Nix build expression.
 For example:
