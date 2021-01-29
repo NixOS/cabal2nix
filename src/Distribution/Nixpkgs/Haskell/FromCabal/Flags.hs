@@ -19,6 +19,7 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "bustle"             = [disable "hgettext"] -- https://gitlab.freedesktop.org/bustle/bustle/issues/13
  | name == "cabal-plan"         = [enable "exe"]
  | name == "cassava"            = [disable "bytestring--lt-0_10_4"]
+ | name == "cryptohash-sha256"  = [enable "use-cbits"] -- https://github.com/haskell-hvr/cryptohash-sha256/issues/11
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
  | name == "diagrams-builder"   = [enable "cairo", enable "svg", enable "ps", enable "rasterific"]
  | name == "fltkhs"             = [enable "opengl"]
