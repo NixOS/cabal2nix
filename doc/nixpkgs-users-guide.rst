@@ -134,6 +134,22 @@ on that compiler. Also, the attributes ``haskell.compiler.ghcXYC`` and
 ``haskell.packages.ghcXYC.ghc`` are synonymous for the sake of
 convenience.
 
+How to install a branch of a package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the nice things about Nix is that since nixpkgs contains all
+information to build a package. This makes it easy to point a package
+to a different branch of the source and have Nix build a package for
+that branch.
+
+Even though Haskell packages are typically generated based on the hackage
+releases, because hackage contains source packages this is still possible
+for hackage. You can simply add a ``src`` attribute to any of the entries
+in ``hackage-packages.nix``.
+
+This is of course not a long-term solution, as ``hackage-packages.nix``
+is a generated file and your changes will be lost when it is regenerated.
+
 How to create a development environment
 ---------------------------------------
 
