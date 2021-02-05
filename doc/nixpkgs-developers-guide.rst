@@ -47,3 +47,4 @@ Unsolved Design Problems
    03-map-cabal-files-to-nix-without-information-loss
    04-set-up-a-sufficiently-powerful-build-farm
    05-publish-all-of-hackage
+   packaging-workflow.md
