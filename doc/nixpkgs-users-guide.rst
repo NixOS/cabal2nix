@@ -137,18 +137,33 @@ convenience.
 How to install a branch of a package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-One of the nice things about Nix is that since nixpkgs contains all
-information to build a package. This makes it easy to point a package
+One of the nice things about Nix is that nixpkgs contains all information
+needed to build a package. This makes it easy to point a package
 to a different branch of the source and have Nix build a package for
 that branch.
 
 Even though Haskell packages are typically generated based on the hackage
 releases, because hackage contains source packages this is still possible
-for hackage. You can simply add a ``src`` attribute to any of the entries
-in ``hackage-packages.nix``.
+for hackage. You can simply override the ``src`` attribute, for example:
 
-This is of course not a long-term solution, as ``hackage-packages.nix``
-is a generated file and your changes will be lost when it is regenerated.
+.. code:: nix
+
+   my-hledger-lib = haskellPackages.hledger-lib.overrideAttrs(old: {
+     src = /home/aengelen/dev/hledger/hledger-lib;
+   });
+   my-hledger = (haskellPackages.hledger.overrideAttrs(old: {
+     src = /home/aengelen/dev/hledger/hledger;
+   })).override {
+     hledger-lib = my-hledger-lib;
+   };
+   hledger-web = haskell.lib.justStaticExecutables ((haskellPackages.hledger-web
+     .overrideAttrs(old: {
+       src = /home/aengelen/dev/hledger/hledger-web;
+     }))
+     .override {
+       hledger = my-hledger;
+       hledger-lib = my-hledger-lib;
+     });
 
 How to create a development environment
 ---------------------------------------
