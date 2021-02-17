@@ -144,22 +144,21 @@ that branch.
 
 Even though Haskell packages are typically generated based on the hackage
 releases, because hackage contains source packages this is still possible
-for hackage. You can simply override the ``src`` attribute, for example:
+for hackage. You can use ``overrideSrc`` to override the source, for example:
 
 .. code:: nix
 
-   my-hledger-lib = haskellPackages.hledger-lib.overrideAttrs(old: {
+   my-hledger-lib = (haskell.lib.overrideSrc haskellPackages.hledger-lib {
      src = /home/aengelen/dev/hledger/hledger-lib;
    });
-   my-hledger = (haskellPackages.hledger.overrideAttrs(old: {
+   my-hledger = (haskell.lib.overrideSrc haskellPackages.hledger {
      src = /home/aengelen/dev/hledger/hledger;
-   })).override {
+   }).override {
      hledger-lib = my-hledger-lib;
    };
-   hledger-web = haskell.lib.justStaticExecutables ((haskellPackages.hledger-web
-     .overrideAttrs(old: {
+   hledger-web = haskell.lib.justStaticExecutables ((haskell.lib.overrideSrc haskellPackages.hledger-web {
        src = /home/aengelen/dev/hledger/hledger-web;
-     }))
+     })
      .override {
        hledger = my-hledger;
        hledger-lib = my-hledger-lib;
