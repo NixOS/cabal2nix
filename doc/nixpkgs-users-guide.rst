@@ -693,7 +693,7 @@ builds in the default Haskell package set:
 .. code:: nix
 
    {
-     packageOverrides = super: let self = super.pkgs; in
+     packageOverrides = super:
      {
        haskellPackages = super.haskellPackages.override {
          overrides = self: super: {
