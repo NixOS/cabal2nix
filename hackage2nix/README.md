@@ -27,6 +27,9 @@ This must be run on a **case sensitive file system**.
 On OSX you can use [this](https://gist.github.com/dixson3/8360571) to create one
 (you can replace `60g` with `4g` as that should be plenty).
 
+For building `cabal2nix` and `hackage2nix` you need to have `cabal-install`
+installed and `update-nixpkgs.sh` uses `git` at run time.
+
 #### Setup
 
 This shows the setup that nixpkgs Haskell maintainers use to iterate on both
@@ -43,11 +46,14 @@ git clone https://github.com/NixOS/cabal2nix.git
 cd cabal2nix
 git clone git@github.com:NixOS/nixpkgs.git # replace this with your fork
 git clone https://github.com/commercialhaskell/all-cabal-hashes.git --branch hackage hackage
-# For high reproducibility and pinned nixpkgs for native dependencies
-# (you can leave `--nix` off on NixOS, or if you don't have nix installed):
-stack --nix build
-# Alternatively, to use Cabal's resolver:
-cabal install
+# update-nixpkgs.sh uses new-style cabal v2-run,
+# so we build using the new cabal resolver:
+cabal v2-build
+# alternatively, if you have cabal2nix from nixpkgs
+# installed, you can save yourself a bit of build
+# time, by using a nix-shell development environment:
+cabal2nix --shell . > shell.nix
+nix-shell --run "cabal v2-build"
 ```
 
 #### Running `hackage2nix`
