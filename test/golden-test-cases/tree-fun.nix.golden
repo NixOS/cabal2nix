@@ -5,5 +5,5 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers mtl ];
   description = "Library for functions pertaining to tree exploration and manipulation";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

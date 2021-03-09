@@ -9,5 +9,5 @@ mkDerivation {
   testHaskellDepends = [ base containers hspec QuickCheck ];
   homepage = "https://github.com/yamadapc/haskell-drawille#readme";
   description = "A port of asciimoo's drawille to haskell";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

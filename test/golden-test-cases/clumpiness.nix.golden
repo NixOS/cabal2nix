@@ -5,5 +5,5 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers tree-fun ];
   description = "Calculate the clumpiness of leaf properties in a tree";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

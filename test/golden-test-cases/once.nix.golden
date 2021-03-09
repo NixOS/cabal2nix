@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://anonscm.debian.org/cgit/users/kaction-guest/haskell-once.git";
   description = "memoization for IO actions and functions";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }
