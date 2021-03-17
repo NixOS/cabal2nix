@@ -70,7 +70,7 @@ library
                     , containers           >= 0.5.9
                     , deepseq              >= 1.4
                     , directory
-                    , distribution-nixpkgs >= 1.4.0
+                    , distribution-nixpkgs >= 1.5.0
                     , filepath
                     , hackage-db           >= 2.0.1
                     , hopenssl             >= 2
