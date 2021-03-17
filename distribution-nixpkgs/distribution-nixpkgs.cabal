@@ -24,7 +24,7 @@ library
                       Language.Nix.PrettyPrinting
   hs-source-dirs:     src
   build-depends:      base         > 4.2 && < 5
-                    , Cabal        > 2.2
+                    , Cabal        >= 2.4
                     , aeson
                     , bytestring
                     , containers
