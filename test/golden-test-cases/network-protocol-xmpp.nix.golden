@@ -11,5 +11,5 @@ mkDerivation {
   ];
   homepage = "https://john-millikin.com/software/haskell-xmpp/";
   description = "Client library for the XMPP protocol";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

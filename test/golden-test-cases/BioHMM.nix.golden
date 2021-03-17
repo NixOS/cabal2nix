@@ -11,5 +11,5 @@ mkDerivation {
     filepath parsec ParsecTools StockholmAlignment SVGFonts text vector
   ];
   description = "Libary for Hidden Markov Models in HMMER3 format";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

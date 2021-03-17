@@ -18,17 +18,17 @@ import Distribution.Version
 
 fromCabalLicense :: Distribution.License.License -> Distribution.Nixpkgs.License.License
 fromCabalLicense (GPL Nothing)                             = Unknown (Just "GPL")
-fromCabalLicense (GPL (Just (versionNumbers -> [2])))      = Known "lib.licenses.gpl2"
-fromCabalLicense (GPL (Just (versionNumbers -> [3])))      = Known "lib.licenses.gpl3"
-fromCabalLicense (GPL (Just (versionNumbers -> [3,0])))    = Known "lib.licenses.gpl3"
+fromCabalLicense (GPL (Just (versionNumbers -> [2])))      = Known "lib.licenses.gpl2Only"
+fromCabalLicense (GPL (Just (versionNumbers -> [3])))      = Known "lib.licenses.gpl3Only"
+fromCabalLicense (GPL (Just (versionNumbers -> [3,0])))    = Known "lib.licenses.gpl3Only"
 fromCabalLicense (LGPL Nothing)                            = Unknown (Just "LGPL")
-fromCabalLicense (LGPL (Just (versionNumbers -> [2,1])))   = Known "lib.licenses.lgpl21"
-fromCabalLicense (LGPL (Just (versionNumbers -> [2])))     = Known "lib.licenses.lgpl2"
-fromCabalLicense (LGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.lgpl3"
-fromCabalLicense (LGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.lgpl3"
+fromCabalLicense (LGPL (Just (versionNumbers -> [2,1])))   = Known "lib.licenses.lgpl21Only"
+fromCabalLicense (LGPL (Just (versionNumbers -> [2])))     = Known "lib.licenses.lgpl2Only"
+fromCabalLicense (LGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.lgpl3Only"
+fromCabalLicense (LGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.lgpl3Only"
 fromCabalLicense (AGPL Nothing)                            = Unknown (Just "AGPL")
-fromCabalLicense (AGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.agpl3"
-fromCabalLicense (AGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.agpl3"
+fromCabalLicense (AGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.agpl3Only"
+fromCabalLicense (AGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.agpl3Only"
 fromCabalLicense (MPL (versionNumbers ->  [2,0]))          = Known "lib.licenses.mpl20"
 fromCabalLicense BSD2                                      = Known "lib.licenses.bsd2"
 fromCabalLicense BSD3                                      = Known "lib.licenses.bsd3"

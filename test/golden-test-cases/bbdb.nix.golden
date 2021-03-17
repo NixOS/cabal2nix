@@ -7,5 +7,5 @@ mkDerivation {
   testHaskellDepends = [ base hspec parsec ];
   homepage = "https://github.com/henrylaxen/bbdb";
   description = "Ability to read, write, and modify BBDB files";
-  license = lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

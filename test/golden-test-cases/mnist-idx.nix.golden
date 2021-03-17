@@ -9,5 +9,5 @@ mkDerivation {
   testHaskellDepends = [ base binary directory hspec vector ];
   homepage = "https://github.com/kryoxide/mnist-idx/";
   description = "Read and write IDX data that is used in e.g. the MNIST database.";
-  license = lib.licenses.lgpl3;
+  license = lib.licenses.lgpl3Only;
 }
