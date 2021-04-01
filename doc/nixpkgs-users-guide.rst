@@ -15,7 +15,7 @@ except for the default version of ghc, cabal-install, and stack:
    $ nix-env -i alex
    error: selector ‘alex’ matches no derivations
    $ nix-env -qa ghc
-   ghc-7.10.2
+   ghc-8.10.2
 
 The Haskell package set is not registered in the top-level namespace
 because it is *huge*. If all Haskell packages were visible to these
@@ -92,7 +92,7 @@ flag, then that’s the way to do it:
    nix-env -qaP -A nixos.haskellPackages
    nix-env -iA nixos.haskellPackages.cabal-install
 
-Our current default compiler is GHC 8.8.x and the ``haskellPackages``
+Our current default compiler is GHC 8.10.x and the ``haskellPackages``
 set contains packages built with that particular version. Nixpkgs
 contains the last three major releases of GHC and there is a whole
 family of package sets available that defines Hackage packages built
@@ -100,11 +100,12 @@ with each of those compilers, too:
 
 .. code:: shell
 
-   nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc865
-   nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc8101
+   nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc8104
+   nix-env -f "<nixpkgs>" -qaP -A haskell.packages.ghc901
 
 The name ``haskellPackages`` is really just a synonym for
-``haskell.packages.ghc882``, because we prefer that package set
+``haskell.packages.ghcXYZ`` (where ``XYZ`` is current default GHC
+version in Nixpkgs), because we prefer that package set
 internally and recommend it to our users as their default choice, but
 ultimately you are free to compile your Haskell packages with any GHC
 version you please. The following command displays the complete list of
@@ -113,25 +114,23 @@ available compilers:
 ::
 
    $ nix-env -f "<nixpkgs>" -qaP -A haskell.compiler
-   haskell.compiler.ghc8101                 ghc-8.10.1
-   haskell.compiler.integer-simple.ghc8101  ghc-8.10.1
-   haskell.compiler.ghcHEAD                 ghc-8.11.20200505
-   haskell.compiler.integer-simple.ghcHEAD  ghc-8.11.20200505
-   haskell.compiler.ghc822Binary            ghc-8.2.2-binary
-   haskell.compiler.ghc844                  ghc-8.4.4
-   haskell.compiler.ghc863Binary            ghc-8.6.3-binary
-   haskell.compiler.ghc865                  ghc-8.6.5
-   haskell.compiler.integer-simple.ghc865   ghc-8.6.5
-   haskell.compiler.ghc882                  ghc-8.8.2
-   haskell.compiler.integer-simple.ghc882   ghc-8.8.2
-   haskell.compiler.ghc883                  ghc-8.8.3
-   haskell.compiler.integer-simple.ghc883   ghc-8.8.3
-   haskell.compiler.ghcjs                   ghcjs-8.6.0.1
+   haskell.compiler.ghc8102Binary           ghc-8.10.2-binary
+   haskell.compiler.ghc8102BinaryMinimal    ghc-8.10.2-binary
+   haskell.compiler.ghc8104                 ghc-8.10.4
+   haskell.compiler.integer-simple.ghc8104  ghc-8.10.4
+   haskell.compiler.ghcHEAD                 ghc-8.11.20200824
+   haskell.compiler.native-bignum.ghcHEAD   ghc-8.11.20200824
+   haskell.compiler.ghc865Binary            ghc-8.6.5-binary
+   haskell.compiler.ghc884                  ghc-8.8.4
+   haskell.compiler.integer-simple.ghc884   ghc-8.8.4
+   haskell.compiler.ghc901                  ghc-9.0.1
+   haskell.compiler.integer-simple.ghc901   ghc-9.0.1
+
 
 We have no package sets for ``jhc`` or ``uhc`` yet, unfortunately, but
 for every version of GHC listed above, there exists a package set based
-on that compiler. Also, the attributes ``haskell.compiler.ghcXYC`` and
-``haskell.packages.ghcXYC.ghc`` are synonymous for the sake of
+on that compiler. Also, the attributes ``haskell.compiler.ghcXYZ`` and
+``haskell.packages.ghcXYZ.ghc`` are synonymous for the sake of
 convenience.
 
 How to create a development environment
