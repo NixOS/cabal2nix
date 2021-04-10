@@ -111,6 +111,7 @@ libNixName "libxml-2.0"                         = return "libxml2"
 libNixName "libzip"                             = return "libzip"
 libNixName "libzmq"                             = return "zeromq"
 libNixName "liquid"                             = return "liquid-dsp"
+libNixName "lzma"                               = return "xz"
 libNixName "m"                                  = []  -- in stdenv
 libNixName "magic"                              = return "file"
 libNixName "MagickWand"                         = return "imagemagick"
