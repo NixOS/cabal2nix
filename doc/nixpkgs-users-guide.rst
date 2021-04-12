@@ -133,6 +133,36 @@ on that compiler. Also, the attributes ``haskell.compiler.ghcXYZ`` and
 ``haskell.packages.ghcXYZ.ghc`` are synonymous for the sake of
 convenience.
 
+How to install a branch of a package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the nice things about Nix is that nixpkgs contains all information
+needed to build a package. This makes it easy to point a package
+to a different branch of the source and have Nix build a package for
+that branch.
+
+Even though Haskell packages are typically generated based on the hackage
+releases, because hackage contains source packages this is still possible
+for hackage. You can use ``overrideSrc`` to override the source, for example:
+
+.. code:: nix
+
+   my-hledger-lib = (haskell.lib.overrideSrc haskellPackages.hledger-lib {
+     src = /home/aengelen/dev/hledger/hledger-lib;
+   });
+   my-hledger = (haskell.lib.overrideSrc haskellPackages.hledger {
+     src = /home/aengelen/dev/hledger/hledger;
+   }).override {
+     hledger-lib = my-hledger-lib;
+   };
+   hledger-web = haskell.lib.justStaticExecutables ((haskell.lib.overrideSrc haskellPackages.hledger-web {
+       src = /home/aengelen/dev/hledger/hledger-web;
+     })
+     .override {
+       hledger = my-hledger;
+       hledger-lib = my-hledger-lib;
+     });
+
 How to create a development environment
 ---------------------------------------
 
