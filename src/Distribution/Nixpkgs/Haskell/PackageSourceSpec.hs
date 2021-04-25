@@ -208,7 +208,7 @@ onlyCabalFromDirectory :: FilePath -> String -> MaybeT IO (Bool, Cabal.GenericPa
 onlyCabalFromDirectory dir errMsg = do
   cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
   case cabals of
-    [] -> fail errMsg
+    [] -> liftIO $ fail errMsg
     [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
     _ -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
 
