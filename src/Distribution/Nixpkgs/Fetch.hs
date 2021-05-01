@@ -108,11 +108,12 @@ fetch :: forall a.
 fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, "url", [])
-    , (True, "git", ["--fetch-submodules" | optSubModules ])
-    , (True, "hg", [])
-    , (True, "svn", [])
-    , (True, "bzr", [])
+    [ (False, "url", Nothing, [])
+    , (False, "zip", Just "nix-prefetch-url", ["--unpack"])
+    , (True, "git", Nothing, ["--fetch-submodules" | optSubModules ])
+    , (True, "hg", Nothing, [])
+    , (True, "svn", Nothing, [])
+    , (True, "bzr", Nothing, [])
     ]
 
   -- | Remove '/' from the end of the path. Nix doesn't accept paths that
@@ -133,7 +134,7 @@ fetch optSubModules f = runMaybeT . fetchers where
   localArchive :: FilePath -> MaybeT IO (DerivationSource, a)
   localArchive path = do
     absolutePath <- liftIO $ canonicalizePath path
-    unpacked <- snd <$> fetchWith (False, "url", ["--unpack"]) (Source ("file://" ++ absolutePath) "" UnknownHash ".")
+    unpacked <- snd <$> fetchWith (False, "url", Nothing, ["--unpack"]) (Source ("file://" ++ absolutePath) "" UnknownHash ".")
     process (localDerivationSource absolutePath, unpacked)
 
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
@@ -142,8 +143,8 @@ fetch optSubModules f = runMaybeT . fetchers where
   localDerivationSource p = DerivationSource "" p "" "" Nothing
 
 -- | Like 'fetch', but allows to specify which script to use.
-fetchWith :: (Bool, String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
-fetchWith (supportsRev, kind, addArgs) source = do
+fetchWith :: (Bool, String, Maybe String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
+fetchWith (supportsRev, kind, command, addArgs) source = do
   unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
@@ -173,14 +174,14 @@ fetchWith (supportsRev, kind, addArgs) source = do
                                               , derivHash = BS.unpack (head ls)
                                               , derivSubmodule = Nothing
                                               }
-                            , sourceUrl source))
+                            , BS.unpack l))
           _ -> case eitherDecode buf' of
                  Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
                  Right ds -> return (Just (ds { derivKind = kind }, BS.unpack l))
  where
 
    script :: String
-   script = "nix-prefetch-" ++ kind
+   script = fromMaybe ("nix-prefetch-" ++ kind) command
 
    args :: [String]
    args = addArgs ++ sourceUrl source : [ sourceRevision source | supportsRev ] ++ hashToList (sourceHash source)
