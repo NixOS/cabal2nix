@@ -8,43 +8,53 @@ import qualified Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LBS
 import Data.Function
 import Data.List as List
-import Data.List.Split
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Language.Nix
+import Paths_distribution_nixpkgs (getDataFileName)
 import System.Process
 
 type PackageMap = Map Identifier (Set Path)
 
-readNixpkgPackageMap :: [String] -> IO PackageMap
-readNixpkgPackageMap = fmap identifierSet2PackageMap . readNixpkgSet
+readNixpkgPackageMap :: String -> Maybe String -> IO PackageMap
+readNixpkgPackageMap nixpkgsPath nixpkgsArgs =
+  identifierSet2PackageMap <$> readNixpkgSet nixpkgsPath nixpkgsArgs
 
-readNixpkgSet :: [String] -> IO (Set String)
-readNixpkgSet extraArgs = do
-  (_, Just h, _, _) <- createProcess (proc "nix-env" (["-qaP", "--json"] ++ extraArgs))
-                       { std_out = CreatePipe, env = Nothing }  -- TODO: ensure that overrides don't screw up our results
+readNixpkgSet :: String -> Maybe String -> IO (Set [String])
+readNixpkgSet nixpkgsPath nixpkgsArgs = do
+  pathsExpr <- getDataFileName "derivation-attr-paths.nix"
+  let nixInstantiate = proc "nix-instantiate" $
+        [ "--strict"
+        , "--json"
+        , "--eval"
+        , pathsExpr
+        , "--arg", "nixpkgsPath", nixpkgsPath
+        ] ++ fromMaybe [] (nixpkgsArgs <&> \arg -> ["--arg", "nixpkgsArgs", arg])
+  (_, Just h, _, _) <- -- TODO: ensure that overrides don't screw up our results
+    createProcess nixInstantiate { std_out = CreatePipe, env = Nothing }
   buf <- LBS.hGetContents h
-  let pkgmap :: Either String (Map String JSON.Object)
-      pkgmap = JSON.eitherDecode buf
-  either fail (return . Map.keysSet) pkgmap
+  either fail return $ JSON.eitherDecode buf
 
-identifierSet2PackageMap :: Set String -> PackageMap
-identifierSet2PackageMap pkgset = foldr (uncurry insertIdentifier) Map.empty pkglist
+identifierSet2PackageMap :: Set [String] -> PackageMap
+identifierSet2PackageMap = foldr insertIdentifier Map.empty
   where
-    pkglist :: [(Identifier, Path)]
-    pkglist = mapMaybe parsePackage (Set.toList pkgset)
+    insertIdentifier :: [String] -> (PackageMap -> PackageMap)
+    insertIdentifier rawPath =
+      case parsePackage rawPath of
+        Nothing -> id
+        Just (i, p) -> Map.insertWith Set.union i $ Set.singleton p
 
-    insertIdentifier :: Identifier -> Path -> PackageMap -> PackageMap
-    insertIdentifier i = Map.insertWith Set.union i . Set.singleton
-
-parsePackage :: String -> Maybe (Identifier, Path)
-parsePackage x | null x                 = error "Distribution.Nixpkgs.PackageMap.parsepackage: empty string is no valid identifier"
-               | xs <- splitOn "." x    = if needsQuoting (head xs)
-                                             then Nothing
-                                             else Just (ident # last xs, path # map (review ident) xs)
+parsePackage :: [String] -> Maybe (Identifier, Path)
+parsePackage x
+  | null x = -- this case would be a bug in derivation-attr-paths.nix
+      error "Distribution.Nixpkgs.PackageMap.parsepackage: empty path is no valid identifier"
+  | otherwise =
+      if any needsQuoting x
+        then Nothing
+        else Just (ident # last x, path # map (review ident) x)
 
 resolve :: PackageMap -> Identifier -> Maybe Binding
 resolve nixpkgs i = case Map.lookup i nixpkgs of

@@ -1,5 +1,5 @@
 name:          distribution-nixpkgs
-version:       1.5.0
+version:       1.6.0
 synopsis:      Types and functions to manipulate the Nixpkgs distribution
 description:   Types and functions to represent, query, and manipulate the Nixpkgs distribution.
 license:       BSD3
@@ -11,6 +11,7 @@ homepage:      https://github.com/peti/distribution-nixpkgs
 bug-reports:   https://github.com/peti/distribution-nixpkgs/issues
 build-type:    Simple
 cabal-version: >= 1.10
+data-files:    derivation-attr-paths.nix
 
 source-repository head
   type:     git
@@ -22,6 +23,7 @@ library
                       Distribution.Nixpkgs.Meta
                       Distribution.Nixpkgs.PackageMap
                       Language.Nix.PrettyPrinting
+  other-modules:      Paths_distribution_nixpkgs
   hs-source-dirs:     src
   build-depends:      base         > 4.2 && < 5
                     , Cabal        >= 2.4
@@ -35,7 +37,6 @@ library
                     , process
                     , split
   default-language:   Haskell2010
-  default-extensions: MonadFailDesugaring
   other-extensions:   CPP
                       TemplateHaskell
                       RecordWildCards
