@@ -19,7 +19,24 @@ import System.Process
 
 type PackageMap = Map Identifier (Set Path)
 
-readNixpkgPackageMap :: String -> Maybe String -> IO PackageMap
+-- | Evaluate nixpkgs at a given (nix) path and build a 'Map'
+--   keeping track of all 'Path's that end in a given 'Identifier'
+--   and evaluate to a derivation.
+--   This can be used to find an attribute 'Path' for an arbitrary
+--   package name using 'resolve'.
+--
+--   Note: Evaluation of nixpkgs is very expensive (takes multiple
+--   seconds), so cache the result of this function if possible.
+--
+--   >>> readNixpkgPackageMap "<nixpkgs>" (Just "{ config = { allowAliases = false; }; }")
+--   fromList [ … ]
+readNixpkgPackageMap :: String
+                     -- ^ Path to nixpkgs, must be a valid nix path
+                     --   (absolute, relative or @NIX_PATH@ lookup)
+                     -> Maybe String
+                     -- ^ (Optional) argument attribute set to pass to
+                     --   nixpkgs. Must be a valid nix attribute set.
+                     -> IO PackageMap
 readNixpkgPackageMap nixpkgsPath nixpkgsArgs =
   identifierSet2PackageMap <$> readNixpkgSet nixpkgsPath nixpkgsArgs
 
@@ -57,6 +74,11 @@ parsePackage x
         then Nothing
         else Just (ident # last x, path # map (review ident) x)
 
+-- | Finds the shortest 'Path' in a 'PackageMap' that has the
+--   given 'Identifier' as its last component.
+--
+--   >>> resolve nixpkgs (ident # "pam")
+--   Just (Bind (Identifier "pam") (Path [Identifier "pam"]))
 resolve :: PackageMap -> Identifier -> Maybe Binding
 resolve nixpkgs i = case Map.lookup i nixpkgs of
                       Nothing -> Nothing
