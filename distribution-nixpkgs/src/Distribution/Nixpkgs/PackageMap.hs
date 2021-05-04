@@ -7,7 +7,7 @@ import Control.Lens
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LBS
 import Data.Function
-import Data.List as List
+import Data.List (minimumBy)
 import Data.Map.Strict ( Map )
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -26,13 +26,14 @@ readNixpkgPackageMap nixpkgsPath nixpkgsArgs =
 readNixpkgSet :: String -> Maybe String -> IO (Set [String])
 readNixpkgSet nixpkgsPath nixpkgsArgs = do
   pathsExpr <- getDataFileName "derivation-attr-paths.nix"
-  let nixInstantiate = proc "nix-instantiate" $
+  let nixInstantiate = proc "nix-instantiate"
         [ "--strict"
         , "--json"
         , "--eval"
         , pathsExpr
         , "--arg", "nixpkgsPath", nixpkgsPath
-        ] ++ fromMaybe [] (nixpkgsArgs <&> \arg -> ["--arg", "nixpkgsArgs", arg])
+        , "--arg", "nixpkgsArgs", fromMaybe "{}" nixpkgsArgs
+        ]
   (_, Just h, _, _) <- -- TODO: ensure that overrides don't screw up our results
     createProcess nixInstantiate { std_out = CreatePipe, env = Nothing }
   buf <- LBS.hGetContents h

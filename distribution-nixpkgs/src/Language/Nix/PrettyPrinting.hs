@@ -22,7 +22,7 @@ import Prelude hiding ( (<>) )
 #endif
 import Data.Char
 import Data.Function
-import Data.List
+import Data.List (sortBy)
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import "pretty" Text.PrettyPrint.HughesPJClass
