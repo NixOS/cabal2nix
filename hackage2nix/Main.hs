@@ -37,6 +37,9 @@ import qualified Paths_cabal2nix as Main
 import System.FilePath
 import System.IO
 import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
+import Data.List.NonEmpty (NonEmpty)
+import Data.Semigroup (sconcat)
+import Options.Applicative.NonEmpty (some1)
 
 type PackageSet = Map PackageName Version
 type PackageMultiSet = Map PackageName (Set Version)
@@ -45,7 +48,7 @@ data CLI = CLI
   { hackageRepository :: FilePath
   , preferredVersionsFile :: Maybe FilePath
   , nixpkgsRepository :: FilePath
-  , configFile :: FilePath
+  , configFiles :: NonEmpty FilePath
   , targetPlatform :: Platform
   }
   deriving (Show)
@@ -57,7 +60,7 @@ main = do
         <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefaultWith id <> metavar "PATH")
         <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
         <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "nixpkgs" <> showDefaultWith id <> metavar "PATH")
-        <*> strOption (long "config" <> help "path to configuration file inside of Nixpkgs" <> value "pkgs/development/haskell-modules/configuration-hackage2nix.yaml" <> showDefaultWith id <> metavar "PATH")
+        <*> some1 (strOption (long "config" <> help "path to configuration file inside of Nixpkgs" <> metavar "PATH"))
         <*> option (fmap fromString str) (long "platform" <> help "target platform to generate package set for" <> value "x86_64-linux" <> showDefaultWith display <> metavar "PLATFORM")
 
       pinfo :: ParserInfo CLI
@@ -71,7 +74,7 @@ main = do
               )
   CLI {..} <- execParser pinfo
 
-  config <- readConfiguration (nixpkgsRepository </>  configFile)
+  config <- sconcat <$> mapM (\file -> readConfiguration (nixpkgsRepository </> file)) configFiles
   nixpkgs <- readNixpkgPackageMap ["-f", nixpkgsRepository, "--arg", "config", "{ allowAliases = false; }"]
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
