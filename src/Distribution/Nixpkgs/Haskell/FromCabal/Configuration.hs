@@ -66,6 +66,17 @@ data Configuration = Configuration
 
 instance NFData Configuration
 
+instance Semigroup Configuration where
+  l <> r = Configuration { compilerInfo = compilerInfo l
+                         , corePackages = corePackages l <> corePackages r
+                         , defaultPackageOverrides = defaultPackageOverrides l <> defaultPackageOverrides r
+                         , extraPackages = extraPackages l <> extraPackages r
+                         , packageMaintainers = packageMaintainers l <> packageMaintainers r
+                         , unsupportedPlatforms = unsupportedPlatforms l <> unsupportedPlatforms r
+                         , dontDistributePackages = dontDistributePackages l <> dontDistributePackages r
+                         , brokenPackages = brokenPackages l <> brokenPackages r
+                         }
+
 instance FromJSON Configuration where
   parseJSON (Object o) = Configuration
         <$> o .:? "compiler" .!= unknownCompilerInfo buildCompilerId NoAbiTag
