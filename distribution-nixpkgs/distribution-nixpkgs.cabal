@@ -12,6 +12,8 @@ bug-reports:   https://github.com/peti/distribution-nixpkgs/issues
 build-type:    Simple
 cabal-version: >= 1.10
 data-files:    derivation-attr-paths.nix
+extra-source-files: CHANGELOG.md
+                    README.md
 
 source-repository head
   type:     git
