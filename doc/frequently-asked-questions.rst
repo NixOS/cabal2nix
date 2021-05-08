@@ -449,6 +449,51 @@ following to get the ``scientific`` package build with
 
    nix-build -A haskell.packages.integer-simple.ghc802.scientific
 
+How to get an environment with GHC and LLVM
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default LLVM is not included with GHC unless it is required for native code generation:
+
+.. code:: shell
+
+   $ nix-shell -p 'haskellPackages.ghcWithPackages (ps: with ps; [mtl])'
+
+   [nix-shell:~]$ ghc -fllvm Main.hs
+   <no location info>: error:
+       Warning: Couldn't figure out LLVM version!
+                Make sure you have installed LLVM 9
+   ghc: could not execute: opt
+   
+   [nix-shell:~]$ llvm-ar
+   llvm-ar: command not found
+  
+To include LLVM in GHC you have to override the expression:
+
+.. code:: shell
+
+   $ nix-shell -p '(haskellPackages.ghcWithPackages (ps: with ps; [mtl])).override { withLLVM = true; }'
+
+   [nix-shell:~]$ ghc -fllvm Main.hs
+   [1 of 1] Compiling Main             ( Main.hs, Main.o )
+   Linking Main ...
+
+However LLVM will still not be available in the environment:
+
+.. code:: shell
+
+   [nix-shell:~]$ llvm-ar
+   llvm-ar: command not found
+
+The solution is to add it as another package to the environment:
+
+.. code:: shell
+
+   $ nix-shell -p '(haskellPackages.ghcWithPackages (ps: with ps; [mtl])).override { withLLVM = true; }' 'haskellPackages.llvmPackages.llvm'
+
+   [nix-shell:~]$ llvm-ar --help
+   OVERVIEW: LLVM Archiver
+   ...
+
 Quality assurance
 ~~~~~~~~~~~~~~~~~
 
