@@ -54,8 +54,8 @@ parsePackageData pn (U.PackageData pv vs') =
     Map.mapWithKey (parseVersionData pn) $
       Map.filterWithKey (\v _ -> v `withinRange` vr) vs'
   where
-    Dependency _ vr _ | BSS.null pv = Dependency pn anyVersion mempty
-                      | otherwise  = parseText "preferred version range" (toString pv)
+    vr | BSS.null pv = anyVersion
+       | otherwise = parseText "preferred version range" (toString pv)
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
 parseVersionData pn v (U.VersionData cf m) =
