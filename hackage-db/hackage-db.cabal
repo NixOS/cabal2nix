@@ -7,7 +7,7 @@ description:   This library provides convenient access to the local copy of the 
                of simple example programs that demonstrate how to use this code.
 license:       BSD3
 license-file:  LICENSE
-author:        Peter Simons, Alexander Altman, Ben James
+author:        Peter Simons, Alexander Altman, Ben James, Kevin Quick
 maintainer:    Peter Simons <simons@cryp.to>
 tested-with:   GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.4, GHC == 8.10.4, GHC == 9.0.1
 category:      Distribution
