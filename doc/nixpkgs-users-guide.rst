@@ -473,6 +473,14 @@ specific nix-shell You can either use an override as given above or
 simply install ``pkgs.haskellPackages.haskell-language-server`` instead
 of the top-level attribute ``pkgs.haskell-language-server``.
 
+How to use haskell-language-server in an editor with a GHC from nix-shell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is solved fairly well with direnv:
+
+* Use `lorri <https://github.com/target/lorri>`__ to get information from the nix-shell to direnv
+* Use a direnv support plugin in your editor (emacs has one, vscode has one) to get the right environment for the server launch.
+
 How to build a Haskell project using Stack
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
