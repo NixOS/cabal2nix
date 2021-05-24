@@ -473,6 +473,30 @@ specific nix-shell You can either use an override as given above or
 simply install ``pkgs.haskellPackages.haskell-language-server`` instead
 of the top-level attribute ``pkgs.haskell-language-server``.
 
+How to make haskell-language-server find a GHC from nix-shell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you use nix-shell for your development environments then ``haskell-language-server``
+will not find an installed GHC or will find a GHC with an installed package set
+different from what your project uses.
+
+The simplest solution to this problem is to launch your editor from within the nix-shell
+environment:
+
+.. code:: shell
+
+  $ nix-shell
+  [nix-shell] $ code .
+
+However, launching a nix-shell every time you want to edit a file is somewhat tedious,
+so an alternative is to use direnv. There are `several solutions <https://github.com/direnv/direnv/wiki/Nix>`__
+that will propagate information from a nix-shell to a direnv envrc file. You can then
+use a direnv support plugin in your editor (emacs has one, vscode has one)
+to get the right environment for the server launch.
+
+Yet another solution is to use a plugin that loads the nix-shell directly in the editor,
+such as `Nix Environment Selector <https://github.com/arrterian/nix-env-selector>`__ for VSCode.
+
 How to build a Haskell project using Stack
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
