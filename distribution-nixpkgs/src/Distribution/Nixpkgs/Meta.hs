@@ -76,10 +76,7 @@ instance Pretty Meta where
 renderPlatforms :: String -> Set Platform -> Doc
 renderPlatforms field ps
   | Set.null ps = sep [ text field <+> equals <+> text "lib.platforms.none" <> semi ]
-  | otherwise   = sep [ text field <+> equals <+> lbrack
-                      , nest 2 $ fsep $ map text (toAscList (Set.map fromCabalPlatform ps))
-                      , rbrack <> semi
-                      ]
+  | otherwise   = setattr field mempty $ Set.map fromCabalPlatform ps
 
 nullMeta :: Meta
 nullMeta = Meta
