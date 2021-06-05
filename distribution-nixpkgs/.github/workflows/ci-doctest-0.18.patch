@@ -1,0 +1,13 @@
+diff --git a/.github/workflows/haskell-ci.yml b/.github/workflows/haskell-ci.yml
+index 5eb6f44..4edc6cd 100644
+--- a/.github/workflows/haskell-ci.yml
++++ b/.github/workflows/haskell-ci.yml
+@@ -129,7 +129,7 @@ jobs:
+           cabal-plan --version
+       - name: install doctest
+         run: |
+-          $CABAL --store-dir=$HOME/.haskell-ci-tools/store v2-install $ARG_COMPILER --ignore-project -j2 doctest --constraint='doctest ^>=0.17'
++          $CABAL --store-dir=$HOME/.haskell-ci-tools/store v2-install $ARG_COMPILER --ignore-project -j2 doctest --constraint='doctest >0.18'
+           doctest --version
+       - name: install hlint
+         run: |
