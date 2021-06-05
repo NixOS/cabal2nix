@@ -1,5 +1,11 @@
 # Revision history for distribution-nixpkgs
 
+## 1.7.0 (Unreleased)
+
+* `Distribution.Nixpkgs.Meta`
+  * `pPrint (x :: Meta)` now renders every maintainer as a full attribute
+    path instead of using `with`.
+
 ## 1.6.0
 
 * `Distribution.Nixpkgs.PackageMap`

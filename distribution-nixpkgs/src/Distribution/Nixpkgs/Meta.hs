@@ -27,6 +27,7 @@ import Distribution.Nixpkgs.License
 import Distribution.System
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
+import Language.Nix.Path ( path )
 import Language.Nix.PrettyPrinting
 
 -- | A representation of the @meta@ section used in Nix expressions.
@@ -44,7 +45,7 @@ import Language.Nix.PrettyPrinting
 -- license = "unknown";
 -- platforms = [ "x86_64-linux" ];
 -- hydraPlatforms = lib.platforms.none;
--- maintainers = with lib.maintainers; [ jane joe ];
+-- maintainers = [ lib.maintainers.jane lib.maintainers.joe ];
 -- broken = true;
 
 data Meta = Meta
@@ -69,7 +70,7 @@ instance Pretty Meta where
     , attr "license" $ pPrint _license
     , onlyIf (_platforms /= allKnownPlatforms) $ renderPlatforms "platforms" _platforms
     , onlyIf (_hydraPlatforms /= _platforms) $ renderPlatforms "hydraPlatforms" _hydraPlatforms
-    , setattr "maintainers" (text "with lib.maintainers;") (Set.map (view ident) _maintainers)
+    , listattrDoc "maintainers" mempty $ renderMaintainers _maintainers
     , boolattr "broken" _broken _broken
     ]
 
@@ -77,6 +78,10 @@ renderPlatforms :: String -> Set Platform -> Doc
 renderPlatforms field ps
   | Set.null ps = sep [ text field <+> equals <+> text "lib.platforms.none" <> semi ]
   | otherwise   = setattr field mempty $ Set.map fromCabalPlatform ps
+
+renderMaintainers :: Set Identifier -> [Doc]
+renderMaintainers = map (pPrint . toPath) . toAscListSortedOn (view ident)
+  where toPath m = path # [ ident # "lib", ident # "maintainers", m]
 
 nullMeta :: Meta
 nullMeta = Meta

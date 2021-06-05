@@ -5,8 +5,9 @@
 
 module Language.Nix.PrettyPrinting
   ( onlyIf
-  , setattr, toAscList
-  , listattr
+  , toAscList, toAscListSortedOn
+  , setattr
+  , listattr, listattrDoc
   , boolattr
   , attr
   , string
@@ -36,18 +37,25 @@ onlyIf b d = if b then d else empty
 boolattr :: String -> Bool -> Bool -> Doc
 boolattr n p v = if p then attr n (bool v) else empty
 
+listattrDoc :: String -> Doc -> [Doc] -> Doc
+listattrDoc n prefix vs = onlyIf (not (null vs)) $
+  sep [ text n <+> equals <+> prefix <+> lbrack,
+        nest 2 $ fsep vs,
+        rbrack <> semi
+      ]
+
 listattr :: String -> Doc -> [String] -> Doc
-listattr n prefix vs = onlyIf (not (null vs)) $
-                sep [ text n <+> equals <+> prefix <+> lbrack,
-                      nest 2 $ fsep $ map text vs,
-                      rbrack <> semi
-                    ]
+listattr n p = listattrDoc n p . map text
 
 setattr :: String -> Doc -> Set String -> Doc
-setattr name prefix set = listattr name prefix (toAscList set)
+setattr name prefix set = listattrDoc name prefix
+  $ map text $ toAscList set
+
+toAscListSortedOn :: (a -> String) -> Set a -> [a]
+toAscListSortedOn f = sortBy (compare `on` map toLower . f) . Set.toList
 
 toAscList :: Set String -> [String]
-toAscList = sortBy (compare `on` map toLower) . Set.toList
+toAscList = toAscListSortedOn id
 
 bool :: Bool -> Doc
 bool True  = text "true"
