@@ -214,6 +214,7 @@ buildToolNixName "nix-env"                      = return "nix"
 buildToolNixName "nix-hash"                     = return "nix"
 buildToolNixName "nix-instantiate"              = return "nix"
 buildToolNixName "nix-store"                    = return "nix"
+buildToolNixName "utillinux"                    = return "util-linux"
 buildToolNixName x                              = return (fromString x)
 
 -- | Helper function to extract the package name from a String that may or may
