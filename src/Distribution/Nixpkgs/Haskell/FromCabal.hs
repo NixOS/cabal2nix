@@ -26,6 +26,7 @@ import Distribution.PackageDescription
 import qualified Distribution.PackageDescription as Cabal
 import Distribution.PackageDescription.Configuration as Cabal
 import Distribution.System
+import Distribution.Types.PackageVersionConstraint
 import Distribution.Text ( display )
 import Distribution.Types.ComponentRequestedSpec as Cabal
 import Distribution.Types.ExeDependency as Cabal
@@ -36,7 +37,7 @@ import Distribution.Utils.ShortText ( fromShortText )
 import Distribution.Version
 import Language.Nix
 
-type HaskellResolver = Dependency -> Bool
+type HaskellResolver = PackageVersionConstraint -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
 fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
@@ -48,10 +49,26 @@ fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flag
 finalizeGenericPackageDescription :: HaskellResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> (PackageDescription, [Dependency])
 finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc =
   let
+    -- finalizePD incooperates the 'LibraryName' of a dependency
+    -- which we always ignore, so the Cabal-compatible resolver
+    -- is a simple wrapper around our 'HaskellResolver'
+    makeCabalResolver :: HaskellResolver -> Dependency -> Bool
+    makeCabalResolver r (Dependency n v _) = r (PackageVersionConstraint n v)
+
+    -- the finalizePD API changed in Cabal 3.4.0.0, so we need to do some plumbing.
+    -- See https://github.com/haskell/cabal/issues/5570
+#if MIN_VERSION_Cabal(3,4,0)
+    makeCabalConstraints :: [Constraint] -> [PackageVersionConstraint]
+    makeCabalConstraints = id
+#else
+    makeCabalConstraints :: [Constraint] -> [Dependency]
+    makeCabalConstraints = map $ \(PackageVersionConstraint n v) -> Dependency n v mempty
+#endif
+
     -- We have to call the Cabal finalizer several times with different resolver
     -- functions, and this convenience function makes our code shorter.
     finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
-    finalize resolver = finalizePD flags requestedComponents resolver arch compiler constraints genDesc
+    finalize resolver = finalizePD flags requestedComponents (makeCabalResolver resolver) arch compiler (makeCabalConstraints constraints) genDesc
 
     requestedComponents :: ComponentRequestedSpec
     requestedComponents = ComponentRequestedSpec
@@ -60,10 +77,10 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
                           }
 
     jailbroken :: HaskellResolver -> HaskellResolver
-    jailbroken resolver (Dependency pkg _ _) = resolver (Dependency pkg anyVersion mempty)
+    jailbroken resolver (PackageVersionConstraint pkg _) = resolver (PackageVersionConstraint pkg anyVersion)
 
     withInternalLibs :: HaskellResolver -> HaskellResolver
-    withInternalLibs resolver d = depPkgName d `elem` internalNames || resolver d
+    withInternalLibs resolver c = constraintPkgName c `elem` internalNames || resolver c
 
     internalNames :: [PackageName]
     internalNames =    [ unqualComponentNameToPackageName n | (n,_) <- condSubLibraries genDesc ]
@@ -152,7 +169,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
       | otherwise                        = bindNull i
 
     resolveInHackageThenNixpkgs :: Identifier -> Binding
-    resolveInHackageThenNixpkgs i | haskellResolver (Dependency (mkPackageName (i^.ident)) anyVersion mempty) = resolveInHackage i
+    resolveInHackageThenNixpkgs i | haskellResolver (PackageVersionConstraint (mkPackageName (i^.ident)) anyVersion) = resolveInHackage i
                                   | otherwise = resolveInNixpkgs i
 
     internalLibNames :: [PackageName]

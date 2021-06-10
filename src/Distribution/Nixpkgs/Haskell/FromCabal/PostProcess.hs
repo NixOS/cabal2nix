@@ -16,13 +16,14 @@ import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.License
 import Distribution.Package
 import Distribution.System
+import Distribution.Types.PackageVersionConstraint
 import Distribution.Text
 import Distribution.Version
 import Language.Nix
 
 postProcess :: Derivation -> Derivation
 postProcess deriv =
- foldr (.) id [ f | (Dependency n vr _, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
+ foldr (.) id [ f | (PackageVersionConstraint n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
  . fixGtkBuilds
  . fixBuildDependsForTools
  $ deriv
@@ -70,7 +71,7 @@ fixBuildDependsForTools = foldr (.) id
                   ]
   ]
 
-hooks :: [(Dependency, Derivation -> Derivation)]
+hooks :: [(PackageVersionConstraint, Derivation -> Derivation)]
 hooks =
   [ ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("Agda >= 2.5 && < 2.6", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)

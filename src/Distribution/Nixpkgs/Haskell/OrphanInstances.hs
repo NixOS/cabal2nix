@@ -11,6 +11,7 @@ import Distribution.Compiler
 import Distribution.Package
 import Distribution.Parsec
 import Distribution.System
+import Distribution.Types.PackageVersionConstraint
 import Distribution.Pretty as Cabal
 import qualified Data.Version as Base
 import Distribution.Version
@@ -28,8 +29,8 @@ instance IsString VersionRange where
 instance IsString PackageIdentifier where
   fromString = text2isString "PackageIdentifier"
 
-instance IsString Dependency where
-  fromString = text2isString "Dependency"
+instance IsString PackageVersionConstraint where
+  fromString = text2isString "PackageVersionConstraint"
 
 instance IsString CompilerId where
   fromString = text2isString "CompilerId"
@@ -58,9 +59,9 @@ instance FromJSON VersionRange where
   parseJSON (String s) = return (fromString (T.unpack s))
   parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Cabal VersionRange")
 
-instance FromJSON Dependency where
+instance FromJSON PackageVersionConstraint where
   parseJSON (String s) = return (fromString (T.unpack s))
-  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell Dependency")
+  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid Haskell PackageVersionConstraint")
 
 instance FromJSON CompilerInfo where
   parseJSON (String s) = return (unknownCompilerInfo (fromString (T.unpack s)) NoAbiTag)
