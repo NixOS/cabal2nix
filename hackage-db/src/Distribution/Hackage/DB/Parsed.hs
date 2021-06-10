@@ -27,6 +27,7 @@ import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parsec
 import Distribution.Text
+import Distribution.Types.PackageVersionConstraint
 import Distribution.Version
 import GHC.Generics ( Generic )
 
@@ -54,8 +55,9 @@ parsePackageData pn (U.PackageData pv vs') =
     Map.mapWithKey (parseVersionData pn) $
       Map.filterWithKey (\v _ -> v `withinRange` vr) vs'
   where
-    vr | BSS.null pv = anyVersion
-       | otherwise = parseText "preferred version range" (toString pv)
+    PackageVersionConstraint _ vr
+      | BSS.null pv = PackageVersionConstraint pn anyVersion
+      | otherwise = parseText "preferred version range" (toString pv)
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
 parseVersionData pn v (U.VersionData cf m) =
