@@ -146,7 +146,7 @@ hooks =
   , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (self "cpphs")) True)
   , ("mwc-random", set doCheck False)
-  , ("mysql", set (libraryDepends . system . contains (pkg "mysql")) True)
+  , ("mysql", set (libraryDepends . system . contains (pkg "libmysqlclient")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
   , ("opencv", opencvOverrides)
