@@ -5,7 +5,7 @@
 , pandoc-citeproc, parsec, process, QuickCheck, random, regex-base
 , regex-tdfa, resourcet, scientific, system-filepath, tagsoup
 , tasty, tasty-hunit, tasty-quickcheck, text, time
-, time-locale-compat, unordered-containers, utillinux, vector, wai
+, time-locale-compat, unordered-containers, util-linux, vector, wai
 , wai-app-static, warp, yaml
 }:
 mkDerivation {
@@ -35,7 +35,7 @@ mkDerivation {
     time time-locale-compat unordered-containers vector wai
     wai-app-static warp yaml
   ];
-  testToolDepends = [ utillinux ];
+  testToolDepends = [ util-linux ];
   homepage = "http://jaspervdj.be/hakyll";
   description = "A static website compiler library";
   license = lib.licenses.bsd3;

@@ -120,7 +120,7 @@ hooks =
   , ("gtk3", gtk3Hook)
   , ("gtkglext", gtkglextHook)
   , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
-  , ("hakyll", set (testDepends . tool . contains (pkg "utillinux")) True) -- test suite depends on "rev"
+  , ("hakyll", set (testDepends . tool . contains (pkg "util-linux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts", set doCheck False)
   , ("hfsevents", hfseventsOverrides)
   , ("HFuse", set phaseOverrides hfusePreConfigure)
