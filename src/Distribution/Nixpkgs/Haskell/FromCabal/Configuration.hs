@@ -109,7 +109,7 @@ assertConsistency :: MonadFail m => Configuration -> m Configuration
 assertConsistency cfg@Configuration {..} = do
   let report msg = fail ("*** configuration error: " ++ msg)
       maintainedPackages = Set.unions (Map.elems packageMaintainers)
-      disabledPackages = dontDistributePackages `Set.union` Set.fromList (depPkgName <$> brokenPackages)
+      disabledPackages = dontDistributePackages `Set.union` Set.fromList (constraintPkgName <$> brokenPackages)
       disabledMaintainedPackages = maintainedPackages `Set.intersection` disabledPackages
   unless (Set.null disabledMaintainedPackages) $
     report ("disabled packages that have a maintainer: " ++ show disabledMaintainedPackages)

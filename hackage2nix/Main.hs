@@ -29,6 +29,7 @@ import Distribution.Nixpkgs.PackageMap
 import Distribution.Package
 import Distribution.PackageDescription hiding ( options, extraLibs, buildTools, homepage )
 import Distribution.System
+import Distribution.Types.PackageVersionConstraint
 import Distribution.Text
 import Distribution.Version
 import Language.Nix
@@ -97,7 +98,7 @@ main = do
       latestVersionSet = Map.map Set.findMax (Map.filter (not . Set.null) (Map.mapWithKey (enforcePreferredVersions preferredVersions) hackage))
 
       defaultPackageOverridesSet :: PackageSet
-      defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(Dependency name _ _) <- defaultPackageOverrides config ]
+      defaultPackageOverridesSet = Map.fromList [ (name, resolveConstraint c hackage) | c@(PackageVersionConstraint name _) <- defaultPackageOverrides config ]
 
       generatedDefaultPackageSet :: PackageSet
       generatedDefaultPackageSet = (defaultPackageOverridesSet `Map.union` latestVersionSet) `Map.difference` corePackageSet
@@ -110,7 +111,7 @@ main = do
 
       extraPackageSet :: PackageMultiSet
       extraPackageSet = Map.unionsWith Set.union
-                          [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(Dependency name _ _) <- extraPackages config ]
+                          [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(PackageVersionConstraint name _) <- extraPackages config ]
 
       db :: PackageMultiSet
       db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
@@ -119,8 +120,8 @@ main = do
                                     , extraPackageSet
                                     ]
 
-      haskellResolver :: Dependency -> Bool
-      haskellResolver (Dependency name vrange _)
+      haskellResolver :: HaskellResolver
+      haskellResolver (PackageVersionConstraint name vrange)
         | Just v <- Map.lookup name corePackageSet                = v `withinRange` vrange
         | Just v <- Map.lookup name generatedDefaultPackageSet    = v `withinRange` vrange
         | otherwise                                               = False
@@ -142,7 +143,7 @@ main = do
       let isInDefaultPackageSet, isHydraEnabled, isBroken :: Bool
           isInDefaultPackageSet = (== Just v) (Map.lookup name generatedDefaultPackageSet)
           isHydraEnabled = isInDefaultPackageSet && not (isBroken || name `Set.member` dontDistributePackages config)
-          isBroken = any (withinRange v) [ vr | Dependency pn vr _ <- brokenPackages config, pn == name ]
+          isBroken = any (withinRange v) [ vr | PackageVersionConstraint pn vr <- brokenPackages config, pn == name ]
 
           droppedPlatforms :: Set Platform
           droppedPlatforms = Map.findWithDefault mempty name (unsupportedPlatforms config)
@@ -209,7 +210,7 @@ resolveConstraint c = fromMaybe (error msg) . resolveConstraint' c
                       ]
 
 resolveConstraint' :: Constraint -> Hackage -> Maybe Version
-resolveConstraint' (Dependency name vrange _) hackage
+resolveConstraint' (PackageVersionConstraint name vrange) hackage
   | Just vset' <- Map.lookup name hackage
   , vset <- Set.filter (`withinRange` vrange) vset'
   , not (Set.null vset)         = Just (Set.findMax vset)
