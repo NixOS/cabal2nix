@@ -23,11 +23,11 @@ toNixName n  = fromString (unPackageName n)
 libNixName :: String -> [Identifier]
 libNixName ""                                   = []
 libNixName "adns"                               = return "adns"
-libNixName "alsa"                               = return "alsaLib"
+libNixName "alsa"                               = return "alsa-lib"
 libNixName "alut"                               = return "freealut"
 libNixName "appindicator-0.1"                   = return "libappindicator-gtk2"
 libNixName "appindicator3-0.1"                  = return "libappindicator-gtk3"
-libNixName "asound"                             = return "alsaLib"
+libNixName "asound"                             = return "alsa-lib"
 libNixName "b2"                                 = return "libb2"
 libNixName "boost_context"                      = return "boost"
 libNixName "bz2"                                = return "bzip2"
