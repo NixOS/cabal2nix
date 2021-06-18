@@ -49,13 +49,22 @@ import Language.Nix.PrettyPrinting
 -- broken = true;
 
 data Meta = Meta
-  { _homepage       :: String           -- ^ URL of the package homepage
-  , _description    :: String           -- ^ short description of the package
-  , _license        :: License          -- ^ licensing terms
-  , _platforms      :: Maybe (Set Platform) -- ^ We re-use the Cabal type for convenience, but render it to conform to @pkgs\/lib\/platforms.nix@. 'Nothing' means we won't explicitly define it
-  , _hydraPlatforms :: Maybe (Set Platform) -- ^ list of platforms built by Hydra (render to conform to @pkgs\/lib\/platforms.nix@). 'Nothing' means we won't explicitly define it.
-  , _maintainers    :: Set Identifier   -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
-  , _broken         :: Bool             -- ^ set to @true@ if the build is known to fail
+  { _homepage       :: String
+  -- ^ URL of the package homepage
+  , _description    :: String
+  -- ^ short description of the package
+  , _license        :: License
+  -- ^ licensing terms
+  , _platforms      :: Maybe (Set Platform)
+  -- ^ We re-use the Cabal type for convenience, but render it to conform to
+  --   @pkgs\/lib\/platforms.nix@. 'Nothing' means we won't explicitly define it.
+  , _hydraPlatforms :: Maybe (Set Platform)
+  -- ^ list of platforms built by Hydra (render to conform to @pkgs\/lib\/platforms.nix@).
+  --  'Nothing' means we won't explicitly define it.
+  , _maintainers    :: Set Identifier
+  -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
+  , _broken         :: Bool
+  -- ^ set to @true@ if the build is known to fail
   }
   deriving (Show, Eq, Ord, Generic)
 
