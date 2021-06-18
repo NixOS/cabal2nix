@@ -35,8 +35,8 @@ import Language.Nix.PrettyPrinting
 -- >>> :set -XOverloadedStrings
 -- >>> :{
 --   print (pPrint (Meta "http://example.org" "an example package" (Unknown Nothing)
---                  (Set.singleton (Platform X86_64 Linux))
---                  Set.empty
+--                  (Just (Set.singleton (Platform X86_64 Linux)))
+--                  (Just Set.empty)
 --                  (Set.fromList ["joe","jane"])
 --                  True))
 -- :}
@@ -52,8 +52,8 @@ data Meta = Meta
   { _homepage       :: String           -- ^ URL of the package homepage
   , _description    :: String           -- ^ short description of the package
   , _license        :: License          -- ^ licensing terms
-  , _platforms      :: Set Platform     -- ^ We re-use the Cabal type for convenience, but render it to conform to @pkgs\/lib\/platforms.nix@.
-  , _hydraPlatforms :: Set Platform     -- ^ list of platforms built by Hydra (render to conform to @pkgs\/lib\/platforms.nix@)
+  , _platforms      :: Maybe (Set Platform) -- ^ We re-use the Cabal type for convenience, but render it to conform to @pkgs\/lib\/platforms.nix@. 'Nothing' means we won't explicitly define it
+  , _hydraPlatforms :: Maybe (Set Platform) -- ^ list of platforms built by Hydra (render to conform to @pkgs\/lib\/platforms.nix@). 'Nothing' means we won't explicitly define it.
   , _maintainers    :: Set Identifier   -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   , _broken         :: Bool             -- ^ set to @true@ if the build is known to fail
   }
@@ -68,8 +68,8 @@ instance Pretty Meta where
     [ onlyIf (not (null _homepage)) $ attr "homepage" $ string _homepage
     , onlyIf (not (null _description)) $ attr "description" $ string _description
     , attr "license" $ pPrint _license
-    , onlyIf (_platforms /= allKnownPlatforms) $ renderPlatforms "platforms" _platforms
-    , onlyIf (_hydraPlatforms /= _platforms) $ renderPlatforms "hydraPlatforms" _hydraPlatforms
+    , maybe mempty (renderPlatforms "platforms") _platforms
+    , maybe mempty (renderPlatforms "hydraPlatforms") _hydraPlatforms
     , listattrDoc "maintainers" mempty $ renderMaintainers _maintainers
     , boolattr "broken" _broken _broken
     ]
