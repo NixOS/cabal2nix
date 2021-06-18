@@ -11,7 +11,7 @@
 
 module Distribution.Nixpkgs.Meta
   ( Meta, nullMeta
-  , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
+  , homepage, description, license, platforms, badPlatforms, hydraPlatforms, maintainers, broken
   ) where
 
 -- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
@@ -35,6 +35,7 @@ import Language.Nix.PrettyPrinting
 -- >>> :{
 --   print (pPrint (Meta "http://example.org" "an example package" (Unknown Nothing)
 --                  (Just (Set.singleton (Platform X86_64 Linux)))
+--                  Nothing
 --                  (Just Set.empty)
 --                  (Set.fromList ["joe","jane"])
 --                  True))
@@ -55,11 +56,22 @@ data Meta = Meta
   , _license        :: License
   -- ^ licensing terms
   , _platforms      :: Maybe (Set Platform)
-  -- ^ We re-use the Cabal type for convenience, but render it to conform to
-  --   @pkgs\/lib\/platforms.nix@. 'Nothing' means we won't explicitly define it.
+  -- ^ List of platforms that are supported by the package.
+  --   'Nothing' prevents the attribute from being rendered.
+  , _badPlatforms   :: Maybe (Set Platform)
+  -- ^ List of platforms that are known to be unsupported. This is semantically
+  --   equivalent to setting the following:
+  --
+  --   @
+  --     platforms = lib.subtractLists
+  --       (initialMeta.badPlatforms or []);
+  --       (initialMeta.platforms or lib.platforms.all)
+  --   @
+  --
+  --   'Nothing' prevents the attribute from being rendered.
   , _hydraPlatforms :: Maybe (Set Platform)
-  -- ^ list of platforms built by Hydra (render to conform to @pkgs\/lib\/platforms.nix@).
-  --  'Nothing' means we won't explicitly define it.
+  -- ^ Platforms for which the package should be tested, built and added to the
+  --   binary cache by Hydra. 'Nothing' prevents the attribute from being rendered.
   , _maintainers    :: Set Identifier
   -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   , _broken         :: Bool
@@ -77,6 +89,7 @@ instance Pretty Meta where
     , onlyIf (not (null _description)) $ attr "description" $ string _description
     , attr "license" $ pPrint _license
     , maybe mempty (renderPlatforms "platforms") _platforms
+    , maybe mempty (renderPlatforms "badPlatforms") _badPlatforms
     , maybe mempty (renderPlatforms "hydraPlatforms") _hydraPlatforms
     , listattrDoc "maintainers" mempty $ renderMaintainers _maintainers
     , boolattr "broken" _broken _broken
@@ -97,6 +110,7 @@ nullMeta = Meta
   , _description = error "undefined Meta.description"
   , _license = error "undefined Meta.license"
   , _platforms = error "undefined Meta.platforms"
+  , _badPlatforms = error "undefined Meta.badPlatforms"
   , _hydraPlatforms = error "undefined Meta.hydraPlatforms"
   , _maintainers = error "undefined Meta.maintainers"
   , _broken = error "undefined Meta.broken"
