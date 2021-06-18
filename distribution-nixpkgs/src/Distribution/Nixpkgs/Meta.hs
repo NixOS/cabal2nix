@@ -12,7 +12,6 @@
 module Distribution.Nixpkgs.Meta
   ( Meta, nullMeta
   , homepage, description, license, platforms, hydraPlatforms, maintainers, broken
-  , allKnownPlatforms
   ) where
 
 -- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
@@ -102,12 +101,6 @@ nullMeta = Meta
   , _maintainers = error "undefined Meta.maintainers"
   , _broken = error "undefined Meta.broken"
   }
-
-allKnownPlatforms :: Set Platform
-allKnownPlatforms = Set.fromList [ Platform I386 Linux, Platform X86_64 Linux
-                                 , Platform X86_64 OSX, Platform (OtherArch "armv7l") Linux
-                                 , Platform AArch64 Linux, Platform AArch64 OSX
-                                 ]
 
 fromCabalPlatform :: Platform -> String
 fromCabalPlatform (Platform I386 Linux)                 = "\"i686-linux\""
