@@ -143,9 +143,6 @@ main = do
           isHydraEnabled = isInDefaultPackageSet && not (isBroken || name `Set.member` dontDistributePackages config)
           isBroken = any (withinRange v) [ vr | PackageVersionConstraint pn vr <- brokenPackages config, pn == name ]
 
-          droppedPlatforms :: Set Platform
-          droppedPlatforms = Map.findWithDefault mempty name (unsupportedPlatforms config)
-
           tarballSHA256 :: SHA256Hash
           tarballSHA256 = fromMaybe (error (display pkgId ++ ": meta data has no hash for the tarball"))
                                     (view (hashes . at "SHA256") meta)
@@ -160,9 +157,8 @@ main = do
           drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
                   & src .~ urlDerivationSource ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") tarballSHA256
                   & editedCabalFile .~ cabalSHA256
-                  & metaSection.platforms %~ (`Set.difference` Map.findWithDefault Set.empty name (unsupportedPlatforms config))
-                  & metaSection.hydraPlatforms %~ (if Set.null droppedPlatforms then id else (`Set.difference` droppedPlatforms))
-                  & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const Set.empty)
+                  & metaSection.badPlatforms .~ fmap (Set.map NixpkgsPlatformSingle) (Map.lookup name (unsupportedPlatforms config))
+                  & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const (Just Set.empty))
                   & metaSection.broken ||~ isBroken
                   & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
                   & metaSection.homepage .~ ""
