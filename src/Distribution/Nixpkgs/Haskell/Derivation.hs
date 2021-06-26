@@ -110,7 +110,7 @@ instance Package Derivation where
 instance NFData Derivation
 
 instance Pretty Derivation where
-  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toCaseInsensitiveAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ pPrint (packageName _pkgid)
@@ -151,7 +151,7 @@ instance Pretty Derivation where
                           ]
 
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]
-                      ++ map text (toAscList _configureFlags)
+                      ++ map text (Set.toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
 
       postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"

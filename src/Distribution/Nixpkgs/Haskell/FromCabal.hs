@@ -132,8 +132,8 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.description .~ stripRedundanceSpaces synopsis
 #endif
                      & Nix.license .~ nixLicense
-                     & Nix.platforms .~ Nix.allKnownPlatforms
-                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nix.allKnownPlatforms else Set.empty)
+                     & Nix.platforms .~ Nothing
+                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nothing else Just Set.empty)
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
                      )
