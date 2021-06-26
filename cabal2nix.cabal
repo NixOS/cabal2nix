@@ -114,7 +114,7 @@ executable hackage2nix
                     , cabal2nix
                     , containers
                     , directory
-                    , distribution-nixpkgs >= 1.2
+                    , distribution-nixpkgs >= 1.6
                     , filepath
                     , hopenssl             >= 2
                     , language-nix
