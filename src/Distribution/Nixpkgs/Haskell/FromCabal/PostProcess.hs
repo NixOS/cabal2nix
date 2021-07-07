@@ -142,7 +142,7 @@ hooks =
   , ("js-jquery", set doCheck False)            -- attempts to access the network
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("libxml", set (configureFlags . contains "--extra-include-dir=${libxml2.dev}/include/libxml2") True)
-  , ("liquid-fixpoint", set (executableDepends . system . contains (pkg "ocaml")) True . set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
+  , ("liquid-fixpoint", set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (self "cpphs")) True)
