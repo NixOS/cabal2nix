@@ -1,0 +1,13 @@
+diff --git a/.github/workflows/haskell-ci.yml b/.github/workflows/haskell-ci.yml
+index 5ed81c0..9bb7e56 100644
+--- a/.github/workflows/haskell-ci.yml
++++ b/.github/workflows/haskell-ci.yml
+@@ -179,7 +179,7 @@ jobs:
+       - name: doctest
+         run: |
+           cd ${PKGDIR_distribution_nixpkgs} || false
+-          doctest -i ../../dist-newstyle/build/*/*/distribution-nixpkgs-*/build/autogen src
++          doctest -i ../../dist-newstyle/build/*/*/distribution-nixpkgs-*/build/autogen src/Distribution/Nixpkgs/Hashes.hs src/Distribution/Nixpkgs/License.hs src/Distribution/Nixpkgs/Meta.hs src/Language/Nix/PrettyPrinting.hs
+       - name: hlint
+         run: |
+           if [ $((HCNUMVER >= 90000)) -ne 0 ] ; then (cd ${PKGDIR_distribution_nixpkgs} && hlint src) ; fi
