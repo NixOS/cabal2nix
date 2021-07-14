@@ -17,7 +17,7 @@ extra-source-files: CHANGELOG.md
 
 source-repository head
   type:     git
-  location: https://github.com/peti/distribution-nixpkgs
+  location: https://github.com/NixOS/distribution-nixpkgs
 
 library
   exposed-modules:    Distribution.Nixpkgs.Hashes
