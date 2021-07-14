@@ -68,16 +68,47 @@ the tool to update the Haskell packages in
 
 ## Building
 
-For ease of contribution, we support these methods to build `cabal2nix`:
+`cabal2nix` is built using [`cabal-install`](https://www.haskell.org/cabal/),
+like you'd expect, and you are free to use your favourite way of setting up
+a Haskell development environment.
 
-* `stack build` if you have [_Stack_](http://haskellstack.org/)
-  * The Stack build can use system dependencies from a pinned nixpkgs
-    version for increased reproducibility (see [`stack.yaml`](./stack.yaml)).
-    On NixOS this happens automatically.
-    On non-NixOS, use `stack --nix build` for that.
-* `cabal install` if you have [_cabal-install_](https://www.haskell.org/cabal/)
-  installed
-* TODO: Add a build method that requires only `nix` preinstalled,
-  also pins nixpkgs, and is thus fully reproducible.
+Since `cabal2nix` is quite intertwined with the packages `distribution-nixpkgs`
+and `hackage-db`, we recommend setting up a shared development environment
+for the three packages like so:
 
-When making changes, please ensure that all these methods continue to work.
+```console
+$ mkdir /path/to/cabal2nix-root && cd /path/to/cabal2nix-root
+$ # clone repositories, note that you may need to checkout an
+$ # older tag for some depending on breaking changes on master.
+$ git clone https://github.com/NixOS/cabal2nix.git
+$ git clone https://github.com/NixOS/hackage-db.git
+$ git clone https://github.com/NixOS/distribution-nixpkgs.git
+$ # setup development environment with shellFor
+$ cat > shell.nix << EOF
+# assumes nix{os,pkgs}-unstable
+{ pkgs ? import <nixpkgs> {} }:
+
+pkgs.haskellPackages.shellFor {
+  packages = p: [
+    p.cabal2nix-unstable
+    p.distribution-nixpkgs
+    p.hackage-db
+  ];
+
+  # for running doctests locally
+  nativeBuildInputs = [
+    pkgs.doctest
+  ];
+
+  # set environment variable, so the development version of
+  # distribution-nixpkgs finds derivation-attr-paths.nix
+  distribution_nixpkgs_datadir = toString ./distribution-nixpkgs;
+}
+EOF
+$ # tell cabal about local packages
+$ cat > cabal.project << EOF
+packages: ./*/*.cabal
+EOF
+$ # test our new development environment
+$ nix-shell --run "cabal v2-build exe:cabal2nix exe:hackage2nix"
+```
