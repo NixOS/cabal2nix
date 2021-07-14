@@ -197,7 +197,7 @@ cabalFromDirectory :: HpackUse -- ^ the way hpack should be used
 cabalFromDirectory ForceHpack dir = hpackDirectory dir
 cabalFromDirectory NoHpack dir = onlyCabalFromDirectory dir "*** No .cabal file was found. Exiting."
 cabalFromDirectory PackageYamlHpack dir = do
-  useHpack <- liftIO $ doesFileExist (dir </> "package.yaml")
+  useHpack <- liftIO $ shouldUseHpack dir
   if useHpack
     then do
       liftIO $ hPutStrLn stderr "*** found package.yaml. Using hpack..."
@@ -206,11 +206,29 @@ cabalFromDirectory PackageYamlHpack dir = do
 
 onlyCabalFromDirectory :: FilePath -> String -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
 onlyCabalFromDirectory dir errMsg = do
-  cabals <- liftIO $ getDirectoryContents dir >>= filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`)
+  cabals <- liftIO $ findCabalFiles dir
   case cabals of
     [] -> liftIO $ fail errMsg
     [cabalFile] -> (,) False <$> cabalFromFile True cabalFile
     _ -> liftIO $ fail ("*** found more than one cabal file (" ++ show cabals ++ "). Exiting.")
+
+-- | Returns a list of files ending with the @.cabal@ suffix.
+findCabalFiles :: FilePath -> IO [FilePath]
+findCabalFiles dir = do
+  contents <- getDirectoryContents dir
+  filterM doesFileExist . map (dir </>) . filter (".cabal" `isSuffixOf`) $ contents
+
+-- | This function returns 'True' if a @package.yaml@ is present and there
+-- are no @.cabal@ files in the directory.
+shouldUseHpack :: FilePath -> IO Bool
+shouldUseHpack dir = do
+  hpackExists <- doesFileExist (dir </> "package.yaml")
+  if hpackExists
+    then do
+      cabalFiles <- findCabalFiles dir
+      pure $ null cabalFiles
+    else
+      pure False
 
 handleIO :: (Exception.IOException -> IO a) -> IO a -> IO a
 handleIO = Exception.handle
