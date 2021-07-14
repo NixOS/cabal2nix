@@ -1,5 +1,5 @@
 name:          hackage-db
-version:       2.1.1
+version:       2.1.2
 synopsis:      Access cabal-install's Hackage database via Data.Map
 description:   This library provides convenient access to the local copy of the Hackage
                database that \"cabal update\" creates. Check out
@@ -15,6 +15,8 @@ homepage:      https://github.com/NixOS/hackage-db#readme
 bug-reports:   https://github.com/NixOS/hackage-db/issues
 build-type:    Simple
 cabal-version: >= 1.10
+extra-source-files: README.md
+                    CHANGELOG.md
 
 source-repository head
   type:     git
