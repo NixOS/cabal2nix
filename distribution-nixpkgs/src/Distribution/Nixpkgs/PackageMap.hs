@@ -1,3 +1,4 @@
+-- | Build a lookup table from package identifiers to full attribute paths in nixpkgs.
 module Distribution.Nixpkgs.PackageMap
   ( PackageMap, readNixpkgPackageMap
   , resolve
