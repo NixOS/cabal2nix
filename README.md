@@ -97,7 +97,7 @@ pkgs.haskellPackages.shellFor {
 
   # for running doctests locally
   nativeBuildInputs = [
-    pkgs.doctest
+    pkgs.haskellPackages.doctest
   ];
 
   # set environment variable, so the development version of
