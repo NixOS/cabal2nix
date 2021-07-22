@@ -8,24 +8,9 @@ description:
   > nix-env -i cabal2nix
 license:            BSD3
 license-file:       LICENSE
-author:             Peter Simons, Andres Loeh, Benno Fünfstück, Mateusz Kowalczyk,
-                    Michael Alan Dorman, Tom Smalley, Mathijs Kwik, Shea Levy, Dmitry
-                    Malikov, Eric Seidel, Jacob Mitchell, Graham Christensen,
-                    Hamish Mackenzie, Nikolay Amiantov, Aycan iRiCAN, Bryan
-                    Gardiner, Joe Hermaszewski, John Wiegley, Philipp Hausmann,
-                    Spencer Janssen, Tom Hunger, William Casarin, koral,
-                    ksaric, Adam Vogt, Alexey Shmalko, Corey O'Connor, Cray
-                    Elliott, David Johnson, Dmitry Bushev, Domen Kožar, Felix
-                    Kunzmann, Gabriel Ebner, Gergely Risko, Joachim Fasting,
-                    John Albietz, John Chee, Jussi Maki, Lisanna Dettwyler,
-                    Mark Laws, Mark Wotton, Matthew Pickering, Matthew Stewart,
-                    Matvey Aksenov, Nicholas Clarke, Nicolas Rolland, Oliver
-                    Charles, Pascal Wittmann, Patrick John Wheeler, Phil de
-                    Joux, Piotr Bogdan, Profpatsch, Raymond Gauthier, Renzo
-                    Carbonara, Rodney Lorrimar, Sibi, Sukant Hajra, Tanner
-                    Doshier, Vaibhav Sagar, Viktar Basharymau, danbst, karsten
-                    gebbert, laMudri, Александр Цамутали
-maintainer:         Peter Simons <simons@cryp.to>
+author:             Peter Simons <simons@cryp.to>
+-- list all contributors: git log --pretty='%an' | sort | uniq
+maintainer:         sternenseemann <sternenseemann@systemli.org>
 stability:          stable
 tested-with:        GHC == 8.10.4 || == 9.0.1
 category:           Distribution, Nix
