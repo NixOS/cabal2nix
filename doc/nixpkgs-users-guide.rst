@@ -418,7 +418,7 @@ environment, too, i.e. by adding the following code to your
 If you are certain that you’ll use only one GHC environment which is
 located in your user profile, then you can use the following code, too,
 which has the advantage that it doesn’t contain any paths from the Nix
-store, i.e. those settings always remain valid even if a ``nix-env -u``
+store, i.e. those settings always remain valid even if a ``nix-env -u``
 operation updates the GHC environment in your profile:
 
 .. code:: bash
@@ -540,16 +540,16 @@ in the binary caches. You can override that list with e.g.
    pkgs.haskell-language-server.override { supportedGhcVersions = [ "884" "901" ]; }
 
 When you run ``haskell-language-server-wrapper`` it will detect the ghc
-version used by the project you are working on (by asking e.g. cabal or
+version used by the project you are working on (by asking e.g. cabal or
 stack) and pick the appropriate above mentioned binary from your path.
 
 Be careful when installing hls globally and using a pinned nixpkgs for a
 Haskell project in a nix-shell. If the nixpkgs versions deviate to much
-(e.g. use different ``glibc`` versions) hls might fail. It is
+(e.g. use different ``glibc`` versions) hls might fail. It is
 recommended to then install hls in the nix-shell from the nixpkgs
 version pinned in there.
 
-If you know, that you only use one ghc version, e.g. in a project
+If you know, that you only use one ghc version, e.g. in a project
 specific nix-shell You can either use an override as given above or
 simply install ``pkgs.haskellPackages.haskell-language-server`` instead
 of the top-level attribute ``pkgs.haskell-language-server``.
@@ -703,7 +703,7 @@ switch to a different compiler version, then pass an appropriate
 ``nix-shell --argstr compiler ghc784``.
 
 If you need such an environment because you’d like to compile a Hackage
-package outside of Nix — i.e. because you’re hacking on the latest
+package outside of Nix — i.e. because you’re hacking on the latest
 version from Git —, then the package set provides suitable nix-shell
 environments for you already! Every Haskell package has an ``env``
 attribute that provides a shell environment suitable for compiling that
