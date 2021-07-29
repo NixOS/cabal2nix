@@ -166,8 +166,89 @@ for hackage. You can use ``overrideSrc`` to override the source, for example:
 How to create a development environment
 ---------------------------------------
 
+A simple approach for beginners
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The basic workflow
+^^^^^^^^^^^^^^^^^^
+
+1. To bootstrap a brand new project, run this command to create a cabal
+file.
+If you already have a cabal file, you can skip this step.
+
+::
+
+   nix-shell --packages ghc --run 'cabal init'
+
+2. Create ``default.nix`` with the following contents:
+
+::
+
+   let
+     pkgs = import <nixpkgs> { };
+   in
+     pkgs.haskellPackages.developPackage {
+       root = ./.;
+     }
+
+*Important:* Your directory must have the same name as your package,
+or else you have to set the ``name`` field in ``default.nix``.
+
+3. Build your package in one of two ways:
+
+   - Run ``nix-build``.
+   - Run ``nix-shell`` to enter an environment with all of your
+     dependencies available, and then use the usual cabal commands.
+
+Adding or overriding dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you need a package that isn't in Hackage, or you want to use a
+different version, add it to ``default.nix``.
+In the example below, I've added the path to another package named
+``grid``.
+
+::
+
+   let
+     pkgs = import <nixpkgs> { };
+   in
+     pkgs.haskellPackages.developPackage {
+       root = ./.;
+       source-overrides = {
+         grid = ../grid;
+       };
+     }
+
+What about cabal.project?
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The file ``default.nix`` specifies the package versions that will
+be available (installed) when you enter the shell.
+You can also use ``cabal.project`` to specify where to find packages that
+you want to install (or rebuild and re-install) while you're in the
+shell.
+The difference is subtle, and you may end up listing packages in
+both files.
+Also, you can end up with two versions of a package installed in your
+development environment;
+one by Nix (because it was listed in ``default.nix``)
+and another by ``cabal-install`` (because it was listed in
+``cabal.project``).
+This usually causes no harm, but it can be a little confusing.
+
+*You may find it simpler to just use* ``default.nix``,
+and not have a ``cabal.project`` file.
+If you need to rebuild one of my package's dependencies, simply exit the
+shell and re-enter it.
+Any packages listed in `default.nix` will automatically be rebuilt as
+needed.
+
+A more customisable approach
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 How to install a compiler
-~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A simple development environment consists of a Haskell compiler and one
 or both of the tools ``cabal-install`` and ``stack``. We saw in section
@@ -237,7 +318,7 @@ longer work after garbage collection, then you’ll have to re-run
 ``cabal configure`` inside of a new ``nix-shell`` environment.
 
 How to install a compiler with libraries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 GHC expects to find all installed libraries inside of its own ``lib``
 directory. This approach works fine on traditional Unix systems, but it
@@ -337,7 +418,7 @@ environment, too, i.e. by adding the following code to your
 If you are certain that you’ll use only one GHC environment which is
 located in your user profile, then you can use the following code, too,
 which has the advantage that it doesn’t contain any paths from the Nix
-store, i.e. those settings always remain valid even if a ``nix-env -u``
+store, i.e. those settings always remain valid even if a ``nix-env -u``
 operation updates the GHC environment in your profile:
 
 .. code:: bash
@@ -350,7 +431,7 @@ operation updates the GHC environment in your profile:
    fi
 
 How to install a compiler with libraries, hoogle and documentation indexes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you plan to use your environment for interactive programming, not
 just compiling random Haskell code, you might want to replace
@@ -437,7 +518,7 @@ Specify the ``packages`` you want documentation for and the
    };
 
 How to install haskell-language-server
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In short: Install ``pkgs.haskell-language-server`` and use the
 ``haskell-language-server-wrapper`` command to run it. See the `hls
@@ -459,22 +540,22 @@ in the binary caches. You can override that list with e.g.
    pkgs.haskell-language-server.override { supportedGhcVersions = [ "884" "901" ]; }
 
 When you run ``haskell-language-server-wrapper`` it will detect the ghc
-version used by the project you are working on (by asking e.g. cabal or
+version used by the project you are working on (by asking e.g. cabal or
 stack) and pick the appropriate above mentioned binary from your path.
 
 Be careful when installing hls globally and using a pinned nixpkgs for a
 Haskell project in a nix-shell. If the nixpkgs versions deviate to much
-(e.g. use different ``glibc`` versions) hls might fail. It is
+(e.g. use different ``glibc`` versions) hls might fail. It is
 recommended to then install hls in the nix-shell from the nixpkgs
 version pinned in there.
 
-If you know, that you only use one ghc version, e.g. in a project
+If you know, that you only use one ghc version, e.g. in a project
 specific nix-shell You can either use an override as given above or
 simply install ``pkgs.haskellPackages.haskell-language-server`` instead
 of the top-level attribute ``pkgs.haskell-language-server``.
 
 How to make haskell-language-server find a GHC from nix-shell
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you use nix-shell for your development environments then ``haskell-language-server``
 will not find an installed GHC or will find a GHC with an installed package set
@@ -498,7 +579,7 @@ Yet another solution is to use a plugin that loads the nix-shell directly in the
 such as `Nix Environment Selector <https://github.com/arrterian/nix-env-selector>`__ for VSCode.
 
 How to build a Haskell project using Stack
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 `Stack <http://haskellstack.org>`__ is a popular build tool for Haskell
 projects. It has first-class support for Nix. Stack can optionally use
@@ -584,7 +665,7 @@ specified in ``stack.yaml`` (only works with Stack >= 1.1.3):
    }
 
 How to create ad hoc environments for ``nix-shell``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The easiest way to create an ad hoc development environment is to run
 ``nix-shell`` with the appropriate GHC environment given on the
@@ -622,7 +703,7 @@ switch to a different compiler version, then pass an appropriate
 ``nix-shell --argstr compiler ghc784``.
 
 If you need such an environment because you’d like to compile a Hackage
-package outside of Nix — i.e. because you’re hacking on the latest
+package outside of Nix — i.e. because you’re hacking on the latest
 version from Git —, then the package set provides suitable nix-shell
 environments for you already! Every Haskell package has an ``env``
 attribute that provides a shell environment suitable for compiling that
