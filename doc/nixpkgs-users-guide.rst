@@ -206,7 +206,7 @@ Adding or overriding dependencies
 If you need a package that isn't in Hackage, or you want to use a
 different version, add it to ``default.nix``.
 In the example below, I've added the path to another package named
-``grid``.
+``additional-package``.
 
 ::
 
@@ -216,7 +216,7 @@ In the example below, I've added the path to another package named
      pkgs.haskellPackages.developPackage {
        root = ./.;
        source-overrides = {
-         grid = ../grid;
+         additional-package = ../additional-package;
        };
      }
 
@@ -239,8 +239,8 @@ This usually causes no harm, but it can be a little confusing.
 
 *You may find it simpler to just use* ``default.nix``,
 and not have a ``cabal.project`` file.
-If you need to rebuild one of my package's dependencies, simply exit the
-shell and re-enter it.
+If you need to rebuild one of your package's dependencies, simply exit
+the shell and re-enter it.
 Any packages listed in `default.nix` will automatically be rebuilt as
 needed.
 
