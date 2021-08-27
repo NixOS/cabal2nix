@@ -6,6 +6,12 @@
   * `pPrint (x :: Meta)` now renders every maintainer as a full attribute
     path instead of using `with`.
 
+## 1.6.1
+
+* `Distribution.Nixpkgs.Meta`: support `aarch64-darwin`
+  * Render `Platform AArch64 OSX` to `"aarch64-darwin"`
+  * Add `Platform AArch64 OSX` to `allKnownPlatforms`
+
 ## 1.6.0
 
 * `Distribution.Nixpkgs.PackageMap`
