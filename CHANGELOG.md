@@ -5,6 +5,8 @@
 * Only use `hpack` when building if no cabal file is found
   for the package to process
   (See [#508](https://github.com/NixOS/cabal2nix/pull/508))
+* Support `aarch64-darwin` as an unsupported platform in
+  `hackage2nix` (See [#517](https://github.com/NixOS/cabal2nix/pull/517))
 
 ## 2.18.0
 
