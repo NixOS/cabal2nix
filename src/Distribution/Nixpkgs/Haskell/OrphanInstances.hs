@@ -40,6 +40,7 @@ instance IsString Platform where
   fromString "x86_64-linux" = Platform X86_64 Linux
   fromString "x86_64-darwin" = Platform X86_64 OSX
   fromString "aarch64-linux" = Platform AArch64 Linux
+  fromString "aarch64-darwin" = Platform AArch64 OSX
   fromString "armv7l-linux" = Platform (OtherArch "armv7l") Linux
   fromString s = error ("fromString: " ++ show s ++ " is not a valid platform")
 
