@@ -5,6 +5,14 @@
 * `Distribution.Nixpkgs.Meta`
   * `pPrint (x :: Meta)` now renders every maintainer as a full attribute
     path instead of using `with`.
+  * Wrap platform `Meta` attributes in a `Maybe`. `Nothing` cause `pPrint`
+    to omit the attribute in question when rendering the nix expression.
+  * Add support for `meta.badPlatforms`, allowing to mark a
+    platform as unsupported.
+  * Remove `allKnownPlatforms`, its previous use can be replaced
+    using `badPlatforms`.
+  * Add support for nixpkgs platform groups in addition to Nix system
+    tuples via `NixpkgsPlatform`.
 
 ## 1.6.1
 
