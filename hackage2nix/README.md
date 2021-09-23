@@ -1,25 +1,18 @@
 # `hackage2nix`
 
+#### Usage
+
 This tool is used to update the Haskell package set in
 [nixpkgs](https://github.com/NixOS/nixpkgs)
 ([`hackage-packages.nix`](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/haskell-modules/hackage-packages.nix)).
 
-Most of the time we do not need run this manually (since it is run automatically
-on the upstream nixpkgs).  Exceptions:
+It gets used by the
+[`maintainers/scripts/haskell/regenerate-hackage-packages.sh`](https://github.com/NixOS/nixpkgs/blob/haskell-updates/maintainers/scripts/haskell/regenerate-hackage-packages.sh)
+script in nixpkgs. There are usually no reasons to run this tool any other way.
+For development and testing you can modify the environment variable HACKAGE2NIX
+of that script.
 
-* To update the Haskell package set in nixpkgs.
-
-* To test that a structural change to nixpkgs (e.g. name change of a system
-  package) does not break Haskell packages.
-
-* To test changes to `hackage2nix` itself.
-
-#### Video tutorial
-
-There is a [video on YouTube](https://www.youtube.com/watch?v=qX0mgtSm360)
-that gives a thorough walk-through of these steps.
-
-It also explains many of the background considerations.
+Further informations regarding the usage of hackage2nix in nixpkgs can be found under [nixpkgs:pkgs/development/haskell-modules/HACKING.md](https://github.com/NixOS/nixpkgs/blob/haskell-updates/pkgs/development/haskell-modules/HACKING.md).
 
 #### Requirements
 
@@ -28,39 +21,13 @@ On OSX you can use [this](https://gist.github.com/dixson3/8360571) to create one
 (you can replace `60g` with `4g` as that should be plenty).
 
 For building `cabal2nix` and `hackage2nix` you need to have `cabal-install`
-installed and `update-nixpkgs.sh` uses `git` at run time.
+installed.
 
-#### Setup
+#### Development
 
-This shows the setup that nixpkgs Haskell maintainers use to iterate on both
-`cabal2nix`, `hackage2nix`, and the Haskell package set in nixpkgs.
+For development setup see the toplevel cabal2nix README.
 
-It clones `cabal2nix` and puts a `nixpkgs` checkout into it, which the
-repo's `update-nixpkgs.sh` script will update for you.
+#### Video tutorial
 
-_Replace `git@github.com:NixOS/nixpkgs.git` with a fork you have push access
-to._
-
-```sh
-git clone https://github.com/NixOS/cabal2nix.git
-cd cabal2nix
-git clone git@github.com:NixOS/nixpkgs.git # replace this with your fork
-git clone https://github.com/commercialhaskell/all-cabal-hashes.git --branch hackage hackage
-# update-nixpkgs.sh uses new-style cabal v2-run,
-# so we build using the new cabal resolver:
-cabal v2-build
-# alternatively, if you have cabal2nix from nixpkgs
-# installed, you can save yourself a bit of build
-# time, by using a nix-shell development environment:
-cabal2nix --shell . > shell.nix
-nix-shell --run "cabal v2-build"
-```
-
-#### Running `hackage2nix`
-
-Runs hackage2nix and pushes a commit with the updated `hackage-packages.nix`
-file to your fork of `nixpkgs`.
-
-```sh
-./update-nixpkgs.sh
-```
+There is a now out-dated [video on YouTube](https://www.youtube.com/watch?v=qX0mgtSm360)
+that gives a thorough walk-through of the previous work flow. It also explains many of the background considerations.
