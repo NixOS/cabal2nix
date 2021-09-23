@@ -7,5 +7,4 @@ mkDerivation {
   homepage = "https://github.com/brendanhay/gogol";
   description = "Google + SDK";
   license = "unknown";
-  hydraPlatforms = lib.platforms.none;
 }

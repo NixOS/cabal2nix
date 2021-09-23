@@ -163,7 +163,17 @@ fromSPDXLicense (SPDX.License expr) =
       -- Use the SPDX expression as a free-form license string.
       Unknown (Just $ prettyShow expr)
 
+-- "isFreeLicense" is used to determine whether we generate a "hydraPlatforms =
+-- none" in the hackage2nix output for a package with the given license.
+
+-- Note: If "isFreeLicense" returned false for a license which is not an unfree
+-- license from "lib.licenses" the package would still be build by hydra if
+-- another package depended on it.
+
+-- Since all software on hackage needs to be "open source in spirit" and we
+-- don‘t know any software on hackage for which we are not allowed to
+-- distribute binary outputs we assume that a package has a free license if we
+-- don‘t explicitly know otherwise.
 isFreeLicense :: Distribution.Nixpkgs.License.License -> Bool
 isFreeLicense (Known "lib.licenses.unfree") = False
-isFreeLicense (Unknown Nothing)             = False
 isFreeLicense _                             = True
