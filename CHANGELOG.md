@@ -7,6 +7,13 @@
   (See [#508](https://github.com/NixOS/cabal2nix/pull/508))
 * Support `aarch64-darwin` as an unsupported platform in
   `hackage2nix` (See [#517](https://github.com/NixOS/cabal2nix/pull/517))
+* `cabal2nix` will no longer emit a dependency on `webkitgtk24x-gtk{2,3}`
+  if it detects the older 3.0 API of WebKit being used. Nixpkgs hasn't
+  contained this package for a few years now due to security
+  vulnerabilities and the packages still using it on Hackage are
+  unmaintained. If you have a legacy project built with an old
+  version of nixpkgs, either don't upgrade `cabal2nix` or emulate
+  the old behavior using overrides.
 
 ## 2.18.0
 
