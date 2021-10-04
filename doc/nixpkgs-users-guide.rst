@@ -440,16 +440,16 @@ How to install haskell-language-server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In short: Install ``pkgs.haskell-language-server`` and use the
-``haskell-language-server-wrapper`` command to run it. See the `hls
-README <https://github.com/haskell/haskell-language-server>`__ on how to
-configure your text editor to use hls and how to test your setup.
+``haskell-language-server-wrapper`` command to run it. See the
+[hls user guide](https://haskell-language-server.readthedocs.io/en/latest/configuration.html#configuring-your-editor)
+on how to configure your text editor to use hls and how to test your setup.
 
 Hls needs to be compiled with the ghc version of the project you use it
 on.
 
 ``pkgs.haskell-language-server`` provides
-``haskell-language-server-wrapper``, ``haskell-language-server``,
-``haskell-language-server-x.x`` and ``haskell-language-server-x.x.x``
+``haskell-language-server-wrapper``, ``haskell-language-server``
+and ``haskell-language-server-x.x.x``
 binaries, where ``x.x.x`` is the ghc version for which it is compiled.
 By default it includes binaries for all ghc versions that are provided
 in the binary caches. You can override that list with e.g.
