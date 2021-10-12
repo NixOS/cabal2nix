@@ -54,6 +54,5 @@ test-suite hspec
   hs-source-dirs:     test
   build-depends:      base, deepseq, distribution-nixpkgs, hspec, lens
   default-language:   Haskell2010
-  default-extensions: MonadFailDesugaring
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints
