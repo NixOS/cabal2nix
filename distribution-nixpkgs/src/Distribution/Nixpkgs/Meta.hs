@@ -24,6 +24,7 @@ import Control.Lens
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.License
+import qualified Distribution.Pretty as CabalPretty
 import Distribution.System
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
@@ -283,10 +284,12 @@ nullMeta = Meta
   }
 
 fromCabalPlatform :: Platform -> String
-fromCabalPlatform (Platform I386 Linux)                 = "\"i686-linux\""
-fromCabalPlatform (Platform X86_64 Linux)               = "\"x86_64-linux\""
-fromCabalPlatform (Platform X86_64 OSX)                 = "\"x86_64-darwin\""
-fromCabalPlatform (Platform (OtherArch "armv7l") Linux) = "\"armv7l-linux\""
-fromCabalPlatform (Platform AArch64 Linux)              = "\"aarch64-linux\""
-fromCabalPlatform (Platform AArch64 OSX)                = "\"aarch64-darwin\""
-fromCabalPlatform p                                     = error ("fromCabalPlatform: invalid Nix platform" ++ show p)
+fromCabalPlatform (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++ "\""
+  where nixArch =
+          case arch of
+            I386 -> "i686" -- rendered as i386 by default
+            _    -> CabalPretty.prettyShow arch
+        nixOs =
+          case os of
+            OSX -> "darwin" -- rendered as osx by default
+            _   -> CabalPretty.prettyShow os
