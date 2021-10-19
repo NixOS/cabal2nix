@@ -20,7 +20,7 @@ module Distribution.Nixpkgs.Meta
 import Prelude hiding ( (<>) )
 #endif
 import Control.DeepSeq
-import Control.Lens
+import Control.Lens hiding ( Strict )
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.License
@@ -59,6 +59,25 @@ data NixpkgsPlatform
   -- ^ 'Identifier' of the attribute name of a platform
   --   group in nixpkgs' @lib.platforms@.
   deriving (Show, Eq, Ord, Generic)
+
+nixpkgsPlatformFromCabal :: Platform -> String
+nixpkgsPlatformFromCabal (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++ "\""
+  where nixArch =
+          case arch of
+            I386 -> "i686" -- rendered as i386 by default
+            PPC -> "powerpc" -- rendered as ppc by default
+            PPC64 -> "powerpc64" -- rendered as ppc64 by default
+            JavaScript -> "js" -- rendered as javascript by default
+            _    -> CabalPretty.prettyShow arch
+        nixOs =
+          case os of
+            OSX -> "darwin" -- rendered as osx by default
+            _   -> CabalPretty.prettyShow os
+
+instance Pretty NixpkgsPlatform where
+  pPrint (NixpkgsPlatformSingle p) = text $ nixpkgsPlatformFromCabal p
+  pPrint (NixpkgsPlatformGroup p)  = pPrint
+    $ path # [ ident # "lib", ident # "platforms", p ]
 
 instance NFData NixpkgsPlatform
 
@@ -130,22 +149,6 @@ instance Pretty Meta where
     , boolattr "broken" _broken _broken
     ]
 
-partitionPlatforms :: Set NixpkgsPlatform -> (Set Platform, Set Identifier)
-partitionPlatforms s =
-  ( Set.map fromSingle singles
-  , Set.map fromGroup groups
-  )
-  where (singles, groups) = Set.partition isSingle s
-        isSingle p = case p of
-          NixpkgsPlatformSingle _ -> True
-          _ -> False
-        fromSingle p = case p of
-          NixpkgsPlatformSingle x -> x
-          _ -> error "fromSingle: not single"
-        fromGroup p = case p of
-          NixpkgsPlatformGroup x -> x
-          _ -> error "fromGroup: not group"
-
 -- | This function renders an Nix attribute binding suitable for use in
 --   an attribute set representing the given set of 'NixpkgsPlatform's.
 --
@@ -214,8 +217,8 @@ partitionPlatforms s =
 --       ]
 --   :}
 --   platforms = [
---     "aarch64-darwin" "aarch64-linux" "i686-linux" "x86_64-darwin"
---     "x86_64-linux"
+--     "i686-linux" "x86_64-linux" "x86_64-darwin" "aarch64-linux"
+--     "aarch64-darwin"
 --   ];
 --
 --   >>> :{
@@ -231,8 +234,8 @@ partitionPlatforms s =
 --       ]
 --   :}
 --   platforms = [
---     "aarch64-darwin" "aarch64-linux" "i686-linux" "x86_64-darwin"
---     "x86_64-linux"
+--     "i686-linux" "x86_64-linux" "x86_64-darwin" "aarch64-linux"
+--     "aarch64-darwin"
 --   ] ++ lib.platforms.arm
 --     ++ lib.platforms.riscv;
 renderPlatforms :: String -> Set NixpkgsPlatform -> Doc
@@ -249,18 +252,18 @@ renderPlatforms field ps
   where -- render nixpkgs platforms and cabal platform tuples separately
         -- since the former represents multiple platforms and meta doesn't
         -- support nested lists.
-        (cabalPs, nixpkgsPs) = partitionPlatforms ps
+        (cabalPs, nixpkgsPs) = Set.partition isSinglePlatform ps
+        isSinglePlatform (NixpkgsPlatformSingle _) = True
+        isSinglePlatform _ = False
 
-        renderedCabalPs = map text $ Set.toAscList $ Set.map fromCabalPlatform cabalPs
+        renderedCabalPs = map pPrint $ Set.toAscList cabalPs
 
-        -- render a lib.platform
-        platformPath p = pPrint $ path # [ ident # "lib", ident # "platforms", p ]
         -- append lib.platforms list via nix's ++ at the end
         -- if there is no cabal platforms list, don't emit leading ++
         appendNixpkgsP acc elem = acc $$
           if isEmpty acc && Set.null cabalPs
-          then nest 3 $ platformPath elem
-          else text "++" <+> platformPath elem
+          then nest 3 $ pPrint elem
+          else text "++" <+> pPrint elem
         renderedNixpkgsPs = Set.foldl' appendNixpkgsP mempty nixpkgsPs
 
         -- Helper function, roughly the inverse of nixpkgs' optionals
@@ -282,14 +285,3 @@ nullMeta = Meta
   , _maintainers = error "undefined Meta.maintainers"
   , _broken = error "undefined Meta.broken"
   }
-
-fromCabalPlatform :: Platform -> String
-fromCabalPlatform (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++ "\""
-  where nixArch =
-          case arch of
-            I386 -> "i686" -- rendered as i386 by default
-            _    -> CabalPretty.prettyShow arch
-        nixOs =
-          case os of
-            OSX -> "darwin" -- rendered as osx by default
-            _   -> CabalPretty.prettyShow os
