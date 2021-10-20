@@ -16,14 +16,18 @@ module Distribution.Nixpkgs.Meta
   , homepage, description, license, platforms, badPlatforms, hydraPlatforms, maintainers, broken
     -- * Representation of Nixpkgs Platform Descriptions
   , NixpkgsPlatform (..)
+  , nixpkgsPlatformFromString
+  , cabalPlatformFromSystem
   ) where
 
 -- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
 #if MIN_VERSION_base(4,11,0)
 import Prelude hiding ( (<>) )
 #endif
+import Control.Applicative ( (<|>) )
 import Control.DeepSeq
 import Control.Lens hiding ( Strict )
+import Data.List ( stripPrefix )
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Nixpkgs.License
@@ -87,6 +91,97 @@ nixpkgsPlatformFromCabal (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++
           case os of
             OSX -> "darwin" -- rendered as osx by default
             _   -> CabalPretty.prettyShow os
+
+-- | Obtain a 'NixpkgsPlatform' from a string representation intended for config
+--   files.
+--
+--   * Every string starting with @lib.platforms.@ or @platforms.@ is
+--     parsed into 'NixpkgsPlatformGroup'.
+--   * All other strings are attempted to be interpreted as a nix(pkgs) style
+--     system tuple and parsed into 'NixpkgsPlatformSingle' by
+--     'cabalPlatformFromSystem'.
+--
+--   If none of these formats match the input 'String', 'Nothing' is returned.
+--   A 'Just' result thus only indicates that the format of the platform is
+--   sound — 'nixpkgsPlatformFromString' does /not/ check if the parsed platform
+--   actually exists.
+--
+--   __Note__: 'nixpkgsPlatformFromString' is /not/ the inverse operation for
+--   'NixpkgsPlatform'\'s 'Pretty' instance. It is not intended for parsing Nix
+--   expressions.
+--
+--   >>> nixpkgsPlatformFromString "x86_64-netbsd"
+--   Just (NixpkgsPlatformSingle (Platform X86_64 NetBSD))
+--   >>> nixpkgsPlatformFromString "platforms.riscv"
+--   Just (NixpkgsPlatformGroup (Identifier "riscv"))
+--   >>> nixpkgsPlatformFromString "garbage"
+--   Nothing
+nixpkgsPlatformFromString :: String -> Maybe NixpkgsPlatform
+nixpkgsPlatformFromString s = platformGroup <|> singlePlatform
+  where platformGroup = do
+          -- also accept "platform." as prefix to save some typing
+          name <- stripPrefix "lib.platforms." s <|> stripPrefix "platforms." s
+          Just $ NixpkgsPlatformGroup (ident # name)
+
+        singlePlatform = NixpkgsPlatformSingle <$> cabalPlatformFromSystem s
+
+-- | Parse a system tuple as understood by Nix and nixpkgs to a Cabal 'Platform'.
+--   System tuples are derived from autoconf's
+--   [target triplets](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.70/autoconf.html#Manual-Configuration),
+--   dropping the vendor part. They have the form @cpu-os@ where @os@ can either
+--   be a single component or of the form @kernel-system@ (system is an autoconf
+--   term here, not a Nix system).
+--
+--   Note that 'cabalPlatformFromSystem' expects to receive a /valid/ system
+--   tuple, i.e. it will accept all system tuples that have a sound format
+--   (with the caveat that it will accept n-tuples for @n >= 4@ even though
+--   they are technically invalid). This is done because the ambiguity of
+--   system tuples requires knowledge over its legal contents in order to check
+--   their validity properly. Since @lib.systems.elaborate@ from nixpkgs is the
+--   source of truth in this case, we want to avoid the need to continously
+--   update @distribution-nixpkgs@ to reflect its inner workings.
+--
+--   'cabalPlatformFromSystem' does, however, some conversions to alleviate some
+--   discrepancies between Cabal and nixpkgs. Parsing and rendering system tuples
+--   using 'cabalPlatformFromSystem' and rendering them via the 'Pretty'
+--   instance of 'NixpkgsPlatform' should, however, not change the system tuple
+--   for tuples accepted by nixpkgs. This has been tested for all known tuples
+--   (from @lib.platforms@ and @lib.systems.examples@) as of 2022-05-08.
+--   Please open an issue if any newly added ones are not recognized properly.
+cabalPlatformFromSystem :: String -> Maybe Platform
+cabalPlatformFromSystem s =
+  case break (== '-') s of
+    (arch, '-':os) ->
+      if null arch || null os
+      then Nothing
+      else Just $ Platform (parseArch arch) (parseOS os)
+    _ -> Nothing
+  where -- Use permissive classification to also recognize autoconf / nixpkgs
+        -- style OS strings, e.g. "darwin" where Cabal would expect "osx".
+        --
+        -- Note that we don't reimplement GHC_CONVERT_OS from GHC's configure
+        -- file here at the moment. Our goal is to recognize all /well formed/
+        -- nixpkgs system strings, nothing more. That this works correctly for
+        -- nixpkgs systems currently in use is confirmed by the test suite.
+        parseOS = classifyOS Permissive
+
+        -- Use Strict for arch classification and add specific guards for cases
+        -- where Cabal's naming expectations (which seems to be LLVM oriented)
+        -- clash with what nixpkgs / autoconf use (e.g. Cabal uses "ppc" instead
+        -- of "powerpc"). Using Permissive is not possible because Cabal is a bit
+        -- overzealous in arch recognition: For example, it ignores endianess in
+        -- the case of the POWER architectures, parsing "powerpcle" to "ppc" and
+        -- "powerpc64le" to "ppc64" when they are clearly different platforms.
+        --
+        -- We also don't implement GHC_CONVERT_ARCH here, for the reasons stated
+        -- above.
+        parseArch as =
+          case classifyArch Strict as of
+            OtherArch "i686" -> I386
+            OtherArch "js" -> JavaScript
+            OtherArch "powerpc" -> PPC
+            OtherArch "powerpc64" -> PPC64
+            a -> a
 
 instance Pretty NixpkgsPlatform where
   pPrint (NixpkgsPlatformSingle p) = text $ nixpkgsPlatformFromCabal p
