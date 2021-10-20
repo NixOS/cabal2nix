@@ -10,9 +10,12 @@
  -}
 
 module Distribution.Nixpkgs.Meta
-  ( Meta, nullMeta
-  , NixpkgsPlatform (..)
+  ( -- * Representation of the Nixpkgs Meta Set
+    Meta, nullMeta
+    -- ** Lenses for 'Meta'
   , homepage, description, license, platforms, badPlatforms, hydraPlatforms, maintainers, broken
+    -- * Representation of Nixpkgs Platform Descriptions
+  , NixpkgsPlatform (..)
   ) where
 
 -- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
