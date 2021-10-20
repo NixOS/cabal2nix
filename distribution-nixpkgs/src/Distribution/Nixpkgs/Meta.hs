@@ -37,16 +37,15 @@ import Language.Nix.PrettyPrinting
 --       list as found in @lib.platforms@. For example, at the
 --       time of writing @NixpkgsPlatformGroup "darwin"@ would
 --       represent the platform tuples @x86_64-darwin@, @aarch64-darwin@,
---       @i686-darwin@ and @armv7a-darwin@. Of course this is
---       subject to change as nixpkgs updates @lib.platforms@,
---       of course.
+--       @i686-darwin@ and @armv7a-darwin@. Naturally, this is
+--       subject to change as nixpkgs updates @lib.platforms@.
 --     * 'NixpkgsPlatformSingle' indicates a single platform tuple
 --       represented using Cabal's 'Platform'.
 --
 --   The former is useful to express related groups of
 --   platforms which have similar properties. The latter
---   can be used to be more precise and to exclude a
---   single, specific platform.
+--   can be used to, for example, exclude a single, specific
+--   platform.
 --
 --   @hackage2nix@ has used the latter approach historically
 --   and is being extended to support nixpkgs' platform
