@@ -157,6 +157,7 @@ main = do
           drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
                   & src .~ urlDerivationSource ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") tarballSHA256
                   & editedCabalFile .~ cabalSHA256
+                  & metaSection.platforms .~ fmap (Set.map NixpkgsPlatformSingle) (Map.lookup name (supportedPlatforms config))
                   & metaSection.badPlatforms .~ fmap (Set.map NixpkgsPlatformSingle) (Map.lookup name (unsupportedPlatforms config))
                   & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const (Just Set.empty))
                   & metaSection.broken ||~ isBroken

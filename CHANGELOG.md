@@ -7,6 +7,11 @@
   (See [#508](https://github.com/NixOS/cabal2nix/pull/508))
 * Support `aarch64-darwin` as an unsupported platform in
   `hackage2nix` (See [#517](https://github.com/NixOS/cabal2nix/pull/517))
+* The new `hackage2nix` `supported-platforms` configuration field
+  allows prescribing a specific list of platforms to set in the
+  package's `platforms` meta attribute. `unsupported-platforms`
+  are now translated to `badPlatforms` instead of being subtracted
+  from `platforms`.
 * `cabal2nix` will no longer emit a dependency on `webkitgtk24x-gtk{2,3}`
   if it detects the older 3.0 API of WebKit being used. Nixpkgs hasn't
   contained this package for a few years now due to security

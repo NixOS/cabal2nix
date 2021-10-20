@@ -49,6 +49,9 @@ data Configuration = Configuration
   -- 'maintainers' for a given Haskell package.
   , packageMaintainers :: Map Identifier (Set PackageName)
 
+  -- |These packages (necessarily) only support a certain list of platforms.
+  , supportedPlatforms :: Map PackageName (Set Platform)
+
   -- |These packages (by design) don't support certain platforms.
   , unsupportedPlatforms :: Map PackageName (Set Platform)
 
@@ -72,6 +75,7 @@ instance Semigroup Configuration where
                          , defaultPackageOverrides = defaultPackageOverrides l <> defaultPackageOverrides r
                          , extraPackages = extraPackages l <> extraPackages r
                          , packageMaintainers = packageMaintainers l <> packageMaintainers r
+                         , supportedPlatforms = supportedPlatforms l <> supportedPlatforms r
                          , unsupportedPlatforms = unsupportedPlatforms l <> unsupportedPlatforms r
                          , dontDistributePackages = dontDistributePackages l <> dontDistributePackages r
                          , brokenPackages = brokenPackages l <> brokenPackages r
@@ -84,6 +88,7 @@ instance FromJSON Configuration where
         <*> o .:? "default-package-overrides" .!= mempty
         <*> o .:? "extra-packages" .!= mempty
         <*> o .:? "package-maintainers" .!= mempty
+        <*> o .:? "supported-platforms" .!= mempty
         <*> o .:? "unsupported-platforms" .!= mempty
         <*> o .:? "dont-distribute-packages" .!= mempty
         <*> o .:? "broken-packages" .!= mempty
