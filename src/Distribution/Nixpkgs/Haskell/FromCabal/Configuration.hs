@@ -23,6 +23,7 @@ import Data.Text as T
 import Data.Yaml
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.Constraint
+import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.System
 import GHC.Generics ( Generic )
@@ -50,10 +51,10 @@ data Configuration = Configuration
   , packageMaintainers :: Map Identifier (Set PackageName)
 
   -- |These packages (necessarily) only support a certain list of platforms.
-  , supportedPlatforms :: Map PackageName (Set Platform)
+  , supportedPlatforms :: Map PackageName (Set NixpkgsPlatform)
 
   -- |These packages (by design) don't support certain platforms.
-  , unsupportedPlatforms :: Map PackageName (Set Platform)
+  , unsupportedPlatforms :: Map PackageName (Set NixpkgsPlatform)
 
   -- |These packages cannot be distributed by Hydra, i.e. because they have an
   -- unfree license or depend on other tools that cannot be distributed for

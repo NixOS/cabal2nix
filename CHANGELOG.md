@@ -5,8 +5,10 @@
 * Only use `hpack` when building if no cabal file is found
   for the package to process
   (See [#508](https://github.com/NixOS/cabal2nix/pull/508))
-* Support `aarch64-darwin` as an unsupported platform in
-  `hackage2nix` (See [#517](https://github.com/NixOS/cabal2nix/pull/517))
+* `hackage2nix` now supports arbitrary Nix-style platform tuples
+  in `unsupported-platforms` (including the new `aarch64-darwin`) as
+  well as nixpkgs platform groups which are denoted as e. g.
+  `platforms.darwin` and can be used instead of platform tuples.
 * The new `hackage2nix` `supported-platforms` configuration field
   allows prescribing a specific list of platforms to set in the
   package's `platforms` meta attribute. `unsupported-platforms`

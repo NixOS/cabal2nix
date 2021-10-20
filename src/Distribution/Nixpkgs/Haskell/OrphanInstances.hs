@@ -9,6 +9,7 @@ import Data.String
 import qualified Data.Text as T
 import Data.Yaml
 import Distribution.Compiler
+import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Distribution.Parsec
 import Distribution.System
@@ -36,16 +37,13 @@ instance IsString PackageVersionConstraint where
 instance IsString CompilerId where
   fromString = text2isString "CompilerId"
 
-instance FromJSON Platform where
+instance FromJSON NixpkgsPlatform where
+  parseJSON (String s) =
+    case nixpkgsPlatformFromString (T.unpack s) of
+      Just p -> pure p
+      Nothing -> fail ("parseJSON: " ++ show s ++ " is not a valid NixpkgsPlatform")
   parseJSON s =
-    case s of
-      (String "i686-linux") -> pure $ Platform I386 Linux
-      (String "x86_64-linux") -> pure $ Platform X86_64 Linux
-      (String "x86_64-darwin") -> pure $ Platform X86_64 OSX
-      (String "aarch64-linux") -> pure $ Platform AArch64 Linux
-      (String "aarch64-darwin") -> pure $ Platform AArch64 OSX
-      (String "armv7l-linux") -> pure $ Platform (OtherArch "armv7l") Linux
-      _ -> fail ("parseJSON: " ++ show s ++ " is not a valid platform")
+    fail ("parseJSON: expected String for NixpkgsPlatform, but got " ++ show s)
 
 instance FromJSON PackageName where
   parseJSON (String s) = return (fromString (T.unpack s))
