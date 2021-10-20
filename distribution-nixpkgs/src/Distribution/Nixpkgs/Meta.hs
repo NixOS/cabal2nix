@@ -51,6 +51,18 @@ import Language.Nix.PrettyPrinting
 --   @hackage2nix@ has used the latter approach historically
 --   and is being extended to support nixpkgs' platform
 --   groups as well for increased maintainer convenience.
+--
+--   The 'Pretty' instance allows for converting a 'NixpkgsPlatform'
+--   into a Nix expression compatible with @meta.platforms@:
+--
+--   >>> pPrint $ NixpkgsPlatformSingle $ Platform X86_64 NetBSD
+--   "x86_64-netbsd"
+--
+--   For 'NixpkgsPlatformGroup' we assume that the @lib@ attribute set is in
+--   scope:
+--
+--   >>> pPrint $ NixpkgsPlatformGroup $ ident # "riscv"
+--   lib.platforms.riscv
 data NixpkgsPlatform
   = NixpkgsPlatformSingle Platform
   -- ^ Single platform represented as a Cabal platform. Can be understood as
