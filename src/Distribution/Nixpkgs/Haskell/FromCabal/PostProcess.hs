@@ -129,7 +129,7 @@ hooks =
   , ("hoogle", set testTarget "--test-option=--no-net")
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
   , ("hslua < 0.9.3", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_1")))
-  , ("hslua >= 0.9.3", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
+  , ("hslua >= 0.9.3 && < 2.0.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
   , ("hspec-core >= 2.4.4", hspecCoreOverrides)
   , ("http-client", set doCheck False)          -- attempts to access the network
   , ("http-client-openssl >= 0.2.0.1", set doCheck False) -- attempts to access the network
@@ -142,6 +142,7 @@ hooks =
   , ("libxml", set (configureFlags . contains "--extra-include-dir=${libxml2.dev}/include/libxml2") True)
   , ("liquid-fixpoint", set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
+  , ("lua >= 2.0.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
   , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (self "cpphs")) True)
   , ("mwc-random", set doCheck False)
