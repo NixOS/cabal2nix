@@ -471,7 +471,7 @@ To include LLVM in GHC you have to override the expression:
 
 .. code:: shell
 
-   $ nix-shell -p '(haskellPackages.ghcWithPackages (ps: with ps; [mtl])).override { withLLVM = true; }'
+   $ nix-shell -p '(haskellPackages.ghcWithPackages.override { useLLVM = true; }) (ps: with ps; [mtl])'
 
    [nix-shell:~]$ ghc -fllvm Main.hs
    [1 of 1] Compiling Main             ( Main.hs, Main.o )
@@ -488,7 +488,7 @@ The solution is to add it as another package to the environment:
 
 .. code:: shell
 
-   $ nix-shell -p '(haskellPackages.ghcWithPackages (ps: with ps; [mtl])).override { withLLVM = true; }' 'haskellPackages.llvmPackages.llvm'
+   $ nix-shell -p '(haskellPackages.ghcWithPackages.override { useLLVM = true; }) (ps: with ps; [mtl])' 'haskellPackages.llvmPackages.llvm'
 
    [nix-shell:~]$ llvm-ar --help
    OVERVIEW: LLVM Archiver
