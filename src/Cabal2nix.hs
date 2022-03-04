@@ -227,7 +227,9 @@ cabal2nix' opts@Options{..} = do
          Source {
            sourceUrl = optUrl,
            sourceRevision = fromMaybe "" optRevision,
-           sourceHash = maybe UnknownHash Guess optSha256,
+           sourceHash = case optSha256 of
+             Nothing -> UnknownHash
+             Just hash -> Guess hash,
            sourceCabalDir = fromMaybe "" optSubpath
          }
   processPackage opts pkg
@@ -240,7 +242,9 @@ cabal2nixWithDB db opts@Options{..} = do
          Source {
            sourceUrl = optUrl,
            sourceRevision = fromMaybe "" optRevision,
-           sourceHash = maybe UnknownHash Guess optSha256,
+           sourceHash = case optSha256 of
+             Nothing -> UnknownHash
+             Just hash -> Guess hash,
            sourceCabalDir = fromMaybe "" optSubpath
          }
   processPackage opts pkg

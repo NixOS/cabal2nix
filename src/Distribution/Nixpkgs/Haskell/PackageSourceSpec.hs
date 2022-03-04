@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( HpackUse(..), Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
@@ -67,8 +68,20 @@ getPackage' :: HpackUse
             -> Source
             -> IO Package
 getPackage' optHpack optSubmodules hackageDB source = do
-  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optSubmodules hackageDB source
-  (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
+  (derivSource, pkgRanHpack, pkgCabal) <- fetchOrFromDB optHpack optSubmodules hackageDB source
+  pkgSource <-
+    case derivSource of
+      Nothing ->
+        sourceFromHackage
+          (sourceHash source)
+          (showPackageIdentifier pkgCabal)
+          (sourceCabalDir source)
+      Just derivSource' -> pure derivSource'
+  pure Package {
+    pkgSource,
+    pkgRanHpack,
+    pkgCabal
+  }
 
 fetchOrFromDB :: HpackUse
               -- ^ the way hpack should be used
@@ -94,7 +107,9 @@ loadHackageDB :: Maybe FilePath
               -- ^ If we have hackage-snapshot time.
               -> IO DB.HackageDB
 loadHackageDB optHackageDB optHackageSnapshot = do
-  dbPath <- maybe DB.hackageTarball return optHackageDB
+  dbPath <- case optHackageDB of
+    Nothing -> DB.hackageTarball
+    Just hackageDb -> return hackageDb
   DB.readTarball optHackageSnapshot dbPath
 
 fromDB :: IO DB.HackageDB
@@ -102,7 +117,9 @@ fromDB :: IO DB.HackageDB
        -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
 fromDB hackageDBIO pkg = do
   hackageDB <- hackageDBIO
-  vd <- maybe unknownPackageError return (DB.lookup name hackageDB >>= lookupVersion)
+  vd <- case DB.lookup name hackageDB >>= lookupVersion of
+    Nothing -> unknownPackageError
+    Just versionData -> pure versionData
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
              Just hash -> Just (urlDerivationSource url hash)
