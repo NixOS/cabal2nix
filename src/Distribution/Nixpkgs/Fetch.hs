@@ -177,6 +177,14 @@ fetchWith (supportsRev, kind, command, addArgs) source = do
   unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
+  let script = fromMaybe ("nix-prefetch-" ++ kind) command
+
+  let args :: [String] =
+         addArgs
+         ++ [ sourceUrl source ]
+         ++ [ sourceRevision source | supportsRev ]
+         ++ hashToList (sourceHash source)
+
   MaybeT $ liftIO $ do
     envs <- getEnvironment
     (Nothing, Just stdoutH, _, processH) <-
@@ -209,13 +217,7 @@ fetchWith (supportsRev, kind, command, addArgs) source = do
           _ -> case eitherDecode buf' of
                  Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
                  Right ds -> return (Just (ds { derivKind = kind }, BS.unpack l))
- where
 
-   script :: String
-   script = fromMaybe ("nix-prefetch-" ++ kind) command
-
-   args :: [String]
-   args = addArgs ++ sourceUrl source : [ sourceRevision source | supportsRev ] ++ hashToList (sourceHash source)
 
 stripPrefix :: Eq a => [a] -> [a] -> [a]
 stripPrefix prefix as
