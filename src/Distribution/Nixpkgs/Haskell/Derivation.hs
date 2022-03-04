@@ -66,7 +66,7 @@ data Derivation = MkDerivation
   , _enableSeparateDataOutput   :: Bool
   , _metaSection                :: Meta
   }
-  deriving (Show, Eq, Generic)
+  deriving (Show, Generic)
 
 nullDerivation :: Derivation
 nullDerivation = MkDerivation
@@ -147,7 +147,9 @@ instance Pretty Derivation where
       inputs :: Set String
       inputs = Set.unions [ Set.map (view (localName . ident)) _extraFunctionArgs
                           , setOf (dependencies . each . folded . localName . ident) drv
-                          , Set.fromList ["fetch" ++ derivKind _src | derivKind _src /= "" && not isHackagePackage]
+                          , case derivKind _src of
+                              Nothing -> mempty
+                              Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
                           ]
 
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]

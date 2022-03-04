@@ -180,7 +180,7 @@ sourceFromHackage optHash pkgId cabalDir = do
       maybeHash <- runMaybeT
         $ derivHash . fst
         <$> fetchWith
-              (False, "url", Nothing, [])
+              (False, DerivKindUrl, Nothing, [])
               (Source {
                 sourceUrl = url,
                 sourceRevision = "",

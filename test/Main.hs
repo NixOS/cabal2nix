@@ -56,7 +56,7 @@ testLibrary cabalFile = do
                          []
                          gpd
                        & src .~ DerivationSource
-                                  { derivKind     = "url"
+                                  { derivKind     = Just DerivKindUrl
                                   , derivUrl      = "mirror://hackage/foo.tar.gz"
                                   , derivRevision = ""
                                   , derivHash     = "deadbeef"

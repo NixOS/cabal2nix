@@ -2,11 +2,14 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Distribution.Nixpkgs.Fetch
   ( Source(..)
   , Hash(..)
   , DerivationSource(..), fromDerivationSource, urlDerivationSource
+  , DerivKind(..)
+  , derivKindFunction
   , fetch
   , fetchWith
   ) where
@@ -55,13 +58,13 @@ hashToList _           = []
 -- | A source for a derivation. It always needs a hash and also has a protocol attached to it (url, git, svn, ...).
 -- A @DerivationSource@ also always has it's revision fully resolved (not relative revisions like @master@, @HEAD@, etc).
 data DerivationSource = DerivationSource
-  { derivKind     :: String -- ^ The kind of the source. The name of the build-support fetch derivation should be fetch<kind>.
+  { derivKind     :: Maybe DerivKind -- ^ The kind of the source. If Nothing, it is a local derivation.
   , derivUrl      :: String -- ^ URL to fetch from.
   , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
   , derivHash     :: String -- ^ The hash of the source.
   , derivSubmodule :: Maybe Bool -- ^ The fetchSubmodule setting (if any)
   }
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Generic)
 
 instance NFData DerivationSource
 
@@ -76,11 +79,11 @@ instance FromJSON DerivationSource where
 instance PP.Pretty DerivationSource where
   pPrint DerivationSource {..} =
     let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
-        fetched = derivKind /= ""
     in if isHackagePackage then if derivHash /= "" then attr "sha256" $ string derivHash else mempty
-       else if not fetched then attr "src" $ text derivUrl
-            else vcat
-                 [ text "src" <+> equals <+> text ("fetch" ++ derivKind) <+> lbrace
+       else case derivKind of
+          Nothing ->  attr "src" $ text derivUrl
+          Just derivKind' -> vcat
+                 [ text "src" <+> equals <+> text (derivKindFunction derivKind') <+> lbrace
                  , nest 2 $ vcat
                    [ attr "url" $ string derivUrl
                    , attr "sha256" $ string derivHash
@@ -94,7 +97,7 @@ instance PP.Pretty DerivationSource where
 urlDerivationSource :: String -> String -> DerivationSource
 urlDerivationSource url hash =
   DerivationSource {
-    derivKind = "url",
+    derivKind = Just DerivKindUrl,
     derivUrl = url,
     derivRevision = "",
     derivHash = hash,
@@ -121,12 +124,12 @@ fetch :: forall a.
 fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, "url", Nothing, [])
-    , (False, "zip", Just "nix-prefetch-url", ["--unpack"])
-    , (True, "git", Nothing, ["--fetch-submodules" | optSubModules ])
-    , (True, "hg", Nothing, [])
-    , (True, "svn", Nothing, [])
-    , (True, "bzr", Nothing, [])
+    [ (False, DerivKindUrl, Nothing, [])
+    , (False, DerivKindZip, Just "nix-prefetch-url", ["--unpack"])
+    , (True, DerivKindGit, Nothing, ["--fetch-submodules" | optSubModules ])
+    , (True, DerivKindHg, Nothing, [])
+    , (True, DerivKindSvn, Nothing, [])
+    , (True, DerivKindBzr, Nothing, [])
     ]
 
   -- | Remove '/' from the end of the path. Nix doesn't accept paths that
@@ -150,7 +153,7 @@ fetch optSubModules f = runMaybeT . fetchers where
     unpacked <-
       snd <$>
         fetchWith
-          (False, "url", Nothing, ["--unpack"])
+          (False, DerivKindUrl, Nothing, ["--unpack"])
           (Source {
             sourceUrl = "file://" ++ absolutePath,
             sourceRevision = "",
@@ -164,20 +167,49 @@ fetch optSubModules f = runMaybeT . fetchers where
 
   localDerivationSource p =
     DerivationSource {
-      derivKind = "",
+      derivKind = Nothing,
       derivUrl = p,
       derivRevision = "",
       derivHash = "",
       derivSubmodule = Nothing
     }
 
+data DerivKind =
+  DerivKindUrl |
+  DerivKindZip |
+  DerivKindGit |
+  DerivKindHg |
+  DerivKindSvn |
+  DerivKindBzr
+  deriving (Show, Generic)
+
+-- | The nixpkgs function to use for fetching this kind of derivation
+derivKindFunction :: DerivKind -> String
+derivKindFunction = \case
+  DerivKindUrl -> "fetchUrl"
+  DerivKindZip -> "fetchZip"
+  DerivKindGit -> "fetchGit"
+  DerivKindHg -> "fetchHg"
+  DerivKindSvn -> "fetchSvn"
+  DerivKindBzr -> "fetchBzr"
+
+instance NFData DerivKind
+
 -- | Like 'fetch', but allows to specify which script to use.
-fetchWith :: (Bool, String, Maybe String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
+fetchWith :: (Bool, DerivKind, Maybe String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
 fetchWith (supportsRev, kind, command, addArgs) source = do
   unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
-  let script = fromMaybe ("nix-prefetch-" ++ kind) command
+  let script = case command of
+        Just cmd -> cmd
+        Nothing -> case kind of
+            DerivKindUrl ->  "nix-prefetch-url"
+            DerivKindZip -> "nix-prefetch-zip"
+            DerivKindGit -> "nix-prefetch-git"
+            DerivKindHg -> "nix-prefetch-hg"
+            DerivKindSvn -> "nix-prefetch-svn"
+            DerivKindBzr -> "nix-prefetch-bzr"
 
   let args :: [String] =
          addArgs
@@ -207,7 +239,7 @@ fetchWith (supportsRev, kind, command, addArgs) source = do
             buf'   = BS.unlines (reverse ls)
         case length ls of
           0 -> return Nothing
-          1 -> return (Just (DerivationSource { derivKind = kind
+          1 -> return (Just (DerivationSource { derivKind = Just kind
                                               , derivUrl = sourceUrl source
                                               , derivRevision = ""
                                               , derivHash = BS.unpack (head ls)
@@ -216,7 +248,7 @@ fetchWith (supportsRev, kind, command, addArgs) source = do
                             , BS.unpack l))
           _ -> case eitherDecode buf' of
                  Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
-                 Right ds -> return (Just (ds { derivKind = kind }, BS.unpack l))
+                 Right ds -> return (Just (ds { derivKind = Just kind }, BS.unpack l))
 
 
 stripPrefix :: Eq a => [a] -> [a] -> [a]
