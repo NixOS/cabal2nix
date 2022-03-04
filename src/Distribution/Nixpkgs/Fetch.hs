@@ -92,10 +92,23 @@ instance PP.Pretty DerivationSource where
 
 
 urlDerivationSource :: String -> String -> DerivationSource
-urlDerivationSource url hash = DerivationSource "url" url "" hash Nothing
+urlDerivationSource url hash =
+  DerivationSource {
+    derivKind = "url",
+    derivUrl = url,
+    derivRevision = "",
+    derivHash = hash,
+    derivSubmodule = Nothing
+  }
 
 fromDerivationSource :: DerivationSource -> Source
-fromDerivationSource DerivationSource{..} = Source derivUrl derivRevision (Certain derivHash) "."
+fromDerivationSource DerivationSource{..} =
+  Source {
+    sourceUrl = derivUrl,
+    sourceRevision = derivRevision,
+    sourceHash = Certain derivHash,
+    sourceCabalDir = "."
+  }
 
 -- | Fetch a source, trying any of the various nix-prefetch-* scripts.
 fetch :: forall a.
@@ -134,13 +147,29 @@ fetch optSubModules f = runMaybeT . fetchers where
   localArchive :: FilePath -> MaybeT IO (DerivationSource, a)
   localArchive path = do
     absolutePath <- liftIO $ canonicalizePath path
-    unpacked <- snd <$> fetchWith (False, "url", Nothing, ["--unpack"]) (Source ("file://" ++ absolutePath) "" UnknownHash ".")
+    unpacked <-
+      snd <$>
+        fetchWith
+          (False, "url", Nothing, ["--unpack"])
+          (Source {
+            sourceUrl = "file://" ++ absolutePath,
+            sourceRevision = "",
+            sourceHash = UnknownHash,
+            sourceCabalDir = "."
+          })
     process (localDerivationSource absolutePath, unpacked)
 
   process :: (DerivationSource, FilePath) -> MaybeT IO (DerivationSource, a)
   process (derivSource, file) = (,) derivSource <$> f file
 
-  localDerivationSource p = DerivationSource "" p "" "" Nothing
+  localDerivationSource p =
+    DerivationSource {
+      derivKind = "",
+      derivUrl = p,
+      derivRevision = "",
+      derivHash = "",
+      derivSubmodule = Nothing
+    }
 
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: (Bool, String, Maybe String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
@@ -150,12 +179,14 @@ fetchWith (supportsRev, kind, command, addArgs) source = do
 
   MaybeT $ liftIO $ do
     envs <- getEnvironment
-    (Nothing, Just stdoutH, _, processH) <- createProcess (proc script args)
-      { env = Just $ ("PRINT_PATH", "1") : envs
-      , std_in = Inherit
-      , std_err = Inherit
-      , std_out = CreatePipe
-      }
+    (Nothing, Just stdoutH, _, processH) <-
+      createProcess
+        (proc script args)
+        { env = Just $ ("PRINT_PATH", "1") : envs
+        , std_in = Inherit
+        , std_err = Inherit
+        , std_out = CreatePipe
+        }
 
     exitCode <- waitForProcess processH
     case exitCode of

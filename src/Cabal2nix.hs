@@ -224,7 +224,12 @@ hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
 cabal2nix' :: Options -> IO (Either Doc Derivation)
 cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
-         Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+         Source {
+           sourceUrl = optUrl,
+           sourceRevision = fromMaybe "" optRevision,
+           sourceHash = maybe UnknownHash Guess optSha256,
+           sourceCabalDir = fromMaybe "" optSubpath
+         }
   processPackage opts pkg
 
 cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
@@ -232,7 +237,12 @@ cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
   pkg <- getPackage' optHpack optFetchSubmodules (return db) $
-         Source optUrl (fromMaybe "" optRevision) (maybe UnknownHash Guess optSha256) (fromMaybe "" optSubpath)
+         Source {
+           sourceUrl = optUrl,
+           sourceRevision = fromMaybe "" optRevision,
+           sourceHash = maybe UnknownHash Guess optSha256,
+           sourceCabalDir = fromMaybe "" optSubpath
+         }
   processPackage opts pkg
 
 processPackage :: Options -> Package -> IO (Either Doc Derivation)
