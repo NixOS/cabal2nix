@@ -49,7 +49,7 @@ data Package = Package
 
 getPackage :: HpackUse
            -- ^ the way hpack should be used.
-           -> Bool
+           -> FetchSubmodules
            -- ^ Whether to fetch submodules if fetching from git
            -> Maybe FilePath
            -- ^ The path to the Hackage database.
@@ -62,7 +62,7 @@ getPackage optHpack optSubmodules optHackageDB optHackageSnapshot =
 
 getPackage' :: HpackUse
             -- ^ the way hpack should be used.
-            -> Bool
+            -> FetchSubmodules
             -- ^ Whether to fetch submodules if fetching from git
             -> IO DB.HackageDB
             -> Source
@@ -85,7 +85,7 @@ getPackage' optHpack optSubmodules hackageDB source = do
 
 fetchOrFromDB :: HpackUse
               -- ^ the way hpack should be used
-              -> Bool
+              -> FetchSubmodules
               -- ^ Whether to fetch submodules if fetching from git
               -> IO DB.HackageDB
               -> Source
@@ -180,7 +180,7 @@ sourceFromHackage optHash pkgId cabalDir = do
       maybeHash <- runMaybeT
         $ derivHash . fst
         <$> fetchWith
-              (False, DerivKindUrl, [])
+              (False, DerivKindUrl DontUnpackArchive)
               (Source {
                 sourceUrl = url,
                 sourceRevision = "",

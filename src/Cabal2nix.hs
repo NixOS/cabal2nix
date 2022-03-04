@@ -67,7 +67,7 @@ data Options = Options
   , optHackageSnapshot :: Maybe UTCTime
   , optNixpkgsIdentifier :: NixpkgsResolver
   , optUrl :: String
-  , optFetchSubmodules :: Bool
+  , optFetchSubmodules :: FetchSubmodules
   }
 
 options :: Parser Options
@@ -125,7 +125,7 @@ options = do
   optUrl
     <- strArgument (metavar "URI")
   optFetchSubmodules
-    <- flag True False (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
+    <- flag FetchSubmodules DontFetchSubmodules  (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
   pure Options{..}
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.

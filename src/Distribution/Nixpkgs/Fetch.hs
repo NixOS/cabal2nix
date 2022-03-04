@@ -10,6 +10,8 @@ module Distribution.Nixpkgs.Fetch
   , DerivationSource(..), fromDerivationSource, urlDerivationSource
   , DerivKind(..)
   , derivKindFunction
+  , FetchSubmodules(..)
+  , UnpackArchive(..)
   , fetch
   , fetchWith
   ) where
@@ -97,7 +99,7 @@ instance PP.Pretty DerivationSource where
 urlDerivationSource :: String -> String -> DerivationSource
 urlDerivationSource url hash =
   DerivationSource {
-    derivKind = Just DerivKindUrl,
+    derivKind = Just (DerivKindUrl DontUnpackArchive),
     derivUrl = url,
     derivRevision = "",
     derivHash = hash,
@@ -115,21 +117,25 @@ fromDerivationSource DerivationSource{..} =
 
 -- | Fetch a source, trying any of the various nix-prefetch-* scripts.
 fetch :: forall a.
-         Bool                                   -- ^ If True, fetch submodules when the source is a git repository
-      -> (String -> MaybeT IO a)                -- ^ This function is passed the output path name as an argument.
-                                                -- It should return 'Nothing' if the file doesn't match the expected format.
-                                                -- This is required, because we cannot always check if a download succeeded otherwise.
-      -> Source                                 -- ^ The source to fetch from.
-      -> IO (Maybe (DerivationSource, a))       -- ^ The derivation source and the result of the processing function. Returns Nothing if the download failed.
+         FetchSubmodules
+      -- ^ whether to fetch submodules when the source is a git repository
+      -> (String -> MaybeT IO a)
+      -- ^ This function is passed the output path name as an argument.
+      -- It should return 'Nothing' if the file doesn't match the expected format.
+      -- This is required, because we cannot always check if a download succeeded otherwise.
+      -> Source
+      -- ^ The source to fetch from.
+      -> IO (Maybe (DerivationSource, a))
+      -- ^ The derivation source and the result of the processing function. Returns Nothing if the download failed.
 fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, DerivKindUrl, [])
-    , (False, DerivKindZip, ["--unpack"])
-    , (True, DerivKindGit, ["--fetch-submodules" | optSubModules ])
-    , (True, DerivKindHg, [])
-    , (True, DerivKindSvn, [])
-    , (True, DerivKindBzr, [])
+    [ (False, DerivKindUrl DontUnpackArchive)
+    , (False, DerivKindZip UnpackArchive)
+    , (True, DerivKindGit optSubModules)
+    , (True, DerivKindHg)
+    , (True, DerivKindSvn)
+    , (True, DerivKindBzr)
     ]
 
   -- | Remove '/' from the end of the path. Nix doesn't accept paths that
@@ -153,7 +159,7 @@ fetch optSubModules f = runMaybeT . fetchers where
     unpacked <-
       snd <$>
         fetchWith
-          (False, DerivKindUrl, ["--unpack"])
+          (False, DerivKindUrl UnpackArchive)
           (Source {
             sourceUrl = "file://" ++ absolutePath,
             sourceRevision = "",
@@ -174,45 +180,63 @@ fetch optSubModules f = runMaybeT . fetchers where
       derivSubmodule = Nothing
     }
 
-data DerivKind =
-  DerivKindUrl |
-  DerivKindZip |
-  DerivKindGit |
-  DerivKindHg |
-  DerivKindSvn |
-  DerivKindBzr
+data DerivKind
+  = DerivKindUrl UnpackArchive
+  | DerivKindZip UnpackArchive
+  | DerivKindGit FetchSubmodules
+  | DerivKindHg
+  | DerivKindSvn
+  | DerivKindBzr
   deriving (Show, Generic)
+
+instance NFData DerivKind
+
+-- | Whether to fetch submodules (git).
+data FetchSubmodules = FetchSubmodules | DontFetchSubmodules
+  deriving (Show, Generic)
+
+instance NFData FetchSubmodules
+
+
+-- | Whether to unpack an archive after fetching, before putting it into the nix store.
+data UnpackArchive = UnpackArchive | DontUnpackArchive
+  deriving (Show, Generic)
+
+instance NFData UnpackArchive
+
 
 -- | The nixpkgs function to use for fetching this kind of derivation
 derivKindFunction :: DerivKind -> String
 derivKindFunction = \case
-  DerivKindUrl -> "fetchUrl"
-  DerivKindZip -> "fetchZip"
-  DerivKindGit -> "fetchGit"
+  DerivKindUrl _ -> "fetchUrl"
+  DerivKindZip _ -> "fetchZip"
+  DerivKindGit _ -> "fetchGit"
   DerivKindHg -> "fetchHg"
   DerivKindSvn -> "fetchSvn"
   DerivKindBzr -> "fetchBzr"
 
-instance NFData DerivKind
 
 -- | Like 'fetch', but allows to specify which script to use.
-fetchWith :: (Bool, DerivKind, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
-fetchWith (supportsRev, kind, addArgs) source = do
+fetchWith :: (Bool, DerivKind) -> Source -> MaybeT IO (DerivationSource, FilePath)
+fetchWith (supportsRev, kind) source = do
   unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
-  let script = case kind of
-        DerivKindUrl ->  "nix-prefetch-url"
-        DerivKindZip -> "nix-prefetch-url"
-        DerivKindGit -> "nix-prefetch-git"
-        DerivKindHg -> "nix-prefetch-hg"
-        DerivKindSvn -> "nix-prefetch-svn"
-        DerivKindBzr -> "nix-prefetch-bzr"
+  let (script, extraArgs) = case kind of
+        DerivKindUrl UnpackArchive ->  ("nix-prefetch-url", ["--unpack"])
+        DerivKindUrl DontUnpackArchive ->  ("nix-prefetch-url", [])
+        DerivKindZip UnpackArchive ->  ("nix-prefetch-url", ["--unpack"])
+        DerivKindZip DontUnpackArchive -> ("nix-prefetch-url", [])
+        DerivKindGit FetchSubmodules -> ("nix-prefetch-git", ["--fetch-submodules"])
+        DerivKindGit DontFetchSubmodules -> ("nix-prefetch-git", [])
+        DerivKindHg -> ("nix-prefetch-hg", [])
+        DerivKindSvn -> ("nix-prefetch-svn", [])
+        DerivKindBzr -> ("nix-prefetch-bzr", [])
 
   let args :: [String] =
-         addArgs
-         ++ [ sourceUrl source ]
-         ++ [ sourceRevision source | supportsRev ]
+            extraArgs
+         ++ sourceUrl source
+         : [ sourceRevision source | supportsRev ]
          ++ hashToList (sourceHash source)
 
   MaybeT $ liftIO $ do
