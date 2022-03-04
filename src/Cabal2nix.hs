@@ -1,6 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ApplicativeDo #-}
 
 module Cabal2nix
   ( main, cabal2nix, cabal2nix', cabal2nixWithDB, parseArgs
@@ -70,38 +71,62 @@ data Options = Options
   }
 
 options :: Parser Options
-options = Options
-          <$> optional (strOption $ long "sha256" <> metavar "HASH" <> help "sha256 hash of source tarball")
-          <*> many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
---        <*> many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
-          <*> flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
-          <*>
-          (
-            flag' ForceHpack (long "hpack" <> help "run hpack before configuring this package (only non-hackage packages)")
-            <|>
-            flag' NoHpack (long "no-hpack" <> help "disable hpack run and use only cabal disregarding package.yaml existence")
-            <|>
-            pure PackageYamlHpack
-          )
-          <*> flag True False (long "no-check" <> help "don't run regression test suites of this package")
-          <*> switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
-          <*> switch (long "benchmark" <> help "enable benchmarks for this package")
-          <*> optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
-          <*> flag True False (long "no-hyperlink-source" <> help "don't generate pretty-printed source code for the documentation")
-          <*> switch (long "enable-library-profiling" <> help "enable library profiling in the generated build")
-          <*> switch (long "enable-executable-profiling" <> help "enable executable profiling in the generated build")
-          <*> optional (switch (long "enable-profiling" <> help "enable both library and executable profiling in the generated build"))
-          <*> many (strOption $ long "extra-arguments" <> help "extra parameters required for the function body")
-          <*> optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
-          <*> switch (long "shell" <> help "generate output suitable for nix-shell")
-          <*> many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
-          <*> option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
-          <*> option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith prettyShow)
-          <*> optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
-          <*> optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
-          <*> pure (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
-          <*> strArgument (metavar "URI")
-          <*> flag True False (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
+options = do
+  optSha256
+    <- optional (strOption $ long "sha256" <> metavar "HASH" <> help "sha256 hash of source tarball")
+  optMaintainer
+    <- many (strOption $ long "maintainer" <> metavar "MAINTAINER" <> help "maintainer of this package (may be specified multiple times)")
+-- optPlatform <- many (strOption $ long "platform" <> metavar "PLATFORM" <> help "supported build platforms (may be specified multiple times)")
+  optHaddock
+    <- flag True False (long "no-haddock" <> help "don't run Haddock when building this package")
+  optHpack
+    <-
+      (
+        flag' ForceHpack (long "hpack" <> help "run hpack before configuring this package (only non-hackage packages)")
+        <|>
+        flag' NoHpack (long "no-hpack" <> help "disable hpack run and use only cabal disregarding package.yaml existence")
+        <|>
+        pure PackageYamlHpack
+      )
+  optDoCheck
+    <- flag True False (long "no-check" <> help "don't run regression test suites of this package")
+  optJailbreak
+    <- switch (long "jailbreak" <> help "disregard version restrictions on build inputs")
+  optDoBenchmark
+    <- switch (long "benchmark" <> help "enable benchmarks for this package")
+  optRevision
+    <- optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
+  optHyperlinkSource
+    <- flag True False (long "no-hyperlink-source" <> help "don't generate pretty-printed source code for the documentation")
+  optEnableLibraryProfiling
+    <- switch (long "enable-library-profiling" <> help "enable library profiling in the generated build")
+  optEnableExecutableProfiling
+    <- switch (long "enable-executable-profiling" <> help "enable executable profiling in the generated build")
+  optEnableProfiling
+    <- optional (switch (long "enable-profiling" <> help "enable both library and executable profiling in the generated build"))
+  optExtraArgs
+    <- many (strOption $ long "extra-arguments" <> help "extra parameters required for the function body")
+  optHackageDb
+    <- optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
+  optNixShellOutput
+    <- switch (long "shell" <> help "generate output suitable for nix-shell")
+  optFlags
+    <- many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
+  optCompiler
+    <- option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
+  optSystem
+    <- option (maybeReader parsePlatform) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith prettyShow)
+  optSubpath
+    <- optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
+  optHackageSnapshot
+    <- optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
+  optNixpkgsIdentifier
+    <- pure (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
+  optUrl
+    <- strArgument (metavar "URI")
+  optFetchSubmodules
+    <- flag True False (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
+  pure Options{..}
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
 -- Example: parseTime defaultTimeLocale "%FT%T%QZ" "2017-11-20T12:18:35Z" :: Maybe UTCTime
