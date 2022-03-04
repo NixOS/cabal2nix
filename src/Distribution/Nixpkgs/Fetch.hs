@@ -124,12 +124,12 @@ fetch :: forall a.
 fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, DerivKindUrl, Nothing, [])
-    , (False, DerivKindZip, Just "nix-prefetch-url", ["--unpack"])
-    , (True, DerivKindGit, Nothing, ["--fetch-submodules" | optSubModules ])
-    , (True, DerivKindHg, Nothing, [])
-    , (True, DerivKindSvn, Nothing, [])
-    , (True, DerivKindBzr, Nothing, [])
+    [ (False, DerivKindUrl, [])
+    , (False, DerivKindZip, ["--unpack"])
+    , (True, DerivKindGit, ["--fetch-submodules" | optSubModules ])
+    , (True, DerivKindHg, [])
+    , (True, DerivKindSvn, [])
+    , (True, DerivKindBzr, [])
     ]
 
   -- | Remove '/' from the end of the path. Nix doesn't accept paths that
@@ -153,7 +153,7 @@ fetch optSubModules f = runMaybeT . fetchers where
     unpacked <-
       snd <$>
         fetchWith
-          (False, DerivKindUrl, Nothing, ["--unpack"])
+          (False, DerivKindUrl, ["--unpack"])
           (Source {
             sourceUrl = "file://" ++ absolutePath,
             sourceRevision = "",
@@ -196,20 +196,18 @@ derivKindFunction = \case
 instance NFData DerivKind
 
 -- | Like 'fetch', but allows to specify which script to use.
-fetchWith :: (Bool, DerivKind, Maybe String, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
-fetchWith (supportsRev, kind, command, addArgs) source = do
+fetchWith :: (Bool, DerivKind, [String]) -> Source -> MaybeT IO (DerivationSource, FilePath)
+fetchWith (supportsRev, kind, addArgs) source = do
   unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
     liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
 
-  let script = case command of
-        Just cmd -> cmd
-        Nothing -> case kind of
-            DerivKindUrl ->  "nix-prefetch-url"
-            DerivKindZip -> "nix-prefetch-zip"
-            DerivKindGit -> "nix-prefetch-git"
-            DerivKindHg -> "nix-prefetch-hg"
-            DerivKindSvn -> "nix-prefetch-svn"
-            DerivKindBzr -> "nix-prefetch-bzr"
+  let script = case kind of
+        DerivKindUrl ->  "nix-prefetch-url"
+        DerivKindZip -> "nix-prefetch-url"
+        DerivKindGit -> "nix-prefetch-git"
+        DerivKindHg -> "nix-prefetch-hg"
+        DerivKindSvn -> "nix-prefetch-svn"
+        DerivKindBzr -> "nix-prefetch-bzr"
 
   let args :: [String] =
          addArgs
