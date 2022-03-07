@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( HpackUse(..), Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
@@ -48,7 +49,7 @@ data Package = Package
 
 getPackage :: HpackUse
            -- ^ the way hpack should be used.
-           -> Bool
+           -> FetchSubmodules
            -- ^ Whether to fetch submodules if fetching from git
            -> Maybe FilePath
            -- ^ The path to the Hackage database.
@@ -61,18 +62,30 @@ getPackage optHpack optSubmodules optHackageDB optHackageSnapshot =
 
 getPackage' :: HpackUse
             -- ^ the way hpack should be used.
-            -> Bool
+            -> FetchSubmodules
             -- ^ Whether to fetch submodules if fetching from git
             -> IO DB.HackageDB
             -> Source
             -> IO Package
 getPackage' optHpack optSubmodules hackageDB source = do
-  (derivSource, ranHpack, pkgDesc) <- fetchOrFromDB optHpack optSubmodules hackageDB source
-  (\s -> Package s ranHpack pkgDesc) <$> maybe (sourceFromHackage (sourceHash source) (showPackageIdentifier pkgDesc) $ sourceCabalDir source) return derivSource
+  (derivSource, pkgRanHpack, pkgCabal) <- fetchOrFromDB optHpack optSubmodules hackageDB source
+  pkgSource <-
+    case derivSource of
+      Nothing ->
+        sourceFromHackage
+          (sourceHash source)
+          (showPackageIdentifier pkgCabal)
+          (sourceCabalDir source)
+      Just derivSource' -> pure derivSource'
+  pure Package {
+    pkgSource,
+    pkgRanHpack,
+    pkgCabal
+  }
 
 fetchOrFromDB :: HpackUse
               -- ^ the way hpack should be used
-              -> Bool
+              -> FetchSubmodules
               -- ^ Whether to fetch submodules if fetching from git
               -> IO DB.HackageDB
               -> Source
@@ -94,7 +107,9 @@ loadHackageDB :: Maybe FilePath
               -- ^ If we have hackage-snapshot time.
               -> IO DB.HackageDB
 loadHackageDB optHackageDB optHackageSnapshot = do
-  dbPath <- maybe DB.hackageTarball return optHackageDB
+  dbPath <- case optHackageDB of
+    Nothing -> DB.hackageTarball
+    Just hackageDb -> return hackageDb
   DB.readTarball optHackageSnapshot dbPath
 
 fromDB :: IO DB.HackageDB
@@ -102,7 +117,9 @@ fromDB :: IO DB.HackageDB
        -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
 fromDB hackageDBIO pkg = do
   hackageDB <- hackageDBIO
-  vd <- maybe unknownPackageError return (DB.lookup name hackageDB >>= lookupVersion)
+  vd <- case DB.lookup name hackageDB >>= lookupVersion of
+    Nothing -> unknownPackageError
+    Just versionData -> pure versionData
   let ds = case DB.tarballSha256 vd of
              Nothing -> Nothing
              Just hash -> Just (urlDerivationSource url hash)
@@ -160,7 +177,16 @@ sourceFromHackage optHash pkgId cabalDir = do
       seq (length hash) $
       urlDerivationSource url hash <$ writeFile cacheFile hash
     UnknownHash -> do
-      maybeHash <- runMaybeT (derivHash . fst <$> fetchWith (False, "url", Nothing, []) (Source url "" UnknownHash cabalDir))
+      maybeHash <- runMaybeT
+        $ derivHash . fst
+        <$> fetchWith
+              (False, DerivKindUrl DontUnpackArchive)
+              (Source {
+                sourceUrl = url,
+                sourceRevision = "",
+                sourceHash = UnknownHash,
+                sourceCabalDir = cabalDir
+              })
       case maybeHash of
         Just hash ->
           seq (length hash) $

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Main ( main ) where
 
@@ -31,7 +32,9 @@ main = do
   --       depend on the system environment: https://github.com/NixOS/cabal2nix/issues/333.
   --
   -- TODO: Run this test without $HOME defined to ensure that we don't need that variable.
-  cabal2nix <- findExecutable "cabal2nix" >>= maybe (fail "cannot find 'cabal2nix' in $PATH") return
+  cabal2nix <- findExecutable "cabal2nix" >>= \case
+    Nothing -> fail "cannot find 'cabal2nix' in $PATH"
+    Just exe -> pure exe
   testCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases"
   defaultMain $ testGroup "regression-tests"
     [ testGroup "cabal2nix library" (map testLibrary testCases)
@@ -53,7 +56,7 @@ testLibrary cabalFile = do
                          []
                          gpd
                        & src .~ DerivationSource
-                                  { derivKind     = "url"
+                                  { derivKind     = Just (DerivKindUrl DontUnpackArchive )
                                   , derivUrl      = "mirror://hackage/foo.tar.gz"
                                   , derivRevision = ""
                                   , derivHash     = "deadbeef"
