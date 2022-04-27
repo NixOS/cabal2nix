@@ -50,7 +50,7 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "liquid-fixpoint"    = [enable "build-external"]
  | name == "lua" && version >= mkVersion [2,0,0]
                                 = [enable "system-lua", disable "use-pkgconfig"]
- | name == "pandoc"             = [enable "https", disable "trypandoc"]
+ | name == "pandoc"             = [disable "trypandoc"]
  | name == "pandoc-placetable"  = [enable "inlineMarkdown"]
  | name == "persistent-sqlite"  = [enable "systemlib"]
  | name == "reactive-banana-wx" = [disable "buildExamples"]
