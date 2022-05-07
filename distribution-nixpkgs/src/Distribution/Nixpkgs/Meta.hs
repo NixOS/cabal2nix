@@ -13,7 +13,7 @@ module Distribution.Nixpkgs.Meta
   ( -- * Representation of the Nixpkgs Meta Set
     Meta, nullMeta
     -- ** Lenses for 'Meta'
-  , homepage, description, license, platforms, badPlatforms, hydraPlatforms, maintainers, broken
+  , homepage, description, license, platforms, badPlatforms, hydraPlatforms, mainProgram, maintainers, broken
     -- * Representation of Nixpkgs Platform Descriptions
   , NixpkgsPlatform (..)
   , nixpkgsPlatformFromString
@@ -198,6 +198,7 @@ instance NFData NixpkgsPlatform
 --                  (Just (Set.singleton (NixpkgsPlatformSingle (Platform X86_64 Linux))))
 --                  Nothing
 --                  (Just Set.empty)
+--                  (Just "example-binary")
 --                  (Set.fromList ["joe","jane"])
 --                  True))
 -- :}
@@ -206,6 +207,7 @@ instance NFData NixpkgsPlatform
 -- license = "unknown";
 -- platforms = [ "x86_64-linux" ];
 -- hydraPlatforms = lib.platforms.none;
+-- mainProgram = "example-binary";
 -- maintainers = [ lib.maintainers.jane lib.maintainers.joe ];
 -- broken = true;
 data Meta = Meta
@@ -235,6 +237,9 @@ data Meta = Meta
   -- ^ Platforms for which the package should be tested, built and added to the
   --   binary cache by Hydra. 'Nothing' prevents the attribute from being rendered.
   --  See 'NixpkgsPlatform' on the precise representation of platforms.
+  , _mainProgram    :: Maybe String
+  -- ^ Filename (as in basename) of the main executable provided by the described
+  --   package. @Nothing@ if it is a library or no obvious default can be chosen.
   , _maintainers    :: Set Identifier
   -- ^ list of maintainers from @pkgs\/lib\/maintainers.nix@
   , _broken         :: Bool
@@ -254,6 +259,7 @@ instance Pretty Meta where
     , maybe mempty (renderPlatforms "platforms") _platforms
     , maybe mempty (renderPlatforms "badPlatforms") _badPlatforms
     , maybe mempty (renderPlatforms "hydraPlatforms") _hydraPlatforms
+    , maybe mempty (attr "mainProgram" . string) _mainProgram
     , listattrDoc "maintainers" mempty $ renderMaintainers _maintainers
     , boolattr "broken" _broken _broken
     ]
@@ -391,6 +397,7 @@ nullMeta = Meta
   , _platforms = error "undefined Meta.platforms"
   , _badPlatforms = error "undefined Meta.badPlatforms"
   , _hydraPlatforms = error "undefined Meta.hydraPlatforms"
+  , _mainProgram = error "undefined Meta.mainProgram"
   , _maintainers = error "undefined Meta.maintainers"
   , _broken = error "undefined Meta.broken"
   }
