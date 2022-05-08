@@ -23,4 +23,5 @@ mkDerivation {
   homepage = "http://msgpack.org/";
   description = "A Haskell implementation of MessagePack";
   license = lib.licenses.bsd3;
+  mainProgram = "msgpack-parser";
 }

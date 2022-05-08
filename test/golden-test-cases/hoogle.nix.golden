@@ -27,4 +27,5 @@ mkDerivation {
   homepage = "http://hoogle.haskell.org/";
   description = "Haskell API Search";
   license = lib.licenses.bsd3;
+  mainProgram = "hoogle";
 }

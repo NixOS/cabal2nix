@@ -10,4 +10,5 @@ mkDerivation {
   homepage = "http://code.haskell.org/lazy-csv";
   description = "Efficient lazy parsers for CSV (comma-separated values)";
   license = lib.licenses.bsd3;
+  mainProgram = "csvSelect";
 }

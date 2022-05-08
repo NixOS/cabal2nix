@@ -21,6 +21,8 @@
   unmaintained. If you have a legacy project built with an old
   version of nixpkgs, either don't upgrade `cabal2nix` or emulate
   the old behavior using overrides.
+* If the input cabal file declares just a single executable, the `mainProgram`
+  meta attribute will be set in the resulting Nix expression.
 
 ## 2.18.0
 

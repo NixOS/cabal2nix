@@ -10,4 +10,5 @@ mkDerivation {
   executableHaskellDepends = [ base directory filepath ];
   description = "Install Haskell software";
   license = lib.licenses.isc;
+  mainProgram = "an-app";
 }

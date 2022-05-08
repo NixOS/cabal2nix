@@ -17,4 +17,5 @@ mkDerivation {
   homepage = "http://github.com/GregorySchwartz/blosum#readme";
   description = "BLOSUM generator";
   license = lib.licenses.gpl2Only;
+  mainProgram = "blosum";
 }

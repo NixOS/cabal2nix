@@ -18,4 +18,5 @@ mkDerivation {
   homepage = "http://github.com/jgm/texmath";
   description = "Conversion between formats used to represent mathematics";
   license = "GPL";
+  mainProgram = "texmath";
 }

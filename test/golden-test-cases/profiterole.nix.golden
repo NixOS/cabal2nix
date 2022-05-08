@@ -14,4 +14,5 @@ mkDerivation {
   homepage = "https://github.com/ndmitchell/profiterole#readme";
   description = "Restructure GHC profile reports";
   license = lib.licenses.bsd3;
+  mainProgram = "profiterole";
 }

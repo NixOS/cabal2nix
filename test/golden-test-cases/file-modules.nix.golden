@@ -18,4 +18,5 @@ mkDerivation {
   homepage = "https://github.com/yamadapc/stack-run-auto";
   description = "Takes a Haskell source-code file and outputs its modules";
   license = lib.licenses.mit;
+  mainProgram = "file-modules";
 }

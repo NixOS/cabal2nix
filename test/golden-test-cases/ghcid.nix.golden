@@ -22,4 +22,5 @@ mkDerivation {
   homepage = "https://github.com/ndmitchell/ghcid#readme";
   description = "GHCi based bare bones IDE";
   license = lib.licenses.bsd3;
+  mainProgram = "ghcid";
 }
