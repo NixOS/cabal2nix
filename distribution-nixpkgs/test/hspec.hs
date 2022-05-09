@@ -4,12 +4,15 @@ import Control.DeepSeq
 import Control.Exception
 import Control.Lens
 import Control.Monad (forM_)
+import Data.Aeson (decodeFileStrict)
 import Data.Bifunctor (second)
+import Data.Maybe (fromJust)
 import Distribution.Nixpkgs.License
 import Distribution.Nixpkgs.Meta
 import Distribution.System (Platform (..), OS (..), Arch (..))
 import Language.Nix.Identifier
 import Language.Nix.PrettyPrinting
+import System.Directory (doesFileExist)
 import Test.Hspec
 
 main :: IO ()
@@ -25,17 +28,25 @@ main = hspec $ do
                   , nullMeta & broken .~ undefined
                   ]
 
-  describe "Platform rendering and prasing works correctly for" $ do
+  describe "Platform rendering and parsing:" $ do
+    it "Checks cover all systems from all-system-tuples.json" $do
+      let allSystemTuplesJson = "test/data/all-system-tuples.json"
+      available <- doesFileExist allSystemTuplesJson
+      if not available
+      then pendingWith $ "System tuple list not found at: " ++ allSystemTuplesJson
+      else do
+        allSystemTuples <- decodeFileStrict allSystemTuplesJson
+        map fst nixpkgsSystemMapping `shouldMatchList` fromJust allSystemTuples
+
     forM_ platformMapping $ \(str, plat) -> describe str $ do
       it "is rendered correctly" $ checkRendering plat str
       it "is parsed correctly" $
         nixpkgsPlatformFromString str `shouldBe` Just plat
 
-
 -- All system tuples from lib.platforms as of 2022-05-08. Testing these allows
 -- us to get notified about behavior change in Cabal as early as possible.
-platformMapping :: [(String, NixpkgsPlatform)]
-platformMapping = (map (second NixpkgsPlatformSingle)
+nixpkgsSystemMapping :: [(String, Platform)]
+nixpkgsSystemMapping =
   [ -- lib.platforms.all
     ("aarch64-darwin", Platform AArch64 OSX)
   , ("aarch64-genode", Platform AArch64 (OtherOS "genode"))
@@ -67,6 +78,7 @@ platformMapping = (map (second NixpkgsPlatformSingle)
   , ("m68k-linux", Platform M68k Linux)
   , ("m68k-netbsd", Platform M68k NetBSD)
   , ("m68k-none", Platform M68k (OtherOS "none"))
+  , ("mips64el-linux", Platform (OtherArch "mips64el") Linux)
   , ("mipsel-linux", Platform (OtherArch "mipsel") Linux)
   , ("mipsel-netbsd", Platform (OtherArch "mipsel") NetBSD)
   , ("mmix-mmixware", Platform (OtherArch "mmix") (OtherOS "mmixware"))
@@ -104,7 +116,11 @@ platformMapping = (map (second NixpkgsPlatformSingle)
   -- lib.systems.examples
   , ("mips-linux", Platform Mips Linux)
   , ("mips64-linux", Platform (OtherArch "mips64") Linux)
-  ]) ++ map platformGroupMapping [ "riscv", "x86", "linux", "darwin" ]
+  ]
+
+platformMapping :: [(String, NixpkgsPlatform)]
+platformMapping = map (second NixpkgsPlatformSingle) nixpkgsSystemMapping
+  ++ map platformGroupMapping [ "riscv", "x86", "linux", "darwin" ]
 
 platformGroupMapping :: String -> (String, NixpkgsPlatform)
 platformGroupMapping name =
