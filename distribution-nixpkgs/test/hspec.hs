@@ -25,11 +25,12 @@ main = hspec $ do
                   , nullMeta & broken .~ undefined
                   ]
 
-  describe "Platform is rendered correctly for" $ forM_ platformMapping $
-    \(str, plat) -> it str $ checkRendering plat str
+  describe "Platform rendering and prasing works correctly for" $ do
+    forM_ platformMapping $ \(str, plat) -> describe str $ do
+      it "is rendered correctly" $ checkRendering plat str
+      it "is parsed correctly" $
+        nixpkgsPlatformFromString str `shouldBe` Just plat
 
-  describe "Platform is parsed correctly for" $ forM_ platformMapping $
-    \(str, plat) -> it str $ nixpkgsPlatformFromString str `shouldBe` Just plat
 
 -- All system tuples from lib.platforms as of 2022-05-08. Testing these allows
 -- us to get notified about behavior change in Cabal as early as possible.
