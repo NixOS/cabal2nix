@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal
   ( HaskellResolver, NixpkgsResolver
@@ -9,6 +10,8 @@ module Distribution.Nixpkgs.Haskell.FromCabal
 
 import Control.Lens
 import Data.Maybe
+import Data.List ( partition )
+import qualified Data.Map.Strict as Map
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
@@ -101,12 +104,15 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
     & extraAttributes .~ mempty
-    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
-    & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
-    & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
-    & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
+    & libraryDepends .~ libraryDeps
+    & executableDepends .~ executableDeps
+    & testDepends .~ testDeps
+    & benchmarkDepends .~ benchmarkDeps
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
-    & configureFlags .~ mempty
+    & configureFlags .~ (   libraryConfigureFlags
+                         <> executableConfigureFlags
+                         <> testConfigureFlags
+                         <> benchmarkConfigureFlags)
     & cabalFlags .~ flags
     & runHaddock .~ doHaddockPhase
     & jailbreak .~ False
@@ -180,18 +186,34 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                    | Just l <- library           = not (null (exposedModules l))
                    | otherwise                   = True
 
-    convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
-    convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
-    convertBuildInfo Cabal.BuildInfo {..} = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, x `notElem` internalLibNames ]
-      & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
-      & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
-      & tool .~ Set.fromList (map resolveInHackageThenNixpkgs . concatMap buildToolNixName
-              $ [ unPackageName x | ExeDependency x _ _ <- buildToolDepends ] ++ [ x | LegacyExeDependency x _ <- buildTools ])
+    fakeDepToConfigureFlag :: Map.Map String String
+    fakeDepToConfigureFlag = Map.fromList [("gcc_s", "--ghc-option=-lgcc_s")]
+
+    convertBuildInfo :: Cabal.BuildInfo -> (Nix.BuildInfo, Set String)
+    convertBuildInfo Cabal.BuildInfo {..} | not buildable = (mempty, mempty)
+    convertBuildInfo Cabal.BuildInfo {..} =
+      let partitionDeps = partition (isNothing . (`Map.lookup` fakeDepToConfigureFlag))
+          getConfigureFlags = Set.fromList . map (fromJust . (`Map.lookup` fakeDepToConfigureFlag))
+          (systemBuildDeps, systemFakeDeps) = partitionDeps extraLibs
+          (pkgconfigBuildDeps, pkgconfigFakeDeps) = partitionDeps [unPkgconfigName x | PkgconfigDependency x _ <- pkgconfigDepends]
+          (toolBuildDeps, toolFakeDeps) = partitionDeps $ [ unPackageName x | ExeDependency x _ _ <- buildToolDepends ] ++ [ x | LegacyExeDependency x _ <- buildTools ]
+      in (mempty, mempty)
+      & alongside haskell id <>~ (Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, x `notElem` internalLibNames ], Set.empty )
+      & alongside system id <>~ (Set.fromList [ resolveInNixpkgs y | x <- systemBuildDeps, y <- libNixName x ], getConfigureFlags systemFakeDeps)
+      & alongside pkgconfig id <>~ (Set.fromList [ resolveInNixpkgs y | x <- pkgconfigBuildDeps, y <- libNixName x ], getConfigureFlags pkgconfigFakeDeps)
+      & alongside tool id  <>~ (Set.fromList (map resolveInHackageThenNixpkgs . concatMap buildToolNixName $ toolBuildDeps), getConfigureFlags toolFakeDeps)
 
     convertSetupBuildInfo :: Cabal.SetupBuildInfo -> Nix.BuildInfo
     convertSetupBuildInfo bi = mempty
       & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- Cabal.setupDepends bi ]
+
+    (libraryDeps :: Nix.BuildInfo, libraryConfigureFlags :: Set String) = foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
+
+    (executableDeps :: Nix.BuildInfo, executableConfigureFlags :: Set String) = mconcat (map (convertBuildInfo . buildInfo) executables)
+
+    (testDeps :: Nix.BuildInfo, testConfigureFlags :: Set String) = mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
+
+    (benchmarkDeps :: Nix.BuildInfo, benchmarkConfigureFlags :: Set String) = mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
 
 bindNull :: Identifier -> Binding
 bindNull i = binding # (i, path # ["null"])
