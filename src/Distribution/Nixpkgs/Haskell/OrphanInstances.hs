@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
 
@@ -35,18 +36,16 @@ instance IsString PackageVersionConstraint where
 instance IsString CompilerId where
   fromString = text2isString "CompilerId"
 
-instance IsString Platform where
-  fromString "i686-linux" = Platform I386 Linux
-  fromString "x86_64-linux" = Platform X86_64 Linux
-  fromString "x86_64-darwin" = Platform X86_64 OSX
-  fromString "aarch64-linux" = Platform AArch64 Linux
-  fromString "aarch64-darwin" = Platform AArch64 OSX
-  fromString "armv7l-linux" = Platform (OtherArch "armv7l") Linux
-  fromString s = error ("fromString: " ++ show s ++ " is not a valid platform")
-
 instance FromJSON Platform where
-  parseJSON (String s) = pure (fromString (T.unpack s))
-  parseJSON s = fail ("parseJSON: " ++ show s ++ " is not a valid platform")
+  parseJSON s =
+    case s of
+      (String "i686-linux") -> pure $ Platform I386 Linux
+      (String "x86_64-linux") -> pure $ Platform X86_64 Linux
+      (String "x86_64-darwin") -> pure $ Platform X86_64 OSX
+      (String "aarch64-linux") -> pure $ Platform AArch64 Linux
+      (String "aarch64-darwin") -> pure $ Platform AArch64 OSX
+      (String "armv7l-linux") -> pure $ Platform (OtherArch "armv7l") Linux
+      _ -> fail ("parseJSON: " ++ show s ++ " is not a valid platform")
 
 instance FromJSON PackageName where
   parseJSON (String s) = return (fromString (T.unpack s))
