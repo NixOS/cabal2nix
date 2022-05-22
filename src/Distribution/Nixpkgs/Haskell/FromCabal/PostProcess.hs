@@ -396,6 +396,8 @@ pandocOverrides = set phaseOverrides postInstall
     postInstall = unlines [ "postInstall = ''"
                           , "  mkdir -p $out/share/man/man1"
                           , "  mv \"man/\"*.1 $out/share/man/man1/"
+                          , "  mkdir -p $out/share/bash-completion/completions"
+                          , "  mv data/bash_completion.tpl $out/share/bash-completion/completions/pandoc"
                           , "'';"
                           ]
 
