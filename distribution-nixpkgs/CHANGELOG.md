@@ -1,18 +1,31 @@
 # Revision history for distribution-nixpkgs
 
-## 1.7.0 (Unreleased)
+## 1.7.0
 
 * `Distribution.Nixpkgs.Meta`
   * `pPrint (x :: Meta)` now renders every maintainer as a full attribute
     path instead of using `with`.
-  * Wrap platform `Meta` attributes in a `Maybe`. `Nothing` cause `pPrint`
-    to omit the attribute in question when rendering the nix expression.
-  * Add support for `meta.badPlatforms`, allowing to mark a
-    platform as unsupported.
-  * Remove `allKnownPlatforms`, its previous use can be replaced
-    using `badPlatforms`.
-  * Add support for nixpkgs platform groups in addition to Nix system
-    tuples via `NixpkgsPlatform`.
+  * **API breaking change**: Changed types for all platform related fields /
+    lenses of `Meta`, i.e. `platforms` and `hydraPlatforms`.
+    * They are now wrapped in a `Maybe`. If `Nothing`, the respective attribute
+      is not rendered.
+    * Instead of `Platform` we now use `NixpkgsPlatform` which may also be a
+      `NixpkgsPlatformGroup`, like `lib.platforms.linux`, in addition to the
+      wrapped `Platform` in `NixpkgsPlatformSingle`.
+  * **API breaking change**: Add new fields / lenses to `Meta`:
+    * `badPlatforms`: Allows setting a list of unsupported platforms, works
+      similarly to the `platform` / `hydraPlatform` lenses.
+    * `mainProgram`: Allows setting the (base-)name of the main binary of a
+      derivation. Not rendered if `Nothing`.
+  * **API breaking change**: Remove `allKnownPlatforms`, its previous use can be
+    replaced using `badPlatforms`.
+  * Added facilities for parsing platform strings:
+    * `cabalPlatformFromSystem` parses a nixpkgs system tuple into Cabal's
+      `Platform` type. Expects the string to be valid and does little validation.
+    * `nixpkgsPlatformFromString` parses a specific format used by hackage2nix's
+      config files into either `NixpkgsPlatformSingle` or `NixpkgsPlatformGroup`.
+* `Language.Nix.PrettyPrinting`: Added new helpers, `listattrDoc` and
+  `toAscListSortedOn`.
 
 ## 1.6.2
 
