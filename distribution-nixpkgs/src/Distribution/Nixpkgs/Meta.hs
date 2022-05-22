@@ -287,10 +287,10 @@ instance Pretty Meta where
 --     This has been preserved for “backwards compatibility” since changing this
 --     would generate a huge diff for nixpkgs' @hackage-packages.nix@ file.
 --
---   * First we render all 'NixpkgsPlatformSingle' values. This is done
---     by printing a Nix list containing Nix system strings which are obtained
---     using 'fromCabalPlatform'. If there are no platform groups, but the 'Set'
---     is not empty, an empty list (@[ ]@) is rendered.
+--   * First we render all 'NixpkgsPlatformSingle' values. This is done by
+--     printing a Nix list containing Nix system strings. If there are no
+--     platform groups, but the 'Set' is not empty, an empty list (@[ ]@) is
+--     rendered.
 --
 --   * Finally we render all 'NixpkgsPlatformGroup's. Since these are lists, we
 --     need to append them to the (cabal) platform list via the @++@ operator.
