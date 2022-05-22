@@ -148,6 +148,17 @@ nixpkgsPlatformFromString s = platformGroup <|> singlePlatform
 --   for tuples accepted by nixpkgs. This has been tested for all known tuples
 --   (from @lib.platforms@ and @lib.systems.examples@) as of 2022-05-08.
 --   Please open an issue if any newly added ones are not recognized properly.
+--
+--   >>> cabalPlatformFromSystem "x86_64-linux"
+--   Just (Platform X86_64 Linux)
+--   >>> cabalPlatformFromSystem "x86_64-linux-musl"
+--   Just (Platform X86_64 (OtherOS "linux-musl"))
+--   >>> cabalPlatformFromSystem "powerpc-darwin"
+--   Just (Platform PPC OSX)
+--   >>> cabalPlatformFromSystem "powerpc64le-linux"
+--   Just (Platform (OtherArch "powerpc64le") Linux)
+--   >>> cabalPlatformFromSystem "js-ghcjs"
+--   Just (Platform JavaScript Ghcjs)
 cabalPlatformFromSystem :: String -> Maybe Platform
 cabalPlatformFromSystem s =
   case break (== '-') s of
