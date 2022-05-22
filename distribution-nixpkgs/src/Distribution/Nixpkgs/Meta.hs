@@ -149,6 +149,13 @@ nixpkgsPlatformFromString s = platformGroup <|> singlePlatform
 --   (from @lib.platforms@ and @lib.systems.examples@) as of 2022-05-08.
 --   Please open an issue if any newly added ones are not recognized properly.
 --
+--   __Warning__: 'cabalPlatformFromSystem' tries to preserve all information in
+--   the system tuple passed in. This means that it distinguishes between things
+--   that Cabal wouldn't, e.g. `powerpc64` and `powerpc64le`. If you use this
+--   function to obtain a 'Platform's that is later used to evaluate a @.cabal@
+--   file, it will behave unexpectedly in such situation. It is generally better
+--   to use Cabal's own facilities for this purpose.
+--
 --   >>> cabalPlatformFromSystem "x86_64-linux"
 --   Just (Platform X86_64 Linux)
 --   >>> cabalPlatformFromSystem "x86_64-linux-musl"
