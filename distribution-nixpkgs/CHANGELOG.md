@@ -19,11 +19,9 @@
       derivation. Not rendered if `Nothing`.
   * **API breaking change**: Remove `allKnownPlatforms`, its previous use can be
     replaced using `badPlatforms`.
-  * Added facilities for parsing platform strings:
-    * `cabalPlatformFromSystem` parses a nixpkgs system tuple into Cabal's
-      `Platform` type. Expects the string to be valid and does little validation.
-    * `nixpkgsPlatformFromString` parses a specific format used by hackage2nix's
-      config files into either `NixpkgsPlatformSingle` or `NixpkgsPlatformGroup`.
+  * Added `nixpkgsPlatformFromString` which parses a specific format used by
+    hackage2nix's config files into either `NixpkgsPlatformSingle` or
+    `NixpkgsPlatformGroup`.
 * `Language.Nix.PrettyPrinting`: Added new helpers, `listattrDoc` and
   `toAscListSortedOn`.
 

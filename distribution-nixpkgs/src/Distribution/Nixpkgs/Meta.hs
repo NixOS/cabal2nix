@@ -17,7 +17,6 @@ module Distribution.Nixpkgs.Meta
     -- * Representation of Nixpkgs Platform Descriptions
   , NixpkgsPlatform (..)
   , nixpkgsPlatformFromString
-  , cabalPlatformFromSystem
   ) where
 
 -- Avoid name clash with Prelude.<> exported by post-SMP versions of base.
@@ -98,15 +97,49 @@ nixpkgsPlatformFromCabal (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++
 --   * Every string starting with @lib.platforms.@ or @platforms.@ is
 --     parsed into 'NixpkgsPlatformGroup'.
 --   * All other strings are attempted to be interpreted as a nix(pkgs) style
---     system tuple and parsed into 'NixpkgsPlatformSingle' by
---     'cabalPlatformFromSystem'.
+--     system tuple and parsed into 'NixpkgsPlatformSingle'.
 --
 --   If none of these formats match the input 'String', 'Nothing' is returned.
 --   A 'Just' result thus only indicates that the format of the platform is
 --   sound — 'nixpkgsPlatformFromString' does /not/ check if the parsed platform
 --   actually exists.
 --
---   __Note__: 'nixpkgsPlatformFromString' is /not/ the inverse operation for
+--   'NixpkgsPlatformSingle' is parsed from system tuples as understood by Nix
+--   and nixpkgs. System tuples are derived from autoconf's
+--   [target triplets](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.70/autoconf.html#Manual-Configuration),
+--   dropping the vendor part. They have the form @cpu-os@ where @os@ can either
+--   be a single component or of the form @kernel-system@ (system is an autoconf
+--   term here, not a Nix system). Note that three component systems are very
+--   rare. The two main candidates @x86_64-linux-musl@ and @x86_64-linux-gnu@
+--   are [prohibited for historical reasons](https://github.com/NixOS/nix/blob/ec07a70979a86cc436de7e46e03789b4606d25ab/configure.ac#L26-L28)
+--   and represented as plain @x86_64-linux@ instead.
+--
+--   Note that 'nixpkgsPlatformFromString' expects to receive a /valid/ system
+--   tuple, i.e. it will accept all system tuples that have a sound format
+--   (with the caveat that it will accept n-tuples for @n >= 4@ even though
+--   they are technically invalid). This is done because the ambiguity of
+--   system tuples requires knowledge over its legal contents in order to check
+--   their validity properly. Since @lib.systems.elaborate@ from nixpkgs is the
+--   source of truth in this case, we want to avoid the need to continuously
+--   update @distribution-nixpkgs@ to reflect its inner workings.
+--
+--   'nixpkgsPlatformFromString' does, however, some conversions to alleviate some
+--   discrepancies between Cabal and nixpkgs. Parsing and rendering system tuples
+--   using 'nixpkgsPlatformFromString' and rendering them via the 'Pretty'
+--   instance of 'NixpkgsPlatform' should not change the system tuple
+--   for tuples accepted by nixpkgs. This has been tested for all known tuples
+--   (from @lib.platforms@ and @lib.systems.examples@) as of 2022-05-08.
+--   Please open an issue if any newly added ones are not recognized properly.
+--
+--   __Warning__: 'nixpkgsPlatformFromString' consequently tries to preserve all
+--   information of the passed system tuple. This means that it distinguishes
+--   between things that Cabal wouldn't, e.g. `powerpc64` and `powerpc64le`. If
+--   you use this function to obtain a 'Platform' that is later used to evaluate
+--   a @.cabal@ file, it will behave unexpectedly in some situation. It is
+--   recommended to use Cabal's own facilities or
+--   @Distribution.Nixpkgs.Haskell.Platform@, provided by @cabal2nix@, instead.
+--
+--   'nixpkgsPlatformFromString' is also /not/ the inverse operation for
 --   'NixpkgsPlatform'\'s 'Pretty' instance. It is not intended for parsing Nix
 --   expressions.
 --
@@ -126,35 +159,7 @@ nixpkgsPlatformFromString s = platformGroup <|> singlePlatform
         singlePlatform = NixpkgsPlatformSingle <$> cabalPlatformFromSystem s
 
 -- | Parse a system tuple as understood by Nix and nixpkgs to a Cabal 'Platform'.
---   System tuples are derived from autoconf's
---   [target triplets](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.70/autoconf.html#Manual-Configuration),
---   dropping the vendor part. They have the form @cpu-os@ where @os@ can either
---   be a single component or of the form @kernel-system@ (system is an autoconf
---   term here, not a Nix system).
---
---   Note that 'cabalPlatformFromSystem' expects to receive a /valid/ system
---   tuple, i.e. it will accept all system tuples that have a sound format
---   (with the caveat that it will accept n-tuples for @n >= 4@ even though
---   they are technically invalid). This is done because the ambiguity of
---   system tuples requires knowledge over its legal contents in order to check
---   their validity properly. Since @lib.systems.elaborate@ from nixpkgs is the
---   source of truth in this case, we want to avoid the need to continously
---   update @distribution-nixpkgs@ to reflect its inner workings.
---
---   'cabalPlatformFromSystem' does, however, some conversions to alleviate some
---   discrepancies between Cabal and nixpkgs. Parsing and rendering system tuples
---   using 'cabalPlatformFromSystem' and rendering them via the 'Pretty'
---   instance of 'NixpkgsPlatform' should, however, not change the system tuple
---   for tuples accepted by nixpkgs. This has been tested for all known tuples
---   (from @lib.platforms@ and @lib.systems.examples@) as of 2022-05-08.
---   Please open an issue if any newly added ones are not recognized properly.
---
---   __Warning__: 'cabalPlatformFromSystem' tries to preserve all information in
---   the system tuple passed in. This means that it distinguishes between things
---   that Cabal wouldn't, e.g. `powerpc64` and `powerpc64le`. If you use this
---   function to obtain a 'Platform's that is later used to evaluate a @.cabal@
---   file, it will behave unexpectedly in such situation. It is generally better
---   to use Cabal's own facilities for this purpose.
+--   Used internally by 'nixpkgsPlatformFromString'.
 --
 --   >>> cabalPlatformFromSystem "x86_64-linux"
 --   Just (Platform X86_64 Linux)
