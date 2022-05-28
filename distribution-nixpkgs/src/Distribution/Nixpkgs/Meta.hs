@@ -412,6 +412,11 @@ renderMaintainers :: Set Identifier -> [Doc]
 renderMaintainers = map (pPrint . toPath) . toAscListSortedOn (view ident)
   where toPath m = path # [ ident # "lib", ident # "maintainers", m]
 
+-- | 'Meta' record with no field set, i.e. evaluating any will throw:
+--
+--   >>> nullMeta ^. homepage
+--   "*** Exception: undefined Meta.homepage
+--   ...
 nullMeta :: Meta
 nullMeta = Meta
   { _homepage = error "undefined Meta.homepage"
