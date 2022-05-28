@@ -56,7 +56,7 @@ library
                     , containers           >= 0.5.9
                     , deepseq              >= 1.4
                     , directory
-                    , distribution-nixpkgs >= 1.6.1
+                    , distribution-nixpkgs >= 1.6.1 && < 1.7.0
                     , filepath
                     , hackage-db           >= 2.0.1
                     , hopenssl             >= 2
@@ -100,7 +100,7 @@ executable hackage2nix
                     , cabal2nix
                     , containers
                     , directory
-                    , distribution-nixpkgs >= 1.6
+                    , distribution-nixpkgs >= 1.6 && < 1.7.0
                     , filepath
                     , hopenssl             >= 2
                     , language-nix
