@@ -217,16 +217,20 @@ instance NFData NixpkgsPlatform
 --
 -- >>> :set -XOverloadedStrings
 -- >>> :{
---   print (pPrint (Meta "http://example.org" "an example package" (Unknown Nothing)
---                  (Just (Set.singleton (NixpkgsPlatformSingle (Platform X86_64 Linux))))
---                  Nothing
---                  (Just Set.empty)
---                  (Just "example-binary")
---                  (Set.fromList ["joe","jane"])
---                  True))
+--   let meta = nullMeta
+--         & homepage .~ "http://example.org"
+--         & description .~ "An example package"
+--         & license .~ Unknown Nothing
+--         & platforms .~ Just (Set.singleton (NixpkgsPlatformSingle (Platform X86_64 Linux)))
+--         & badPlatforms .~ Nothing
+--         & hydraPlatforms .~ Just Set.empty
+--         & mainProgram .~ Just "example-binary"
+--         & maintainers .~ Set.fromList ["joe", "jane"]
+--         & broken .~ True
+--   in print $ pPrint meta
 -- :}
 -- homepage = "http://example.org";
--- description = "an example package";
+-- description = "An example package";
 -- license = "unknown";
 -- platforms = [ "x86_64-linux" ];
 -- hydraPlatforms = lib.platforms.none;
