@@ -16,13 +16,13 @@ import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
-import Data.String
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell as Derivation
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration as Config
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.Platform ( parsePlatformFromSystemLenient )
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.PackageMap
@@ -62,7 +62,7 @@ main = do
         <*> optional (strOption (long "preferred-versions" <> help "path to Hackage preferred-versions file" <> value "hackage/preferred-versions" <> showDefault <> metavar "PATH"))
         <*> strOption (long "nixpkgs" <> help "path to Nixpkgs repository" <> value "nixpkgs" <> showDefaultWith id <> metavar "PATH")
         <*> some1 (strOption (long "config" <> help "path to configuration file inside of Nixpkgs" <> metavar "PATH"))
-        <*> option (fmap fromString str) (long "platform" <> help "target platform to generate package set for" <> value "x86_64-linux" <> showDefaultWith display <> metavar "PLATFORM")
+        <*> option (maybeReader parsePlatformFromSystemLenient) (long "platform" <> help "target platform to generate package set for" <> value (Platform X86_64 Linux) <> showDefaultWith display <> metavar "PLATFORM")
 
       pinfo :: ParserInfo CLI
       pinfo = info
