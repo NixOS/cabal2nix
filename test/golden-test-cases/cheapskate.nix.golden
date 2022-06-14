@@ -16,4 +16,5 @@ mkDerivation {
   homepage = "http://github.com/jgm/cheapskate";
   description = "Experimental markdown processor";
   license = lib.licenses.bsd3;
+  mainProgram = "cheapskate";
 }

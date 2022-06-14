@@ -15,5 +15,4 @@ mkDerivation {
   homepage = "http://hub.darcs.net/thielema/pathtype/";
   description = "Type-safe replacement for System.FilePath etc";
   license = lib.licenses.bsd3;
-  mainProgram = "create-pathtype-test";
 }
