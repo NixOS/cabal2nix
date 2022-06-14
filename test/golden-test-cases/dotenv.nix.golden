@@ -24,4 +24,5 @@ mkDerivation {
   homepage = "https://github.com/stackbuilders/dotenv-hs";
   description = "Loads environment variables from dotenv files";
   license = lib.licenses.mit;
+  mainProgram = "dotenv";
 }

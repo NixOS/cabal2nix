@@ -10,4 +10,5 @@ mkDerivation {
   homepage = "https://github.com/WillSewell/benchpress";
   description = "Micro-benchmarking with detailed statistics";
   license = lib.licenses.bsd3;
+  mainProgram = "example";
 }

@@ -20,4 +20,5 @@ mkDerivation {
   ];
   description = "SVG renderer based on Rasterific";
   license = lib.licenses.bsd3;
+  mainProgram = "svgrender";
 }

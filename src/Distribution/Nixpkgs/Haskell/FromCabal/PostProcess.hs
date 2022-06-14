@@ -15,7 +15,6 @@ import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.License
 import Distribution.Package
-import Distribution.System
 import Distribution.Types.PackageVersionConstraint
 import Distribution.Text
 import Distribution.Version
@@ -78,9 +77,9 @@ hooks =
   , ("Agda >= 2.6", set (executableDepends . tool . contains (pkg "emacs")) True)
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
   , ("alex",  set (executableDepends . tool . contains (self "happy")) True)
-  , ("alsa-core", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
+  , ("alsa-core", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
-  , ("bindings-lxc", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
+  , ("bindings-lxc", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("bustle", bustleOverrides)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
   , ("Cabal >2.2", over (setupDepends . haskell) (Set.union (Set.fromList [self "mtl", self "parsec"]))) -- https://github.com/haskell/cabal/issues/5391
@@ -91,7 +90,7 @@ hooks =
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
   , ("dhall", set doCheck False) -- attempts to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
-  , ("eventstore", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64)))
+  , ("eventstore", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64"))))
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
   , ("fltkhs", set (libraryDepends . system . contains (pkg "fltk14")) True . over (libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
@@ -144,7 +143,7 @@ hooks =
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("lua >= 2.0.0 && < 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
   , ("lua >= 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_4")))
-  , ("lzma-clib", over (metaSection . platforms) (Set.filter (\(Platform _  os) -> os == Windows)) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
+  , ("lzma-clib", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
   , ("MFlow < 4.6", set (libraryDepends . tool . contains (self "cpphs")) True)
   , ("mwc-random", set doCheck False)
   , ("mysql", set (libraryDepends . system . contains (pkg "libmysqlclient")) True)
@@ -163,7 +162,7 @@ hooks =
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("req", set doCheck False)  -- test suite requires network access
   , ("sbv > 7", set (testDepends . system . contains (pkg "z3")) True)
-  , ("sdr", over (metaSection . platforms) (Set.filter (\(Platform arch _) -> arch == X86_64))) -- https://github.com/adamwalker/sdr/issues/2
+  , ("sdr", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64")))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
   , ("ssh", set doCheck False) -- test suite runs forever, probably can't deal with our lack of network access
   , ("stack", set phaseOverrides stackOverrides . set doCheck False)
@@ -175,10 +174,10 @@ hooks =
   , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
-  , ("udev", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Linux)))
+  , ("udev", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
-  , ("Win32", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Windows)))
-  , ("Win32-shortcut", over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == Windows)))
+  , ("Win32", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
+  , ("Win32-shortcut", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
   , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender","pkgs.xorg.libXScrnSaver"])))
@@ -349,7 +348,7 @@ giCairoPhaseOverrides = over phaseOverrides (++txt)
 hfseventsOverrides :: Derivation -> Derivation
 hfseventsOverrides
   = set isLibrary True
-  . over (metaSection . platforms) (Set.filter (\(Platform _ os) -> os == OSX))
+  . set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "darwin")))
   . set (libraryDepends . tool . contains (bind "pkgs.darwin.apple_sdk.frameworks.CoreServices")) True
   . set (libraryDepends . system . contains (bind "pkgs.darwin.apple_sdk.frameworks.Cocoa")) True
   . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
@@ -403,7 +402,7 @@ bustleOverrides :: Derivation -> Derivation
 bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True
                 . set (executableDepends . pkgconfig . contains "gio-unix = null") False
                 . set (metaSection . license) (Known "lib.licenses.lgpl21Plus")
-                . set (metaSection . hydraPlatforms) allKnownPlatforms
+                . set (metaSection . hydraPlatforms) Nothing
 
 nullBinding :: Identifier -> Binding
 nullBinding name = binding # (name, path # [ident # "null"])

@@ -25,4 +25,5 @@ mkDerivation {
   ];
   description = "Authentication middleware that secures WAI application";
   license = lib.licenses.mit;
+  mainProgram = "wai-auth";
 }

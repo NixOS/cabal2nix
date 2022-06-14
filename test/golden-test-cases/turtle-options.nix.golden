@@ -13,4 +13,5 @@ mkDerivation {
   homepage = "https://github.com/elaye/turtle-options#readme";
   description = "Collection of command line options and parsers for these options";
   license = lib.licenses.bsd3;
+  mainProgram = "example";
 }

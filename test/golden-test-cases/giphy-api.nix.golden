@@ -21,4 +21,5 @@ mkDerivation {
   homepage = "http://github.com/passy/giphy-api#readme";
   description = "Giphy HTTP API wrapper and CLI search tool";
   license = lib.licenses.bsd3;
+  mainProgram = "giphy-search";
 }

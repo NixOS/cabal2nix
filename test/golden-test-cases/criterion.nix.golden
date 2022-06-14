@@ -28,4 +28,5 @@ mkDerivation {
   homepage = "http://www.serpentine.com/criterion";
   description = "Robust, reliable performance measurement and analysis";
   license = lib.licenses.bsd3;
+  mainProgram = "criterion-report";
 }

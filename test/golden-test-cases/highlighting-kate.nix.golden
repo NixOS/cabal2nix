@@ -19,4 +19,5 @@ mkDerivation {
   homepage = "http://github.com/jgm/highlighting-kate";
   description = "Syntax highlighting";
   license = "GPL";
+  mainProgram = "highlighting-kate";
 }

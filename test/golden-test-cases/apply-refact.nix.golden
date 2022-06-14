@@ -26,4 +26,5 @@ mkDerivation {
   ];
   description = "Perform refactorings specified by the refact library";
   license = lib.licenses.bsd3;
+  mainProgram = "refactor";
 }

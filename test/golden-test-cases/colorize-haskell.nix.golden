@@ -10,4 +10,5 @@ mkDerivation {
   homepage = "http://github.com/yav/colorize-haskell";
   description = "Highligt Haskell source";
   license = lib.licenses.bsd3;
+  mainProgram = "hscolor";
 }

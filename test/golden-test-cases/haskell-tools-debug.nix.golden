@@ -19,4 +19,5 @@ mkDerivation {
   homepage = "https://github.com/haskell-tools/haskell-tools";
   description = "Debugging Tools for Haskell-tools";
   license = lib.licenses.bsd3;
+  mainProgram = "ht-debug";
 }

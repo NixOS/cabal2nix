@@ -21,4 +21,5 @@ mkDerivation {
   homepage = "http://github.com/vincenthz/hit";
   description = "Git operations in haskell";
   license = lib.licenses.bsd3;
+  mainProgram = "Hit";
 }

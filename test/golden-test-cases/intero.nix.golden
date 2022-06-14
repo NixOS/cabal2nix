@@ -21,4 +21,5 @@ mkDerivation {
   homepage = "https://github.com/commercialhaskell/intero";
   description = "Complete interactive development program for Haskell";
   license = lib.licenses.bsd3;
+  mainProgram = "intero";
 }

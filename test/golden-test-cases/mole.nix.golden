@@ -23,4 +23,5 @@ mkDerivation {
   ];
   description = "A glorified string replacement tool";
   license = lib.licenses.mit;
+  mainProgram = "mole";
 }

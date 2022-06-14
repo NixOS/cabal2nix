@@ -16,4 +16,5 @@ mkDerivation {
   homepage = "https://github.com/pharpend/pager";
   description = "Open up a pager, like 'less' or 'more'";
   license = lib.licenses.bsd2;
+  mainProgram = "hs-pager-test-pager";
 }

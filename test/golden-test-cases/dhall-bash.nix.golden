@@ -17,4 +17,5 @@ mkDerivation {
   ];
   description = "Compile Dhall to Bash";
   license = lib.licenses.bsd3;
+  mainProgram = "dhall-to-bash";
 }

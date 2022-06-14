@@ -11,4 +11,5 @@ mkDerivation {
   homepage = "http://github.com/rampion/ReadArgs";
   description = "Simple command line argument parsing";
   license = lib.licenses.bsd3;
+  mainProgram = "ReadArgsEx";
 }

@@ -24,4 +24,5 @@ mkDerivation {
   homepage = "http://github.com/alpmestan/taggy";
   description = "Efficient and simple HTML/XML parsing library";
   license = lib.licenses.bsd3;
+  mainProgram = "taggy";
 }

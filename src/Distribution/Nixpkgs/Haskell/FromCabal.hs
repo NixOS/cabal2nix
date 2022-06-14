@@ -132,8 +132,10 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.description .~ stripRedundanceSpaces synopsis
 #endif
                      & Nix.license .~ nixLicense
-                     & Nix.platforms .~ Nix.allKnownPlatforms
-                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nix.allKnownPlatforms else Set.empty)
+                     & Nix.platforms .~ Nothing
+                     & Nix.badPlatforms .~ Nothing
+                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nothing else Just Set.empty)
+                     & Nix.mainProgram .~ nixMainProgram
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
                      )
@@ -142,6 +144,14 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 
     nixLicense :: Nix.License
     nixLicense =  either fromSPDXLicense fromCabalLicense licenseRaw
+
+    -- return the name of the executable if there is exactly one. If more,
+    -- it is hard to decide automatically which should be the default/main one.
+    nixMainProgram :: Maybe String
+    nixMainProgram =
+      case executables of
+        [mainProgram] -> Just $ unUnqualComponentName $ exeName mainProgram
+        _ -> Nothing
 
     resolveInHackage :: Identifier -> Binding
     resolveInHackage i | (i^.ident) `elem` [ unPackageName n | (Dependency n _ _) <- missingDeps ] = bindNull i

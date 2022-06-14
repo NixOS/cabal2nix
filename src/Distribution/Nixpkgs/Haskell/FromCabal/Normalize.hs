@@ -27,8 +27,7 @@ normalizeBuildInfo pname bi = bi
 normalizeMeta :: Meta -> Meta
 normalizeMeta meta = meta
   & description %~ normalizeSynopsis
-  & platforms %~ Set.intersection allKnownPlatforms
-  & hydraPlatforms %~ (if meta^.broken then const Set.empty else Set.intersection (meta^.platforms))
+  & hydraPlatforms %~ (if meta^.broken then const (Just Set.empty) else id)
 
 normalizeSynopsis :: String -> String
 normalizeSynopsis desc
