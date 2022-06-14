@@ -14,5 +14,4 @@ mkDerivation {
   homepage = "https://github.com/roelvandijk/terminal-progress-bar";
   description = "A simple progress bar in the terminal";
   license = lib.licenses.bsd3;
-  mainProgram = "example";
 }

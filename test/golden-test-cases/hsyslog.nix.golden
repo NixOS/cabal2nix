@@ -11,5 +11,4 @@ mkDerivation {
   homepage = "http://github.com/peti/hsyslog";
   description = "FFI interface to syslog(3) from POSIX.1-2001";
   license = lib.licenses.bsd3;
-  mainProgram = "hsyslog-example";
 }

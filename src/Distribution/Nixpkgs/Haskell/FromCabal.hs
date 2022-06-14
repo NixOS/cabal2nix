@@ -149,7 +149,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     -- it is hard to decide automatically which should be the default/main one.
     nixMainProgram :: Maybe String
     nixMainProgram =
-      case executables of
+      case filter (buildable . buildInfo) executables of
         [mainProgram] -> Just $ unUnqualComponentName $ exeName mainProgram
         _ -> Nothing
 

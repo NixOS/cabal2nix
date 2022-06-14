@@ -10,5 +10,4 @@ mkDerivation {
   homepage = "http://github.com/vincenthz/hs-cpu";
   description = "Cpu information and properties helpers";
   license = lib.licenses.bsd3;
-  mainProgram = "cpuid";
 }
