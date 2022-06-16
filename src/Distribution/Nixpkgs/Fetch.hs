@@ -208,12 +208,12 @@ instance NFData UnpackArchive
 -- | The nixpkgs function to use for fetching this kind of derivation
 derivKindFunction :: DerivKind -> String
 derivKindFunction = \case
-  DerivKindUrl _ -> "fetchUrl"
-  DerivKindZip _ -> "fetchZip"
-  DerivKindGit _ -> "fetchGit"
-  DerivKindHg -> "fetchHg"
-  DerivKindSvn -> "fetchSvn"
-  DerivKindBzr -> "fetchBzr"
+  DerivKindUrl _ -> "fetchurl"
+  DerivKindZip _ -> "fetchzip"
+  DerivKindGit _ -> "fetchgit"
+  DerivKindHg -> "fetchhg"
+  DerivKindSvn -> "fetchsvn"
+  DerivKindBzr -> "fetchbzr"
 
 
 -- | Like 'fetch', but allows to specify which script to use.
