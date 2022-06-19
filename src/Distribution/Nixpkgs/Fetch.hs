@@ -131,7 +131,7 @@ fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
     [ (False, DerivKindUrl DontUnpackArchive)
-    , (False, DerivKindZip UnpackArchive)
+    , (False, DerivKindUrl UnpackArchive)
     , (True, DerivKindGit optSubModules)
     , (True, DerivKindHg)
     , (True, DerivKindSvn)
@@ -182,7 +182,6 @@ fetch optSubModules f = runMaybeT . fetchers where
 
 data DerivKind
   = DerivKindUrl UnpackArchive
-  | DerivKindZip UnpackArchive
   | DerivKindGit FetchSubmodules
   | DerivKindHg
   | DerivKindSvn
@@ -208,8 +207,8 @@ instance NFData UnpackArchive
 -- | The nixpkgs function to use for fetching this kind of derivation
 derivKindFunction :: DerivKind -> String
 derivKindFunction = \case
-  DerivKindUrl _ -> "fetchurl"
-  DerivKindZip _ -> "fetchzip"
+  DerivKindUrl DontUnpackArchive -> "fetchurl"
+  DerivKindUrl UnpackArchive -> "fetchzip"
   DerivKindGit _ -> "fetchgit"
   DerivKindHg -> "fetchhg"
   DerivKindSvn -> "fetchsvn"
@@ -225,8 +224,6 @@ fetchWith (supportsRev, kind) source = do
   let (script, extraArgs) = case kind of
         DerivKindUrl UnpackArchive ->  ("nix-prefetch-url", ["--unpack"])
         DerivKindUrl DontUnpackArchive ->  ("nix-prefetch-url", [])
-        DerivKindZip UnpackArchive ->  ("nix-prefetch-url", ["--unpack"])
-        DerivKindZip DontUnpackArchive -> ("nix-prefetch-url", [])
         DerivKindGit FetchSubmodules -> ("nix-prefetch-git", ["--fetch-submodules"])
         DerivKindGit DontFetchSubmodules -> ("nix-prefetch-git", [])
         DerivKindHg -> ("nix-prefetch-hg", [])
