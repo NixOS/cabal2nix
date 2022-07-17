@@ -1,5 +1,5 @@
 name:               cabal2nix
-version:            2.18.0
+version:            2.19.0
 synopsis:           Convert Cabal files into Nix build instructions.
 description:
   Convert Cabal files into Nix build instructions. Users of Nix can install the latest
