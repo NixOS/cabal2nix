@@ -1,0 +1,66 @@
+name:          distribution-nixpkgs
+version:       1.7.0
+synopsis:      Types and functions to manipulate the Nixpkgs distribution
+description:   Types and functions to represent, query, and manipulate the Nixpkgs distribution.
+license:       BSD3
+license-file:  LICENSE
+author:        Peter Simons <simons@cryp.to>
+maintainer:    sternenseemann <sternenseemann@systemli.org>
+tested-with:   GHC == 8.6.5 || == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.2
+category:      Distribution, Nix
+homepage:      https://github.com/NixOS/distribution-nixpkgs
+bug-reports:   https://github.com/NixOS/distribution-nixpkgs/issues
+build-type:    Simple
+cabal-version: >= 1.10
+data-files:    derivation-attr-paths.nix
+extra-source-files: CHANGELOG.md
+                    README.md
+                    test/data/all-system-tuples.json
+
+source-repository head
+  type:     git
+  location: https://github.com/NixOS/distribution-nixpkgs
+
+library
+  exposed-modules:    Distribution.Nixpkgs.Hashes
+                      Distribution.Nixpkgs.License
+                      Distribution.Nixpkgs.Meta
+                      Distribution.Nixpkgs.PackageMap
+                      Language.Nix.PrettyPrinting
+  other-modules:      Paths_distribution_nixpkgs
+  hs-source-dirs:     src
+  build-depends:      base         > 4.2 && < 5
+                    , Cabal        >= 2.4
+                    , aeson
+                    , bytestring
+                    , containers
+                    , deepseq      >= 1.4
+                    , language-nix > 2
+                    , lens
+                    , pretty       >= 1.1.2
+                    , process
+  default-language:   Haskell2010
+  other-extensions:   CPP
+                      TemplateHaskell
+                      RecordWildCards
+                      DeriveGeneric
+                      PackageImports
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints
+
+test-suite hspec
+  type:               exitcode-stdio-1.0
+  main-is:            hspec.hs
+  hs-source-dirs:     test
+  build-depends:      base
+                    , deepseq
+                    , distribution-nixpkgs
+                    , language-nix
+                    , hspec
+                    , lens
+                    , Cabal
+                    , aeson
+                    , directory
+  default-language:   Haskell2010
+  ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                      -Wredundant-constraints
