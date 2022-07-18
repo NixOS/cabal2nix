@@ -1,6 +1,6 @@
 -- cabal.project
 
-packages: .
+packages: ./*/*.cabal
 tests: True
 
 package cabal2nix

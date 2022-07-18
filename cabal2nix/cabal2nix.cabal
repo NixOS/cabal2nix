@@ -26,6 +26,7 @@ cabal-version:      1.24
 source-repository head
   type:     git
   location: https://github.com/nixos/cabal2nix
+  subdir:   cabal2nix
 
 library
   exposed-modules:    Cabal2nix
