@@ -1,0 +1,84 @@
+name:          hackage-db
+version:       2.1.2
+synopsis:      Access cabal-install's Hackage database via Data.Map
+description:   This library provides convenient access to the local copy of the Hackage
+               database that \"cabal update\" creates. Check out
+               <https://github.com/NixOS/hackage-db/tree/master/example/> for a collection
+               of simple example programs that demonstrate how to use this code.
+license:       BSD3
+license-file:  LICENSE
+author:        Peter Simons, Alexander Altman, Ben James, Kevin Quick
+maintainer:    Peter Simons <simons@cryp.to>
+tested-with:   GHC == 8.8.4 || == 8.10.4 || == 9.0.1
+category:      Distribution
+homepage:      https://github.com/NixOS/hackage-db#readme
+bug-reports:   https://github.com/NixOS/hackage-db/issues
+build-type:    Simple
+cabal-version: >= 1.10
+extra-source-files: README.md
+                    CHANGELOG.md
+
+source-repository head
+  type:     git
+  location: git://github.com/NixOS/hackage-db.git
+
+flag install-examples
+  default:     False
+  description: Build and install example programs.
+
+library
+  exposed-modules:  Distribution.Hackage.DB
+                    Distribution.Hackage.DB.Builder
+                    Distribution.Hackage.DB.Errors
+                    Distribution.Hackage.DB.MetaData
+                    Distribution.Hackage.DB.Parsed
+                    Distribution.Hackage.DB.Path
+                    Distribution.Hackage.DB.Unparsed
+                    Distribution.Hackage.DB.Utility
+  other-modules:    Paths_hackage_db
+  hs-source-dirs:   src
+  build-depends:    base        >= 4.9 && < 5
+                  , Cabal       > 3
+                  , aeson
+                  , bytestring
+                  , containers
+                  , directory
+                  , exceptions
+                  , filepath
+                  , tar         >= 0.4
+                  , time
+                  , utf8-string
+  default-language: Haskell2010
+  other-extensions: DeriveDataTypeable
+                    DeriveGeneric
+
+executable list-known-versions
+  main-is:          list-known-versions.hs
+  hs-source-dirs:   example
+  default-language: Haskell2010
+
+  if flag(install-examples)
+    build-depends: base >= 3 && < 5, Cabal, bytestring, containers, hackage-db
+  else
+    buildable: False
+
+executable show-meta-data
+  main-is:          show-meta-data.hs
+  hs-source-dirs:   example
+  default-language: Haskell2010
+
+  if flag(install-examples)
+    build-depends: base >= 3 && < 5, Cabal, containers, hackage-db, utf8-string
+  else
+    buildable: False
+
+executable show-package-versions
+  main-is:          show-package-versions.hs
+  hs-source-dirs:   example
+  default-language: Haskell2010
+  other-extensions: CPP
+
+  if flag(install-examples)
+    build-depends: base >= 3 && < 5, Cabal, containers, hackage-db
+  else
+    buildable: False

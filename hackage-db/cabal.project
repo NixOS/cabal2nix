@@ -1,0 +1,6 @@
+packages: .
+
+package hackage-db
+  flags:         +install-examples
+  ghc-options:   -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
+                 -Wredundant-constraints

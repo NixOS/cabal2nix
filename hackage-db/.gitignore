@@ -1,0 +1,5 @@
+# ignore build Cabal build files
+
+/.*.environment.*
+/dist-newstyle/*
+/dist/*
