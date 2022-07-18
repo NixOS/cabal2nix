@@ -4,7 +4,7 @@ let
   haskellPackages = pkgs.haskellPackages;
   ghc = haskellPackages.ghcWithHoogle (hps: [
     hps.ansi-wl-pprint
-    hps.distribution-nixpkgs
+    (hps.distribution-nixpkgs_1_7_0 or hps.distribution-nixpkgs)
     hps.hackage-db
     hps.hopenssl
     hps.hpack
