@@ -1,0 +1,6 @@
+# ignore cabal build files
+
+/.*.environment.*
+/.stack-work/*
+/dist
+/dist-newstyle
