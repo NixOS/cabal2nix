@@ -25,6 +25,7 @@ in pkgs.mkShell {
   packages = [
     ghc
     pkgs.cabal-install
+    pkgs.haskell-ci
     haskellPackages.haskell-language-server
     (pkgs.lib.getLib pkgs.openssl)
   ];

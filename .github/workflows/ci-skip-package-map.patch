@@ -1,0 +1,13 @@
+diff --git a/.github/workflows/haskell-ci.yml b/.github/workflows/haskell-ci.yml
+index 7fca651d..c2b799c0 100644
+--- a/.github/workflows/haskell-ci.yml
++++ b/.github/workflows/haskell-ci.yml
+@@ -253,7 +253,7 @@ jobs:
+           cd ${PKGDIR_language_nix} || false
+           doctest -i ../../dist-newstyle/build/*/*/cabal2nix-*/build/autogen -XHaskell2010 src
+           cd ${PKGDIR_distribution_nixpkgs} || false
+-          doctest -i ../../dist-newstyle/build/*/*/cabal2nix-*/build/autogen -XHaskell2010 src
++          find src -type f -and -not -name 'PackageMap.hs' | xargs doctest -i ../../dist-newstyle/build/*/*/cabal2nix-*/build/autogen -XHaskell2010
+           cd ${PKGDIR_hackage_db} || false
+           doctest -i ../../dist-newstyle/build/*/*/cabal2nix-*/build/autogen -XHaskell2010 src
+       - name: hlint
