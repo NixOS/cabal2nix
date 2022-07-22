@@ -45,6 +45,7 @@ libNixName "dl"                                 = []  -- provided by glibc
 libNixName "ff"                                 = return "libff"
 libNixName "fftw3"                              = return "fftw"
 libNixName "fftw3f"                             = return "fftwFloat"
+libNixName "FLAC"                               = return "flac"
 libNixName "freetype2"                          = return "freetype"
 libNixName "gconf"                              = return "GConf"
 libNixName "gconf-2.0"                          = return "GConf"
