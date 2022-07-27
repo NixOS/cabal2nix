@@ -1,13 +1,14 @@
 # ignore build Cabal build files
 
-/.cabal-sandbox
-/.ghc.environment.*
-/Setup
-/Setup.hi
-/Setup.o
-/cabal.sandbox.config
-/dist
-/dist-newstyle
+cabal.project.local*
+.cabal-sandbox
+.ghc.environment.*
+/*/Setup
+/*/Setup.hi
+/*/Setup.o
+cabal.sandbox.config
+dist
+dist-newstyle
 
 # vim tmp files
 
@@ -21,10 +22,5 @@ TAGS
 # ignore stack build directory
 
 .stack-work
-/src/highlight.js
-/src/style.css
-
-# hackage2nix ususally needs those two repositories around
-
-/hackage/
-/nixpkgs/
+/*/src/highlight.js
+/*/src/style.css
