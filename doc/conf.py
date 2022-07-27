@@ -25,7 +25,7 @@ master_doc = 'index'
 html_theme = 'alabaster'
 html_theme_options = {
     'canonical_url': 'https://hackage4nix.readthedocs.io/',
-    'fixed_sidebar': True,
+    'fixed_sidebar': False,
     'github_button': True,
     'github_repo': 'cabal2nix',
     'github_user': 'NixOS',
