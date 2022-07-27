@@ -1,31 +1,9 @@
-{ pkgs ? import <nixpkgs> {} }:
-
+(import (
 let
-  haskellPackages = pkgs.haskellPackages;
-  ghc = haskellPackages.ghcWithHoogle (hps: [
-    hps.ansi-wl-pprint
-    hps.distribution-nixpkgs
-    hps.hackage-db
-    hps.hopenssl
-    hps.hpack
-    hps.language-nix
-    hps.lens
-    hps.optparse-applicative
-    hps.pretty
-    hps.split
-    hps.yaml
-    hps.monad-par
-    hps.monad-par-extras
-    hps.tasty
-    hps.tasty-golden
-  ]);
-
-in pkgs.stdenv.mkDerivation {
-  name = "shell";
-  buildInputs = [
-            ghc
-            haskellPackages.cabal-install
-            haskellPackages.haskell-language-server
-            (pkgs.lib.getLib pkgs.openssl)
-          ];
-}
+    lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+  in fetchTarball {
+    url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+    sha256 = lock.nodes.flake-compat.locked.narHash; }
+) {
+  src =  ./.;
+}).shellNix
