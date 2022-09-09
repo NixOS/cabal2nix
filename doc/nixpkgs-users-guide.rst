@@ -166,6 +166,67 @@ for hackage. You can use ``overrideSrc`` to override the source, for example:
 How to create a development environment
 ---------------------------------------
 
+How to create ad hoc environments for ``nix-shell``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The easiest way to create an ad hoc development environment is to run
+``nix-shell`` with the appropriate GHC environment given on the
+command-line:
+
+.. code:: shell
+
+   nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [mtl pandoc])"
+
+For more sophisticated use-cases, however, it’s more convenient to save
+the desired configuration in a file called ``shell.nix`` that looks like
+this:
+
+.. code:: nix
+
+   { nixpkgs ? import <nixpkgs> {}, compiler ? "ghc7102" }:
+   let
+     inherit (nixpkgs) pkgs;
+     ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
+             monad-par mtl
+           ]);
+   in
+   pkgs.stdenv.mkDerivation {
+     name = "my-haskell-env-0";
+     buildInputs = [ ghc ];
+     shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";
+   }
+
+Now run ``nix-shell`` — or even ``nix-shell --pure`` — to enter a shell
+environment that has the appropriate compiler in ``$PATH``. If you use
+``--pure``, then add all other packages that your development
+environment needs into the ``buildInputs`` attribute. If you’d like to
+switch to a different compiler version, then pass an appropriate
+``compiler`` argument to the expression, i.e.
+``nix-shell --argstr compiler ghc784``.
+
+If you need such an environment because you’d like to compile a Hackage
+package outside of Nix — i.e. because you’re hacking on the latest
+version from Git —, then the package set provides suitable nix-shell
+environments for you already! Every Haskell package has an ``env``
+attribute that provides a shell environment suitable for compiling that
+particular package. If you’d like to hack the ``lens`` library, for
+example, then you just have to check out the source code and enter the
+appropriate environment:
+
+::
+
+   $ cabal get lens-4.11 && cd lens-4.11
+   Downloading lens-4.11...
+   Unpacking to lens-4.11/
+
+   $ nix-shell "<nixpkgs>" -A haskellPackages.lens.env
+   [nix-shell:/tmp/lens-4.11]$
+
+At point, you can run ``cabal configure``, ``cabal build``, and all the
+other development commands. Note that you need ``cabal-install``
+installed in your ``$PATH`` already to use it here — the ``nix-shell``
+environment does not provide it.
+
 How to install a compiler
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -582,67 +643,6 @@ specified in ``stack.yaml`` (only works with Stack >= 1.1.3):
      buildInputs = [ R zeromq zlib ];
      inherit ghc;
    }
-
-How to create ad hoc environments for ``nix-shell``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The easiest way to create an ad hoc development environment is to run
-``nix-shell`` with the appropriate GHC environment given on the
-command-line:
-
-.. code:: shell
-
-   nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [mtl pandoc])"
-
-For more sophisticated use-cases, however, it’s more convenient to save
-the desired configuration in a file called ``shell.nix`` that looks like
-this:
-
-.. code:: nix
-
-   { nixpkgs ? import <nixpkgs> {}, compiler ? "ghc7102" }:
-   let
-     inherit (nixpkgs) pkgs;
-     ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
-             monad-par mtl
-           ]);
-   in
-   pkgs.stdenv.mkDerivation {
-     name = "my-haskell-env-0";
-     buildInputs = [ ghc ];
-     shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";
-   }
-
-Now run ``nix-shell`` — or even ``nix-shell --pure`` — to enter a shell
-environment that has the appropriate compiler in ``$PATH``. If you use
-``--pure``, then add all other packages that your development
-environment needs into the ``buildInputs`` attribute. If you’d like to
-switch to a different compiler version, then pass an appropriate
-``compiler`` argument to the expression, i.e.
-``nix-shell --argstr compiler ghc784``.
-
-If you need such an environment because you’d like to compile a Hackage
-package outside of Nix — i.e. because you’re hacking on the latest
-version from Git —, then the package set provides suitable nix-shell
-environments for you already! Every Haskell package has an ``env``
-attribute that provides a shell environment suitable for compiling that
-particular package. If you’d like to hack the ``lens`` library, for
-example, then you just have to check out the source code and enter the
-appropriate environment:
-
-::
-
-   $ cabal get lens-4.11 && cd lens-4.11
-   Downloading lens-4.11...
-   Unpacking to lens-4.11/
-
-   $ nix-shell "<nixpkgs>" -A haskellPackages.lens.env
-   [nix-shell:/tmp/lens-4.11]$
-
-At point, you can run ``cabal configure``, ``cabal build``, and all the
-other development commands. Note that you need ``cabal-install``
-installed in your ``$PATH`` already to use it here — the ``nix-shell``
-environment does not provide it.
 
 How to create Nix builds for your own private Haskell packages
 --------------------------------------------------------------
