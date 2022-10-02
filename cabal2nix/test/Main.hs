@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE CPP #-}
 
 module Main ( main ) where
 
@@ -13,8 +14,13 @@ import Control.Monad
 import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.Package
+#if MIN_VERSION_Cabal(3,8,1)
+import Distribution.Simple.PackageDescription
+import Distribution.Types.GenericPackageDescription
+#else
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parsec
+#endif
 import Distribution.System
 import Distribution.Verbosity
 import Distribution.Version
