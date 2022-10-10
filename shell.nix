@@ -1,7 +1,12 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import <nixpkgs> { }
+, ghcVersion ? pkgs.haskellPackages.ghc.version
+, withHls ? true
+}:
 
 let
-  haskellPackages = pkgs.haskellPackages;
+  haskellPackages = pkgs.haskell.packages."ghc${
+    builtins.replaceStrings [ "." ] [ "" ] ghcVersion
+  }";
   ghc = haskellPackages.ghcWithHoogle (hps: [
     hps.ansi-wl-pprint
     hps.hopenssl
@@ -26,7 +31,8 @@ in pkgs.mkShell {
     ghc
     pkgs.cabal-install
     pkgs.haskell-ci
-    haskellPackages.haskell-language-server
     (pkgs.lib.getLib pkgs.openssl)
+  ] ++ pkgs.lib.optionals withHls [
+    haskellPackages.haskell-language-server
   ];
 }

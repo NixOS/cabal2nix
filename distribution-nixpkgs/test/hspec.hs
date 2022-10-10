@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Main ( main ) where
 
 import Control.DeepSeq
@@ -29,7 +30,7 @@ main = hspec $ do
                   ]
 
   describe "Platform rendering and parsing:" $ do
-    it "Checks cover all systems from all-system-tuples.json" $do
+    it "Checks cover all systems from all-system-tuples.json" $ do
       let allSystemTuplesJson = "test/data/all-system-tuples.json"
       available <- doesFileExist allSystemTuplesJson
       if not available
@@ -78,6 +79,10 @@ nixpkgsSystemMapping =
   , ("m68k-linux", Platform M68k Linux)
   , ("m68k-netbsd", Platform M68k NetBSD)
   , ("m68k-none", Platform M68k (OtherOS "none"))
+  , ("microblaze-linux", Platform (OtherArch "microblaze") Linux)
+  , ("microblazeel-linux", Platform (OtherArch "microblazeel") Linux)
+  , ("microblaze-none", Platform (OtherArch "microblaze") (OtherOS "none"))
+  , ("microblazeel-none", Platform (OtherArch "microblazeel") (OtherOS "none"))
   , ("mips64el-linux", Platform (OtherArch "mips64el") Linux)
   , ("mipsel-linux", Platform (OtherArch "mipsel") Linux)
   , ("mipsel-netbsd", Platform (OtherArch "mipsel") NetBSD)
@@ -95,13 +100,24 @@ nixpkgsSystemMapping =
   , ("riscv64-linux", Platform (OtherArch "riscv64") Linux)
   , ("riscv64-netbsd", Platform (OtherArch "riscv64") NetBSD)
   , ("riscv64-none", Platform (OtherArch "riscv64") (OtherOS "none"))
+  , ("rx-none", Platform (OtherArch "rx") (OtherOS "none"))
   , ("s390-linux", Platform S390 Linux)
   , ("s390-none", Platform S390 (OtherOS "none"))
+#if MIN_VERSION_Cabal(3,8,1)
+  , ("s390x-linux", Platform S390X Linux)
+  , ("s390x-none", Platform S390X (OtherOS "none"))
+#else
   , ("s390x-linux", Platform (OtherArch "s390x") Linux)
   , ("s390x-none", Platform (OtherArch "s390x") (OtherOS "none"))
+#endif
   , ("vc4-none", Platform (OtherArch "vc4") (OtherOS "none"))
+#if MIN_VERSION_Cabal(3,8,1)
+  , ("wasm32-wasi", Platform Wasm32 Wasi)
+  , ("wasm64-wasi", Platform (OtherArch "wasm64") Wasi)
+#else
   , ("wasm32-wasi", Platform (OtherArch "wasm32") (OtherOS "wasi"))
   , ("wasm64-wasi", Platform (OtherArch "wasm64") (OtherOS "wasi"))
+#endif
   , ("x86_64-cygwin", Platform X86_64 (OtherOS "cygwin"))
   , ("x86_64-darwin", Platform X86_64 OSX)
   , ("x86_64-freebsd", Platform X86_64 FreeBSD)
