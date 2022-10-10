@@ -1,5 +1,6 @@
 { mkDerivation, attoparsec, base, bytestring, cryptohash-sha512
-, lib, quickcheck-instances, tasty, tasty-hunit, tasty-quickcheck
+, lib, libxcrypt, quickcheck-instances, tasty, tasty-hunit
+, tasty-quickcheck
 }:
 mkDerivation {
   pname = "crypt-sha512";
@@ -12,6 +13,7 @@ mkDerivation {
     base bytestring quickcheck-instances tasty tasty-hunit
     tasty-quickcheck
   ];
+  testSystemDepends = [ libxcrypt ];
   homepage = "https://github.com/phadej/crypt-sha512";
   description = "Pure Haskell implelementation for GNU SHA512 crypt algorithm";
   license = lib.licenses.bsd3;
