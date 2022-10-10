@@ -1,118 +1,70 @@
-Cabal2nix
-=========
+# The cabal2nix monorepo
 
-[![hackage release](https://img.shields.io/hackage/v/cabal2nix.svg?label=hackage)](http://hackage.haskell.org/package/cabal2nix)
-[![stackage LTS package](http://stackage.org/package/cabal2nix/badge/lts)](http://stackage.org/lts/package/cabal2nix)
-[![stackage Nightly package](http://stackage.org/package/cabal2nix/badge/nightly)](http://stackage.org/nightly/package/cabal2nix)
 ![Continous Integration](https://github.com/NixOS/cabal2nix/workflows/Haskell-CI/badge.svg)
 
-`cabal2nix` converts a single Cabal file into a single Nix build expression.
-For example:
+## Components
+
+### cabal2nix
+
+Tool that generates Nix build instructions from a Cabal file. Also contains
+hackage2nix, the tool that generates the `haskellPackages` set in nixpkgs.
+
+### distribution-nixpkgs
+
+Utility library implementing nixpkgs-specific tasks and concepts: Looking
+up packages, `meta` sets, Nix-style integrity hashes etc.
+
+### language-nix
+
+Simplistic library to parse and render a subset of the Nix language.
+
+### hackage-db
+
+Library for working with the Hackage database created and updated
+using `cabal update`.
+
+## Development
+
+At the top-level, a `cabal.project` and `shell.nix` are provided for working
+on all packages in the repository. You can use `direnv` and (optionally)
+lorri to make the environment available in your normal shell as well.
+
+## Maintenance
+
+The monorepo has been assembled using [josh]. You can obtain it from nixpkgs
+using `nix-shell -p josh`. Below, some common tasks are documented.
+
+### Extracting the original git history
+
+[josh]'s history filtering capabilities are quite powerful, allowing us to
+extract the original git histories of the repositories that have been vendored
+in. For example, for `distribution-nixpkgs`:
 
 ```console
-$ cabal2nix cabal://mtl
-{ mkDerivation, base, lib, transformers }:
-mkDerivation {
-  pname = "mtl";
-  version = "2.2.1";
-  sha256 = "1icdbj2rshzn0m1zz5wa7v3xvkf6qw811p4s7jgqwvx1ydwrvrfa";
-  libraryHaskellDepends = [ base transformers ];
-  homepage = "http://github.com/ekmett/mtl";
-  description = "Monad classes, using functional dependencies";
-  license = lib.licenses.bsd3;
-}
+$ josh-filter ':/distribution-nixpkgs'
+$ git checkout FILTERED_HEAD
+$ ls *.cabal
+distribution-nixpkgs.cabal
 ```
 
-Cabal files can be referred to using the magic URL `cabal://NAME-VERSION`,
-which will automatically download the file from Hackage. Alternatively, a
-direct `http://host/path/pkg.cabal` URL can be provided, as well as a
-`file:///local/path/pkg.cabal` URI that doesn't depend on network access.
-However, if the source hash is not already in `cabal2nix`'s cache or provided
-using the `--sha256` option, `cabal2nix` still needs to download the source
-code to compute the hash, which still causes network traffic. Run the utility
-with `--help` to see the complete list of supported command-line flags.
+The `FILTERED_HEAD` ref has the original `HEAD` of the `distribution-nixpkgs`
+`HEAD` when it was vendored as its ancestor and can thus be pushed to the
+original repository.
 
-Detailed instructions on how to use those generated files with Nix can be found at
-https://haskell4nix.readthedocs.io/nixpkgs-users-guide.html#how-to-create-nix-builds-for-your-own-private-haskell-packages.
 
-`cabal2nix` can also build derivations for projects from other sources than
-Hackage. You only need to provide a URI that points to a cabal project. The
-most common use-case for this is probably to generate a derivation for a
-project on the local file system:
+### Vendoring components
+
+This probably won't come up in the future, but the process that was used to
+vendor the additional libraries is documented here:
 
 ```console
-$ cabal get mtl-2.2.1 && cd mtl-2.2.1
-$ cabal2nix .
-{ mkDerivation, base, lib, transformers }:
-mkDerivation {
-  pname = "mtl";
-  version = "2.2.1";
-  src = ./.;
-  libraryHaskellDepends = [ base transformers ];
-  homepage = "http://github.com/ekmett/mtl";
-  description = "Monad classes, using functional dependencies";
-  license = lib.licenses.bsd3;
-}
+$ name=…
+$ git fetch https://github.com/nixos/$name.git
+$ josh-filter ":prefix=$name" FETCH_HEAD
+$ git merge --allow-unrelated-histories FILTERED_HEAD -m "$name: subtree upstream repo"
 ```
 
-This derivation will not fetch from hackage, but instead use the directory which
-contains the derivation as the source repository.
+Also refer to the relevant [josh
+documentation](https://josh-project.github.io/josh/guide/importing.html).
 
-`cabal2nix` currently supports the following repository types:
-
-* directory
-* source archive (zip, tar.gz, ...) from http or https URL or local file.
-* git, mercurial, svn or bazaar repository
-
-## `hackage2nix`
-
-This repository also contains, in the [`hackage2nix/`](./hackage2nix) directory,
-the tool to update the Haskell packages in
-[nixpkgs](https://github.com/NixOS/nixpkgs). It has its own README there.
-
-## Building
-
-`cabal2nix` is built using [`cabal-install`](https://www.haskell.org/cabal/),
-like you'd expect, and you are free to use your favourite way of setting up
-a Haskell development environment.
-
-Since `cabal2nix` is quite intertwined with the packages `distribution-nixpkgs`
-and `hackage-db`, we recommend setting up a shared development environment
-for the three packages like so:
-
-```console
-$ mkdir /path/to/cabal2nix-root && cd /path/to/cabal2nix-root
-$ # clone repositories, note that you may need to checkout an
-$ # older tag for some depending on breaking changes on master.
-$ git clone https://github.com/NixOS/cabal2nix.git
-$ git clone https://github.com/NixOS/hackage-db.git
-$ git clone https://github.com/NixOS/distribution-nixpkgs.git
-$ # setup development environment with shellFor
-$ cat > shell.nix << EOF
-# assumes nix{os,pkgs}-unstable
-{ pkgs ? import <nixpkgs> {} }:
-
-pkgs.haskellPackages.shellFor {
-  packages = p: [
-    p.cabal2nix-unstable
-    p.distribution-nixpkgs
-    p.hackage-db
-  ];
-
-  # for running doctests locally
-  nativeBuildInputs = [
-    pkgs.haskellPackages.doctest
-  ];
-
-  # set environment variable, so the development version of
-  # distribution-nixpkgs finds derivation-attr-paths.nix
-  distribution_nixpkgs_datadir = toString ./distribution-nixpkgs;
-}
-EOF
-$ # tell cabal about local packages
-$ cat > cabal.project << EOF
-packages: ./*/*.cabal
-EOF
-$ # test our new development environment
-$ nix-shell --run "cabal v2-build exe:cabal2nix exe:hackage2nix"
-```
+[josh]: https://josh-project.github.io/josh/

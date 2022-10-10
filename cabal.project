@@ -1,8 +1,11 @@
 -- cabal.project
 
-packages: .
+packages: ./*/*.cabal
 tests: True
 
-package cabal2nix
+package *
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates
                       -Wredundant-constraints -Wunused-packages
+
+package hackage-db
+  flags:              +install-examples
