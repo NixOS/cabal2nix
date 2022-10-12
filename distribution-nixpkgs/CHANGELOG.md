@@ -1,5 +1,15 @@
 # Revision history for distribution-nixpkgs
 
+## 1.7.0.1
+
+* Adapt test suite to changed representation of some `Platform`s in Cabal 3.8.
+* Update test data to include new nixpkgs architectures `rx`, `microblaze` and
+  `microblazeel`.
+* The distribution-nixpkgs repository has been merged into the
+  [cabal2nix](https://github.com/NixOS/cabal2nix) repository.
+  All URLs in the cabal file have been updated and the distribution-nixpkgs
+  repository will be archived.
+
 ## 1.7.0
 
 * `Distribution.Nixpkgs.Meta`
