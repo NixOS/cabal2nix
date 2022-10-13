@@ -23,6 +23,8 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "darcs"              = [enable "library", enable "force-char8-encoding"]
  | name == "diagrams-builder"   = [enable "cairo", enable "svg", enable "ps", enable "rasterific"]
  | name == "fltkhs"             = [enable "opengl"]
+ -- https://github.com/tweag/ormolu/issues/927
+ | name == "fourmolu"           = [disable "fixity-th"]
  | name == "folds"              = [disable "test-hlint"]
  | name == "git-annex"          = [ enable "assistant"
                                   , disable "benchmark"
@@ -50,6 +52,8 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "liquid-fixpoint"    = [enable "build-external"]
  | name == "lua" && version >= mkVersion [2,0,0]
                                 = [enable "system-lua", disable "use-pkgconfig"]
+ -- https://github.com/tweag/ormolu/issues/927
+ | name == "ormolu"             = [disable "fixity-th"]
  | name == "pandoc"             = [disable "trypandoc"]
  | name == "pandoc-placetable"  = [enable "inlineMarkdown"]
  | name == "persistent-sqlite"  = [enable "systemlib"]
