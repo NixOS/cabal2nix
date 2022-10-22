@@ -1,5 +1,31 @@
 # Revision History for cabal2nix
 
+## 2.19.1
+
+**Warning**: This version of `cabal2nix` generates Nix expressions that
+are expected to be used with at least NixOS 22.11 or the unstable
+channels at `3928cfa27d9925f9fbd1d211cf2549f723546a81` or later (which
+should be all unstable channels published after 2022-10-23) due to changes
+how `libcrypt` is provided by `nixpkgs`. For details read below.
+
+* `cabal2nix` and `hackage2nix` will now emit a dependency on `libxcrypt`
+  if the `crypt` library is requested by a package description. This has
+  been done because `nixpkgs` has
+  [disabled `libcrypt` being bundled with `glibc`](https://github.com/NixOS/nixpkgs/pull/181764),
+  so the library will need to be pulled in from elsewhere.
+  These new generated nix expressions may not work correctly with older
+  versions of `nixpkgs` (since two `libcrypt`s would be pulled in).
+  Versions expected to work are listed in the warning above.
+  See also [#576](https://github.com/NixOS/cabal2nix/pull/576).
+* `cabal2nix` and `hackage2nix` can now resolve the `FLAC` library name.
+  See also [#567](https://github.com/NixOS/cabal2nix/pull/567).
+* Fix test suite compilation with `Cabal >= 3.8`.
+  See also [#572](https://github.com/NixOS/cabal2nix/pull/572).
+* Packages closely tied to `cabal2nix` have been merged into the main
+  `cabal2nix` source repository. As a consequence, the cabal2nix source
+  code has been moved into the `cabal2nix` subdirectory.
+  See also [#567](https://github.com/NixOS/cabal2nix/pull/567).
+
 ## 2.19.0
 
 Note that some of the API has also changed in a breaking
