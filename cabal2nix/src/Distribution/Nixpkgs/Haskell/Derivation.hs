@@ -130,7 +130,6 @@ instance Pretty Derivation where
       , onlyIf (_benchmarkDepends /= mempty) $ pPrintBuildInfo "benchmark" _benchmarkDepends
       , boolattr "enableLibraryProfiling" _enableLibraryProfiling
       , boolattr "enableExecutableProfiling" _enableExecutableProfiling
-      , boolattr "enableSplitObjs" _enableSplitObjs
       , boolattr "doHaddock" _runHaddock
       , boolattr "jailbreak" _jailbreak
       , boolattr "doCheck" _doCheck
