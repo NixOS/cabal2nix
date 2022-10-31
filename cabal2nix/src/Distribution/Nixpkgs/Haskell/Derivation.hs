@@ -120,23 +120,23 @@ instance Pretty Derivation where
       , onlyIf (_revision > 0) $ attr "revision" $ doubleQuotes $ int _revision
       , onlyIf (not (null _editedCabalFile) && _revision > 0) $ attr "editedCabalFile" $ string _editedCabalFile
       , listattr "configureFlags" empty (map (show . show) renderedFlags)
-      , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
-      , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
-      , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput _enableSeparateDataOutput
+      , boolattr "isLibrary" _isLibrary
+      , boolattr "isExecutable" _isExecutable
+      , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput
       , onlyIf (_setupDepends /= mempty) $ pPrintBuildInfo "setup" _setupDepends
       , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
       , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
       , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends
       , onlyIf (_benchmarkDepends /= mempty) $ pPrintBuildInfo "benchmark" _benchmarkDepends
-      , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
-      , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
-      , boolattr "enableSplitObjs"  (not _enableSplitObjs) _enableSplitObjs
-      , boolattr "doHaddock" (not _runHaddock) _runHaddock
-      , boolattr "jailbreak" _jailbreak _jailbreak
-      , boolattr "doCheck" (not _doCheck) _doCheck
-      , boolattr "doBenchmark" _doBenchmark _doBenchmark
+      , boolattr "enableLibraryProfiling" _enableLibraryProfiling
+      , boolattr "enableExecutableProfiling" _enableExecutableProfiling
+      , boolattr "enableSplitObjs" _enableSplitObjs
+      , boolattr "doHaddock" _runHaddock
+      , boolattr "jailbreak" _jailbreak
+      , boolattr "doCheck" _doCheck
+      , boolattr "doBenchmark" _doBenchmark
       , onlyIf (not (null _testTarget)) $ attr "testTarget" $ string _testTarget
-      , boolattr "hyperlinkSource" (not _hyperlinkSource) _hyperlinkSource
+      , boolattr "hyperlinkSource" _hyperlinkSource
       , onlyIf (not (null _phaseOverrides)) $ vcat ((map text . lines) _phaseOverrides)
       , pPrint _metaSection
       , vcat [ attr k (text v) | (k,v) <- Map.toList _extraAttributes ]
