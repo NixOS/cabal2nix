@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
-  ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
+  ( Derivation(MkDerivation), nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testTarget, hyperlinkSource, enableSplitObjs
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
