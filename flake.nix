@@ -56,17 +56,6 @@
 
       in
         rec {
-          packages = rec {
-            inherit (pkgs.haskell.packages."${ghcVersion}".local)
-              cabal2nix
-              hackage-db
-              distribution-nixpkgs
-              language-nix
-            ;
-
-            default = cabal2nix;
-          };
-
           devShells = rec {
             cabal2nix =
               pkgs.haskell.packages."${ghcVersion}".local.cabal2nix.env;
