@@ -1,5 +1,5 @@
 { inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/release-22.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     flake-compat = {
       url = "github:edolstra/flake-compat";
