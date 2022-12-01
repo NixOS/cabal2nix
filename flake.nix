@@ -30,7 +30,11 @@
                       local = rec {
                         cabal2nix =
                           hself.callCabal2nix "cabal2nix" ./cabal2nix {
-                            inherit distribution-nixpkgs hackage-db;
+                            inherit
+                              distribution-nixpkgs
+                              hackage-db
+                              language-nix
+                            ;
                           };
 
                         distribution-nixpkgs =
