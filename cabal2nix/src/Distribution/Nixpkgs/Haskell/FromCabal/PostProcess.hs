@@ -91,7 +91,7 @@ hooks =
   , ("dhall", set doCheck False) -- attempts to access the network
   , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
   , ("eventstore", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64"))))
-  , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${pkgs.freenect}/lib"])))
+  , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${lib.getDev pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${lib.getLib pkgs.freenect}/lib"])))
   , ("fltkhs", set (libraryDepends . system . contains (pkg "fltk14")) True . over (libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("gi-cairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
@@ -138,7 +138,7 @@ hooks =
   , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (self "random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
   , ("js-jquery", set doCheck False)            -- attempts to access the network
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
-  , ("libxml", set (configureFlags . contains "--extra-include-dir=${libxml2.dev}/include/libxml2") True)
+  , ("libxml", set (configureFlags . contains "--extra-include-dir=${lib.getDev libxml2}/include/libxml2") True)
   , ("liquid-fixpoint", set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("lua >= 2.0.0 && < 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
@@ -243,7 +243,7 @@ gitAnnexHook = set phaseOverrides gitAnnexOverrides
 hfusePreConfigure :: String
 hfusePreConfigure = unlines
   [ "preConfigure = ''"
-  , "  sed -i -e \"s@  Extra-Lib-Dirs:         /usr/local/lib@  Extra-Lib-Dirs:         ${fuse}/lib@\" HFuse.cabal"
+  , "  sed -i -e \"s@  Extra-Lib-Dirs:         /usr/local/lib@  Extra-Lib-Dirs:         ${lib.getLib fuse}/lib@\" HFuse.cabal"
   , "'';"
   ]
 
@@ -340,7 +340,7 @@ giCairoPhaseOverrides = over phaseOverrides (++txt)
                       . set (libraryDepends . pkgconfig . contains (pkg "cairo")) True
   where
     txt = unlines [ "preCompileBuildDriver = ''"
-                  , "  PKG_CONFIG_PATH+=\":${cairo}/lib/pkgconfig\""
+                  , "  PKG_CONFIG_PATH+=\":${lib.getDev cairo}/lib/pkgconfig\""
                   , "  setupCompileFlags+=\" $(pkg-config --libs cairo-gobject)\""
                   , "'';"
                   ]
