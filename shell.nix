@@ -35,4 +35,8 @@ in pkgs.mkShell {
   ] ++ pkgs.lib.optionals withHls [
     haskellPackages.haskell-language-server
   ];
+
+  # Make Paths_ module of distribution-nixpkgs find its data files in the shell.
+  # https://cabal.readthedocs.io/en/latest/cabal-package.html#accessing-data-files-from-package-code
+  distribution_nixpkgs_datadir = toString ./distribution-nixpkgs;
 }
