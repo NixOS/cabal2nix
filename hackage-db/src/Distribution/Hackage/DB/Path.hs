@@ -17,8 +17,18 @@ import Control.Exception
 import System.Directory
 import System.FilePath
 
+-- Some logic to handle both old ~/.cabal and XDG cache directory used
+-- by default from cabal-install 3.10.1.0.
+--
+-- This is a simplified form of the logic found in cabal-install
+-- itself:
+-- https://github.com/haskell/cabal/blob/0ed12188525335ac9759dc957d49979ab09382a1/cabal-install/src/Distribution/Client/Config.hs#L594-L610
 cabalStateDir :: IO FilePath
-cabalStateDir = getAppUserDataDirectory "cabal"
+cabalStateDir = do
+  dotCabal <- getAppUserDataDirectory "cabal"
+  dotCabalExists <- doesDirectoryExist dotCabal
+  if dotCabalExists then pure dotCabal else
+    getXdgDirectory XdgCache "cabal"
 
 cabalTarballDir :: String -> IO FilePath
 cabalTarballDir repo = do
