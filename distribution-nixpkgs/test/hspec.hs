@@ -68,14 +68,14 @@ nixpkgsSystemMapping =
   , ("avr-none", Platform (OtherArch "avr") (OtherOS "none"))
   , ("i686-cygwin", Platform I386 (OtherOS "cygwin"))
   , ("i686-darwin", Platform I386 OSX)
-  , ("i686-freebsd", Platform I386 FreeBSD)
+  , ("i686-freebsd13", Platform I386 (OtherOS "freebsd13"))
   , ("i686-genode", Platform I386 (OtherOS "genode"))
   , ("i686-linux", Platform I386 Linux)
   , ("i686-netbsd", Platform I386 NetBSD)
   , ("i686-none", Platform I386 (OtherOS "none"))
   , ("i686-openbsd", Platform I386 OpenBSD)
   , ("i686-windows", Platform I386 Windows)
-  , ("js-ghcjs", Platform JavaScript Ghcjs)
+  , ("javascript-ghcjs", Platform JavaScript Ghcjs)
   , ("m68k-linux", Platform M68k Linux)
   , ("m68k-netbsd", Platform M68k NetBSD)
   , ("m68k-none", Platform M68k (OtherOS "none"))
@@ -120,7 +120,7 @@ nixpkgsSystemMapping =
 #endif
   , ("x86_64-cygwin", Platform X86_64 (OtherOS "cygwin"))
   , ("x86_64-darwin", Platform X86_64 OSX)
-  , ("x86_64-freebsd", Platform X86_64 FreeBSD)
+  , ("x86_64-freebsd13", Platform X86_64 (OtherOS "freebsd13"))
   , ("x86_64-genode", Platform X86_64 (OtherOS "genode"))
   , ("x86_64-linux", Platform X86_64 Linux)
   , ("x86_64-netbsd", Platform X86_64 NetBSD)
@@ -132,6 +132,10 @@ nixpkgsSystemMapping =
   -- lib.systems.examples
   , ("mips-linux", Platform Mips Linux)
   , ("mips64-linux", Platform (OtherArch "mips64") Linux)
+  , ("mipsisa32r6-linux", Platform (OtherArch "mipsisa32r6") Linux)
+  , ("mipsisa32r6el-linux", Platform (OtherArch "mipsisa32r6el") Linux)
+  , ("mipsisa64r6-linux", Platform (OtherArch "mipsisa64r6") Linux)
+  , ("mipsisa64r6el-linux", Platform (OtherArch "mipsisa64r6el") Linux)
   ]
 
 platformMapping :: [(String, NixpkgsPlatform)]
