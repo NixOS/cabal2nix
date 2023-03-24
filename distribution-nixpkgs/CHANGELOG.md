@@ -1,5 +1,15 @@
 # Revision history for distribution-nixpkgs
 
+## Unreleased
+
+* GHC and nixpkgs now
+  [use the system double `javascript-ghcjs`](https://github.com/NixOS/nixpkgs/commit/471b9cab41b218080f5e9f4abbc83eaaa60c6abf)
+  instead of `js-ghcjs` to match Cabal's default rendering. With this release,
+  `distribution-nixpkgs` does the same.
+  Note that this means that this release needs to be used with nixpkgs unstable
+  after [97d55ec](https://github.com/NixOS/nixpkgs/commit/97d55ec923b0cd3798a6a84e2e0a6b2c6b54f6a9)
+  or nixpkgs stable 23.05 or newer.
+
 ## 1.7.0.1
 
 * Adapt test suite to changed representation of some `Platform`s in Cabal 3.8.
