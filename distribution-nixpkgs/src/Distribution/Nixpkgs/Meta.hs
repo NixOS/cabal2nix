@@ -84,7 +84,6 @@ nixpkgsPlatformFromCabal (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++
             I386 -> "i686" -- rendered as i386 by default
             PPC -> "powerpc" -- rendered as ppc by default
             PPC64 -> "powerpc64" -- rendered as ppc64 by default
-            JavaScript -> "js" -- rendered as javascript by default
             _    -> CabalPretty.prettyShow arch
         nixOs =
           case os of
