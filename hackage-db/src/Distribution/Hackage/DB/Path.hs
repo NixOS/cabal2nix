@@ -17,12 +17,23 @@ import Control.Exception
 import System.Directory
 import System.FilePath
 
--- Some logic to handle both old ~/.cabal and XDG cache directory used
--- by default from cabal-install 3.10.1.0.
+-- |
+-- Determines the /state/ directory (which e.g. holds the hackage tarball)
+-- cabal-install uses via the following logic:
 --
--- This is a simplified form of the logic found in cabal-install
--- itself:
--- https://github.com/haskell/cabal/blob/0ed12188525335ac9759dc957d49979ab09382a1/cabal-install/src/Distribution/Client/Config.hs#L594-L610
+-- 1. If @~/.cabal@ (see 'getAppUserDataDirectory') exists, use that.
+-- 2. Otherwise, use @${XDG_CACHE_HOME}/cabal@ (see @'getXdgDirectory' 'XdgCache'@)
+--    which is the new directory cabal-install can use starting with
+--    version @3.10.*@.
+--
+-- This logic is mostly equivalent to what upstream cabal-install is
+-- [doing](https://github.com/haskell/cabal/blob/0ed12188525335ac9759dc957d49979ab09382a1/cabal-install/src/Distribution/Client/Config.hs#L594-L610)
+-- with the following exceptions:
+--
+-- * The @CABAL_DIR@ environment variable is not supported at the moment.
+-- * The state directory can freely be configured to use a different location
+--   in the cabal-install configuration file. hackage-db doesn't parse this
+--   configuration file, so differing state directories are ignored.
 cabalStateDir :: IO FilePath
 cabalStateDir = do
   dotCabal <- getAppUserDataDirectory "cabal"
@@ -39,9 +50,11 @@ hackageTarballDir :: IO FilePath
 hackageTarballDir = cabalTarballDir "hackage.haskell.org"
 
 -- | Determine the default path of the Hackage database, which typically
--- resides at @"$HOME\/.cabal\/packages\/hackage.haskell.org\/00-index.tar"@.
--- Running the command @"cabal update"@ will keep that file up-to-date.
-
+-- resides in @$HOME\/.cabal\/packages\/hackage.haskell.org\/@.
+-- Running the command @cabal update@ or @cabal v2-update@ will keep the index
+-- up-to-date.
+--
+-- See 'cabalStateDir' on how @hackage-db@ searches for the cabal state directory.
 hackageTarball :: IO FilePath
 hackageTarball = do
   htd <- hackageTarballDir
