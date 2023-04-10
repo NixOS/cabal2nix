@@ -7,7 +7,7 @@ license:       BSD3
 license-file:  LICENSE
 author:        Peter Simons
 maintainer:    simons@cryp.to
-tested-with:   GHC == 8.8.4, GHC == 8.10.7, GHC == 9.0.2, GHC == 9.2.2
+tested-with:   GHC == 8.8.4, GHC == 8.10.7, GHC == 9.0.2, GHC == 9.2.7
 category:      Distribution, Language, Nix
 homepage:      https://github.com/NixOS/cabal2nix/tree/master/language-nix#readme
 bug-reports:   https://github.com/NixOS/cabal2nix/issues
