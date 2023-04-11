@@ -12,7 +12,7 @@ author:             Peter Simons <simons@cryp.to>
 -- list all contributors: git log --pretty='%an' | sort | uniq
 maintainer:         sternenseemann <sternenseemann@systemli.org>
 stability:          stable
-tested-with:        GHC == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.2
+tested-with:        GHC == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.7 || == 9.4.4
 category:           Distribution, Nix
 homepage:           https://github.com/nixos/cabal2nix#readme
 bug-reports:        https://github.com/nixos/cabal2nix/issues
