@@ -161,6 +161,7 @@ hooks =
   , ("qtah-qt5", set (libraryDepends . tool . contains (bind "pkgs.qt5.qtbase")) True)
   , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("req", set doCheck False)  -- test suite requires network access
+  , ("rest-rewrite", over (testDepends . system) (Set.union (pkgs ["graphviz", "z3"])))
   , ("sbv > 7", set (testDepends . system . contains (pkg "z3")) True)
   , ("sdr", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64")))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
