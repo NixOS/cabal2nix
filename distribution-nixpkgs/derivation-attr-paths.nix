@@ -34,8 +34,8 @@ let
           if !success then []
           else if lib.isDerivation value then [
             path
-          ] else if recurseInto path x then lib.concatLists (
-            lib.mapAttrsToList (n: go (path ++ [ n ])) x
+          ] else if recurseInto path value then lib.concatLists (
+            lib.mapAttrsToList (n: go (path ++ [ n ])) value
           ) else [];
     in go [];
 in
