@@ -405,13 +405,11 @@ bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs
                 . set (metaSection . license) (Known "lib.licenses.lgpl21Plus")
                 . set (metaSection . hydraPlatforms) Nothing
 
+-- | The tz Haskell package depends on both the tzdata Haskell package, as well as the
+-- tzdata system package.  The following passes in the tzdata system package as
+-- \"system-tzdata\".
 tzOverrides :: Derivation -> Derivation
 tzOverrides =
-  -- The tz Haskell package uses zoneinfo files from the system tzdata package in its tests.
-  set phaseOverrides "preCheck = \"export TZDIR=${system-tzdata}/share/zoneinfo\";" .
-  -- The tz Haskell package depends on both the tzdata Haskell package, as well as the
-  -- tzdata system package.  The following passes in the tzdata system package as
-  -- "system-tzdata".
   set (testDepends . system . contains "system-tzdata = pkgs.tzdata") True
 
 nullBinding :: Identifier -> Binding
