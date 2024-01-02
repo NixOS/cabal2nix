@@ -174,7 +174,6 @@ hooks =
   , ("tensorflow-proto", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
-  , ("tz", set phaseOverrides "preConfigure = \"export TZDIR=${pkgs.tzdata}/share/zoneinfo\";")
   , ("udev", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
   , ("Win32", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
