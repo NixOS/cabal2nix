@@ -174,7 +174,6 @@ hooks =
   , ("tensorflow-proto", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
-  , ("tz", tzOverrides)
   , ("udev", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
   , ("Win32", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
@@ -404,13 +403,6 @@ bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs
                 . set (executableDepends . pkgconfig . contains "gio-unix = null") False
                 . set (metaSection . license) (Known "lib.licenses.lgpl21Plus")
                 . set (metaSection . hydraPlatforms) Nothing
-
--- | The tz Haskell package depends on both the tzdata Haskell package, as well as the
--- tzdata system package.  The following passes in the tzdata system package as
--- \"system-tzdata\".
-tzOverrides :: Derivation -> Derivation
-tzOverrides =
-  set (testDepends . system . contains "system-tzdata = pkgs.tzdata") True
 
 nullBinding :: Identifier -> Binding
 nullBinding name = binding # (name, path # [ident # "null"])
