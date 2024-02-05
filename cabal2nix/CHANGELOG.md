@@ -1,5 +1,10 @@
 # Revision History for cabal2nix
 
+## Unreleased
+
+* `hackage2nix` now defaults internally to a utf-8 locale ignoring enviroment
+  variables.
+
 ## 2.19.1
 
 **Warning**: This version of `cabal2nix` generates Nix expressions that

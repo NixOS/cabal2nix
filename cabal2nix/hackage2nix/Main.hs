@@ -41,6 +41,7 @@ import Text.PrettyPrint.HughesPJClass hiding ( (<>) )
 import Data.List.NonEmpty (NonEmpty)
 import Data.Semigroup (sconcat)
 import Options.Applicative.NonEmpty (some1)
+import GHC.IO.Encoding (setLocaleEncoding)
 
 type PackageSet = Map PackageName Version
 type PackageMultiSet = Map PackageName (Set Version)
@@ -56,6 +57,7 @@ data CLI = CLI
 
 main :: IO ()
 main = do
+  setLocaleEncoding utf8
   let cliOptions :: Parser CLI
       cliOptions = CLI
         <$> strOption (long "hackage" <> help "path to Hackage git repository" <> value "hackage" <> showDefaultWith id <> metavar "PATH")
