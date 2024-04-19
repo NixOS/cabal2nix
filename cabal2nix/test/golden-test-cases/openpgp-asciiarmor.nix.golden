@@ -12,6 +12,7 @@ mkDerivation {
     attoparsec base base64-bytestring bytestring cereal HUnit
     test-framework test-framework-hunit
   ];
+  testTarget = "tests";
   homepage = "http://floss.scru.org/openpgp-asciiarmor";
   description = "OpenPGP (RFC4880) ASCII Armor codec";
   license = "unknown";

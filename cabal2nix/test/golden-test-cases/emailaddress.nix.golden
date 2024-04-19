@@ -13,6 +13,7 @@ mkDerivation {
     product-profunctors profunctors text
   ];
   testHaskellDepends = [ base doctest Glob ];
+  testTarget = "emailaddress-doctest";
   homepage = "https://github.com/cdepillabout/emailaddress#readme";
   description = "Wrapper around email-validate library adding instances for common type classes";
   license = lib.licenses.bsd3;

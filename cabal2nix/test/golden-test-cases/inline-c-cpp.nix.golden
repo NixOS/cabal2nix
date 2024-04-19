@@ -9,6 +9,7 @@ mkDerivation {
     base inline-c safe-exceptions template-haskell
   ];
   testHaskellDepends = [ base hspec inline-c safe-exceptions ];
+  testTarget = "tests";
   description = "Lets you embed C++ code into Haskell";
   license = lib.licenses.mit;
 }

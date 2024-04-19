@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base bytestring chell chell-quickcheck QuickCheck text
   ];
+  testTarget = "filesystem_path_tests";
   homepage = "https://github.com/fpco/haskell-filesystem";
   description = "High-level, byte-based file and directory path manipulations (deprecated)";
   license = lib.licenses.mit;

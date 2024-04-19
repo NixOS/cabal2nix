@@ -10,6 +10,7 @@ mkDerivation {
   testHaskellDepends = [
     base bytestring QuickCheck tasty tasty-hunit tasty-quickcheck
   ];
+  testTarget = "tests";
   description = "Compression and decompression in the gzip and zlib formats";
   license = lib.licenses.bsd3;
 }

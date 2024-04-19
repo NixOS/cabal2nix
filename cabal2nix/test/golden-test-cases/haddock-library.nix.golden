@@ -11,6 +11,7 @@ mkDerivation {
   ];
   testToolDepends = [ hspec-discover ];
   doHaddock = false;
+  testTarget = "spec";
   homepage = "http://www.haskell.org/haddock/";
   description = "Library exposing some functionality of Haddock";
   license = lib.licenses.bsd3;

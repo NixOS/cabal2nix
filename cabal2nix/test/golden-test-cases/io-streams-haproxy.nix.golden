@@ -12,6 +12,7 @@ mkDerivation {
     attoparsec base bytestring HUnit io-streams network test-framework
     test-framework-hunit transformers
   ];
+  testTarget = "testsuite";
   homepage = "http://snapframework.com/";
   description = "HAProxy protocol 1.5 support for io-streams";
   license = lib.licenses.bsd3;

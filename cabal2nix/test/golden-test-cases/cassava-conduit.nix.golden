@@ -14,6 +14,7 @@ mkDerivation {
     base bytestring cassava conduit conduit-extra QuickCheck text
   ];
   benchmarkHaskellDepends = [ base criterion ];
+  testTarget = "quickcheck";
   homepage = "https://github.com/domdere/cassava-conduit";
   description = "Conduit interface for cassava package";
   license = lib.licenses.bsd3;

@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base HUnit test-framework test-framework-hunit
   ];
+  testTarget = "test-async";
   homepage = "https://github.com/simonmar/async";
   description = "Run IO operations asynchronously and wait for their results";
   license = lib.licenses.bsd3;

@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base time ];
   testHaskellDepends = [ base ];
+  testTarget = "io-machine-test";
   homepage = "https://github.com/YoshikuniJujo/io-machine#readme";
   description = "Easy I/O model to learn IO monad";
   license = lib.licenses.bsd3;

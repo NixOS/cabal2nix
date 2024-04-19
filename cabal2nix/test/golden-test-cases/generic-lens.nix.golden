@@ -10,6 +10,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base criterion deepseq lens QuickCheck
   ];
+  testTarget = "generic-lens-test generic-lens-test-25 generic-lens-test-24 doctests";
   homepage = "https://github.com/kcsongor/generic-lens";
   description = "Generic data-structure operations exposed as lenses";
   license = lib.licenses.bsd3;

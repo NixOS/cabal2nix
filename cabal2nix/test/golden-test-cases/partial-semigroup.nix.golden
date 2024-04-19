@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base doctest hedgehog ];
+  testTarget = "docs examples properties generics";
   homepage = "https://github.com/chris-martin/partial-semigroup";
   description = "A partial binary associative operator";
   license = lib.licenses.asl20;

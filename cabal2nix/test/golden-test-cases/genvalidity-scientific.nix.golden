@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base genvalidity genvalidity-hspec hspec QuickCheck scientific
   ];
+  testTarget = "genvalidity-scientific-test";
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "GenValidity support for Scientific";
   license = lib.licenses.mit;

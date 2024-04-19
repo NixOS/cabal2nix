@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base HUnit test-framework test-framework-hunit
   ];
+  testTarget = "TestRank1Dynamic";
   homepage = "http://haskell-distributed.github.com";
   description = "Like Data.Dynamic/Data.Typeable but with support for rank-1 polymorphic types";
   license = lib.licenses.bsd3;

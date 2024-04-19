@@ -23,6 +23,7 @@ mkDerivation {
     monad-control mtl network nonce parsec random random-shuffle text
     transformers-base
   ];
+  testTarget = "test";
   homepage = "https://github.com/mongodb-haskell/mongodb";
   description = "Driver (client) for MongoDB, a free, scalable, fast, document DBMS";
   license = lib.licenses.asl20;

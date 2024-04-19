@@ -24,6 +24,7 @@ mkDerivation {
     unordered-containers vector
   ];
   testToolDepends = [ hspec-discover ];
+  testTarget = "github-test";
   homepage = "https://github.com/phadej/github";
   description = "Access to the GitHub API, v3";
   license = lib.licenses.bsd3;

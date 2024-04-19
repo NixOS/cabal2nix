@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base genvalidity genvalidity-hspec hspec QuickCheck uuid
   ];
+  testTarget = "genvalidity-uuid-test";
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "GenValidity support for UUID";
   license = lib.licenses.mit;

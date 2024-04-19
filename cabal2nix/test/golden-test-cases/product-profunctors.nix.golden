@@ -9,6 +9,7 @@ mkDerivation {
     base contravariant profunctors tagged template-haskell
   ];
   testHaskellDepends = [ base profunctors ];
+  testTarget = "test";
   homepage = "https://github.com/tomjaguarpaw/product-profunctors";
   description = "product-profunctors";
   license = lib.licenses.bsd3;

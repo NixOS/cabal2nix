@@ -8,6 +8,7 @@ mkDerivation {
   setupHaskellDepends = [ base Cabal cabal-doctest ];
   libraryHaskellDepends = [ base bytes mtl transformers ];
   testHaskellDepends = [ base doctest ];
+  testTarget = "doctests";
   homepage = "http://github.com/ekmett/bits";
   description = "Various bit twiddling and bitwise serialization primitives";
   license = lib.licenses.bsd3;

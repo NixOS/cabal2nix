@@ -32,6 +32,7 @@ mkDerivation {
     neat-interpolation parsec pretty safe semigroups strict syb text
     transformers uniplate unsafe yaml
   ];
+  testTarget = "unittests littests libinterfacetests";
   homepage = "https://github.com/lspitzner/brittany/";
   description = "Haskell source code formatter";
   license = lib.licenses.agpl3Only;

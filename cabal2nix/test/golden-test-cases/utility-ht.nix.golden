@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base QuickCheck ];
+  testTarget = "test";
   description = "Various small helper functions for Lists, Maybes, Tuples, Functions";
   license = lib.licenses.bsd3;
 }

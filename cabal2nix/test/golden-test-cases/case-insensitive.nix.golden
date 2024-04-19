@@ -10,6 +10,7 @@ mkDerivation {
     base bytestring HUnit test-framework test-framework-hunit text
   ];
   benchmarkHaskellDepends = [ base bytestring criterion deepseq ];
+  testTarget = "test-case-insensitive";
   homepage = "https://github.com/basvandijk/case-insensitive";
   description = "Case insensitive string comparison";
   license = lib.licenses.bsd3;

@@ -29,6 +29,7 @@ mkDerivation {
     quickcheck-instances resourcet tagged tasty tasty-hunit
     tasty-quickcheck text time transformers transformers-base
   ];
+  testTarget = "sqs-tests dynamodb-tests s3-tests";
   homepage = "http://github.com/aristidb/aws";
   description = "Amazon Web Services (AWS) for Haskell";
   license = lib.licenses.bsd3;

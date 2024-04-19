@@ -12,6 +12,7 @@ mkDerivation {
     array base binary bytestring QuickCheck test-framework
     test-framework-quickcheck2
   ];
+  testTarget = "test-sha";
   description = "Implementations of the SHA suite of message digest functions";
   license = lib.licenses.bsd3;
 }

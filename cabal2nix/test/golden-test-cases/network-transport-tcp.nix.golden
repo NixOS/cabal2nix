@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base bytestring network network-transport network-transport-tests
   ];
+  testTarget = "TestTCP TestQC";
   homepage = "http://haskell-distributed.github.com";
   description = "TCP instantiation of Network.Transport";
   license = lib.licenses.bsd3;

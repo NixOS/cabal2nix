@@ -18,6 +18,7 @@ mkDerivation {
   testHaskellDepends = [
     aeson base bifunctors bytestring directory tasty tasty-golden text
   ];
+  testTarget = "golden";
   homepage = "http://github.com/brendanhay/ede";
   description = "Templating language with similar syntax and features to Liquid or Jinja2";
   license = "unknown";

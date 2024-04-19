@@ -12,6 +12,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base bytestring criterion deepseq monoid-subclasses text
   ];
+  testTarget = "Main";
   homepage = "https://github.com/blamario/incremental-parser";
   description = "Generic parser library capable of providing partial results from partial input";
   license = "GPL";

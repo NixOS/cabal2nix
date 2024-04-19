@@ -9,6 +9,7 @@ mkDerivation {
     base monad-loops MonadRandom random random-shuffle
   ];
   testHaskellDepends = [ base hspec HUnit MonadRandom ];
+  testTarget = "general-games-test";
   homepage = "https://github.com/cgorski/general-games";
   description = "Library supporting simulation of a number of games";
   license = lib.licenses.mit;

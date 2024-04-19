@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base bytestring containers hashable time unordered-containers
   ];
+  testTarget = "test-threads test-sequence invalidate-test invalidate-cache-test";
   homepage = "https://github.com/elblake/expiring-cache-map";
   description = "General purpose simple caching";
   license = lib.licenses.bsd3;

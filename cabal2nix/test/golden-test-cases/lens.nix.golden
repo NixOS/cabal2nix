@@ -33,6 +33,7 @@ mkDerivation {
     base bytestring comonad containers criterion deepseq
     generic-deriving transformers unordered-containers vector
   ];
+  testTarget = "templates properties hunit doctests";
   homepage = "http://github.com/ekmett/lens/";
   description = "Lenses, Folds and Traversals";
   license = lib.licenses.bsd2;

@@ -6,6 +6,7 @@ mkDerivation {
   libraryHaskellDepends = [ base basement ghc-prim ];
   testHaskellDepends = [ base basement ];
   benchmarkHaskellDepends = [ base basement gauge ];
+  testTarget = "check-foundation doctest";
   homepage = "https://github.com/haskell-foundation/foundation";
   description = "Alternative prelude with batteries and no dependencies";
   license = lib.licenses.bsd3;

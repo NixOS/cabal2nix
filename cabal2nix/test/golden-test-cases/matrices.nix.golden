@@ -10,6 +10,7 @@ mkDerivation {
     base tasty tasty-hunit tasty-quickcheck vector
   ];
   benchmarkHaskellDepends = [ base criterion vector ];
+  testTarget = "test";
   description = "native matrix based on vector";
   license = lib.licenses.bsd3;
 }

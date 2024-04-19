@@ -7,6 +7,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base mmap primitive vector ];
   testHaskellDepends = [ base QuickCheck temporary vector ];
+  testTarget = "quickcheck";
   homepage = "http://github.com/pumpkin/vector-mmap";
   description = "Memory map immutable and mutable vectors";
   license = lib.licenses.bsd3;

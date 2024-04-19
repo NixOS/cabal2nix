@@ -9,6 +9,7 @@ mkDerivation {
     ansi-terminal base base-unicode-symbols text
   ];
   testHaskellDepends = [ base base-unicode-symbols hspec text ];
+  testTarget = "test";
   homepage = "http://github.com/mvoidex/hformat";
   description = "Simple Haskell formatting";
   license = lib.licenses.bsd3;

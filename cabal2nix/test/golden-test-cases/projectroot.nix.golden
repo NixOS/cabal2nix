@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base directory ];
   testHaskellDepends = [ base hspec QuickCheck ];
+  testTarget = "hspec";
   homepage = "https://github.com/yamadapc/haskell-projectroot";
   description = "Bindings to the projectroot C logic";
   license = lib.licenses.mit;

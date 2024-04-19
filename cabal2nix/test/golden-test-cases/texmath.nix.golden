@@ -15,6 +15,7 @@ mkDerivation {
     base bytestring directory filepath process split temporary text
     utf8-string xml
   ];
+  testTarget = "test-texmath";
   homepage = "http://github.com/jgm/texmath";
   description = "Conversion between formats used to represent mathematics";
   license = "GPL";

@@ -7,6 +7,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ aeson base shakespeare text ];
   testHaskellDepends = [ aeson base hspec QuickCheck text ];
+  testTarget = "state-codes-test";
   homepage = "https://github.com/acamino/state-codes#README";
   description = "ISO 3166-2:US state codes and i18n names";
   license = lib.licenses.mit;

@@ -10,6 +10,7 @@ mkDerivation {
     base binary bytestring QuickCheck random test-framework
     test-framework-quickcheck2
   ];
+  testTarget = "qc";
   description = "Bit parsing/writing on top of binary";
   license = lib.licenses.bsd3;
 }

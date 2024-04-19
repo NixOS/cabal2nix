@@ -358,7 +358,7 @@ opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
                 . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
-hspecCoreOverrides = set phaseOverrides "testTarget = \"--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\";"
+hspecCoreOverrides = set testTarget "--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'"
 
 cabal2nixOverrides :: Derivation -> Derivation
 cabal2nixOverrides = set phaseOverrides $ unlines
