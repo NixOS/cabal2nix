@@ -110,7 +110,6 @@ hooks =
   , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex >= 6.20170925 && < 6.20171214", set doCheck False)      -- some versions of git-annex require their test suite to be run inside of a git checkout
-  , ("git-annex", gitAnnexHook)
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
   , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
@@ -223,22 +222,6 @@ haddockHook = set doCheck False
             . set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";"
             . over (dependencies . haskell) (Set.filter (\b -> view localName b /= "haddock-test"))
             . set (metaSection . broken) False
-
-gitAnnexHook :: Derivation -> Derivation
-gitAnnexHook = set phaseOverrides gitAnnexOverrides
-             . over (executableDepends . system) (Set.union buildInputs)
-  where
-    gitAnnexOverrides = unlines
-      [ "preConfigure = \"export HOME=$TEMPDIR; patchShebangs .\";"
-      , "postBuild = ''"
-      , "  ln -sf dist/build/git-annex/git-annex git-annex"
-      , "  ln -sf git-annex git-annex-shell"
-      , "'';"
-      , "installPhase = \"make PREFIX=$out BUILDER=: install install-completions\";"
-      , "checkPhase = ''PATH+=\":$PWD\" git-annex test'';"
-      , "enableSharedExecutables = false;"
-      ]
-    buildInputs = pkgs ["git","rsync","gnupg","curl","wget","lsof","openssh","which","bup","perl"]
 
 hfusePreConfigure :: String
 hfusePreConfigure = unlines
