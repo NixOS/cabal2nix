@@ -24,18 +24,17 @@ configureCabalFlags' (PackageIdentifier name version)
  | name == "diagrams-builder"   = [enable "cairo", enable "svg", enable "ps", enable "rasterific"]
  | name == "fltkhs"             = [enable "opengl"]
  | name == "folds"              = [disable "test-hlint"]
- | name == "git-annex"          = [ enable "assistant"
-                                  , disable "benchmark"
-                                  , enable "dbus"
+ | name == "git-annex"          = [ -- default
+                                    enable "assistant"
                                   , disable "debuglocks"
+                                    -- custom
+                                  , disable "benchmark"
+                                  , enable "crypton"
+                                  , enable "dbus"
                                   , enable "magicmime"
-                                  , enable "networkbsd"
                                   , enable "pairing"
                                   , enable "production"
-                                  , enable "s3"
                                   , enable "torrentparser"
-                                  , enable "webapp"
-                                  , enable "webdav"
                                   ]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
