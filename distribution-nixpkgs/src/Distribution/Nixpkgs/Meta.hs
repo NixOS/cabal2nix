@@ -168,7 +168,7 @@ nixpkgsPlatformFromString s = platformGroup <|> singlePlatform
 --   Just (Platform PPC OSX)
 --   >>> cabalPlatformFromSystem "powerpc64le-linux"
 --   Just (Platform (OtherArch "powerpc64le") Linux)
---   >>> cabalPlatformFromSystem "js-ghcjs"
+--   >>> cabalPlatformFromSystem "javascript-ghcjs"
 --   Just (Platform JavaScript Ghcjs)
 cabalPlatformFromSystem :: String -> Maybe Platform
 cabalPlatformFromSystem s =
@@ -200,7 +200,6 @@ cabalPlatformFromSystem s =
         parseArch as =
           case classifyArch Strict as of
             OtherArch "i686" -> I386
-            OtherArch "js" -> JavaScript
             OtherArch "powerpc" -> PPC
             OtherArch "powerpc64" -> PPC64
             a -> a
