@@ -116,7 +116,6 @@ hooks =
   , ("graphviz", set (testDepends . system . contains (pkg "graphviz")) True)
   , ("gtk3", gtk3Hook)
   , ("gtkglext", gtkglextHook)
-  , ("haddock", haddockHook) -- https://github.com/haskell/haddock/issues/511
   , ("hakyll", set (testDepends . tool . contains (pkg "util-linux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts", set doCheck False)
   , ("hfsevents", hfseventsOverrides)
@@ -216,12 +215,6 @@ replace old new bs
 gtk3Hook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
 gtk3Hook = set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
          . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
-
-haddockHook :: Derivation -> Derivation
-haddockHook = set doCheck False
-            . set phaseOverrides "preCheck = \"unset GHC_PACKAGE_PATH\";"
-            . over (dependencies . haskell) (Set.filter (\b -> view localName b /= "haddock-test"))
-            . set (metaSection . broken) False
 
 hfusePreConfigure :: String
 hfusePreConfigure = unlines
