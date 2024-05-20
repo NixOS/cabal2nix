@@ -1,6 +1,6 @@
 # Revision history for distribution-nixpkgs
 
-## Unreleased
+## 1.7.1
 
 * GHC and nixpkgs now
   [use the system double `javascript-ghcjs`](https://github.com/NixOS/nixpkgs/commit/471b9cab41b218080f5e9f4abbc83eaaa60c6abf)
