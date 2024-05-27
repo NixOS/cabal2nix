@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base bytestring silently tasty tasty-golden tasty-hunit
   ];
+  testTarget = "tests";
   homepage = "https://github.com/AshleyYakeley/countable";
   description = "Countable, Searchable, Finite, Empty classes";
   license = lib.licenses.bsd3;

@@ -10,6 +10,7 @@ mkDerivation {
   setupHaskellDepends = [ base Cabal directory filepath ];
   executableHaskellDepends = [ array base containers mtl ];
   testHaskellDepends = [ base process ];
+  testTarget = "tests";
   homepage = "https://www.haskell.org/happy/";
   description = "Happy is a parser generator for Haskell";
   license = lib.licenses.bsd2;

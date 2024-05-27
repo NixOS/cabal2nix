@@ -17,6 +17,7 @@ mkDerivation {
   testHaskellDepends = [
     base containers directory process shake stm text time unix vector
   ];
+  testTarget = "wiki-suite";
   homepage = "https://github.com/ku-fpg/blank-canvas/wiki";
   description = "HTML5 Canvas Graphics Library";
   license = lib.licenses.bsd3;

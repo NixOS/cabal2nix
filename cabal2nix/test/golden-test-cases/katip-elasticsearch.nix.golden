@@ -24,6 +24,7 @@ mkDerivation {
     aeson base bloodhound criterion deepseq random text
     unordered-containers uuid
   ];
+  testTarget = "test";
   homepage = "https://github.com/Soostone/katip";
   description = "ElasticSearch scribe for the Katip logging framework";
   license = lib.licenses.bsd3;

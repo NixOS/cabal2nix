@@ -43,6 +43,7 @@ mkDerivation {
     time-locale-compat transformers unordered-containers
     wl-pprint-extras zlib
   ];
+  testTarget = "tests";
   homepage = "http://floss.scru.org/hOpenPGP/";
   description = "native Haskell implementation of OpenPGP (RFC4880)";
   license = lib.licenses.mit;

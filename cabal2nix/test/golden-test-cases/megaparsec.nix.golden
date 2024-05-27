@@ -16,6 +16,7 @@ mkDerivation {
     scientific text transformers
   ];
   benchmarkHaskellDepends = [ base criterion deepseq text weigh ];
+  testTarget = "tests";
   homepage = "https://github.com/mrkkrp/megaparsec";
   description = "Monadic parser combinators";
   license = lib.licenses.bsd2;

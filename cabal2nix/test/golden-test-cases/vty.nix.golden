@@ -27,6 +27,7 @@ mkDerivation {
     test-framework-hunit test-framework-smallcheck text unix
     utf8-string vector
   ];
+  testTarget = "verify-attribute-ops verify-using-mock-terminal verify-terminal verify-display-attributes verify-empty-image-props verify-eval-terminfo-caps verify-image-ops verify-image-trans verify-inline verify-parse-terminfo-caps verify-simple-span-generation verify-crop-span-generation verify-layers-span-generation verify-utf8-width verify-using-mock-input verify-config";
   homepage = "https://github.com/jtdaugherty/vty";
   description = "A simple terminal UI library";
   license = lib.licenses.bsd3;

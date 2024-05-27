@@ -14,6 +14,7 @@ mkDerivation {
     base doctest either Glob hspec http-client http-client-tls mtl safe
     servant servant-client
   ];
+  testTarget = "yahoo-finance-api-test yahoo-finance-api-doctest";
   homepage = "https://github.com/cdepillabout/yahoo-finance-api";
   description = "Read quotes from Yahoo Finance API";
   license = lib.licenses.bsd3;

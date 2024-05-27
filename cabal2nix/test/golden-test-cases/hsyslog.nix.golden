@@ -8,6 +8,7 @@ mkDerivation {
   setupHaskellDepends = [ base Cabal cabal-doctest ];
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base doctest ];
+  testTarget = "doctests";
   homepage = "http://github.com/peti/hsyslog";
   description = "FFI interface to syslog(3) from POSIX.1-2001";
   license = lib.licenses.bsd3;
