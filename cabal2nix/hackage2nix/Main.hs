@@ -169,11 +169,10 @@ main = do
               & metaSection.homepage .~ ""
 
           drv :: PackageNix
-          drv = fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
-            ^. derivation
+          drv = fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment SingleDerivation [] descr
 
           overrides :: Doc
-          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
+          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (allDependencies . each) drv `Set.union` view allExtraFunctionArgs drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
         hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 

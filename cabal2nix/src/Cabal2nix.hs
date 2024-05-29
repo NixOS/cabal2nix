@@ -60,6 +60,7 @@ data Options = Options
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
   , optFlags :: [String]
+  , optOutputGranularity :: OutputGranularity
   , optCompiler :: CompilerId
   , optSystem :: Platform
   , optSubpath :: Maybe FilePath
@@ -111,6 +112,8 @@ options = do
     <- switch (long "shell" <> help "generate output suitable for nix-shell")
   optFlags
     <- many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
+  optOutputGranularity
+    <- flag SingleDerivation PerTarget $ long "granular-output" <> help "Generate an attrset with a derivation for each build target"
   optCompiler
     <- option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
   optSystem
@@ -232,7 +235,7 @@ processPackage Options{..} pkg = do
                   optSystem
                   (unknownCompilerInfo optCompiler NoAbiTag)
                   flags
-                  SingleDerivation
+                  optOutputGranularity
                   []
                   (pkgCabal pkg)
 

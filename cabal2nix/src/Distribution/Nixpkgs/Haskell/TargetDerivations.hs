@@ -5,7 +5,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.TargetDerivations
-  ( TargetDerivations, targetDerivation, derivations, libraries, exes, testExes, benchExes
+  ( TargetDerivations, targetDerivations, allDerivations, libraries, exes, testExes, benchExes
   , nullTargetDerivations
   )
   where
@@ -36,10 +36,10 @@ instance NFData TargetDerivations
 
 makeLenses ''TargetDerivations
 
-makeLensesFor [("_libraries", "derivations"), ("_executables", "derivations"), ("_testExecutables", "derivations"), ("_benchExecutables", "derivations")] ''TargetDerivations
+makeLensesFor [("_libraries", "allDerivations"), ("_executables", "allDerivations"), ("_testExecutables", "allDerivations"), ("_benchExecutables", "allDerivations")] ''TargetDerivations
 
-targetDerivation :: Traversal' TargetDerivations Derivation
-targetDerivation f (TargetDerivations {..}) = do
+targetDerivations :: Traversal' TargetDerivations Derivation
+targetDerivations f (TargetDerivations {..}) = do
   libs <- traverse f _libraries
   exes' <- traverse f _exes
   testExes' <- traverse f _testExes
@@ -68,12 +68,12 @@ allInputs TargetDerivations {..} = Set.unions
   ]
 
 instance Pretty TargetDerivations where
-  pPrint targetDerivations = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivations))) $$ vcat
+  pPrint targetDerivationss = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivationss))) $$ vcat
     [ text "let"
-    , vcat $ derivationAttr <$> targetDerivations^.derivations
+    , vcat $ derivationAttr <$> targetDerivationss^.allDerivations
     , text "in" <+> lbrace
     , nest 2 $ text "inherit"
-    , nest 2 $ vcat $ pPrint . packageName <$> targetDerivations^.derivations
+    , nest 2 $ vcat $ pPrint . packageName <$> targetDerivationss^.allDerivations
     , semi
     , rbrace
     ]
