@@ -68,13 +68,13 @@ allInputs TargetDerivations {..} = Set.unions
   ]
 
 instance Pretty TargetDerivations where
-  pPrint targetDerivationss = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivationss))) $$ vcat
+  pPrint targetDerivations = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivations))) $$ vcat
     [ text "let"
-    , vcat $ derivationAttr <$> targetDerivationss^.allDerivations
+    , vcat $ derivationAttr <$> targetDerivations^.allDerivations
     , text "in" <+> lbrace
     , nest 2 $ text "inherit"
-    , nest 2 $ vcat $ pPrint . packageName <$> targetDerivationss^.allDerivations
-    , semi
+    , nest 4 $ vcat $ pPrint . packageName <$> targetDerivations^.allDerivations
+    , nest 4 semi
     , rbrace
     ]
 
