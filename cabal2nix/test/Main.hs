@@ -43,13 +43,15 @@ main = do
     Nothing -> fail "cannot find 'cabal2nix' in $PATH"
     Just exe -> pure exe
   testCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases"
+  granularCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases-granular"
   defaultMain $ testGroup "regression-tests"
-    [ testGroup "cabal2nix library" (map testLibrary testCases)
+    [ testGroup "cabal2nix library" (map (testLibrary SingleDerivation) testCases)
+    , testGroup "cabal2nix granular-output" (map (testLibrary PerTarget) granularCases)
     , testGroup "cabal2nix executable" (map (testExecutable cabal2nix) testCases)
     ]
 
-testLibrary :: String -> TestTree
-testLibrary cabalFile = do
+testLibrary :: OutputGranularity -> String -> TestTree
+testLibrary outputGranularity cabalFile = do
   let nixFile = cabalFile `replaceExtension` "nix"
       goldenFile = nixFile `addExtension` "golden"
 
@@ -71,7 +73,7 @@ testLibrary cabalFile = do
                          (Platform X86_64 Linux)
                          (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
                          (configureCabalFlags (packageId gpd))
-                         SingleDerivation
+                         outputGranularity
                          []
                          gpd
   goldenVsFileDiff
