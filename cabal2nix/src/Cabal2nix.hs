@@ -173,7 +173,7 @@ hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
                . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
-cabal2nix' :: Options -> IO (Either Doc SingleDerivation)
+cabal2nix' :: Options -> IO (Either Doc PackageNix)
 cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
          Source {
@@ -186,7 +186,7 @@ cabal2nix' opts@Options{..} = do
          }
   processPackage opts pkg
 
-cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc SingleDerivation)
+cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc PackageNix)
 cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
@@ -201,7 +201,7 @@ cabal2nixWithDB db opts@Options{..} = do
          }
   processPackage opts pkg
 
-processPackage :: Options -> Package -> IO (Either Doc SingleDerivation)
+processPackage :: Options -> Package -> IO (Either Doc PackageNix)
 processPackage Options{..} pkg = do
   let
       withHpackOverrides :: Derivation -> Derivation
@@ -225,8 +225,8 @@ processPackage Options{..} pkg = do
         & doBenchmark ||~ optDoBenchmark
         & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
 
-      deriv :: SingleDerivation
-      deriv = drvFromGenericPackageDescription overrideDrv
+      deriv :: PackageNix
+      deriv = fromGenericPackageDescription overrideDrv
                   (const True)
                   optNixpkgsIdentifier
                   optSystem

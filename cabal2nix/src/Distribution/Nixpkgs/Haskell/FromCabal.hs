@@ -4,7 +4,7 @@
 
 module Distribution.Nixpkgs.Haskell.FromCabal
   ( HaskellResolver, NixpkgsResolver
-  , drvFromGenericPackageDescription , finalizeGenericPackageDescription , fromPackageDescription
+  , fromGenericPackageDescription , finalizeGenericPackageDescription , fromPackageDescription
   ) where
 
 import Control.Lens
@@ -47,7 +47,7 @@ data OutputGranularity
   -- One derivation per component, where libraries are not excluded from executables' libraryDepends
   | PerComponent 
 
-drvFromGenericPackageDescription 
+fromGenericPackageDescription 
   :: (Derivation -> Derivation)
   -> HaskellResolver
   -> NixpkgsResolver
@@ -56,8 +56,8 @@ drvFromGenericPackageDescription
   -> FlagAssignment
   -> [Constraint]
   -> GenericPackageDescription
-  -> SingleDerivation
-drvFromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
+  -> PackageNix
+fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
   fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags descr
     where
       (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc
@@ -115,17 +115,19 @@ fromPackageDescription
   -> [Dependency]
   -> FlagAssignment
   -> PackageDescription
-  -> SingleDerivation
-fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = singleDerivation
+  -> PackageNix
+fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = singleDerivationPackage
   where
-    singleDerivation :: SingleDerivation
-    singleDerivation = nullSingleDerivation & derivation .~ overrideDrv (normalize $ postProcess $ baseDerivation
-      & isLibrary .~ isJust library
-      & isExecutable .~ not (null executables)
-      & libraryDepends .~ foldMap (convertSingleDerivationBuildInfo . libBuildInfo) allLibraries
-      & executableDepends .~ mconcat (map (convertSingleDerivationBuildInfo . buildInfo) executables)
-      & testDepends .~ mconcat (map (convertSingleDerivationBuildInfo . testBuildInfo) testSuites)
-      & benchmarkDepends .~ mconcat (map (convertSingleDerivationBuildInfo . benchmarkBuildInfo) benchmarks))
+    singleDerivationPackage :: PackageNix
+    singleDerivationPackage = nullSingleDrvPackage 
+      & derivation .~ overrideDrv (normalize $ postProcess $ 
+        baseDerivation
+          & isLibrary .~ isJust library
+          & isExecutable .~ not (null executables)
+          & libraryDepends .~ foldMap (convertSingleDerivationBuildInfo . libBuildInfo) allLibraries
+          & executableDepends .~ mconcat (map (convertSingleDerivationBuildInfo . buildInfo) executables)
+          & testDepends .~ mconcat (map (convertSingleDerivationBuildInfo . testBuildInfo) testSuites)
+          & benchmarkDepends .~ mconcat (map (convertSingleDerivationBuildInfo . benchmarkBuildInfo) benchmarks))
 
     libraryDerivations :: [Derivation]
     libraryDerivations = fmap (normalize . postProcess . toLibraryDerivation) allLibraries

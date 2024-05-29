@@ -8,6 +8,7 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell.Derivation
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.PackageNix
 
 import Control.Lens
 import Control.Monad
@@ -62,8 +63,8 @@ testLibrary cabalFile = do
                     , derivSubmodule = Nothing
                     }
          & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
-      cabal2nix :: GenericPackageDescription -> SingleDerivation
-      cabal2nix gpd = drvFromGenericPackageDescription
+      cabal2nix :: GenericPackageDescription -> PackageNix
+      cabal2nix gpd = fromGenericPackageDescription
                          overrideDrv
                          (const True)
                          (\i -> Just (binding # (i, path # [ident # "pkgs", i])))

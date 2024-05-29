@@ -44,7 +44,9 @@ library
                       Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
                       Distribution.Nixpkgs.Haskell.Hackage
                       Distribution.Nixpkgs.Haskell.OrphanInstances
+                      Distribution.Nixpkgs.Haskell.PackageNix
                       Distribution.Nixpkgs.Haskell.PackageSourceSpec
+                      Distribution.Nixpkgs.Haskell.TargetDerivations
                       Distribution.Nixpkgs.Haskell.Platform
   other-modules:      Paths_cabal2nix
   hs-source-dirs:     src

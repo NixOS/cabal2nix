@@ -5,7 +5,7 @@
 
 module Distribution.Nixpkgs.Haskell.Derivation
   ( Derivation, SingleDerivation
-  , derivation, nullSingleDerivation
+  , singleDerivation, nullSingleDerivation
   , nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, buildTarget, testTarget, hyperlinkSource
@@ -167,38 +167,18 @@ inputs drv@MkDerivation {..} = Set.unions
     isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
 
 newtype SingleDerivation = SingleDerivation 
-  { _derivation :: Derivation }
+  { _singleDerivation :: Derivation }
   deriving (Show, Generic)
 
 makeLenses ''SingleDerivation
 
 nullSingleDerivation :: SingleDerivation
 nullSingleDerivation = SingleDerivation
-  { _derivation = error "undefined SingleDerivation.derivation"
+  { _singleDerivation = error "undefined SingleDerivation.derivation"
   }
 
 instance NFData SingleDerivation
 
 instance Pretty SingleDerivation where
-  pPrint SingleDerivation {..} = funargs (map text ("mkDerivation" : toAscList (inputs _derivation))) $$ 
-    pPrint _derivation
-
--- data DefaultNix
---   = SingleDerivation
---   { _derivation :: Derivation }
---   | ComponentDerivations
---   { _libraries :: [Derivation]
---   , _executables :: [Derivation]
---   , _testExecutables :: [Derivation]
---   , _benchExecutables :: [Derivation]
---   }
---   deriving (Show, Generic)
---
--- makeLenses ''DefaultNix
---
--- instance NFData DefaultNix
---
--- -- instance Pretty DefaultNix where
--- --   pPrint drv@ComponentDerivations {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
---
---
+  pPrint SingleDerivation {..} = funargs (map text ("mkDerivation" : toAscList (inputs _singleDerivation))) $$ 
+    pPrint _singleDerivation

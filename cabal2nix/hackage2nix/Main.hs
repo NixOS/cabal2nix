@@ -168,8 +168,8 @@ main = do
               & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
               & metaSection.homepage .~ ""
 
-          drv :: Derivation
-          drv = drvFromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
+          drv :: PackageNix
+          drv = fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
             ^. derivation
 
           overrides :: Doc
