@@ -36,7 +36,7 @@ instance NFData TargetDerivations
 
 makeLenses ''TargetDerivations
 
-makeLensesFor [("_libraries", "allDerivations"), ("_executables", "allDerivations"), ("_testExecutables", "allDerivations"), ("_benchExecutables", "allDerivations")] ''TargetDerivations
+makeLensesFor [("_libraries", "allDerivations"), ("_exes", "allDerivations"), ("_testExes", "allDerivations"), ("_benchExes", "allDerivations")] ''TargetDerivations
 
 targetDerivations :: Traversal' TargetDerivations Derivation
 targetDerivations f (TargetDerivations {..}) = do
