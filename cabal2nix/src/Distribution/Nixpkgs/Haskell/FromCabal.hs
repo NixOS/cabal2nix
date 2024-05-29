@@ -3,7 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal
-  ( HaskellResolver, NixpkgsResolver
+  ( HaskellResolver, NixpkgsResolver, OutputGranularity (..)
   , fromGenericPackageDescription , finalizeGenericPackageDescription , fromPackageDescription
   ) where
 
@@ -44,8 +44,8 @@ type NixpkgsResolver = Identifier -> Maybe Binding
 
 data OutputGranularity
   = SingleDerivation
-  -- One derivation per component, where libraries are not excluded from executables' libraryDepends
-  | PerComponent 
+  -- One derivation per target, where libraries are not excluded from executables' libraryDepends
+  | PerTarget
 
 fromGenericPackageDescription 
   :: (Derivation -> Derivation)
@@ -54,11 +54,12 @@ fromGenericPackageDescription
   -> Platform
   -> CompilerInfo
   -> FlagAssignment
+  -> OutputGranularity
   -> [Constraint]
   -> GenericPackageDescription
   -> PackageNix
-fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
-  fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags descr
+fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver arch compiler flags granularity constraints genDesc =
+  fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags granularity descr
     where
       (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc
 
@@ -114,32 +115,34 @@ fromPackageDescription
   -> NixpkgsResolver
   -> [Dependency]
   -> FlagAssignment
+  -> OutputGranularity
   -> PackageDescription
   -> PackageNix
-fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = singleDerivationPackage
+fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags granularity packageDescription@PackageDescription {..}
+  = case granularity of
+    SingleDerivation -> singleDerivationPackage
+    PerTarget -> multiDerivationPackage
   where
     singleDerivationPackage :: PackageNix
     singleDerivationPackage = nullSingleDrvPackage 
-      & derivation .~ overrideDrv (normalize $ postProcess $ 
-        baseDerivation
-          & isLibrary .~ isJust library
-          & isExecutable .~ not (null executables)
-          & libraryDepends .~ foldMap (convertSingleDerivationBuildInfo . libBuildInfo) allLibraries
-          & executableDepends .~ mconcat (map (convertSingleDerivationBuildInfo . buildInfo) executables)
-          & testDepends .~ mconcat (map (convertSingleDerivationBuildInfo . testBuildInfo) testSuites)
-          & benchmarkDepends .~ mconcat (map (convertSingleDerivationBuildInfo . benchmarkBuildInfo) benchmarks))
+      & derivation .~ processDrv (baseDerivation
+        & isLibrary .~ isJust library
+        & isExecutable .~ not (null executables)
+        & libraryDepends .~ foldMap (convertSingleDerivationBuildInfo . libBuildInfo) (allLibraries packageDescription)
+        & executableDepends .~ mconcat (map (convertSingleDerivationBuildInfo . buildInfo) executables)
+        & testDepends .~ mconcat (map (convertSingleDerivationBuildInfo . testBuildInfo) testSuites)
+        & benchmarkDepends .~ mconcat (map (convertSingleDerivationBuildInfo . benchmarkBuildInfo) benchmarks))
 
-    libraryDerivations :: [Derivation]
-    libraryDerivations = fmap (normalize . postProcess . toLibraryDerivation) allLibraries
+    processDrv :: Derivation -> Derivation
+    processDrv = overrideDrv . normalize . postProcess
 
-    executableDerivations :: [Derivation]
-    executableDerivations = fmap (normalize . postProcess . toExecutableDerivation) executables
-
-    testDerivations :: [Derivation]
-    testDerivations = fmap (normalize . postProcess . toTestDerivation) testSuites
-
-    benchDerivations :: [Derivation]
-    benchDerivations = fmap (normalize . postProcess . toBenchDerivation) benchmarks
+    multiDerivationPackage :: PackageNix
+    multiDerivationPackage = nullTargetDrvsPackage
+      & targetDrvs .~ (nullTargetDerivations
+        & libraries .~ fmap (processDrv . toLibraryDerivation) (allLibraries packageDescription)
+        & exes .~ fmap (processDrv . toExecutableDerivation) executables
+        & testExes .~ fmap (processDrv . toTestDerivation) testSuites
+        & benchExes .~ fmap (processDrv . toBenchDerivation) benchmarks)
 
     toLibraryDerivation :: Library -> Derivation
     toLibraryDerivation lib = baseDerivation
@@ -217,8 +220,6 @@ fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps f
                        & Nix.maintainers .~ mempty
                        & Nix.broken .~ not (null missingDeps)
                        )
-
-    allLibraries = maybeToList library ++ subLibraries
 
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 

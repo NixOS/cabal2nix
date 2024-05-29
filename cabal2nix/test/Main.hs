@@ -71,6 +71,7 @@ testLibrary cabalFile = do
                          (Platform X86_64 Linux)
                          (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
                          (configureCabalFlags (packageId gpd))
+                         SingleDerivation
                          []
                          gpd
   goldenVsFileDiff

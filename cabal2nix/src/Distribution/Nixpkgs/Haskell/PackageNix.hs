@@ -40,4 +40,4 @@ nullSingleDrvPackage :: PackageNix
 nullSingleDrvPackage = SingleDerivation { _singleDrv = nullSingleDerivation }
 
 nullTargetDrvsPackage :: PackageNix
-nullTargetDrvsPackage = SingleDerivation { _singleDrv = nullSingleDerivation }
+nullTargetDrvsPackage = TargetDerivations { _targetDrvs = nullTargetDerivations }

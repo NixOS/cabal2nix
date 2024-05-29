@@ -232,6 +232,7 @@ processPackage Options{..} pkg = do
                   optSystem
                   (unknownCompilerInfo optCompiler NoAbiTag)
                   flags
+                  SingleDerivation
                   []
                   (pkgCabal pkg)
 

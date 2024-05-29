@@ -5,7 +5,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.TargetDerivations
-  ( TargetDerivations, targetDerivation, derivations, libraries, executables, testExecutables, benchExecutables
+  ( TargetDerivations, targetDerivation, derivations, libraries, exes, testExes, benchExes
   , nullTargetDerivations
   )
   where
@@ -23,9 +23,9 @@ import Language.Nix.PrettyPrinting
 
 data TargetDerivations = TargetDerivations
   { _libraries :: [Derivation]
-  , _executables :: [Derivation]
-  , _testExecutables :: [Derivation]
-  , _benchExecutables :: [Derivation]
+  , _exes :: [Derivation]
+  , _testExes :: [Derivation]
+  , _benchExes :: [Derivation]
   }
   deriving (Show, Generic)
 
@@ -38,22 +38,22 @@ makeLensesFor [("_libraries", "derivations"), ("_executables", "derivations"), (
 targetDerivation :: Traversal' TargetDerivations Derivation
 targetDerivation f (TargetDerivations {..}) = do
   libs <- traverse f _libraries
-  exes <- traverse f _executables
-  testExes <- traverse f _testExecutables
-  benchExes <- traverse f _benchExecutables
+  exes' <- traverse f _exes
+  testExes' <- traverse f _testExes
+  benchExes' <- traverse f _benchExes
   pure TargetDerivations
     { _libraries = libs
-    , _executables = exes
-    , _testExecutables = testExes
-    , _benchExecutables = benchExes
+    , _exes = exes'
+    , _testExes = testExes'
+    , _benchExes = benchExes'
     }
 
 nullTargetDerivations :: TargetDerivations 
 nullTargetDerivations = TargetDerivations
   { _libraries = mempty
-  , _executables = mempty
-  , _testExecutables = mempty
-  , _benchExecutables = mempty
+  , _exes = mempty
+  , _testExes = mempty
+  , _benchExes = mempty
   }
 
 instance Pretty TargetDerivations where
