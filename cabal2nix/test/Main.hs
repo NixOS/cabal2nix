@@ -52,8 +52,19 @@ testLibrary cabalFile = do
   let nixFile = cabalFile `replaceExtension` "nix"
       goldenFile = nixFile `addExtension` "golden"
 
-      cabal2nix :: GenericPackageDescription -> Derivation
-      cabal2nix gpd = fromGenericPackageDescription
+      overrideDrv :: Derivation -> Derivation
+      overrideDrv drv = drv
+         & src .~ DerivationSource
+                    { derivKind     = Just (DerivKindUrl DontUnpackArchive )
+                    , derivUrl      = "mirror://hackage/foo.tar.gz"
+                    , derivRevision = ""
+                    , derivHash     = "deadbeef"
+                    , derivSubmodule = Nothing
+                    }
+         & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
+      cabal2nix :: GenericPackageDescription -> SingleDerivation
+      cabal2nix gpd = drvFromGenericPackageDescription
+                         overrideDrv
                          (const True)
                          (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
                          (Platform X86_64 Linux)
@@ -61,14 +72,6 @@ testLibrary cabalFile = do
                          (configureCabalFlags (packageId gpd))
                          []
                          gpd
-                       & src .~ DerivationSource
-                                  { derivKind     = Just (DerivKindUrl DontUnpackArchive )
-                                  , derivUrl      = "mirror://hackage/foo.tar.gz"
-                                  , derivRevision = ""
-                                  , derivHash     = "deadbeef"
-                                  , derivSubmodule = Nothing
-                                  }
-                       & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
   goldenVsFileDiff
     nixFile
     (\ref new -> ["diff", "-u", ref, new])
