@@ -60,12 +60,15 @@ nullTargetDerivations = TargetDerivations
   }
 
 allInputs :: TargetDerivations -> Set String
-allInputs TargetDerivations {..} = Set.unions 
-  [ mconcat $ inputs <$> _libraries
-  , mconcat $ inputs <$> _exes
-  , mconcat $ inputs <$> _testExes
-  , mconcat $ inputs <$> _benchExes
+allInputs TargetDerivations {..} = Set.filter (`notElem` internalLibNames) $ Set.unions $ mconcat
+  [ inputs <$> _libraries
+  , inputs <$> _exes
+  , inputs <$> _testExes
+  , inputs <$> _benchExes
   ]
+  where
+    internalLibNames :: [String]
+    internalLibNames = drvName <$> _libraries
 
 instance Pretty TargetDerivations where
   pPrint targetDerivations = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivations))) $$ vcat
