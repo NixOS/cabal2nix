@@ -14,7 +14,10 @@ import Prelude hiding ((<>))
 
 import Control.DeepSeq
 import Control.Lens
+import Data.Set ( Set )
+import qualified Data.Set as Set
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
+import Distribution.Package
 import GHC.Generics ( Generic )
 import Distribution.Nixpkgs.Haskell.Derivation
 import Language.Nix.PrettyPrinting
@@ -56,5 +59,27 @@ nullTargetDerivations = TargetDerivations
   , _benchExes = mempty
   }
 
+allInputs :: TargetDerivations -> Set String
+allInputs TargetDerivations {..} = Set.unions 
+  [ mconcat $ inputs <$> _libraries
+  , mconcat $ inputs <$> _exes
+  , mconcat $ inputs <$> _testExes
+  , mconcat $ inputs <$> _benchExes
+  ]
+
 instance Pretty TargetDerivations where
-  pPrint TargetDerivations {} = undefined -- TODO
+  pPrint targetDerivations = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivations))) $$ vcat
+    [ text "let"
+    , vcat $ derivationAttr <$> targetDerivations^.derivations
+    , text "in" <+> lbrace
+    , nest 2 $ text "inherit"
+    , nest 2 $ vcat $ pPrint . packageName <$> targetDerivations^.derivations
+    , semi
+    , rbrace
+    ]
+
+derivationAttr :: Derivation -> Doc
+derivationAttr drv = attr (drvName drv) $ pPrint drv
+    
+drvName :: Derivation -> String
+drvName drv = unPackageName $ packageName $ drv^.pkgid

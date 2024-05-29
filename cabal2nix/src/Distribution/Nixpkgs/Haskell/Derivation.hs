@@ -11,7 +11,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, buildTarget, testTarget, hyperlinkSource
   , enableSplitObjs , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides
   , editedCabalFile, metaSection , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
-  , extraAttributes
+  , extraAttributes, inputs
   )
   where
 
