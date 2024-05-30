@@ -71,12 +71,12 @@ allInputs TargetDerivations {..} = Set.filter (`notElem` internalLibNames) $ Set
     internalLibNames = drvName <$> _libraries
 
 instance Pretty TargetDerivations where
-  pPrint targetDerivations = funargs (map text ("mkDerivation" : toAscList (allInputs targetDerivations))) $$ vcat
+  pPrint targetDrvs = funargs (map text ("mkDerivation" : toAscList (allInputs targetDrvs))) $$ vcat
     [ text "let"
-    , vcat $ derivationAttr <$> targetDerivations^.allDerivations
+    , vcat $ derivationAttr <$> targetDrvs^.allDerivations
     , text "in" <+> lbrace
     , nest 2 $ text "inherit"
-    , nest 4 $ vcat $ pPrint . packageName <$> targetDerivations^.allDerivations
+    , nest 4 $ vcat $ pPrint . packageName <$> targetDrvs^.allDerivations
     , nest 4 semi
     , rbrace
     ]
