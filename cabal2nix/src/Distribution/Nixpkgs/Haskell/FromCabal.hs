@@ -151,6 +151,7 @@ fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps f
           LSubLibName subLibName -> (baseDerivation^.pkgid) { pkgName = unqualComponentNameToPackageName subLibName }
       & isLibrary .~ True
       & isExecutable .~ False
+      & doCheck .~ False
       & libraryDepends .~ convertComponentDerivationBuildInfo (libBuildInfo lib)
       & buildTarget .~ render (prettyLibraryNameComponent $ libName lib)
 
