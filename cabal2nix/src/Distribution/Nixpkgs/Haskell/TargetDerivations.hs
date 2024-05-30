@@ -73,16 +73,33 @@ allInputs TargetDerivations {..} = Set.filter (`notElem` internalLibNames) $ Set
 instance Pretty TargetDerivations where
   pPrint targetDrvs = funargs (map text ("mkDerivation" : toAscList (allInputs targetDrvs))) $$ vcat
     [ text "let"
-    , vcat $ derivationAttr <$> targetDrvs^.allDerivations
-    , text "in" <+> lbrace
-    , nest 2 $ text "inherit"
-    , nest 4 $ vcat $ pPrint . packageName <$> targetDrvs^.allDerivations
-    , nest 4 semi
-    , rbrace
+    , nest 2 $ vcat $ derivationAttr <$> targetDrvs^.libraries
+    , text "in" <+> lbrace $$ nest 2 (vcat
+      [ attr "libraries" $ hcat
+        [ lbrace
+        , text "inherit"
+        , text " "
+        , hcat (pPrint . packageName <$> targetDrvs^.libraries)
+        , semi
+        , rbrace
+        ]
+      , attr "exes" $ derivationAttrs $ targetDrvs^.exes
+      , attr "testExes" $ derivationAttrs $ targetDrvs^.testExes
+      , attr "benchExes" $ derivationAttrs $ targetDrvs^.benchExes
+      , nest (-2) rbrace
+      ])
     ]
 
 derivationAttr :: Derivation -> Doc
 derivationAttr drv = attr (drvName drv) $ pPrint drv
+    
+derivationAttrs :: [Derivation] -> Doc
+derivationAttrs [] = lbrace <+> rbrace
+derivationAttrs drvs = vcat
+    [ lbrace
+    , nest (-8) $ vcat (derivationAttr <$> drvs)
+    , nest (-11) rbrace
+    ]
     
 drvName :: Derivation -> String
 drvName drv = unPackageName $ packageName $ drv^.pkgid
