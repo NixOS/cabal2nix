@@ -12,6 +12,7 @@ import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
+import Distribution.Pretty
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Distribution.Nixpkgs.Haskell.Constraint
@@ -153,7 +154,9 @@ fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps f
       & isExecutable .~ False
       & doCheck .~ False
       & libraryDepends .~ convertComponentDerivationBuildInfo (libBuildInfo lib)
-      & buildTarget .~ render (prettyLibraryNameComponent $ libName lib)
+      & buildTarget .~ render (case libName lib of
+          LMainLibName -> pretty $ packageName (baseDerivation^.pkgid)
+          name@LSubLibName {} -> prettyLibraryNameComponent name)
 
     toExecutableDerivation :: Executable -> Derivation
     toExecutableDerivation executable = baseDerivation
