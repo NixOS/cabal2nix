@@ -12,7 +12,8 @@ ttrie = mkDerivation {
           libraryHaskellDepends = [
             atomic-primops base hashable primitive stm
           ];
-          buildTarget = "lib";
+          doCheck = false;
+          buildTarget = "ttrie";
           homepage = "http://github.com/mcschroeder/ttrie";
           description = "Contention-free STM hash map";
           license = lib.licenses.mit;
