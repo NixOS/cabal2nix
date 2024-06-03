@@ -21,6 +21,8 @@ extra-source-files: README.md
                     CHANGELOG.md
                     test/golden-test-cases/*.cabal
                     test/golden-test-cases/*.nix.golden
+                    test/golden-test-cases-granular/*.cabal
+                    test/golden-test-cases-granular/*.nix.golden
 cabal-version:      1.24
 
 source-repository head
