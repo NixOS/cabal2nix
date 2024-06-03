@@ -22,39 +22,39 @@ in {
   libraries = {inherit ttrie;};
   exes = { };
   testExes = {
-     map-properties = mkDerivation {
-                        pname = "map-properties";
+             map-properties = mkDerivation {
+                                pname = "map-properties";
+                                version = "0.1.2.1";
+                                sha256 = "deadbeef";
+                                isLibrary = false;
+                                isExecutable = true;
+                                testHaskellDepends = [
+                                  base containers hashable QuickCheck stm test-framework
+                                  test-framework-quickcheck2 ttrie
+                                ];
+                                buildTarget = "map-properties";
+                                homepage = "http://github.com/mcschroeder/ttrie";
+                                description = "Contention-free STM hash map";
+                                license = lib.licenses.mit;
+                              };
+             };
+  benchExes = {
+              bench = mkDerivation {
+                        pname = "bench";
                         version = "0.1.2.1";
                         sha256 = "deadbeef";
                         isLibrary = false;
                         isExecutable = true;
-                        testHaskellDepends = [
-                          base containers hashable QuickCheck stm test-framework
-                          test-framework-quickcheck2 ttrie
+                        benchmarkHaskellDepends = [
+                          async base bifunctors containers criterion-plus deepseq mwc-random
+                          primitive stm stm-containers stm-stats text transformers ttrie
+                          unordered-containers vector
                         ];
-                        buildTarget = "map-properties";
+                        doBenchmark = true;
+                        buildTarget = "bench";
                         homepage = "http://github.com/mcschroeder/ttrie";
                         description = "Contention-free STM hash map";
                         license = lib.licenses.mit;
                       };
-  };
-  benchExes = {
-      bench = mkDerivation {
-                pname = "bench";
-                version = "0.1.2.1";
-                sha256 = "deadbeef";
-                isLibrary = false;
-                isExecutable = true;
-                benchmarkHaskellDepends = [
-                  async base bifunctors containers criterion-plus deepseq mwc-random
-                  primitive stm stm-containers stm-stats text transformers ttrie
-                  unordered-containers vector
-                ];
-                doBenchmark = true;
-                buildTarget = "bench";
-                homepage = "http://github.com/mcschroeder/ttrie";
-                description = "Contention-free STM hash map";
-                license = lib.licenses.mit;
               };
-   };
 }
