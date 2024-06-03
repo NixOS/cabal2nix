@@ -97,8 +97,8 @@ derivationAttrs :: [Derivation] -> Doc
 derivationAttrs [] = lbrace <+> rbrace
 derivationAttrs drvs = vcat
     [ lbrace
-    , nest (-8) $ vcat (derivationAttr <$> drvs)
-    , nest (-11) rbrace
+    , vcat (derivationAttr <$> drvs)
+    , rbrace
     ]
     
 drvName :: Derivation -> String
