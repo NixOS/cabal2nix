@@ -4,11 +4,14 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
-  ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
+  ( Derivation, SingleDerivation
+  , singleDerivation, nullSingleDerivation
+  , nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
-  , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testTarget, hyperlinkSource, enableSplitObjs
-  , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
-  , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
+  , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, buildTarget, testTarget, hyperlinkSource
+  , enableSplitObjs , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides
+  , editedCabalFile, metaSection , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput
+  , extraAttributes, inputs
   )
   where
 
@@ -56,6 +59,7 @@ data Derivation = MkDerivation
   , _jailbreak                  :: Bool
   , _doCheck                    :: Bool
   , _doBenchmark                :: Bool
+  , _buildTarget                :: String
   , _testTarget                 :: String
   , _hyperlinkSource            :: Bool
   , _enableLibraryProfiling     :: Bool
@@ -79,16 +83,17 @@ nullDerivation = MkDerivation
   , _extraFunctionArgs = error "undefined Derivation.extraFunctionArgs"
   , _extraAttributes = error "undefined Derivation.extraAttributes"
   , _setupDepends = error "undefined Derivation.setupDepends"
-  , _libraryDepends = error "undefined Derivation.libraryDepends"
-  , _executableDepends = error "undefined Derivation.executableDepends"
-  , _testDepends = error "undefined Derivation.testDepends"
-  , _benchmarkDepends = error "undefined Derivation.benchmarkDepends"
+  , _libraryDepends = mempty
+  , _executableDepends = mempty
+  , _testDepends = mempty
+  , _benchmarkDepends = mempty
   , _configureFlags = error "undefined Derivation.configureFlags"
   , _cabalFlags = error "undefined Derivation.cabalFlags"
   , _runHaddock = error "undefined Derivation.runHaddock"
   , _jailbreak = error "undefined Derivation.jailbreak"
   , _doCheck = error "undefined Derivation.doCheck"
   , _doBenchmark = error "undefined Derivation.doBenchmark"
+  , _buildTarget = error "undefined Derivation.buildTarget"
   , _testTarget = error "undefined Derivation.testTarget"
   , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
   , _enableLibraryProfiling = error "undefined Derivation.enableLibraryProfiling"
@@ -110,7 +115,7 @@ instance Package Derivation where
 instance NFData Derivation
 
 instance Pretty Derivation where
-  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+  pPrint MkDerivation {..} = vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ pPrint (packageName _pkgid)
@@ -135,6 +140,7 @@ instance Pretty Derivation where
       , boolattr "jailbreak" _jailbreak _jailbreak
       , boolattr "doCheck" (not _doCheck) _doCheck
       , boolattr "doBenchmark" _doBenchmark _doBenchmark
+      , onlyIf (not (null _buildTarget)) $ attr "buildTarget" $ string _buildTarget
       , onlyIf (not (null _testTarget)) $ attr "testTarget" $ string _testTarget
       , boolattr "hyperlinkSource" (not _hyperlinkSource) _hyperlinkSource
       , onlyIf (not (null _phaseOverrides)) $ vcat ((map text . lines) _phaseOverrides)
@@ -144,16 +150,35 @@ instance Pretty Derivation where
     , rbrace
     ]
     where
-      inputs :: Set String
-      inputs = Set.unions [ Set.map (view (localName . ident)) _extraFunctionArgs
-                          , setOf (dependencies . each . folded . localName . ident) drv
-                          , case derivKind _src of
-                              Nothing -> mempty
-                              Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
-                          ]
-
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
-      isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
 
       postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"
+
+inputs :: Derivation -> Set String
+inputs drv@MkDerivation {..} = Set.unions 
+  [ Set.map (view (localName . ident)) _extraFunctionArgs
+  , setOf (dependencies . each . folded . localName . ident) drv
+  , case derivKind _src of
+      Nothing -> mempty
+      Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
+  ]
+  where
+    isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
+
+newtype SingleDerivation = SingleDerivation 
+  { _singleDerivation :: Derivation }
+  deriving (Show, Generic)
+
+makeLenses ''SingleDerivation
+
+nullSingleDerivation :: SingleDerivation
+nullSingleDerivation = SingleDerivation
+  { _singleDerivation = error "undefined SingleDerivation.derivation"
+  }
+
+instance NFData SingleDerivation
+
+instance Pretty SingleDerivation where
+  pPrint SingleDerivation {..} = funargs (map text ("mkDerivation" : toAscList (inputs _singleDerivation))) $$ 
+    pPrint _singleDerivation

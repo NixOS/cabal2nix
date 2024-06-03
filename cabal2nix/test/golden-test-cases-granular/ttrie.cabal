@@ -1,0 +1,68 @@
+name:                ttrie
+version:             0.1.2.1
+synopsis:            Contention-free STM hash map
+description:
+  A contention-free STM hash map.
+  \"Contention-free\" means that the map will never cause spurious conflicts.
+  A transaction operating on the map will only ever have to retry if
+  another transaction is operating on the same key at the same time.
+  .
+  This is an implementation of the /transactional trie/,
+  which is basically a /lock-free concurrent hash trie/ lifted into STM.
+  For a detailed discussion, including an evaluation of its performance,
+  see Chapter 4 of <https://github.com/mcschroeder/thesis my master's thesis>.
+homepage:            http://github.com/mcschroeder/ttrie
+bug-reports:         http://github.com/mcschroeder/ttrie/issues
+license:             MIT
+license-file:        LICENSE
+author:              Michael Schröder
+maintainer:          mc.schroeder@gmail.com
+copyright:           (c) 2014-2015 Michael Schröder
+category:            Concurrency
+build-type:          Simple
+extra-source-files:  README.md, benchmarks/run.sh
+cabal-version:       >=1.10
+
+extra-source-files:  changelog.md
+
+source-repository head
+  type: git
+  location: https://github.com/mcschroeder/ttrie.git
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Control.Concurrent.STM.Map
+  other-modules:       Data.SparseArray
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+  build-depends:       base >=4.7 && <5
+                     , atomic-primops >=0.6
+                     , hashable >=1.2
+                     , primitive >=0.5
+                     , stm >=2
+
+test-suite map-properties
+  hs-source-dirs:    tests
+  main-is:           MapProperties.hs
+  type:              exitcode-stdio-1.0
+
+  build-depends:
+      base
+    , QuickCheck >=2.5
+    , test-framework >=0.8
+    , test-framework-quickcheck2 >=0.3
+    , containers >=0.5
+    , hashable >=1.2
+    , stm
+    , ttrie
+
+benchmark bench
+  hs-source-dirs:      benchmarks
+  main-is:             Bench.hs
+  other-modules:       BenchGen
+  type:                exitcode-stdio-1.0
+  default-language:    Haskell2010
+  ghc-options:         -O2 -threaded -with-rtsopts=-N
+  build-depends:
+    base, async, bifunctors, containers, criterion-plus, deepseq, mwc-random, primitive, stm, stm-containers, stm-stats, text, transformers, ttrie, unordered-containers, vector
+

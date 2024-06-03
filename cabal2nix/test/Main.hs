@@ -8,6 +8,7 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell.Derivation
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.PackageNix
 
 import Control.Lens
 import Control.Monad
@@ -42,33 +43,39 @@ main = do
     Nothing -> fail "cannot find 'cabal2nix' in $PATH"
     Just exe -> pure exe
   testCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases"
+  granularCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases-granular"
   defaultMain $ testGroup "regression-tests"
-    [ testGroup "cabal2nix library" (map testLibrary testCases)
+    [ testGroup "cabal2nix library" (map (testLibrary SingleDerivation) testCases)
+    , testGroup "cabal2nix granular-output" (map (testLibrary PerTarget) granularCases)
     , testGroup "cabal2nix executable" (map (testExecutable cabal2nix) testCases)
     ]
 
-testLibrary :: String -> TestTree
-testLibrary cabalFile = do
+testLibrary :: OutputGranularity -> String -> TestTree
+testLibrary outputGranularity cabalFile = do
   let nixFile = cabalFile `replaceExtension` "nix"
       goldenFile = nixFile `addExtension` "golden"
 
-      cabal2nix :: GenericPackageDescription -> Derivation
+      overrideDrv :: Derivation -> Derivation
+      overrideDrv drv = drv
+         & src .~ DerivationSource
+                    { derivKind     = Just (DerivKindUrl DontUnpackArchive )
+                    , derivUrl      = "mirror://hackage/foo.tar.gz"
+                    , derivRevision = ""
+                    , derivHash     = "deadbeef"
+                    , derivSubmodule = Nothing
+                    }
+         & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
+      cabal2nix :: GenericPackageDescription -> PackageNix
       cabal2nix gpd = fromGenericPackageDescription
+                         overrideDrv
                          (const True)
                          (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
                          (Platform X86_64 Linux)
                          (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
                          (configureCabalFlags (packageId gpd))
+                         outputGranularity
                          []
                          gpd
-                       & src .~ DerivationSource
-                                  { derivKind     = Just (DerivKindUrl DontUnpackArchive )
-                                  , derivUrl      = "mirror://hackage/foo.tar.gz"
-                                  , derivRevision = ""
-                                  , derivHash     = "deadbeef"
-                                  , derivSubmodule = Nothing
-                                  }
-                       & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
   goldenVsFileDiff
     nixFile
     (\ref new -> ["diff", "-u", ref, new])
