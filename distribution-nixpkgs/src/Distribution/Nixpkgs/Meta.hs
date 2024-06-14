@@ -286,7 +286,7 @@ instance Pretty Meta where
     , maybe mempty (renderPlatforms "hydraPlatforms") _hydraPlatforms
     , maybe mempty (attr "mainProgram" . string) _mainProgram
     , listattrDoc "maintainers" mempty $ renderMaintainers _maintainers
-    , boolattr "broken" _broken _broken
+    , boolattr "broken" _broken
     ]
 
 -- | This function renders an Nix attribute binding suitable for use in
