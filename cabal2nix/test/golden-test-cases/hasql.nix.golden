@@ -21,6 +21,7 @@ mkDerivation {
     rerebase tasty tasty-hunit tasty-quickcheck
   ];
   benchmarkHaskellDepends = [ bug criterion rerebase ];
+  testTarget = "tasty threads-test profiling";
   homepage = "https://github.com/nikita-volkov/hasql";
   description = "An efficient PostgreSQL driver and a flexible mapping API";
   license = lib.licenses.mit;

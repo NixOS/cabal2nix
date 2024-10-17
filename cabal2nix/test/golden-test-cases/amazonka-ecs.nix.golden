@@ -10,6 +10,7 @@ mkDerivation {
     amazonka-core amazonka-test base bytestring tasty tasty-hunit text
     time unordered-containers
   ];
+  testTarget = "amazonka-ecs-test";
   homepage = "https://github.com/brendanhay/amazonka";
   description = "Amazon EC2 Container Service SDK";
   license = lib.licenses.mpl20;

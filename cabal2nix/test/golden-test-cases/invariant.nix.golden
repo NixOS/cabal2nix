@@ -15,6 +15,7 @@ mkDerivation {
     unordered-containers
   ];
   testHaskellDepends = [ base hspec QuickCheck template-haskell ];
+  testTarget = "spec";
   homepage = "https://github.com/nfrisby/invariant-functors";
   description = "Haskell98 invariant functors";
   license = lib.licenses.bsd2;

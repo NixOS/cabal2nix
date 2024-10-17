@@ -14,6 +14,7 @@ mkDerivation {
   testHaskellDepends = [
     base doctest generic-deriving semigroups simple-reflect
   ];
+  testTarget = "doctests";
   homepage = "http://github.com/lens/lens-aeson/";
   description = "Law-abiding lenses for aeson";
   license = lib.licenses.mit;

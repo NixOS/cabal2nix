@@ -21,6 +21,7 @@ mkDerivation {
     hashtables list-t loch-th mtl mtl-prelude mwc-random
     mwc-random-monad placeholders text unordered-containers vector
   ];
+  testTarget = "word-array-tests api-tests";
   homepage = "https://github.com/nikita-volkov/stm-containers";
   description = "Containers for STM";
   license = lib.licenses.mit;

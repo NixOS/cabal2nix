@@ -14,6 +14,7 @@ mkDerivation {
     aeson base doctest genvalidity genvalidity-aeson genvalidity-hspec
     genvalidity-text hspec text
   ];
+  testTarget = "genvalidity-hspec-aeson-doctests genvalidity-hspec-aeson-test";
   homepage = "http://cs-syd.eu";
   description = "Standard spec's for aeson-related instances";
   license = lib.licenses.mit;

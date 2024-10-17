@@ -8,6 +8,7 @@ mkDerivation {
   libraryHaskellDepends = [ base containers ];
   executableHaskellDepends = [ base containers ];
   testHaskellDepends = [ base containers HUnit ];
+  testTarget = "test-hsmisc";
   homepage = "http://hub.darcs.net/dino/tce-conf";
   description = "Very simple config file reading";
   license = lib.licenses.bsd3;

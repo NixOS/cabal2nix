@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base parsec ];
   testHaskellDepends = [ base hspec parsec ];
+  testTarget = "bbdb-tests";
   homepage = "https://github.com/henrylaxen/bbdb";
   description = "Ability to read, write, and modify BBDB files";
   license = lib.licenses.gpl3Only;

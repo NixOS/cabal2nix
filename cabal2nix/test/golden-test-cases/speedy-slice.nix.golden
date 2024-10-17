@@ -10,6 +10,7 @@ mkDerivation {
     transformers
   ];
   testHaskellDepends = [ base containers mwc-probability ];
+  testTarget = "rosenbrock bnn";
   homepage = "http://github.com/jtobin/speedy-slice";
   description = "Speedy slice sampling";
   license = lib.licenses.mit;

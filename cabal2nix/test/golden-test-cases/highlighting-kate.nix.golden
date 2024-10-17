@@ -16,6 +16,7 @@ mkDerivation {
   testHaskellDepends = [
     base blaze-html containers Diff directory filepath process
   ];
+  testTarget = "test-highlighting-kate";
   homepage = "http://github.com/jgm/highlighting-kate";
   description = "Syntax highlighting";
   license = "GPL";

@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base postgresql-simple tasty tasty-quickcheck
   ];
+  testTarget = "test";
   homepage = "https://github.com/futurice/postgresql-simple-url";
   description = "Parse postgres:// url into ConnectInfo";
   license = lib.licenses.mit;

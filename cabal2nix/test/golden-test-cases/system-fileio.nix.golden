@@ -12,6 +12,7 @@ mkDerivation {
     base bytestring chell system-filepath temporary text time
     transformers unix
   ];
+  testTarget = "filesystem_tests";
   homepage = "https://github.com/fpco/haskell-filesystem";
   description = "Consistent filesystem interaction across GHC versions (deprecated)";
   license = lib.licenses.mit;

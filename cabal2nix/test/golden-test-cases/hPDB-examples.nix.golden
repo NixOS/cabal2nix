@@ -18,6 +18,7 @@ mkDerivation {
     AC-Vector base bytestring containers deepseq directory ghc-prim
     hPDB IfElse iterable mtl process template-haskell text time vector
   ];
+  testTarget = "ParserPerformance";
   homepage = "https://github.com/BioHaskell/hPDB-examples";
   description = "Examples for hPDB library";
   license = lib.licenses.bsd3;

@@ -16,6 +16,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base blaze-builder bytestring criterion deepseq text transformers
   ];
+  testTarget = "test";
   homepage = "https://github.com/chrisdone/lucid";
   description = "Clear to write, read and edit DSL for HTML";
   license = lib.licenses.bsd3;

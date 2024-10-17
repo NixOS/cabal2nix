@@ -13,6 +13,7 @@ mkDerivation {
     base containers hspec HUnit parsec shakespeare template-haskell
     text xml-conduit
   ];
+  testTarget = "test";
   homepage = "http://www.yesodweb.com/";
   description = "Hamlet-style quasiquoter for XML content";
   license = lib.licenses.bsd3;

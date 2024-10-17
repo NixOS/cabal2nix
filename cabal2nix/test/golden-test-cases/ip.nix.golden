@@ -18,6 +18,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     attoparsec base bytestring criterion text
   ];
+  testTarget = "test doctest";
   homepage = "https://github.com/andrewthad/haskell-ip#readme";
   description = "Library for IP and MAC addresses";
   license = lib.licenses.bsd3;

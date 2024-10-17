@@ -8,6 +8,7 @@ mkDerivation {
   libraryHaskellDepends = [ base system-filepath text ];
   executableHaskellDepends = [ base system-filepath text ];
   testHaskellDepends = [ base hspec system-filepath text ];
+  testTarget = "ReadArgsSpec";
   homepage = "http://github.com/rampion/ReadArgs";
   description = "Simple command line argument parsing";
   license = lib.licenses.bsd3;

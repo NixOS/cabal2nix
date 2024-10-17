@@ -6,6 +6,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base deepseq primitive ];
   testHaskellDepends = [ base doctest filemanip primitive ];
+  testTarget = "doctests";
   description = "Generic vectors with statically known size";
   license = lib.licenses.bsd3;
 }

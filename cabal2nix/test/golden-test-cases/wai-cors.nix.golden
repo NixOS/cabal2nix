@@ -17,6 +17,7 @@ mkDerivation {
     process tasty tasty-hunit text wai wai-extra wai-websockets warp
     websockets
   ];
+  testTarget = "phantomjs unit-tests";
   homepage = "https://github.com/larskuhtz/wai-cors";
   description = "CORS for WAI";
   license = lib.licenses.mit;

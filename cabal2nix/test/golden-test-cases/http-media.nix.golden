@@ -13,6 +13,7 @@ mkDerivation {
     base bytestring case-insensitive containers QuickCheck
     test-framework test-framework-quickcheck2 utf8-string
   ];
+  testTarget = "test-http-media";
   homepage = "https://github.com/zmthy/http-media";
   description = "Processing HTTP Content-Type and Accept headers";
   license = lib.licenses.mit;

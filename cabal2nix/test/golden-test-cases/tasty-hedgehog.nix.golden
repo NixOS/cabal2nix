@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base hedgehog tasty tasty-expected-failure
   ];
+  testTarget = "tasty-hedgehog-tests";
   homepage = "https://github.com/qfpl/tasty-hedghog";
   description = "Integrates the hedgehog testing library with the tasty testing framework";
   license = lib.licenses.bsd3;
