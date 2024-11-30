@@ -127,9 +127,11 @@ nixpkgsSystemMapping =
 #endif
   , ("vc4-none", Platform (OtherArch "vc4") (OtherOS "none"))
 #if MIN_VERSION_Cabal(3,8,1)
+  , ("wasm32-none", Platform Wasm32 (OtherOS "none"))
   , ("wasm32-wasi", Platform Wasm32 Wasi)
   , ("wasm64-wasi", Platform (OtherArch "wasm64") Wasi)
 #else
+  , ("wasm32-none", Platform (OtherArch "wasm32") (OtherOS "none"))
   , ("wasm32-wasi", Platform (OtherArch "wasm32") (OtherOS "wasi"))
   , ("wasm64-wasi", Platform (OtherArch "wasm64") (OtherOS "wasi"))
 #endif
