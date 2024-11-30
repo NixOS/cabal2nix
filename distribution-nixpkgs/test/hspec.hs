@@ -76,7 +76,11 @@ nixpkgsSystemMapping =
   , ("i686-openbsd", Platform I386 OpenBSD)
   , ("i686-windows", Platform I386 Windows)
   , ("javascript-ghcjs", Platform JavaScript Ghcjs)
+#if MIN_VERSION_Cabal(3,12,0)
+  , ("loongarch64-linux", Platform LoongArch64 Linux)
+#else
   , ("loongarch64-linux", Platform (OtherArch "loongarch64") Linux)
+#endif
   , ("m68k-linux", Platform M68k Linux)
   , ("m68k-netbsd", Platform M68k NetBSD)
   , ("m68k-none", Platform M68k (OtherOS "none"))
@@ -102,9 +106,15 @@ nixpkgsSystemMapping =
   , ("riscv32-linux", Platform (OtherArch "riscv32") Linux)
   , ("riscv32-netbsd", Platform (OtherArch "riscv32") NetBSD)
   , ("riscv32-none", Platform (OtherArch "riscv32") (OtherOS "none"))
+#if MIN_VERSION_Cabal(3,12,0)
+  , ("riscv64-linux", Platform RISCV64 Linux)
+  , ("riscv64-netbsd", Platform RISCV64 NetBSD)
+  , ("riscv64-none", Platform RISCV64 (OtherOS "none"))
+#else
   , ("riscv64-linux", Platform (OtherArch "riscv64") Linux)
   , ("riscv64-netbsd", Platform (OtherArch "riscv64") NetBSD)
   , ("riscv64-none", Platform (OtherArch "riscv64") (OtherOS "none"))
+#endif
   , ("rx-none", Platform (OtherArch "rx") (OtherOS "none"))
   , ("s390-linux", Platform S390 Linux)
   , ("s390-none", Platform S390 (OtherOS "none"))
@@ -117,9 +127,11 @@ nixpkgsSystemMapping =
 #endif
   , ("vc4-none", Platform (OtherArch "vc4") (OtherOS "none"))
 #if MIN_VERSION_Cabal(3,8,1)
+  , ("wasm32-none", Platform Wasm32 (OtherOS "none"))
   , ("wasm32-wasi", Platform Wasm32 Wasi)
   , ("wasm64-wasi", Platform (OtherArch "wasm64") Wasi)
 #else
+  , ("wasm32-none", Platform (OtherArch "wasm32") (OtherOS "none"))
   , ("wasm32-wasi", Platform (OtherArch "wasm32") (OtherOS "wasi"))
   , ("wasm64-wasi", Platform (OtherArch "wasm64") (OtherOS "wasi"))
 #endif
