@@ -28,6 +28,7 @@ mkDerivation {
     aeson async base blaze-builder criterion deepseq directory filepath
     safe-exceptions text time transformers unix
   ];
+  testTarget = "test";
   homepage = "https://github.com/Soostone/katip";
   description = "A structured logging framework";
   license = lib.licenses.bsd3;

@@ -15,6 +15,7 @@ mkDerivation {
   testHaskellDepends = [
     base containers product-isomorphic quickcheck-simple transformers
   ];
+  testTarget = "sqls sqlsArrow";
   homepage = "http://khibino.github.io/haskell-relational-record/";
   description = "Typeful, Modular, Relational, algebraic query engine";
   license = lib.licenses.bsd3;

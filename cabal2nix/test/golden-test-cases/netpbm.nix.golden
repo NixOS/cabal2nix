@@ -12,6 +12,7 @@ mkDerivation {
   ];
   testHaskellDepends = [ base bytestring hspec HUnit vector ];
   benchmarkHaskellDepends = [ base bytestring criterion ];
+  testTarget = "tests";
   homepage = "https://github.com/nh2/haskell-netpbm";
   description = "Loading PBM, PGM, PPM image files";
   license = lib.licenses.mit;

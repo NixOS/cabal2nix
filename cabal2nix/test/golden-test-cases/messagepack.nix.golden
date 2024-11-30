@@ -13,6 +13,7 @@ mkDerivation {
     base bytestring cereal containers QuickCheck test-framework
     test-framework-quickcheck2 test-framework-th
   ];
+  testTarget = "messagepack-tests";
   homepage = "https://github.com/rodrigosetti/messagepack";
   description = "Serialize instance for Message Pack Object";
   license = lib.licenses.mit;

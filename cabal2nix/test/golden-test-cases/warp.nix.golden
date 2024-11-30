@@ -28,6 +28,7 @@ mkDerivation {
     auto-update base bytestring containers criterion hashable http-date
     http-types network unix unix-compat
   ];
+  testTarget = "doctest spec";
   homepage = "http://github.com/yesodweb/wai";
   description = "A fast, light-weight web server for WAI applications";
   license = lib.licenses.mit;

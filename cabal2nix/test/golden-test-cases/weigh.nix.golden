@@ -9,6 +9,7 @@ mkDerivation {
     base deepseq mtl process split template-haskell temporary
   ];
   testHaskellDepends = [ base deepseq ];
+  testTarget = "weigh-test weigh-maps";
   homepage = "https://github.com/fpco/weigh#readme";
   description = "Measure allocations of a Haskell functions/values";
   license = lib.licenses.bsd3;

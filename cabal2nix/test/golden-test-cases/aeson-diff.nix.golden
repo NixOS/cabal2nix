@@ -20,6 +20,7 @@ mkDerivation {
     aeson base bytestring directory doctest filepath Glob hlint
     QuickCheck quickcheck-instances text unordered-containers vector
   ];
+  testTarget = "properties examples doctests hlint-check";
   homepage = "https://github.com/thsutton/aeson-diff";
   description = "Extract and apply patches to JSON documents";
   license = lib.licenses.bsd3;

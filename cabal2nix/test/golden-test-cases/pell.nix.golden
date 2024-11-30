@@ -10,6 +10,7 @@ mkDerivation {
     arithmoi base Cabal cabal-test-quickcheck containers primes
     QuickCheck
   ];
+  testTarget = "test-pell";
   homepage = "https://github.com/brunjlar/pell";
   description = "Package to solve the Generalized Pell Equation";
   license = lib.licenses.mit;

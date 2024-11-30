@@ -12,6 +12,7 @@ mkDerivation {
   testHaskellDepends = [
     base exceptions hspec http-api-data path-pieces QuickCheck text
   ];
+  testTarget = "tests";
   homepage = "https://github.com/mrkkrp/slug";
   description = "Type-safe slugs for Yesod ecosystem";
   license = lib.licenses.bsd3;
