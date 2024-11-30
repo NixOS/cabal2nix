@@ -1,5 +1,10 @@
 # Revision history for distribution-nixpkgs
 
+## 1.7.1.1
+
+* Adapt test suite to added representation of `RISCV64` and
+  `LoongArch64` architectures in Cabal 3.12.
+
 ## 1.7.1
 
 * GHC and nixpkgs now
