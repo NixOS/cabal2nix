@@ -44,16 +44,20 @@ main = hspec $ do
       it "is parsed correctly" $
         nixpkgsPlatformFromString str `shouldBe` Just plat
 
--- All system tuples from lib.platforms as of 2022-05-08. Testing these allows
--- us to get notified about behavior change in Cabal as early as possible.
+-- All system tuples from lib.platforms. Testing these allows us to
+-- get notified about behavior change in Cabal as early as possible.
+-- You can check if the list is up to date by running
+-- regenerate-all-system-tuples.sh.
 nixpkgsSystemMapping :: [(String, Platform)]
 nixpkgsSystemMapping =
   [ -- lib.platforms.all
     ("aarch64-darwin", Platform AArch64 OSX)
+  , ("aarch64-freebsd", Platform AArch64 FreeBSD)
   , ("aarch64-genode", Platform AArch64 (OtherOS "genode"))
   , ("aarch64-linux", Platform AArch64 Linux)
   , ("aarch64-netbsd", Platform AArch64 NetBSD)
   , ("aarch64-none", Platform AArch64 (OtherOS "none"))
+  , ("aarch64-windows", Platform AArch64 Windows)
   , ("aarch64_be-none", Platform (OtherArch "aarch64_be") (OtherOS "none"))
   , ("arm-none", Platform Arm (OtherOS "none"))
   , ("armv5tel-linux", Platform (OtherArch "armv5tel") Linux)

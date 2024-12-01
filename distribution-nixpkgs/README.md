@@ -22,5 +22,5 @@ To check if any new platforms need to be covered, do the following:
 
 3. If the test suite fails, add test cases for all missing system tuples.
 
-4. In all cases, change the dates of last update in `test/hspec.hs` and
+4. In all cases, change the date of last update in
    `src/Distribution/Nixpkgs/Meta.hs` to the current day.
