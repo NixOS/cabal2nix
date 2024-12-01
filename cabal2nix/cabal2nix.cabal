@@ -17,9 +17,9 @@ category:           Distribution, Nix
 homepage:           https://github.com/nixos/cabal2nix#readme
 bug-reports:        https://github.com/nixos/cabal2nix/issues
 build-type:         Simple
-extra-source-files: README.md
+extra-doc-files:    README.md
                     CHANGELOG.md
-                    test/golden-test-cases/*.cabal
+extra-source-files: test/golden-test-cases/*.cabal
                     test/golden-test-cases/*.nix.golden
 cabal-version:      1.24
 
