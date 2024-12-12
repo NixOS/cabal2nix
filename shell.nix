@@ -32,6 +32,8 @@ in pkgs.mkShell {
     pkgs.cabal-install
     pkgs.haskell-ci
     (pkgs.lib.getLib pkgs.openssl)
+    # Needed to run `cabal2nix`:
+    pkgs.nix-prefetch-scripts
   ] ++ pkgs.lib.optionals withHls [
     haskellPackages.haskell-language-server
   ];
