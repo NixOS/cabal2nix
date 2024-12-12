@@ -25,12 +25,12 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.List as L
 import Data.Maybe
+import Distribution.Nixpkgs.Color (colorStderrLn, commandColor, warningColor)
 import GHC.Generics ( Generic )
 import Language.Nix.PrettyPrinting as PP
 import System.Directory
 import System.Environment
 import System.Exit
-import System.IO
 import System.Process
 
 -- | A source is a location from which we can fetch, such as a HTTP URL, a GIT URL, ....
@@ -219,7 +219,7 @@ derivKindFunction = \case
 fetchWith :: (Bool, DerivKind) -> Source -> MaybeT IO (DerivationSource, FilePath)
 fetchWith (supportsRev, kind) source = do
   unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
-    liftIO (hPutStrLn stderr "** need a revision for VCS when the hash is given. skipping.") >> mzero
+    colorStderrLn warningColor "** need a revision for VCS when the hash is given. skipping." >> mzero
 
   let (script, extraArgs) = case kind of
         DerivKindUrl UnpackArchive ->  ("nix-prefetch-url", ["--unpack"])
@@ -236,7 +236,7 @@ fetchWith (supportsRev, kind) source = do
          : [ sourceRevision source | supportsRev ]
          ++ hashToList (sourceHash source)
 
-  liftIO $ hPutStrLn stderr $ "$ " ++ unwords (script:args)
+  colorStderrLn commandColor $ "$ " ++ unwords (script:args)
 
   MaybeT $ liftIO $ do
     envs <- getEnvironment

@@ -16,6 +16,7 @@ import Data.Maybe
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Data.Time
+import Distribution.Nixpkgs.Color ( colorStderrLn, infoColor, errorColor )
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Hashes
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
@@ -192,7 +193,7 @@ sourceFromHackage optHash pkgId cabalDir = do
           seq (length hash) $
           urlDerivationSource url hash <$ writeFile cacheFile hash
         Nothing -> do
-          hPutStr stderr $ unlines
+          colorStderrLn errorColor $ unlines
             [ "*** cannot compute hash. (Not a hackage project?)"
             , " If your project is not on hackage, please supply the path to the root directory of"
             , " the project, not to the cabal file."
@@ -226,7 +227,7 @@ cabalFromDirectory PackageYamlHpack dir = do
   useHpack <- liftIO $ shouldUseHpack dir
   if useHpack
     then do
-      liftIO $ hPutStrLn stderr "*** found package.yaml. Using hpack..."
+      colorStderrLn infoColor "*** found package.yaml. Using hpack..."
       hpackDirectory dir
     else onlyCabalFromDirectory dir "*** Found neither a .cabal file nor package.yaml. Exiting."
 
@@ -269,7 +270,7 @@ hpackDirectory dir = do
     , Hpack.decodeOptionsTarget = dir </> Hpack.packageConfig
     }
   case mPackage of
-    Left err -> liftIO $ hPutStrLn stderr ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
+    Left err -> liftIO $ colorStderrLn errorColor ("*** hpack error: " ++ show err ++ ". Exiting.") >> exitFailure
     Right r -> do
       let hpackOutput =
             let body = Hpack.renderPackage [] (Hpack.decodeResultPackage r)
@@ -278,10 +279,10 @@ hpackDirectory dir = do
           hash = printSHA256 $ digest (digestByName "sha256") hpackOutput
       case runParseGenericPackageDescription "<hpack output>" hpackOutput of
         Left msg -> liftIO $ do
-          hPutStrLn stderr "*** hpack output:"
+          colorStderrLn errorColor "*** hpack output:"
           BS.hPutStrLn stderr hpackOutput
-          hPutStrLn stderr "*** cannot parse hpack output:"
-          hPutStrLn stderr msg
+          colorStderrLn errorColor "*** cannot parse hpack output:"
+          colorStderrLn errorColor msg
           fail "*** Exiting."
         Right pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
 
@@ -290,13 +291,13 @@ cabalFromFile failHard file =
   -- hGetContents throws an error if it's used on files which contain sequences
   -- that do not represent valid characters. To catch that exception, we need to
   -- wrap the whole block in `catchIO`.
-  MaybeT $ handleIO (\err -> Nothing <$ hPutStrLn stderr ("*** parsing cabal file: " ++ show err)) $ do
+  MaybeT $ handleIO (\err -> Nothing <$ colorStderrLn errorColor ("*** parsing cabal file: " ++ show err)) $ do
     buf <- BS.readFile file
     let hash = printSHA256 (digest (digestByName "sha256") buf)
     case runParseGenericPackageDescription file buf of
       Left msg | failHard -> liftIO $ do
-          hPutStrLn stderr $ "*** cannot parse " ++ show file ++ ":"
-          hPutStrLn stderr msg
+          colorStderrLn errorColor $ "*** cannot parse " ++ show file ++ ":"
+          colorStderrLn errorColor msg
           fail "*** Exiting."
       Left _ -> return Nothing
       Right pkg -> return $ Just $ setCabalFileHash hash pkg

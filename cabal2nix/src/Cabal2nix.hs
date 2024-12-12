@@ -17,6 +17,7 @@ import qualified Data.Set as Set
 import Data.String
 import Data.Time
 import Distribution.Compiler
+import Distribution.Nixpkgs.Color (colorStderrLn, warningColor)
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
@@ -36,7 +37,7 @@ import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix ( version )
 import System.Environment ( getArgs )
-import System.IO ( hFlush, hPutStrLn, stdout, stderr )
+import System.IO ( hFlush, stdout, stderr )
 import qualified Text.PrettyPrint.ANSI.Leijen as P2
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi, render, prettyShow )
 
@@ -188,8 +189,8 @@ cabal2nix' opts@Options{..} = do
 
 cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
 cabal2nixWithDB db opts@Options{..} = do
-  when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
-  when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
+  when (isJust optHackageDb) $ colorStderrLn warningColor "WARN: HackageDB provided directly; ignoring --hackage-db"
+  when (isJust optHackageSnapshot) $ colorStderrLn warningColor "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
   pkg <- getPackage' optHpack optFetchSubmodules (return db) $
          Source {
            sourceUrl = optUrl,
