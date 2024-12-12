@@ -236,6 +236,8 @@ fetchWith (supportsRev, kind) source = do
          : [ sourceRevision source | supportsRev ]
          ++ hashToList (sourceHash source)
 
+  liftIO $ hPutStrLn stderr $ "$ " ++ unwords (script:args)
+
   MaybeT $ liftIO $ do
     envs <- getEnvironment
     (Nothing, Just stdoutH, _, processH) <-
