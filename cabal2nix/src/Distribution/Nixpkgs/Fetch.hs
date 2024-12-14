@@ -90,7 +90,7 @@ instance PP.Pretty DerivationSource where
                    [ attr "url" $ string derivUrl
                    , attr "sha256" $ string derivHash
                    , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
-                   , boolattr "fetchSubmodules" (isJust derivSubmodule) (fromJust derivSubmodule)
+                   , boolattr "fetchSubmodules" (maybe True id derivSubmodule)
                    ]
                  , rbrace PP.<> semi
                  ]

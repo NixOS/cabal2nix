@@ -34,8 +34,8 @@ attr n v = text n <+> equals <+> v <> semi
 onlyIf :: Bool -> Doc -> Doc
 onlyIf b d = if b then d else empty
 
-boolattr :: String -> Bool -> Bool -> Doc
-boolattr n p v = if p then attr n (bool v) else empty
+boolattr :: String -> Bool -> Doc
+boolattr n v = attr n (bool v)
 
 listattrDoc :: String -> Doc -> [Doc] -> Doc
 listattrDoc n prefix vs = onlyIf (not (null vs)) $
