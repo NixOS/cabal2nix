@@ -30,6 +30,7 @@ source-repository head
 
 library
   exposed-modules:    Cabal2nix
+                      Distribution.Nixpkgs.Color
                       Distribution.Nixpkgs.Fetch
                       Distribution.Nixpkgs.Haskell
                       Distribution.Nixpkgs.Haskell.BuildInfo
@@ -53,6 +54,7 @@ library
                     -- with all installation methods mentioned in the README!
                     , Cabal                >= 3.0
                     , aeson                > 1
+                    , ansi-terminal
                     , ansi-wl-pprint
                     , bytestring
                     , containers           >= 0.5.9
