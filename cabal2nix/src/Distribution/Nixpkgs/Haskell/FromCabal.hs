@@ -3,7 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal
-  ( HaskellResolver, NixpkgsResolver
+  ( HaskellResolver, NixpkgsResolver, OutputGranularity (..)
   , fromGenericPackageDescription , finalizeGenericPackageDescription , fromPackageDescription
   ) where
 
@@ -12,6 +12,7 @@ import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Distribution.Compiler
+import Distribution.Pretty
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
 import Distribution.Nixpkgs.Haskell.Constraint
@@ -36,13 +37,30 @@ import Distribution.Types.UnqualComponentName as Cabal
 import Distribution.Utils.ShortText ( fromShortText )
 import Distribution.Version
 import Language.Nix
+import Distribution.Nixpkgs.Fetch (DerivKind(DerivKindHg))
+import Text.PrettyPrint (render)
 
 type HaskellResolver = PackageVersionConstraint -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
-fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
-fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
-  fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
+data OutputGranularity
+  = SingleDerivation
+  -- One derivation per target, where libraries are not excluded from executables' libraryDepends
+  | PerTarget
+
+fromGenericPackageDescription 
+  :: (Derivation -> Derivation)
+  -> HaskellResolver
+  -> NixpkgsResolver
+  -> Platform
+  -> CompilerInfo
+  -> FlagAssignment
+  -> OutputGranularity
+  -> [Constraint]
+  -> GenericPackageDescription
+  -> PackageNix
+fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver arch compiler flags granularity constraints genDesc =
+  fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags granularity descr
     where
       (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc
 
@@ -92,54 +110,121 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
                 Right (d,_) -> (d,m)
     Right (d,_)  -> (d,[])
 
-fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
-fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
-    & isLibrary .~ isJust library
-    & pkgid .~ package
-    & revision .~ xrev
-    & isLibrary .~ isJust library
-    & isExecutable .~ not (null executables)
-    & extraFunctionArgs .~ mempty
-    & extraAttributes .~ mempty
-    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
-    & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
-    & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
-    & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
-    & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
-    & configureFlags .~ mempty
-    & cabalFlags .~ flags
-    & runHaddock .~ doHaddockPhase
-    & jailbreak .~ False
-    & doCheck .~ True
-    & doBenchmark .~ False
-    & testTarget .~ mempty
-    & hyperlinkSource .~ True
-    & enableSplitObjs .~ True
-    & enableLibraryProfiling .~ False
-    & enableExecutableProfiling .~ False
-    & enableSeparateDataOutput .~ not (null dataFiles)
-    & subpath .~ "."
-    & phaseOverrides .~ mempty
-    & editedCabalFile .~ (if xrev > 0
-                             then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
-                             else "")
-    & metaSection .~ ( Nix.nullMeta
-#if MIN_VERSION_Cabal(3,2,0)
-                     & Nix.homepage .~ stripRedundanceSpaces (fromShortText homepage)
-                     & Nix.description .~ stripRedundanceSpaces (fromShortText synopsis)
-#else
-                     & Nix.homepage .~ stripRedundanceSpaces homepage
-                     & Nix.description .~ stripRedundanceSpaces synopsis
-#endif
-                     & Nix.license .~ nixLicense
-                     & Nix.platforms .~ Nothing
-                     & Nix.badPlatforms .~ Nothing
-                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nothing else Just Set.empty)
-                     & Nix.mainProgram .~ nixMainProgram
-                     & Nix.maintainers .~ mempty
-                     & Nix.broken .~ not (null missingDeps)
-                     )
+fromPackageDescription
+  :: (Derivation -> Derivation)
+  -> HaskellResolver
+  -> NixpkgsResolver
+  -> [Dependency]
+  -> FlagAssignment
+  -> OutputGranularity
+  -> PackageDescription
+  -> PackageNix
+fromPackageDescription overrideDrv haskellResolver nixpkgsResolver missingDeps flags granularity packageDescription@PackageDescription {..}
+  = case granularity of
+    SingleDerivation -> singleDerivationPackage
+    PerTarget -> multiDerivationPackage
   where
+    singleDerivationPackage :: PackageNix
+    singleDerivationPackage = nullSingleDrvPackage 
+      & derivation .~ processDrv (baseDerivation
+        & isLibrary .~ isJust library
+        & isExecutable .~ not (null executables)
+        & libraryDepends .~ foldMap (convertSingleDerivationBuildInfo . libBuildInfo) (allLibraries packageDescription)
+        & executableDepends .~ mconcat (map (convertSingleDerivationBuildInfo . buildInfo) executables)
+        & testDepends .~ mconcat (map (convertSingleDerivationBuildInfo . testBuildInfo) testSuites)
+        & benchmarkDepends .~ mconcat (map (convertSingleDerivationBuildInfo . benchmarkBuildInfo) benchmarks))
+
+    processDrv :: Derivation -> Derivation
+    processDrv = overrideDrv . normalize . postProcess
+
+    multiDerivationPackage :: PackageNix
+    multiDerivationPackage = nullTargetDrvsPackage
+      & targetDrvs .~ (nullTargetDerivations
+        & libraries .~ fmap (processDrv . toLibraryDerivation) (allLibraries packageDescription)
+        & exes .~ fmap (processDrv . toExecutableDerivation) executables
+        & testExes .~ fmap (processDrv . toTestDerivation) testSuites
+        & benchExes .~ fmap (processDrv . toBenchDerivation) benchmarks)
+
+    toLibraryDerivation :: Library -> Derivation
+    toLibraryDerivation lib = baseDerivation
+      & pkgid .~ case libName lib of
+          LMainLibName -> baseDerivation^.pkgid
+          LSubLibName subLibName -> (baseDerivation^.pkgid) { pkgName = unqualComponentNameToPackageName subLibName }
+      & isLibrary .~ True
+      & isExecutable .~ False
+      & doCheck .~ False
+      & libraryDepends .~ convertComponentDerivationBuildInfo (libBuildInfo lib)
+      & buildTarget .~ render (case libName lib of
+          LMainLibName -> pretty $ packageName (baseDerivation^.pkgid)
+          name@LSubLibName {} -> prettyLibraryNameComponent name)
+
+    toExecutableDerivation :: Executable -> Derivation
+    toExecutableDerivation executable = baseDerivation
+      & pkgid .~ (baseDerivation^.pkgid) { pkgName = unqualComponentNameToPackageName (exeName executable) }
+      & isLibrary .~ False
+      & isExecutable .~ True
+      & executableDepends .~ convertComponentDerivationBuildInfo (buildInfo executable)
+      & buildTarget .~ unUnqualComponentName (exeName executable)
+
+    toTestDerivation :: TestSuite -> Derivation
+    toTestDerivation testSuite = baseDerivation
+      & pkgid .~ (baseDerivation^.pkgid) { pkgName = unqualComponentNameToPackageName (testName testSuite) }
+      & isLibrary .~ False
+      & isExecutable .~ True
+      & testDepends .~ convertComponentDerivationBuildInfo (testBuildInfo testSuite)
+      & buildTarget .~ unUnqualComponentName (testName testSuite)
+
+    toBenchDerivation :: Benchmark -> Derivation
+    toBenchDerivation benchmark = baseDerivation
+      & pkgid .~ (baseDerivation^.pkgid) { pkgName = unqualComponentNameToPackageName (benchmarkName benchmark) }
+      & isLibrary .~ False
+      & isExecutable .~ True
+      & doBenchmark .~ True
+      & benchmarkDepends .~ convertComponentDerivationBuildInfo (benchmarkBuildInfo benchmark)
+      & buildTarget .~ unUnqualComponentName (benchmarkName benchmark)
+
+    baseDerivation :: Derivation
+    baseDerivation = nullDerivation
+      & pkgid .~ package
+      & revision .~ xrev
+      & extraFunctionArgs .~ mempty
+      & extraAttributes .~ mempty
+      & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
+      & configureFlags .~ mempty
+      & cabalFlags .~ flags
+      & runHaddock .~ doHaddockPhase
+      & jailbreak .~ False
+      & doCheck .~ True
+      & doBenchmark .~ False
+      & buildTarget .~ mempty
+      & testTarget .~ mempty
+      & hyperlinkSource .~ True
+      & enableSplitObjs .~ True
+      & enableLibraryProfiling .~ False
+      & enableExecutableProfiling .~ False
+      & enableSeparateDataOutput .~ not (null dataFiles)
+      & subpath .~ "."
+      & phaseOverrides .~ mempty
+      & editedCabalFile .~ (if xrev > 0
+                               then fromMaybe (error (display package ++ ": X-Cabal-File-Hash field is missing")) (lookup "X-Cabal-File-Hash" customFieldsPD)
+                               else "")
+      & metaSection .~ ( Nix.nullMeta
+#if MIN_VERSION_Cabal(3,2,0)
+                       & Nix.homepage .~ stripRedundanceSpaces (fromShortText homepage)
+                       & Nix.description .~ stripRedundanceSpaces (fromShortText synopsis)
+#else
+                       & Nix.homepage .~ stripRedundanceSpaces homepage
+                       & Nix.description .~ stripRedundanceSpaces synopsis
+#endif
+                       & Nix.license .~ nixLicense
+                       & Nix.platforms .~ Nothing
+                       & Nix.badPlatforms .~ Nothing
+                       & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nothing else Just Set.empty)
+                       & Nix.mainProgram .~ nixMainProgram
+                       & Nix.maintainers .~ mempty
+                       & Nix.broken .~ not (null missingDeps)
+                       )
+
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     nixLicense :: Nix.License
@@ -190,10 +275,16 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                    | Just l <- library           = not (null (exposedModules l))
                    | otherwise                   = True
 
-    convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
-    convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
-    convertBuildInfo Cabal.BuildInfo {..} = mempty
-      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, x `notElem` internalLibNames ]
+    convertSingleDerivationBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
+    convertSingleDerivationBuildInfo = convertBuildInfo (`notElem` internalLibNames)
+
+    convertComponentDerivationBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
+    convertComponentDerivationBuildInfo = convertBuildInfo $ const True
+
+    convertBuildInfo :: (PackageName -> Bool) -> Cabal.BuildInfo -> Nix.BuildInfo
+    convertBuildInfo _ Cabal.BuildInfo {..} | not buildable = mempty
+    convertBuildInfo buildDependsFilterPredicate Cabal.BuildInfo {..} = mempty
+      & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, buildDependsFilterPredicate x ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
       & tool .~ Set.fromList (map resolveInHackageThenNixpkgs . concatMap buildToolNixName

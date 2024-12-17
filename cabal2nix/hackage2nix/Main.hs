@@ -155,21 +155,24 @@ main = do
           attr :: String
           attr = if isInDefaultPackageSet then unPackageName name else mangle pkgId
 
-          drv :: Derivation
-          drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
-                  & src .~ urlDerivationSource ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") tarballSHA256
-                  & editedCabalFile .~ cabalSHA256
-                  -- If a list of platforms is set in the hackage2nix configuration file, prefer that.
-                  -- Otherwise a list defined by PostProcess or Nothing is used.
-                  & metaSection.platforms %~ (Map.lookup name (supportedPlatforms config) <|>)
-                  & metaSection.badPlatforms %~ (Map.lookup name (unsupportedPlatforms config) <|>)
-                  & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const (Just Set.empty))
-                  & metaSection.broken ||~ isBroken
-                  & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
-                  & metaSection.homepage .~ ""
+          overrideDrv :: Derivation -> Derivation
+          overrideDrv drv' = drv'
+              & src .~ urlDerivationSource ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") tarballSHA256
+              & editedCabalFile .~ cabalSHA256
+              -- If a list of platforms is set in the hackage2nix configuration file, prefer that.
+              -- Otherwise a list defined by PostProcess or Nothing is used.
+              & metaSection.platforms %~ (Map.lookup name (supportedPlatforms config) <|>)
+              & metaSection.badPlatforms %~ (Map.lookup name (unsupportedPlatforms config) <|>)
+              & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const (Just Set.empty))
+              & metaSection.broken ||~ isBroken
+              & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
+              & metaSection.homepage .~ ""
+
+          drv :: PackageNix
+          drv = fromGenericPackageDescription overrideDrv haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment SingleDerivation [] descr
 
           overrides :: Doc
-          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
+          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (allDependencies . each) drv `Set.union` view allExtraFunctionArgs drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
         hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 

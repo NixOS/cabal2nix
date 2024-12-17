@@ -60,6 +60,7 @@ data Options = Options
   , optHackageDb :: Maybe FilePath
   , optNixShellOutput :: Bool
   , optFlags :: [String]
+  , optOutputGranularity :: OutputGranularity
   , optCompiler :: CompilerId
   , optSystem :: Platform
   , optSubpath :: Maybe FilePath
@@ -111,6 +112,8 @@ options = do
     <- switch (long "shell" <> help "generate output suitable for nix-shell")
   optFlags
     <- many (strOption $ short 'f' <> long "flag" <> help "Cabal flag (may be specified multiple times)")
+  optOutputGranularity
+    <- flag SingleDerivation PerTarget $ long "granular-output" <> help "Generate an attrset with a derivation for each build target"
   optCompiler
     <- option parseCabal (long "compiler" <> help "compiler to use when evaluating the Cabal file" <> value buildCompilerId <> showDefaultWith prettyShow)
   optSystem
@@ -173,7 +176,7 @@ hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
                . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
-cabal2nix' :: Options -> IO (Either Doc Derivation)
+cabal2nix' :: Options -> IO (Either Doc PackageNix)
 cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
          Source {
@@ -186,7 +189,7 @@ cabal2nix' opts@Options{..} = do
          }
   processPackage opts pkg
 
-cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
+cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc PackageNix)
 cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ hPutStrLn stderr "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
@@ -201,7 +204,7 @@ cabal2nixWithDB db opts@Options{..} = do
          }
   processPackage opts pkg
 
-processPackage :: Options -> Package -> IO (Either Doc Derivation)
+processPackage :: Options -> Package -> IO (Either Doc PackageNix)
 processPackage Options{..} pkg = do
   let
       withHpackOverrides :: Derivation -> Derivation
@@ -210,26 +213,31 @@ processPackage Options{..} pkg = do
       flags :: FlagAssignment
       flags = configureCabalFlags (packageId (pkgCabal pkg)) `mappend` readFlagList optFlags
 
-      deriv :: Derivation
-      deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
-                                            optNixpkgsIdentifier
-                                            optSystem
-                                            (unknownCompilerInfo optCompiler NoAbiTag)
-                                            flags
-                                            []
-                                            (pkgCabal pkg)
-              & src .~ pkgSource pkg
-              & subpath .~ fromMaybe "." optSubpath
-              & runHaddock %~ (optHaddock &&)
-              & jailbreak .~ optJailbreak
-              & hyperlinkSource .~ optHyperlinkSource
-              & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
-              & enableExecutableProfiling .~ (fromMaybe False optEnableProfiling || optEnableExecutableProfiling)
-              & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
---            & metaSection.platforms .~ Set.fromList optPlatform
-              & doCheck &&~ optDoCheck
-              & doBenchmark ||~ optDoBenchmark
-              & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
+      overrideDrv :: Derivation -> Derivation
+      overrideDrv drv = withHpackOverrides $ drv
+        & src .~ pkgSource pkg
+        & subpath .~ fromMaybe "." optSubpath
+        & runHaddock %~ (optHaddock &&)
+        & jailbreak .~ optJailbreak
+        & hyperlinkSource .~ optHyperlinkSource
+        & enableLibraryProfiling .~ (fromMaybe False optEnableProfiling || optEnableLibraryProfiling)
+        & enableExecutableProfiling .~ (fromMaybe False optEnableProfiling || optEnableExecutableProfiling)
+        & metaSection.maintainers .~ Set.fromList (map (review ident) optMaintainer)
+  --            & metaSection.platforms .~ Set.fromList optPlatform
+        & doCheck &&~ optDoCheck
+        & doBenchmark ||~ optDoBenchmark
+        & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
+
+      deriv :: PackageNix
+      deriv = fromGenericPackageDescription overrideDrv
+                  (const True)
+                  optNixpkgsIdentifier
+                  optSystem
+                  (unknownCompilerInfo optCompiler NoAbiTag)
+                  flags
+                  optOutputGranularity
+                  []
+                  (pkgCabal pkg)
 
       shell :: Doc
       shell = vcat
