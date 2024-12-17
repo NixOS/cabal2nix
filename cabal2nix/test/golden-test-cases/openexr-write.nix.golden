@@ -10,6 +10,7 @@ mkDerivation {
     vector-split zlib
   ];
   testHaskellDepends = [ base bytestring directory hspec vector ];
+  testTarget = "spec";
   homepage = "https://github.com/pavolzetor/openexr-write#readme";
   description = "Library for writing images in OpenEXR HDR file format";
   license = lib.licenses.gpl3Only;

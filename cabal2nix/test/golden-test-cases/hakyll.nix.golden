@@ -36,6 +36,7 @@ mkDerivation {
     wai-app-static warp yaml
   ];
   testToolDepends = [ util-linux ];
+  testTarget = "hakyll-tests";
   homepage = "http://jaspervdj.be/hakyll";
   description = "A static website compiler library";
   license = lib.licenses.bsd3;

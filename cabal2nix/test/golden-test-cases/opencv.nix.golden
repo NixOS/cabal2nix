@@ -23,6 +23,7 @@ mkDerivation {
     transformers vector
   ];
   benchmarkHaskellDepends = [ base bytestring criterion repa ];
+  testTarget = "doc-images-opencv test-opencv";
   hardeningDisable = [ "bindnow" ];
   homepage = "https://github.com/LumiGuide/haskell-opencv";
   description = "Haskell binding to OpenCV-3.x";

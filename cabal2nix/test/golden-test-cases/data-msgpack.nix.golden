@@ -20,6 +20,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base bytestring criterion deepseq QuickCheck
   ];
+  testTarget = "testsuite";
   homepage = "http://msgpack.org/";
   description = "A Haskell implementation of MessagePack";
   license = lib.licenses.bsd3;

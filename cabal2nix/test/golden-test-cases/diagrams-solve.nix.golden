@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base deepseq tasty tasty-hunit tasty-quickcheck
   ];
+  testTarget = "tests";
   homepage = "http://projects.haskell.org/diagrams";
   description = "Pure Haskell solver routines used by diagrams";
   license = lib.licenses.bsd3;

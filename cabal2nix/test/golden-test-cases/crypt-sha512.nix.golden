@@ -14,6 +14,7 @@ mkDerivation {
     tasty-quickcheck
   ];
   testSystemDepends = [ libxcrypt ];
+  testTarget = "example";
   homepage = "https://github.com/phadej/crypt-sha512";
   description = "Pure Haskell implelementation for GNU SHA512 crypt algorithm";
   license = lib.licenses.bsd3;

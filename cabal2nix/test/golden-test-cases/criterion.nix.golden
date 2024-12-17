@@ -25,6 +25,7 @@ mkDerivation {
     aeson base bytestring deepseq directory HUnit QuickCheck statistics
     tasty tasty-hunit tasty-quickcheck vector
   ];
+  testTarget = "sanity tests cleanup";
   homepage = "http://www.serpentine.com/criterion";
   description = "Robust, reliable performance measurement and analysis";
   license = lib.licenses.bsd3;

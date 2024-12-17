@@ -16,6 +16,7 @@ mkDerivation {
     hslogger HUnit mtl network old-locale old-time parsec process
     QuickCheck random regex-compat testpack time unix
   ];
+  testTarget = "runtests";
   homepage = "http://software.complete.org/missingh";
   description = "Large utility library";
   license = lib.licenses.bsd3;

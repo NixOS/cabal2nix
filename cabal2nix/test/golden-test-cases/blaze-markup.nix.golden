@@ -11,6 +11,7 @@ mkDerivation {
     base blaze-builder bytestring containers HUnit QuickCheck
     test-framework test-framework-hunit test-framework-quickcheck2 text
   ];
+  testTarget = "blaze-markup-tests";
   homepage = "http://jaspervdj.be/blaze";
   description = "A blazingly fast markup combinator library for Haskell";
   license = lib.licenses.bsd3;

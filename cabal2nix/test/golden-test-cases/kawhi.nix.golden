@@ -15,6 +15,7 @@ mkDerivation {
     scientific smallcheck tasty tasty-hunit tasty-quickcheck
     tasty-smallcheck text
   ];
+  testTarget = "tests";
   homepage = "https://github.com/thunky-monk/kawhi";
   description = "stats.NBA.com library";
   license = lib.licenses.mit;

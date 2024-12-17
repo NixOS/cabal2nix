@@ -12,6 +12,7 @@ mkDerivation {
   ];
   testHaskellDepends = [ base HUnit regex-base regex-tdfa tagsoup ];
   benchmarkHaskellDepends = [ base criterion tagsoup text ];
+  testTarget = "lib-tests";
   homepage = "https://github.com/fimad/scalpel";
   description = "A high level web scraping library for Haskell";
   license = lib.licenses.asl20;

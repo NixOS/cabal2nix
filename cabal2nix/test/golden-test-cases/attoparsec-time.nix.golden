@@ -13,6 +13,7 @@ mkDerivation {
   testHaskellDepends = [
     base base-prelude directory doctest filepath
   ];
+  testTarget = "doctests";
   homepage = "https://github.com/nikita-volkov/attoparsec-time";
   description = "Attoparsec parsers of time";
   license = lib.licenses.mit;

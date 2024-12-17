@@ -9,6 +9,7 @@ mkDerivation {
   testHaskellDepends = [
     base hspec lens QuickCheck template-haskell transformers
   ];
+  testTarget = "test";
   homepage = "https://github.com/plow-technologies/quickcheck-arbitrary-adt#readme";
   description = "Generic typeclasses for generating arbitrary ADTs";
   license = lib.licenses.bsd3;
