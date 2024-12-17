@@ -114,7 +114,6 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & doBenchmark .~ False
     & testTarget .~ mempty
     & hyperlinkSource .~ True
-    & enableSplitObjs .~ True
     & enableLibraryProfiling .~ False
     & enableExecutableProfiling .~ False
     & enableSeparateDataOutput .~ not (null dataFiles)
