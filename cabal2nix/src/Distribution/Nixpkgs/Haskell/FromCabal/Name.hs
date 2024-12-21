@@ -186,6 +186,7 @@ libNixName "tensorflow"                         = return "libtensorflow"
 libNixName "udev"                               = return "systemd";
 libNixName "uuid"                               = return "libossp_uuid";
 libNixName "vte-2.91"                           = return "vte_291"
+libNixName "vulkan"                             = return "vulkan-loader"
 libNixName "wayland-client"                     = return "wayland"
 libNixName "wayland-cursor"                     = return "wayland"
 libNixName "wayland-egl"                        = return "libGL"
