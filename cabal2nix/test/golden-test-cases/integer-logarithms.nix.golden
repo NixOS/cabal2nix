@@ -11,6 +11,7 @@ mkDerivation {
     base QuickCheck smallcheck tasty tasty-hunit tasty-quickcheck
     tasty-smallcheck
   ];
+  testTarget = "spec";
   homepage = "https://github.com/phadej/integer-logarithms";
   description = "Integer logarithms";
   license = lib.licenses.mit;

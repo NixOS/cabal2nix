@@ -10,6 +10,7 @@ mkDerivation {
     base HUnit QuickCheck test-framework test-framework-hunit
     test-framework-quickcheck2
   ];
+  testTarget = "ft-properties";
   description = "Generic finger-tree structure, with example instances";
   license = lib.licenses.bsd3;
 }

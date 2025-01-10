@@ -16,6 +16,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base criterion directory network-uri text transformers
   ];
+  testTarget = "tests";
   homepage = "https://github.com/myfreeweb/http-link-header";
   description = "A parser and writer for the HTTP Link header as specified in RFC 5988 \"Web Linking\"";
   license = lib.licenses.publicDomain;

@@ -8,6 +8,7 @@ mkDerivation {
   libraryHaskellDepends = [ array base containers ];
   testHaskellDepends = [ base containers extra QuickCheck ];
   benchmarkHaskellDepends = [ base containers criterion ];
+  testTarget = "test-alga";
   homepage = "https://github.com/snowleopard/alga";
   description = "A library for algebraic graph construction and transformation";
   license = lib.licenses.mit;

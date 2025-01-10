@@ -17,6 +17,7 @@ mkDerivation {
     base bytestring doctest Glob hspec-wai servant servant-server tasty
     tasty-hspec tasty-hunit wai
   ];
+  testTarget = "servant-checked-exceptions-doctest servant-checked-exceptions-test";
   homepage = "https://github.com/cdepillabout/servant-checked-exceptions";
   description = "Checked exceptions for Servant APIs";
   license = lib.licenses.bsd3;

@@ -10,6 +10,7 @@ mkDerivation {
     mtl random vector zlib
   ];
   testHaskellDepends = [ base HTF ];
+  testTarget = "HPDF-Tests";
   homepage = "http://www.alpheccar.org";
   description = "Generation of PDF documents";
   license = lib.licenses.bsd3;

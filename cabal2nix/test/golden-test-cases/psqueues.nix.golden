@@ -16,6 +16,7 @@ mkDerivation {
     base containers criterion deepseq fingertree-psqueue ghc-prim
     hashable mtl PSQueue random unordered-containers
   ];
+  testTarget = "psqueues-tests";
   description = "Pure priority search queues";
   license = lib.licenses.bsd3;
 }

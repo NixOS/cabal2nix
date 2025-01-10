@@ -10,6 +10,7 @@ mkDerivation {
     amazonka-core amazonka-test base bytestring tasty tasty-hunit text
     time unordered-containers
   ];
+  testTarget = "amazonka-waf-test";
   homepage = "https://github.com/brendanhay/amazonka";
   description = "Amazon WAF SDK";
   license = lib.licenses.mpl20;

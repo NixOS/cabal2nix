@@ -19,6 +19,7 @@ mkDerivation {
     ansi-terminal base cmdargs containers directory extra filepath
     fsnotify process tasty tasty-hunit terminal-size time unix
   ];
+  testTarget = "ghcid_test";
   homepage = "https://github.com/ndmitchell/ghcid#readme";
   description = "GHCi based bare bones IDE";
   license = lib.licenses.bsd3;

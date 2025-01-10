@@ -14,6 +14,7 @@ mkDerivation {
     base containers hashable HUnit pqueue psqueues test-framework
     test-framework-hunit transformers unordered-containers vault
   ];
+  testTarget = "tests";
   homepage = "http://wiki.haskell.org/Reactive-banana";
   description = "Library for functional reactive programming (FRP)";
   license = lib.licenses.bsd3;

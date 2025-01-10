@@ -18,6 +18,7 @@ mkDerivation {
     base directory filepath hspec process regex-compat temporary
     transformers
   ];
+  testTarget = "intero-test";
   homepage = "https://github.com/commercialhaskell/intero";
   description = "Complete interactive development program for Haskell";
   license = lib.licenses.bsd3;

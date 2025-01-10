@@ -22,6 +22,7 @@ mkDerivation {
     base commutative containers contravariant criterion
     unordered-containers
   ];
+  testTarget = "spec";
   description = "Ducktyped set interface for Haskell containers";
   license = lib.licenses.mit;
 }

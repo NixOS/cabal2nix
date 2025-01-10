@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base containers directory hspec HUnit mtl parsec text
   ];
+  testTarget = "tests";
   homepage = "https://github.com/emmanueltouzery/app-settings";
   description = "A library to manage application settings (INI file-like)";
   license = lib.licenses.bsd3;

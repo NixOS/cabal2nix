@@ -10,6 +10,7 @@ mkDerivation {
     amazonka-core amazonka-test base bytestring tasty tasty-hunit text
     time unordered-containers
   ];
+  testTarget = "amazonka-route53-domains-test";
   homepage = "https://github.com/brendanhay/amazonka";
   description = "Amazon Route 53 Domains SDK";
   license = lib.licenses.mpl20;

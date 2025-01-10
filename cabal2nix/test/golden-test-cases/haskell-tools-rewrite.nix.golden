@@ -14,6 +14,7 @@ mkDerivation {
     base directory filepath haskell-tools-ast haskell-tools-prettyprint
     tasty tasty-hunit
   ];
+  testTarget = "haskell-tools-rewrite-tests";
   homepage = "https://github.com/haskell-tools/haskell-tools";
   description = "Facilities for generating new parts of the Haskell-Tools AST";
   license = lib.licenses.bsd3;
