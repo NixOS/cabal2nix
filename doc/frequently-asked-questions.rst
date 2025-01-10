@@ -497,24 +497,29 @@ The solution is to add it as another package to the environment:
 Quality assurance
 ~~~~~~~~~~~~~~~~~
 
-The ``haskell.lib`` library includes a number of functions for checking
-for various imperfections in Haskell packages. It’s useful to apply
-these functions to your own Haskell packages and integrate that in a
-Continuous Integration server like `hydra <https://nixos.org/hydra/>`__
-to assure your packages maintain a minimum level of quality. This
-section discusses some of these functions.
+The ``haskell.lib.compose`` library, (herein referred to as ``haskellLib``)
+includes a number of functions for checking for various imperfections in
+Haskell packages. It’s useful to apply these functions to your own Haskell
+packages and integrate that in a Continuous Integration server like `hydra
+<https://nixos.org/hydra/>`__ to assure your packages maintain a minimum level
+of quality. This section discusses some of these functions.
+
+There also exists ``haskell.lib`` with the same functionality, but with a less
+easy to compose argument ordering where the derivation being overridden comes
+before any additional arguments, for this reason ``haskell.lib.compose`` is
+preferred.
 
 failOnAllWarnings
 ^^^^^^^^^^^^^^^^^
 
-Applying ``haskell.lib.failOnAllWarnings`` to a Haskell package enables
+Applying ``haskellLib.failOnAllWarnings`` to a Haskell package enables
 the ``-Wall`` and ``-Werror`` GHC options to turn all warnings into
 build failures.
 
 buildStrictly
 ^^^^^^^^^^^^^
 
-Applying ``haskell.lib.buildStrictly`` to a Haskell package calls
+Applying ``haskellLib.buildStrictly`` to a Haskell package calls
 ``failOnAllWarnings`` on the given package to turn all warnings into
 build failures. Additionally the source of your package is gotten from
 first invoking ``cabal sdist`` to ensure all needed files are listed in
@@ -523,7 +528,7 @@ the Cabal file.
 checkUnusedPackages
 ^^^^^^^^^^^^^^^^^^^
 
-Applying ``haskell.lib.checkUnusedPackages`` to a Haskell package
+Applying ``haskellLib.checkUnusedPackages`` to a Haskell package
 invokes the
 `packunused <http://hackage.haskell.org/package/packunused>`__ tool on
 the package. ``packunused`` complains when it finds packages listed as
@@ -531,7 +536,7 @@ build-depends in the Cabal file which are redundant. For example:
 
 ::
 
-   $ nix-build -E 'let pkgs = import <nixpkgs> {}; in pkgs.haskell.lib.checkUnusedPackages {} pkgs.haskellPackages.scientific'
+   $ nix-build -E 'let pkgs = import <nixpkgs> {}; in pkgs.haskell.lib.compose.checkUnusedPackages {} pkgs.haskellPackages.scientific'
    these derivations will be built:
      /nix/store/3lc51cxj2j57y3zfpq5i69qbzjpvyci1-scientific-0.3.5.1.drv
    ...
