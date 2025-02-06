@@ -19,7 +19,7 @@ import Control.Monad.Fail
 import Data.Aeson
 import Data.Map as Map
 import Data.Set as Set
-import Data.Text as T
+import qualified Data.Text as T
 import Data.Yaml
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.Constraint
@@ -105,7 +105,7 @@ instance FromJSONKey Identifier where
 instance FromJSONKey PackageName where
   fromJSONKey = FromJSONKeyText parseKey
 
-parseKey :: FromJSON k => Text -> k
+parseKey :: FromJSON k => T.Text -> k
 parseKey s = either error id (parseEither parseJSON (String s))
 
 readConfiguration :: FilePath -> IO Configuration
