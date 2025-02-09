@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base ];
+  testTarget = "tests";
   homepage = "https://github.com/RyanGlScott/code-page";
   description = "Windows code page library for Haskell";
   license = lib.licenses.bsd3;

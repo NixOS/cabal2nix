@@ -18,6 +18,7 @@ mkDerivation {
     aeson base containers criterion parsec text time
     unordered-containers vector
   ];
+  testTarget = "htoml-test";
   homepage = "https://github.com/cies/htoml";
   description = "Parser for TOML files";
   license = lib.licenses.bsd3;

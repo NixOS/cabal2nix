@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base vector ];
   testHaskellDepends = [ base hspec vector ];
+  testTarget = "stb-image-redux-tests";
   homepage = "https://github.com/typedrat/stb-image-redux#readme";
   description = "Image loading and writing microlibrary";
   license = lib.licenses.bsd3;

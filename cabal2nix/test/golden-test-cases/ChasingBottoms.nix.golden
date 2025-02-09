@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     array base containers mtl QuickCheck random syb
   ];
+  testTarget = "ChasingBottomsTestSuite";
   description = "For testing partial and infinite values";
   license = lib.licenses.mit;
 }

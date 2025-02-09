@@ -9,6 +9,7 @@ mkDerivation {
     aeson base lens split template-haskell text
   ];
   testHaskellDepends = [ aeson base HUnit lens ];
+  testTarget = "api-field-json-th-test";
   homepage = "https://github.com/nakaji-dayo/api-field-json-th";
   description = "option of aeson's deriveJSON";
   license = lib.licenses.bsd3;

@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ghc-prim transformers ];
   testHaskellDepends = [ base ghc-prim ];
+  testTarget = "test";
   homepage = "https://github.com/haskell/primitive";
   description = "Primitive memory-related operations";
   license = lib.licenses.bsd3;

@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers syb template-haskell ];
   testHaskellDepends = [ base template-haskell ];
+  testTarget = "test-th-expand-syns";
   homepage = "https://github.com/DanielSchuessler/th-expand-syns";
   description = "Expands type synonyms in Template Haskell ASTs";
   license = lib.licenses.bsd3;

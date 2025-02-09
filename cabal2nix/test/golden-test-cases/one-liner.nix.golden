@@ -10,6 +10,7 @@ mkDerivation {
     transformers
   ];
   testHaskellDepends = [ base contravariant HUnit ];
+  testTarget = "unittests";
   homepage = "https://github.com/sjoerdvisscher/one-liner";
   description = "Constraint-based generics";
   license = lib.licenses.bsd3;

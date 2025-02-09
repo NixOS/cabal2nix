@@ -13,6 +13,7 @@ mkDerivation {
   testHaskellDepends = [
     base drifter either postgresql-simple tasty tasty-hunit text
   ];
+  testTarget = "test";
   homepage = "http://github.com/michaelxavier/drifter-postgresql";
   description = "PostgreSQL support for the drifter schema migration tool";
   license = lib.licenses.mit;

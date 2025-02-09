@@ -14,6 +14,7 @@ mkDerivation {
     tasty-th
   ];
   benchmarkHaskellDepends = [ async base criterion deepseq ];
+  testTarget = "test-lifted-async regression-tests";
   homepage = "https://github.com/maoe/lifted-async";
   description = "Run lifted IO operations asynchronously and wait for their results";
   license = lib.licenses.bsd3;

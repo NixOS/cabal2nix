@@ -28,6 +28,7 @@ mkDerivation {
     tasty-quickcheck tasty-smallcheck temporary text text-format time
     transformers transformers-base vector xml-conduit
   ];
+  testTarget = "minio-hs-live-server-test minio-hs-test";
   homepage = "https://github.com/minio/minio-hs#readme";
   description = "A Minio Haskell Library for Amazon S3 compatible cloud storage";
   license = lib.licenses.asl20;

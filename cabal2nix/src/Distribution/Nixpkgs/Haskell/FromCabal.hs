@@ -112,7 +112,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & jailbreak .~ False
     & doCheck .~ True
     & doBenchmark .~ False
-    & testTarget .~ mempty
+    & testTarget .~ unwords (map (unUnqualComponentName . testName) testSuites)
     & hyperlinkSource .~ True
     & enableLibraryProfiling .~ False
     & enableExecutableProfiling .~ False

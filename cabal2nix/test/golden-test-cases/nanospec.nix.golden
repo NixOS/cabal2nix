@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ];
   testHaskellDepends = [ base hspec silently ];
+  testTarget = "spec";
   description = "A lightweight implementation of a subset of Hspec's API";
   license = lib.licenses.mit;
 }

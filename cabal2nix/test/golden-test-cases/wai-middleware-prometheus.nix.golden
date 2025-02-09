@@ -10,6 +10,7 @@ mkDerivation {
     text wai
   ];
   testHaskellDepends = [ base doctest prometheus-client ];
+  testTarget = "doctest";
   homepage = "https://github.com/fimad/prometheus-haskell";
   description = "WAI middlware for exposing http://prometheus.io metrics.";
   license = lib.licenses.asl20;

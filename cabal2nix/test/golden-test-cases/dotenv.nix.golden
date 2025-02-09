@@ -21,6 +21,7 @@ mkDerivation {
     base base-compat directory exceptions hspec hspec-megaparsec
     megaparsec process text transformers yaml
   ];
+  testTarget = "dotenv-test";
   homepage = "https://github.com/stackbuilders/dotenv-hs";
   description = "Loads environment variables from dotenv files";
   license = lib.licenses.mit;

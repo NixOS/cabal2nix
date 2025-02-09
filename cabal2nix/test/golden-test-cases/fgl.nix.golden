@@ -10,6 +10,7 @@ mkDerivation {
   ];
   testHaskellDepends = [ base containers hspec QuickCheck ];
   benchmarkHaskellDepends = [ base deepseq microbench ];
+  testTarget = "fgl-tests";
   description = "Martin Erwig's Functional Graph Library";
   license = lib.licenses.bsd3;
 }

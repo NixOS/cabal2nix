@@ -9,6 +9,7 @@ mkDerivation {
     base dlist transformers transformers-compat
   ];
   testHaskellDepends = [ base QuickCheck quickcheck-simple ];
+  testTarget = "pp";
   homepage = "http://khibino.github.io/haskell-relational-record/";
   description = "Parser and Printer of PostgreSQL extended types";
   license = lib.licenses.bsd3;

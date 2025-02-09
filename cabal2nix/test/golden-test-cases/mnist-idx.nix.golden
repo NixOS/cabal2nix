@@ -7,6 +7,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base binary bytestring vector ];
   testHaskellDepends = [ base binary directory hspec vector ];
+  testTarget = "tests";
   homepage = "https://github.com/kryoxide/mnist-idx/";
   description = "Read and write IDX data that is used in e.g. the MNIST database.";
   license = lib.licenses.lgpl3Only;

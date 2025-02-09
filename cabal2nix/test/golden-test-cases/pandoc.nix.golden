@@ -47,6 +47,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base bytestring deepseq mtl tasty-bench text
   ];
+  testTarget = "test-pandoc";
   postInstall = ''
     mkdir -p $out/share/man/man1
     mv "man/"*.1 $out/share/man/man1/

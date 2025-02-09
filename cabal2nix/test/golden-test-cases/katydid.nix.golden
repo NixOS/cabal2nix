@@ -15,6 +15,7 @@ mkDerivation {
     base containers directory filepath HUnit hxt json mtl parsec tasty
     tasty-hunit
   ];
+  testTarget = "katydid-test";
   homepage = "https://github.com/katydid/katydid-haskell";
   description = "A haskell implementation of Katydid";
   license = lib.licenses.bsd3;

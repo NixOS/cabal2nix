@@ -15,6 +15,7 @@ mkDerivation {
   testHaskellDepends = [
     aeson base genvalidity genvalidity-hspec hspec
   ];
+  testTarget = "genvalidity-aeson-test";
   homepage = "https://github.com/NorfairKing/validity#readme";
   description = "GenValidity support for aeson";
   license = lib.licenses.mit;

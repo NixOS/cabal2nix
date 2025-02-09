@@ -10,6 +10,7 @@ mkDerivation {
     base HUnit QuickCheck test-framework test-framework-hunit
     test-framework-quickcheck2
   ];
+  testTarget = "unicode-show-test";
   homepage = "http://github.com/nushio3/unicode-show#readme";
   description = "print and show in unicode";
   license = lib.licenses.bsd3;

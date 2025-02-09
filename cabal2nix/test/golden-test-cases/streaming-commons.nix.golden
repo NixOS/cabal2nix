@@ -17,6 +17,7 @@ mkDerivation {
   benchmarkHaskellDepends = [
     base blaze-builder bytestring criterion deepseq text
   ];
+  testTarget = "test";
   homepage = "https://github.com/fpco/streaming-commons";
   description = "Common lower-level functions needed by various streaming data libraries";
   license = lib.licenses.mit;

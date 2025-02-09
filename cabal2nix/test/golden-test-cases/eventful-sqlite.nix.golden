@@ -15,6 +15,7 @@ mkDerivation {
     eventful-test-helpers hspec HUnit mtl persistent persistent-sqlite
     text uuid
   ];
+  testTarget = "spec";
   homepage = "https://github.com/jdreaver/eventful#readme";
   description = "SQLite implementations for eventful";
   license = lib.licenses.mit;

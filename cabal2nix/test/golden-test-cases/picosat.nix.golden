@@ -6,6 +6,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers transformers ];
   testHaskellDepends = [ base containers random rdtsc transformers ];
+  testTarget = "Sudoku Scoped rand-shared-improvement";
   homepage = "https://github.com/sdiehl/haskell-picosat";
   description = "Bindings to the PicoSAT solver";
   license = lib.licenses.mit;

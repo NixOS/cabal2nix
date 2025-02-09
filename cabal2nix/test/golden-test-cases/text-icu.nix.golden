@@ -13,6 +13,7 @@ mkDerivation {
     random test-framework test-framework-hunit
     test-framework-quickcheck2 text
   ];
+  testTarget = "tests";
   homepage = "https://github.com/bos/text-icu";
   description = "Bindings to the ICU library";
   license = lib.licenses.bsd3;

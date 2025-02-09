@@ -24,6 +24,7 @@ mkDerivation {
     containers criterion deepseq generics-sop hashable nats scientific
     semigroups SHA tagged text time unordered-containers vector
   ];
+  testTarget = "binary-tagged-test";
   homepage = "https://github.com/phadej/binary-tagged#readme";
   description = "Tagged binary serialisation";
   license = lib.licenses.bsd3;

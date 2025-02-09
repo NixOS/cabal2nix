@@ -18,6 +18,7 @@ mkDerivation {
     aeson base basic-prelude bytestring containers directory hspec lens
     network-uri text
   ];
+  testTarget = "spec";
   homepage = "http://github.com/passy/giphy-api#readme";
   description = "Giphy HTTP API wrapper and CLI search tool";
   license = lib.licenses.bsd3;

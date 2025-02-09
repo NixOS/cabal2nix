@@ -12,6 +12,7 @@ mkDerivation {
     base binary bytestring cereal microspec QuickCheck utf8-string
     vivid-osc
   ];
+  testTarget = "vivid-sc-tests";
   description = "Implementation of SuperCollider server specifications";
   license = "GPL";
 }

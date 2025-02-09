@@ -20,6 +20,7 @@ mkDerivation {
     primitive stm stm-containers stm-stats text transformers
     unordered-containers vector
   ];
+  testTarget = "map-properties";
   homepage = "http://github.com/mcschroeder/ttrie";
   description = "Contention-free STM hash map";
   license = lib.licenses.mit;

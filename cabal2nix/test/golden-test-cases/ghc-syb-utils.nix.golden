@@ -6,6 +6,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base ghc syb ];
   testHaskellDepends = [ base directory filepath ghc ghc-paths ];
+  testTarget = "regression-tests";
   homepage = "http://github.com/nominolo/ghc-syb";
   description = "Scrap Your Boilerplate utilities for the GHC API";
   license = lib.licenses.bsd3;

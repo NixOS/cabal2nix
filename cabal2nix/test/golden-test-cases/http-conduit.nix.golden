@@ -23,6 +23,7 @@ mkDerivation {
     wai-conduit warp warp-tls
   ];
   doCheck = false;
+  testTarget = "test";
   homepage = "http://www.yesodweb.com/book/http-conduit";
   description = "HTTP client package with conduit interface and HTTPS support";
   license = lib.licenses.bsd3;

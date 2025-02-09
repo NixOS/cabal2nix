@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base pretty ];
   testHaskellDepends = [ base ];
+  testTarget = "examples";
   homepage = "https://github.com/sheyll/type-spec#readme";
   description = "Type Level Specification by Example";
   license = lib.licenses.bsd3;

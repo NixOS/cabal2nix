@@ -5,6 +5,7 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base containers pretty ];
   testHaskellDepends = [ base QuickCheck ];
+  testTarget = "pressburger-qc-tests";
   homepage = "http://github.com/yav/presburger";
   description = "A decision procedure for quantifier-free linear arithmetic";
   license = lib.licenses.bsd3;

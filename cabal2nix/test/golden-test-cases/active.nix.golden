@@ -11,6 +11,7 @@ mkDerivation {
   testHaskellDepends = [
     base lens linear QuickCheck semigroupoids semigroups vector
   ];
+  testTarget = "active-tests";
   description = "Abstractions for animation";
   license = lib.licenses.bsd3;
 }

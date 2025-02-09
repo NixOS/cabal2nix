@@ -14,6 +14,7 @@ mkDerivation {
   testHaskellDepends = [
     base bytestring conduit hspec HUnit QuickCheck resourcet text
   ];
+  testTarget = "test";
   homepage = "http://github.com/yihuang/tagstream-conduit";
   description = "streamlined html tag parser";
   license = lib.licenses.bsd3;

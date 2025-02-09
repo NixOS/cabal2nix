@@ -21,6 +21,7 @@ mkDerivation {
     attoparsec base bytestring containers hspec hspec-smallcheck kraken
     smallcheck stm text time unordered-containers vector
   ];
+  testTarget = "spec";
   description = "A glorified string replacement tool";
   license = lib.licenses.mit;
   mainProgram = "mole";

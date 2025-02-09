@@ -18,6 +18,7 @@ mkDerivation {
     quickcheck-instances tasty tasty-quickcheck transformers
     unordered-containers vector
   ];
+  testTarget = "test";
   homepage = "https://github.com/isomorphism/these";
   description = "An either-or-both data type & a generalized 'zip with padding' typeclass";
   license = lib.licenses.bsd3;
