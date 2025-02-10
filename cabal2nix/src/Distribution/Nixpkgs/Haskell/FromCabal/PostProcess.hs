@@ -89,7 +89,7 @@ hooks =
   , ("darcs", set phaseOverrides darcsInstallPostInstall . set doCheck False)
   , ("dbus", set doCheck False) -- don't execute tests that try to access the network
   , ("dhall", set doCheck False) -- attempts to access the network
-  , ("dns", set testTarget "spec")      -- don't execute tests that try to access the network
+  , ("dns", set testTargets ["spec"])      -- don't execute tests that try to access the network
   , ("eventstore", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64"))))
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${lib.getDev pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${lib.getLib pkgs.freenect}/lib"])))
   , ("fltkhs", set (libraryDepends . system . contains (pkg "fltk14")) True . over (libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
@@ -123,7 +123,7 @@ hooks =
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix < 0.18.1.1", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e '/\\\\/usr\\\\//D'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
-  , ("hoogle", set testTarget "--test-option=--no-net")
+  , ("hoogle", set testTargets ["--test-option=--no-net"])
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
   , ("hslua < 0.9.3", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_1")))
   , ("hslua >= 0.9.3 && < 2.0.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
@@ -334,7 +334,7 @@ opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
                 . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
-hspecCoreOverrides = set phaseOverrides "testTarget = \"--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\";"
+hspecCoreOverrides = set phaseOverrides "testTargets = [ \"--test-option=--skip\" \"--test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\" ];"
 
 cabal2nixOverrides :: Derivation -> Derivation
 cabal2nixOverrides = set phaseOverrides $ unlines

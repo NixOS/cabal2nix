@@ -6,7 +6,7 @@
 module Distribution.Nixpkgs.Haskell.Derivation
   ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
-  , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testTarget, hyperlinkSource
+  , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testTargets, hyperlinkSource
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
   )
@@ -56,7 +56,7 @@ data Derivation = MkDerivation
   , _jailbreak                  :: Bool
   , _doCheck                    :: Bool
   , _doBenchmark                :: Bool
-  , _testTarget                 :: String
+  , _testTargets                :: [String]
   , _hyperlinkSource            :: Bool
   , _enableLibraryProfiling     :: Bool
   , _enableExecutableProfiling  :: Bool
@@ -88,7 +88,7 @@ nullDerivation = MkDerivation
   , _jailbreak = error "undefined Derivation.jailbreak"
   , _doCheck = error "undefined Derivation.doCheck"
   , _doBenchmark = error "undefined Derivation.doBenchmark"
-  , _testTarget = error "undefined Derivation.testTarget"
+  , _testTargets = error "undefined Derivation.testTargets"
   , _hyperlinkSource = error "undefined Derivation.hyperlinkSource"
   , _enableLibraryProfiling = error "undefined Derivation.enableLibraryProfiling"
   , _enableExecutableProfiling = error "undefined Derivation.enableExecutableProfiling"
@@ -132,7 +132,7 @@ instance Pretty Derivation where
       , boolattr "jailbreak" _jailbreak _jailbreak
       , boolattr "doCheck" (not _doCheck) _doCheck
       , boolattr "doBenchmark" _doBenchmark _doBenchmark
-      , onlyIf (not (null _testTarget)) $ attr "testTarget" $ string _testTarget
+      , onlyIf (not (null _testTargets)) $ listattr "testTargets" empty (map show _testTargets)
       , boolattr "hyperlinkSource" (not _hyperlinkSource) _hyperlinkSource
       , onlyIf (not (null _phaseOverrides)) $ vcat ((map text . lines) _phaseOverrides)
       , pPrint _metaSection
