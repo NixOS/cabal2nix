@@ -147,17 +147,17 @@ for hackage. You can use ``overrideSrc`` to override the source, for example:
 
 .. code:: nix
 
-   my-hledger-lib = (haskell.lib.overrideSrc haskellPackages.hledger-lib {
+   my-hledger-lib = (haskell.lib.compose.overrideSrc {
      src = /home/aengelen/dev/hledger/hledger-lib;
-   });
-   my-hledger = (haskell.lib.overrideSrc haskellPackages.hledger {
+   }) haskellPackages.hledger-lib;
+   my-hledger = (haskell.lib.compose.overrideSrc {
      src = /home/aengelen/dev/hledger/hledger;
-   }).override {
+   } haskellPackages.hledger).override {
      hledger-lib = my-hledger-lib;
    };
-   hledger-web = haskell.lib.justStaticExecutables ((haskell.lib.overrideSrc haskellPackages.hledger-web {
+   hledger-web = haskell.lib.compose.justStaticExecutables ((haskell.lib.compose.overrideSrc {
        src = /home/aengelen/dev/hledger/hledger-web;
-     })
+     } haskellPackages.hledger-web)
      .override {
        hledger = my-hledger;
        hledger-lib = my-hledger-lib;
@@ -602,17 +602,16 @@ way, or with extra environment variables. In these cases, you’ll need a
      enable: true
      shell-file: shell.nix
 
-For more on how to write a ``shell.nix`` file see the below section.
-You’ll need to express a derivation. Note that Nixpkgs ships with a
-convenience wrapper function around ``mkDerivation`` called
-``haskell.lib.buildStackProject`` to help you create this derivation in
-exactly the way Stack expects. However for this to work you need to
-disable the sandbox, which you can do by using
-``--option sandbox relaxed`` or ``--option sandbox false`` to the Nix
-command. All of the same inputs as ``mkDerivation`` can be provided. For
-example, to build a Stack project that including packages that link
-against a version of the R library compiled with special options turned
-on:
+For more on how to write a ``shell.nix`` file see the below section.  You’ll
+need to express a derivation. Note that Nixpkgs ships with a convenience
+wrapper function around ``mkDerivation`` called
+``haskell.lib.compose.buildStackProject`` to help you create this derivation in
+exactly the way Stack expects. However for this to work you need to disable the
+sandbox, which you can do by using ``--option sandbox relaxed`` or ``--option
+sandbox false`` to the Nix command. All of the same inputs as ``mkDerivation``
+can be provided. For example, to build a Stack project that including packages
+that link against a version of the R library compiled with special options
+turned on:
 
 .. code:: nix
 
@@ -620,7 +619,7 @@ on:
 
    let R = pkgs.R.override { enableStrictBarrier = true; };
    in
-   haskell.lib.buildStackProject {
+   haskell.lib.compose.buildStackProject {
      name = "HaskellR";
      buildInputs = [ R zeromq zlib ];
    }
@@ -638,7 +637,7 @@ specified in ``stack.yaml`` (only works with Stack >= 1.1.3):
 
    let R = pkgs.R.override { enableStrictBarrier = true; };
    in
-   haskell.lib.buildStackProject {
+   haskell.lib.compose.buildStackProject {
      name = "HaskellR";
      buildInputs = [ R zeromq zlib ];
      inherit ghc;
