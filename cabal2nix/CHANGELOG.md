@@ -13,6 +13,8 @@
   * Expressions using `_testTargets` will only work with
     Nixpkgs 24.11, 25.05 or newer.
     <!-- TODO(@sternenseemann): add merge date of the PR for unstable -->
+* Added support for the [testFlags argument](https://github.com/NixOS/nixpkgs/pull/126364),
+  available since 21.11, to `Derivation`. **API breaking change**.
 * Remove `_enableSplitObjs` from `Derivation` since it [hasn't been
   supported by Nixpkgs in a while](https://github.com/nixOS/nixpkgs/commit/a62b24be6d650757deb8fe222763f436a53650ff),
   **API breaking change**.
