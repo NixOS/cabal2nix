@@ -123,7 +123,7 @@ hooks =
   , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix < 0.18.1.1", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e '/\\\\/usr\\\\//D'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
-  , ("hoogle", set testTargets ["--test-option=--no-net"])
+  , ("hoogle", set testFlags ["--no-net"])
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
   , ("hslua < 0.9.3", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_1")))
   , ("hslua >= 0.9.3 && < 2.0.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
@@ -334,7 +334,7 @@ opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
                 . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
-hspecCoreOverrides = set phaseOverrides "testTargets = [ \"--test-option=--skip\" \"--test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\" ];"
+hspecCoreOverrides = set testFlags [ "--skip", "'Test.Hspec.Core.Runner.hspecResult runs specs in parallel'" ]
 
 cabal2nixOverrides :: Derivation -> Derivation
 cabal2nixOverrides = set phaseOverrides $ unlines
