@@ -2,8 +2,26 @@
 
 ## Unreleased
 
-* `hackage2nix` now defaults internally to a utf-8 locale ignoring enviroment
+* `cabal2nix` now [prints the commands it runs when fetching sources](https://github.com/nixOS/cabal2nix/commit/5327953d299eba0b6de4e88bacf4bba9022bb5e2).
+* `hackage2nix` now defaults internally to an utf-8 locale, ignoring enviroment
   variables.
+* `cabal2nix` now exclusively uses the new
+  [plural testTargets](https://github.com/NixOS/nixpkgs/pull/306283)
+  argument.
+  * This is an **API breaking change**: `_testTarget` was removed in
+    favor of `_testTargets`.
+  * Expressions using `_testTargets` will only work with
+    Nixpkgs 24.11, 25.05 or newer.
+    <!-- TODO(@sternenseemann): add merge date of the PR for unstable -->
+* Remove `_enableSplitObjs` from `Derivation` since it [hasn't been
+  supported by Nixpkgs in a while](https://github.com/nixOS/nixpkgs/commit/a62b24be6d650757deb8fe222763f436a53650ff),
+  **API breaking change**.
+* Added and updated various library name to Nixpkgs attribute name mappings.
+* Dropped/reduced post-processing hooks for
+  * `pandoc`
+  * `git-annex`
+  * `haddock`
+  * `tz`
 
 ## 2.19.1
 
