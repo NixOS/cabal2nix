@@ -112,6 +112,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & jailbreak .~ False
     & doCheck .~ True
     & doBenchmark .~ False
+    & testFlags .~ mempty
     & testTargets .~ mempty
     & hyperlinkSource .~ True
     & enableLibraryProfiling .~ False
