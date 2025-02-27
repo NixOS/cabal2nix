@@ -382,4 +382,4 @@ bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs
                 . set (metaSection . hydraPlatforms) Nothing
 
 nullBinding :: Identifier -> Binding
-nullBinding name = binding # (name, path # [ident # "null"])
+nullBinding name = binding # (name, path # ["pkgs", name])
