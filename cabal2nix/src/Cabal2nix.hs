@@ -32,6 +32,7 @@ import Distribution.PackageDescription ( mkFlagName, mkFlagAssignment, FlagAssig
 import Distribution.Parsec as P
 import Distribution.Simple.Utils ( lowercase )
 import Distribution.System
+import GHC.Stack (HasCallStack)
 import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix ( version )
@@ -165,7 +166,7 @@ pinfo = info
                      ]))
         )
 
-main :: IO ()
+main :: HasCallStack => IO ()
 main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
   cabal2nix =<< getArgs
 
@@ -173,7 +174,7 @@ hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
                . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
 
-cabal2nix' :: Options -> IO (Either Doc Derivation)
+cabal2nix' :: HasCallStack => Options -> IO (Either Doc Derivation)
 cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
          Source {
@@ -201,7 +202,7 @@ cabal2nixWithDB db opts@Options{..} = do
          }
   processPackage opts pkg
 
-processPackage :: Options -> Package -> IO (Either Doc Derivation)
+processPackage :: HasCallStack => Options -> Package -> IO (Either Doc Derivation)
 processPackage Options{..} pkg = do
   let
       withHpackOverrides :: Derivation -> Derivation
@@ -255,7 +256,7 @@ processPackage Options{..} pkg = do
               ]
   pure $ if optNixShellOutput then Left shell else Right deriv
 
-cabal2nix :: [String] -> IO ()
+cabal2nix :: HasCallStack => [String] -> IO ()
 cabal2nix = parseArgs >=> cabal2nix' >=> putStrLn . either render prettyShow
 
 parseArgs :: [String] -> IO Options

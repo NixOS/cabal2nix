@@ -35,12 +35,13 @@ import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
 import Distribution.Utils.ShortText ( fromShortText )
 import Distribution.Version
+import GHC.Stack (HasCallStack)
 import Language.Nix
 
 type HaskellResolver = PackageVersionConstraint -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
-fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
+fromGenericPackageDescription :: HasCallStack => HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
 fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
   fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
     where
@@ -92,7 +93,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
                 Right (d,_) -> (d,m)
     Right (d,_)  -> (d,[])
 
-fromPackageDescription :: HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
+fromPackageDescription :: HasCallStack => HaskellResolver -> NixpkgsResolver -> [Dependency] -> FlagAssignment -> PackageDescription -> Derivation
 fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags PackageDescription {..} = normalize $ postProcess $ nullDerivation
     & isLibrary .~ isJust library
     & pkgid .~ package

@@ -18,9 +18,10 @@ import Distribution.Package
 import Distribution.Types.PackageVersionConstraint
 import Distribution.Text
 import Distribution.Version
+import GHC.Stack (HasCallStack)
 import Language.Nix
 
-postProcess :: Derivation -> Derivation
+postProcess :: HasCallStack => Derivation -> Derivation
 postProcess deriv =
  foldr (.) id [ f | (PackageVersionConstraint n vr, f) <- hooks, packageName deriv == n, packageVersion deriv `withinRange` vr ]
  . fixGtkBuilds
@@ -70,7 +71,7 @@ fixBuildDependsForTools = foldr (.) id
                   ]
   ]
 
-hooks :: [(PackageVersionConstraint, Derivation -> Derivation)]
+hooks :: HasCallStack => [(PackageVersionConstraint, Derivation -> Derivation)]
 hooks =
   [ ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
   , ("Agda >= 2.5 && < 2.6", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
@@ -203,7 +204,7 @@ bind s = binding # (i, path # is)
 -- | @replace old new bset@ replaces the Nix binding @old@ with @new@ in the
 -- set of bindings @bset@. If @old@ is not found in @bset@, then the function
 -- fails with an 'error'.
-replace :: Binding -> Binding -> Set Binding -> Set Binding
+replace :: HasCallStack => Binding -> Binding -> Set Binding -> Set Binding
 replace old new bs
   | old `Set.member` bs = Set.insert new (Set.delete old bs)
   | otherwise           = error (unwords [ "post-process: cannot replace name binding"
@@ -307,7 +308,7 @@ stackOverrides = unlines
   ]
 
 -- Replace a binding for <package> to one to pkgs.gst_all_1.<package>
-giGstLibOverrides :: String -> Derivation -> Derivation
+giGstLibOverrides :: HasCallStack => String -> Derivation -> Derivation
 giGstLibOverrides package
   = over (libraryDepends . pkgconfig) (replace (nullBinding (ident # package)) (binding # (ident # package, path # ["pkgs","gst_all_1", ident # package])))
 
@@ -329,7 +330,7 @@ hfseventsOverrides
   . set (libraryDepends . system . contains (bind "pkgs.darwin.apple_sdk.frameworks.Cocoa")) True
   . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
 
-opencvOverrides :: Derivation -> Derivation
+opencvOverrides :: HasCallStack => Derivation -> Derivation
 opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
                 . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
 
