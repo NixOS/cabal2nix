@@ -24,6 +24,9 @@
   * `git-annex`
   * `haddock`
   * `tz`
+* Postprocessing hooks utilising `replace` no longer fail when they can't find
+  the binding to replace. This fixes an issue where `cabal2nix` would fail to
+  generate an expression for a package when `hackage2nix` would succeed.
 
 ## 2.19.1
 
