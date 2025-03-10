@@ -1,6 +1,6 @@
 # Revision History for cabal2nix
 
-## Unreleased
+## 2.20.0
 
 * `cabal2nix` now [prints the commands it runs when fetching sources](https://github.com/nixOS/cabal2nix/commit/5327953d299eba0b6de4e88bacf4bba9022bb5e2).
 * `cabal2nix` now [produces colorful output](https://github.com/NixOS/cabal2nix/pull/636)
