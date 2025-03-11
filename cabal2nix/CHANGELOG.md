@@ -1,8 +1,12 @@
 # Revision History for cabal2nix
 
-## Unreleased
+## 2.20.0
 
 * `cabal2nix` now [prints the commands it runs when fetching sources](https://github.com/nixOS/cabal2nix/commit/5327953d299eba0b6de4e88bacf4bba9022bb5e2).
+* `cabal2nix` now [produces colorful output](https://github.com/NixOS/cabal2nix/pull/636)
+  using ANSI SGR escape sequences when printing to a TTY.
+  This can be disabled using the [`NO_COLOR` environment variable](https://no-color.org/)
+  or forcibly enabled using `FORCE_COLOR`.
 * `hackage2nix` now defaults internally to an utf-8 locale, ignoring enviroment
   variables.
 * `cabal2nix` now exclusively uses the new
@@ -12,7 +16,9 @@
     favor of `_testTargets`.
   * Expressions using `_testTargets` will only work with
     Nixpkgs 24.11, 25.05 or newer.
-    <!-- TODO(@sternenseemann): add merge date of the PR for unstable -->
+    **Warning**: As of this writing (2025-03-10), the unstable channels of
+    nixpkgs don't support testTargets yet. Inclusion is tracked by
+    [nixpkgs#371032](https://github.com/NixOS/nixpkgs/pull/371032).
 * Added support for the [testFlags argument](https://github.com/NixOS/nixpkgs/pull/126364),
   available since 21.11, to `Derivation`. **API breaking change**.
 * Remove `_enableSplitObjs` from `Derivation` since it [hasn't been
