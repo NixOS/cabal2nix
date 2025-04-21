@@ -9,7 +9,7 @@ license:       BSD3
 license-file:  LICENSE
 author:        Peter Simons, Alexander Altman, Ben James, Kevin Quick
 maintainer:    sternenseemann <sternenseemann@systemli.org>
-tested-with:   GHC == 8.10.7 || == 9.0.2 || == 9.2.8 || == 9.4.8 || == 9.6.6 || == 9.8.3 || == 9.10.1
+tested-with:   GHC == 8.10.7 || == 9.0.2 || == 9.2.8 || == 9.4.8 || == 9.6.7 || == 9.8.4 || == 9.10.1
 category:      Distribution
 homepage:      https://github.com/NixOS/cabal2nix/tree/master/hackage-db#readme
 bug-reports:   https://github.com/NixOS/cabal2nix/issues
@@ -20,7 +20,7 @@ extra-doc-files:    README.md
 
 source-repository head
   type:     git
-  location: git://github.com/NixOS/cabal2nix.git
+  location: https://github.com/NixOS/cabal2nix.git
   subdir:   hackage-db
 
 flag install-examples
