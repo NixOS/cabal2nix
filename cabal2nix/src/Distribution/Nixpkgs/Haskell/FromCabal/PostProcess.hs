@@ -320,8 +320,6 @@ hfseventsOverrides :: Derivation -> Derivation
 hfseventsOverrides
   = set isLibrary True
   . set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "darwin")))
-  . set (libraryDepends . tool . contains (bind "pkgs.darwin.apple_sdk.frameworks.CoreServices")) True
-  . set (libraryDepends . system . contains (bind "pkgs.darwin.apple_sdk.frameworks.Cocoa")) True
   . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
 
 opencvOverrides :: Derivation -> Derivation
