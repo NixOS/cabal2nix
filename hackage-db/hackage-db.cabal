@@ -20,7 +20,7 @@ extra-doc-files:    README.md
 
 source-repository head
   type:     git
-  location: git://github.com/NixOS/cabal2nix.git
+  location: https://github.com/NixOS/cabal2nix.git
   subdir:   hackage-db
 
 flag install-examples
