@@ -15,6 +15,27 @@ let
   haskellPackages = pkgs.haskell.packages."ghc${
     builtins.replaceStrings [ "." ] [ "" ] ghcVersion
   }";
+  inherit (pkgs) lib;
+  haskellLib = pkgs.haskell.lib.compose;
+
+  haskell-ci-pinned = lib.pipe
+    pkgs.haskell.packages.ghc9101.haskell-ci # compatible Cabal version by default
+    [
+      (haskellLib.overrideSrc {
+        version = "0-unstable-2025-03-30";
+        src = pkgs.fetchFromGitHub rec {
+          name = "haskell-ci-source-${lib.substring 0 7 rev}";
+          owner = "haskell-CI";
+          repo = "haskell-ci";
+          rev = "f0fd898ab14070fa46e9fd542a2b487a8146d88e";
+          sha256 = "1pzrnpwsamy8ld6gb7vf9acr873z5q35pixbkwxvji5y9si0x352";
+        };
+      })
+      # Make the build a bit less expensive
+      haskellLib.dontCheck
+      haskellLib.disableLibraryProfiling
+    ];
+
   ghc = haskellPackages.ghcWithHoogle (hps: [
     hps.ansi-wl-pprint
     hps.hopenssl
@@ -38,12 +59,13 @@ in pkgs.mkShell {
   packages = [
     ghc
     pkgs.cabal-install
-    pkgs.haskell-ci
-    (pkgs.lib.getLib pkgs.openssl)
+    (lib.getLib pkgs.openssl)
     # Needed to run `cabal2nix`:
     pkgs.nix-prefetch-scripts
-  ] ++ pkgs.lib.optionals withHls [
+  ] ++ lib.optionals withHls [
     haskellPackages.haskell-language-server
+  ] ++ lib.optionals (!minimal) [
+    haskell-ci-pinned
   ];
 
   # Make Paths_ module of distribution-nixpkgs find its data files in the shell.
