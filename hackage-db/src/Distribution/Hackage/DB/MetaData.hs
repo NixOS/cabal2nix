@@ -9,7 +9,7 @@
    @01-index.tar@ tarball from Hackage with "Data.Aeson". These parsers mirror
    the exact structure of those files, but only a small part of it is actually
    of interest to anyone other than implementors of @cabal-install@. Everyone
-   else will most likely prefer the functions oferred by
+   else will most likely prefer the functions offered by
    "Distribution.Hackage.DB.Parsed".
  -}
 
