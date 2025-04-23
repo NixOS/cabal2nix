@@ -1,5 +1,9 @@
 # Revision History for cabal2nix
 
+## Unreleased
+
+- Add support for Cabal `== 3.14.*` in the test suite.
+
 ## 2.20.0
 
 * `cabal2nix` now [prints the commands it runs when fetching sources](https://github.com/nixOS/cabal2nix/commit/5327953d299eba0b6de4e88bacf4bba9022bb5e2).

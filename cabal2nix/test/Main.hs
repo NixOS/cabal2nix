@@ -22,6 +22,9 @@ import Distribution.PackageDescription
 import Distribution.PackageDescription.Parsec
 #endif
 import Distribution.System
+#if MIN_VERSION_Cabal(3,14,0)
+import Distribution.Utils.Path (makeSymbolicPath)
+#endif
 import Distribution.Verbosity
 import Distribution.Version
 import Language.Nix
@@ -38,6 +41,7 @@ main = do
   --       depend on the system environment: https://github.com/NixOS/cabal2nix/issues/333.
   --
   -- TODO: Run this test without $HOME defined to ensure that we don't need that variable.
+  -- TODO: make test suite independent of working directory somehow
   cabal2nix <- findExecutable "cabal2nix" >>= \case
     Nothing -> fail "cannot find 'cabal2nix' in $PATH"
     Just exe -> pure exe
@@ -74,7 +78,12 @@ testLibrary cabalFile = do
     (\ref new -> ["diff", "-u", ref, new])
     goldenFile
     nixFile
-    (readGenericPackageDescription silent cabalFile >>= writeFileLn nixFile . prettyShow . cabal2nix)
+#if MIN_VERSION_Cabal(3,14,0)
+    (readGenericPackageDescription silent Nothing (makeSymbolicPath cabalFile)
+#else
+    (readGenericPackageDescription silent cabalFile
+#endif
+     >>= writeFileLn nixFile . prettyShow . cabal2nix)
 
 -- | TODO:
 --
