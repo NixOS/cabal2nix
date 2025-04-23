@@ -1,4 +1,9 @@
-{ pkgs ? import <nixpkgs> { }
+{ pkgs ?
+    import (builtins.fetchTarball {
+      # nixos-unstable 2025-04-23
+      url = "https://github.com/nixos/nixpkgs/archive/96d30055a2215e5c5a545872376137a5d063e804.tar.gz";
+      sha256 = "0xvzkpgc8qy4q252c3x399c8ikrks970c877s4i7vppnhxp08p8n";
+    }) { }
 , ghcVersion ? pkgs.haskellPackages.ghc.version
 , withHls ? true
 }:
