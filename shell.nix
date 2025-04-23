@@ -5,7 +5,10 @@
       sha256 = "0xvzkpgc8qy4q252c3x399c8ikrks970c877s4i7vppnhxp08p8n";
     }) { }
 , ghcVersion ? pkgs.haskellPackages.ghc.version
-, withHls ? true
+  # Pass --arg minimal true to disable tools that are not strictly necessary
+  # and may break when using non default GHC versions / other Nixpkgs revisions.
+, minimal ? false
+, withHls ? !minimal
 }:
 
 let
