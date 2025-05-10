@@ -1,8 +1,15 @@
 # Revision History for cabal2nix
 
-## Unreleased
+## 2.20.1
 
-- Add support for Cabal `== 3.14.*` in the test suite.
+* Add support for Cabal `== 3.14.*` in the test suite.
+* Adjust postprocessing hooks in `hfsevents` to recent changes to Darwin
+  frameworks in nixpkgs. Assumes at least 25.05 or recent Nixpkgs unstable
+  for generated `hfsevents` expressions, see also
+  [nixpkgs#398707](https://github.com/NixOS/nixpkgs/pull/398707).
+* Use `pkgs.libpq` over `pkgs.postgresql` when possible. Requires
+  Nixpkgs with [nixpkgs#359659](https://github.com/NixOS/nixpkgs/pull/359659)
+  (e.g. 25.05 or later).
 
 ## 2.20.0
 
