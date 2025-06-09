@@ -10,7 +10,6 @@ import Distribution.Hackage.DB.Errors
 
 import Codec.Archive.Tar.Entry as Tar
 import Control.Exception
-import Control.Monad.Fail
 import Data.Maybe
 import Data.Time.Clock
 import Data.Time.Clock.POSIX

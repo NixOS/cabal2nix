@@ -18,8 +18,6 @@ import Distribution.Hackage.DB.Builder ( Builder(..) )
 import Distribution.Hackage.DB.Utility
 
 import Codec.Archive.Tar as Tar
-import Codec.Archive.Tar.Entry as Tar
-import Control.Exception
 import Control.Monad.Catch
 import Data.ByteString ( ByteString )
 import Data.ByteString.Lazy ( toStrict )
@@ -28,7 +26,6 @@ import Data.Time.Clock
 import Distribution.Types.PackageName
 import Distribution.Types.Version
 import GHC.Generics ( Generic )
-import System.FilePath
 
 type HackageDB = Map PackageName PackageData
 
