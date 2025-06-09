@@ -258,12 +258,12 @@ fetchWith (supportsRev, kind) source = do
                        []     -> error "This can't happen, but GHC doesn't know that."
                        (x:xs) -> (x,xs)
             buf'   = BS.unlines (reverse ls)
-        case length ls of
-          0 -> return Nothing
-          1 -> return (Just (DerivationSource { derivKind = Just kind
+        case ls of
+          [] -> return Nothing
+          [hash] -> return (Just (DerivationSource { derivKind = Just kind
                                               , derivUrl = sourceUrl source
                                               , derivRevision = ""
-                                              , derivHash = BS.unpack (head ls)
+                                              , derivHash = BS.unpack hash
                                               , derivSubmodule = Nothing
                                               }
                             , BS.unpack l))
