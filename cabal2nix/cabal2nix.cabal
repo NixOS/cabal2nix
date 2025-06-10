@@ -55,7 +55,6 @@ library
                     , Cabal                >= 3.0
                     , aeson                > 1
                     , ansi-terminal
-                    , ansi-wl-pprint
                     , bytestring
                     , containers           >= 0.5.9
                     , deepseq              >= 1.4
@@ -69,6 +68,7 @@ library
                     , lens
                     , optparse-applicative
                     , pretty               >= 1.1.2
+                    , prettyprinter
                     , process
                     , split
                     , text

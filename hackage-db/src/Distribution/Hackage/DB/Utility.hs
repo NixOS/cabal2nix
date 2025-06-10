@@ -10,11 +10,10 @@ import Distribution.Hackage.DB.Errors
 
 import Codec.Archive.Tar.Entry as Tar
 import Control.Exception
-import Control.Monad.Fail
 import Data.Maybe
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
-import Data.Time.Format
+import Data.Time.Format.ISO8601
 import Distribution.Parsec
 
 parseText :: Parsec a => String -> String -> a
@@ -42,4 +41,4 @@ toEpochTime = floor . utcTimeToPOSIXSeconds
 -- 2018-12-21 13:17:40 UTC
 
 parseIso8601 :: MonadFail m => String -> m UTCTime
-parseIso8601 = parseTimeM False defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%SZ"))
+parseIso8601 = iso8601ParseM

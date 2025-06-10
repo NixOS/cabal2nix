@@ -6,7 +6,6 @@ module Language.Nix.Binding ( Binding, binding, localName, reference ) where
 
 import Control.DeepSeq
 import Control.Lens
-import Data.Maybe
 import Data.String
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier

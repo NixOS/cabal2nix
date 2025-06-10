@@ -29,10 +29,12 @@ import Distribution.System
 import Distribution.Types.PackageVersionConstraint
 import Distribution.Text ( display )
 import Distribution.Types.ComponentRequestedSpec as Cabal
+#if !MIN_VERSION_Cabal(3,8,1)
 import Distribution.Types.ExeDependency as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
 import Distribution.Types.PkgconfigDependency as Cabal
 import Distribution.Types.UnqualComponentName as Cabal
+#endif
 import Distribution.Utils.ShortText ( fromShortText )
 import Distribution.Version
 import Language.Nix

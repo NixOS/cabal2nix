@@ -14,7 +14,6 @@ import qualified Distribution.Hackage.DB.Unparsed as U
 import Distribution.Hackage.DB.Utility
 
 import Codec.Archive.Tar
-import Codec.Archive.Tar.Entry
 import Control.Exception
 import Control.Monad.Catch
 import Data.ByteString as BSS

@@ -25,7 +25,6 @@ import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.System
 import GHC.Generics ( Generic )
 import Language.Nix.Identifier
 

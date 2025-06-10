@@ -11,6 +11,7 @@ import Control.Lens hiding ( (<.>) )
 import Control.Monad
 import Data.Aeson
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.List as List
 import Data.Map as Map
 import Data.Set as Set
 import Data.String
@@ -38,7 +39,7 @@ readHackage path = getSubDirs path >>= foldM discoverPackageVersions mempty
 getSubDirs :: FilePath -> IO [FilePath]
 getSubDirs path = do
   let isDirectory p = doesDirectoryExist (path </> p)
-  getDirectoryContents path >>= filterM isDirectory . Prelude.filter (\x -> head x /= '.')
+  getDirectoryContents path >>= filterM isDirectory . Prelude.filter (not . List.isPrefixOf ".")
 
 type SHA256Hash = String
 

@@ -25,7 +25,7 @@ import Prelude hiding ( (<>) )
 #endif
 import Control.Applicative ( (<|>) )
 import Control.DeepSeq
-import Control.Lens hiding ( Strict )
+import Control.Lens hiding ( Strict, element )
 import Data.List ( stripPrefix )
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -400,10 +400,10 @@ renderPlatforms field ps
 
         -- append lib.platforms list via nix's ++ at the end
         -- if there is no cabal platforms list, don't emit leading ++
-        appendNixpkgsP acc elem = acc $$
+        appendNixpkgsP acc element = acc $$
           if isEmpty acc && Set.null cabalPs
-          then nest 3 $ pPrint elem
-          else text "++" <+> pPrint elem
+          then nest 3 $ pPrint element
+          else text "++" <+> pPrint element
         renderedNixpkgsPs = Set.foldl' appendNixpkgsP mempty nixpkgsPs
 
         -- Helper function, roughly the inverse of nixpkgs' optionals

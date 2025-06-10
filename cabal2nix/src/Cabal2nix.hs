@@ -38,7 +38,7 @@ import Options.Applicative
 import Paths_cabal2nix ( version )
 import System.Environment ( getArgs )
 import System.IO ( hFlush, stdout, stderr )
-import qualified Text.PrettyPrint.ANSI.Leijen as P2
+import qualified Prettyprinter as P2
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi, render, prettyShow )
 
 {-# ANN module ("HLint: ignore Use Just" :: String) #-}
@@ -148,16 +148,16 @@ pinfo = info
         (  fullDesc
         <> header "cabal2nix converts Cabal files into build instructions for Nix."
         <> progDescDoc (Just (P2.vcat
-                     [ P2.text ""
-                     , P2.text "Recognized URI schemes:"
-                     , P2.text ""
-                     , P2.text "  cabal://pkgname-pkgversion     download the specified package from Hackage"
-                     , P2.text "  cabal://pkgname                download latest version of this package from Hackage"
-                     , P2.text "  file:///local/path             load the Cabal file from the local disk"
-                     , P2.text "  /local/path                    abbreviated version of file URI"
-                     , P2.text "  <git/svn/bzr/hg URL>           download the source from the specified repository"
-                     , P2.text ""
-                     , P2.fillSep (map P2.text (words (  "If the URI refers to a cabal file, information for building the package "
+                     [ ""
+                     , "Recognized URI schemes:"
+                     , ""
+                     , "  cabal://pkgname-pkgversion     download the specified package from Hackage"
+                     , "  cabal://pkgname                download latest version of this package from Hackage"
+                     , "  file:///local/path             load the Cabal file from the local disk"
+                     , "  /local/path                    abbreviated version of file URI"
+                     , "  <git/svn/bzr/hg URL>           download the source from the specified repository"
+                     , ""
+                     , P2.fillSep (map P2.pretty (words (  "If the URI refers to a cabal file, information for building the package "
                                                       ++ "will be retrieved from that file, but hackage will be used as a source "
                                                       ++ "for the derivation. Otherwise, the supplied URI will be used to as the "
                                                       ++ "source for the derivation and the information is taken from the cabal file "
