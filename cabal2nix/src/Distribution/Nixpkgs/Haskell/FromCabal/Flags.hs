@@ -46,7 +46,6 @@ configureCabalFlags' (PackageIdentifier name version)
                                 = [enable "system-lua", disable "use-pkgconfig"]
  | name == "idris"              = [enable "gmp", enable "ffi", enable "curses", ("execonly", version `withinRange` orLaterVersion (mkVersion [1,1,1])) ]
  | name == "io-streams"         = [enable "NoInteractiveTests"]
- | name == "liquid-fixpoint"    = [enable "build-external"]
  | name == "lua" && version >= mkVersion [2,0,0]
                                 = [enable "system-lua", disable "use-pkgconfig"]
  | name == "pandoc"             = [disable "trypandoc"]

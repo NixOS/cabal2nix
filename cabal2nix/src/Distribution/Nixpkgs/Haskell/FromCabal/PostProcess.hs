@@ -137,7 +137,6 @@ hooks =
   , ("js-jquery", set doCheck False)            -- attempts to access the network
   , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("libxml", set (configureFlags . contains "--extra-include-dir=${lib.getDev libxml2}/include/libxml2") True)
-  , ("liquid-fixpoint", set (testDepends . system . contains (pkg "z3")) True . set (testDepends . system . contains (pkg "nettools")) True . set (testDepends . system . contains (pkg "git")) True . set doCheck False)
   , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
   , ("lua >= 2.0.0 && < 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
   , ("lua >= 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_4")))
