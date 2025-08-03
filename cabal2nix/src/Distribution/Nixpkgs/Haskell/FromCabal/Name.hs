@@ -141,6 +141,7 @@ libNixName "libxxhash"                          = return "xxHash"
 libNixName "libzip"                             = return "libzip"
 libNixName "libzmq"                             = return "zeromq"
 libNixName "liquid"                             = return "liquid-dsp"
+libNixName "llama"                              = return "llama-cpp"
 libNixName "lzma"                               = return "xz"
 libNixName "m"                                  = []  -- in stdenv
 libNixName "magic"                              = return "file"
