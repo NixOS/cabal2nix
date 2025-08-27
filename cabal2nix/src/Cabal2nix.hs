@@ -234,7 +234,7 @@ processPackage Options{..} pkg = do
 
       shell :: Doc
       shell = vcat
-              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\", doBenchmark ? false }:"
+              [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\", doBenchmark ? false, inNixShell ? false }:"
               , text ""
               , text "let"
               , text ""
@@ -252,7 +252,7 @@ processPackage Options{..} pkg = do
               , text ""
               , text "in"
               , text ""
-              , text "  if pkgs.lib.inNixShell then drv.env else drv"
+              , text "  if inNixShell then drv.env else drv"
               ]
   pure $ if optNixShellOutput then Left shell else Right deriv
 
