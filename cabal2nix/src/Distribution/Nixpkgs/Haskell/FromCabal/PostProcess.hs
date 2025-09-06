@@ -146,10 +146,6 @@ hooks =
   , ("mysql", set (libraryDepends . system . contains (pkg "libmysqlclient")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
-  , ("pandoc >= 1.16.0.2 && < 2.5", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
-  , ("pandoc < 2.6", pandocPre26Overrides)
-  , ("pandoc >= 2.6 && < 3.1.10", pandocPre3110Overrides) -- https://github.com/jgm/pandoc/commit/55227a20273267c236ec039c3e6559287a1dca45
-  , ("pandoc-citeproc", set doCheck False) -- https://github.com/jgm/pandoc-citeproc/issues/369
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
   , ("proto-lens-protobuf-types", set (libraryDepends . tool . contains (pkg "protobuf")) True)
   , ("proto-lens-protoc", set (libraryDepends . tool . contains (pkg "protobuf")) True)
@@ -342,24 +338,6 @@ gtkglextHook = over (libraryDepends . system) (Set.union (Set.fromList deps))
                     , "pkgs.xorg.libXt"
                     , "pkgs.xorg.libXmu"
                     ]
-
-pandocPre26Overrides :: Derivation -> Derivation
-pandocPre26Overrides = set phaseOverrides postInstall
-  where
-    postInstall = unlines [ "postInstall = ''"
-                          , "  mkdir -p $out/share"
-                          , "  mv $data/*/*/man $out/share/"
-                          , "'';"
-                          ]
-
-pandocPre3110Overrides :: Derivation -> Derivation
-pandocPre3110Overrides = set phaseOverrides postInstall
-  where
-    postInstall = unlines [ "postInstall = ''"
-                          , "  mkdir -p $out/share/man/man1"
-                          , "  mv \"man/\"*.1 $out/share/man/man1/"
-                          , "'';"
-                          ]
 
 bustleOverrides :: Derivation -> Derivation
 bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True
