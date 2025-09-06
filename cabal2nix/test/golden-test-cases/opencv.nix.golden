@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, base64-bytestring, bindings-DSL
 , bytestring, Cabal, containers, criterion, data-default, deepseq
 , directory, Glob, haskell-src-exts, inline-c, inline-c-cpp
-, JuicyPixels, lens, lib, linear, opencv3, primitive, QuickCheck
+, JuicyPixels, lens, lib, linear, opencv, primitive, QuickCheck
 , repa, tasty, tasty-hunit, tasty-quickcheck, template-haskell
 , text, transformers, vector
 }:
@@ -15,7 +15,7 @@ mkDerivation {
     data-default deepseq inline-c inline-c-cpp JuicyPixels linear
     primitive repa template-haskell text transformers vector
   ];
-  libraryPkgconfigDepends = [ opencv3 ];
+  libraryPkgconfigDepends = [ opencv ];
   testHaskellDepends = [
     base bytestring containers data-default directory Glob
     haskell-src-exts JuicyPixels lens linear primitive QuickCheck repa
@@ -23,7 +23,6 @@ mkDerivation {
     transformers vector
   ];
   benchmarkHaskellDepends = [ base bytestring criterion repa ];
-  hardeningDisable = [ "bindnow" ];
   homepage = "https://github.com/LumiGuide/haskell-opencv";
   description = "Haskell binding to OpenCV-3.x";
   license = lib.licenses.bsd3;
