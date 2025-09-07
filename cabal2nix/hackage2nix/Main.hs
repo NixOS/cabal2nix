@@ -114,11 +114,12 @@ main = do
                           [ Map.singleton name (Set.singleton (resolveConstraint c hackage)) | c@(PackageVersionConstraint name _) <- extraPackages config ]
 
       db :: PackageMultiSet
-      db = Map.unionsWith Set.union [ Map.map Set.singleton generatedDefaultPackageSet
-                                    , Map.map Set.singleton latestCorePackageSet
-                                    , Map.map Set.singleton latestOverridePackageSet
-                                    , extraPackageSet
-                                    ]
+      db = flip Map.withoutKeys (excludedPackages config) $ Map.unionsWith Set.union
+        [ Map.map Set.singleton generatedDefaultPackageSet
+        , Map.map Set.singleton latestCorePackageSet
+        , Map.map Set.singleton latestOverridePackageSet
+        , extraPackageSet
+        ]
 
       haskellResolver :: HaskellResolver
       haskellResolver (PackageVersionConstraint name vrange)
