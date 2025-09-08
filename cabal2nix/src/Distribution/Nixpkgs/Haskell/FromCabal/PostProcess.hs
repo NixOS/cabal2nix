@@ -112,7 +112,6 @@ hooks =
   , ("git-annex >= 6.20170925 && < 6.20171214", set doCheck False)      -- some versions of git-annex require their test suite to be run inside of a git checkout
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
   , ("GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
-  , ("GlomeVec", set (libraryDepends . pkgconfig . contains (bind "self.llvmPackages.llvm")) True)
   , ("graphviz", set (testDepends . system . contains (pkg "graphviz")) True)
   , ("gtk3", gtk3Hook)
   , ("gtkglext", gtkglextHook)
