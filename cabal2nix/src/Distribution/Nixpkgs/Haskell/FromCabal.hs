@@ -172,9 +172,6 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
-      | i == "gtk2"                      = binding # (i, path # ["pkgs","gtk2"])               -- TODO: these cases should not be necessary
-      | i == "gtk3"                      = binding # (i, path # ["pkgs","gtk3"])
-      | i == "gtksourceview3"            = binding # (i, path # ["pkgs","gtksourceview3"])
       | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
       | otherwise                        = bindNull i
 
