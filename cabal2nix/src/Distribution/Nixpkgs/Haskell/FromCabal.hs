@@ -172,11 +172,6 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
 
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
-      | i `elem` ["clang","lldb","llvm"] = binding # (i, path # ["self","llvmPackages",i])     -- TODO: evil!
-      | i == "gtk2"                      = binding # (i, path # ["pkgs","gtk2"])               -- TODO: these cases should not be necessary
-      | i == "gtk3"                      = binding # (i, path # ["pkgs","gtk3"])
-      | i == "gtksourceview3"            = binding # (i, path # ["pkgs","gtksourceview3"])
-      | i == "vte_291"                   = binding # (i, path # ["pkgs","vte"])
       | Just p <- nixpkgsResolver i, init (view (reference . path) p) `Set.member` goodScopes = p
       | otherwise                        = bindNull i
 

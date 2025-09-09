@@ -484,11 +484,11 @@ However LLVM will still not be available in the environment:
    [nix-shell:~]$ llvm-ar
    llvm-ar: command not found
 
-The solution is to add it as another package to the environment:
+The solution is to add it the relevant LLVM packages to the environment:
 
 .. code:: shell
 
-   $ nix-shell -p '(haskellPackages.ghcWithPackages.override { useLLVM = true; }) (ps: with ps; [mtl])' 'haskellPackages.llvmPackages.llvm'
+   $ nix-shell -p '(haskellPackages.ghcWithPackages.override { useLLVM = true; }) (ps: with ps; [mtl])' 'haskellPackages.ghc.llvmPackages.llvm' 'haskellPackages.ghc.llvmPackages.clang'
 
    [nix-shell:~]$ llvm-ar --help
    OVERVIEW: LLVM Archiver
