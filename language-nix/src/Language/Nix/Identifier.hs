@@ -44,9 +44,10 @@ declareLenses [d| newtype Identifier = Identifier { ident :: String }
 -- ^ An isomorphism that allows conversion of 'Identifier' from/to the
 -- standard 'String' type via 'review'.
 --
--- prop> \str -> fromString str == ident # str
--- prop> \str -> set ident str undefined == ident # str
--- prop> \str -> view ident (review ident str) == str
+-- >>> ident # "hello"
+-- Identifier "hello"
+-- >>> from ident # fromString "hello"
+-- "hello"
 
 instance NFData Identifier where
   rnf (Identifier str) = rnf str

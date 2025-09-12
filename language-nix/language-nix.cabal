@@ -14,7 +14,7 @@ bug-reports:   https://github.com/NixOS/cabal2nix/issues
 build-type:    Simple
 cabal-version: 1.18
 extra-doc-files: README.md
--- TODO: add changelog
+                 CHANGELOG.md
 
 source-repository head
   type:     git
@@ -34,3 +34,14 @@ library
                     TemplateHaskell
                     GeneralizedNewtypeDeriving
                     DeriveGeneric
+
+test-suite hspec
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          hspec.hs
+  build-depends:    base
+                  , language-nix
+                  , hspec
+                  , QuickCheck
+                  , lens
+  default-language: Haskell2010
