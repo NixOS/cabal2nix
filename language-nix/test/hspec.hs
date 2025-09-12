@@ -21,10 +21,14 @@ main = hspec $ do
 
     describe "HasParser Identifier" $ do
       it "can parse the result of prettyShow" $
-        property $ \i -> parseM "Identifier" (prettyShow i) == Just (i :: Identifier)
+        identProperty $ \i -> parseM "Identifier" (prettyShow i) == Just (i :: Identifier)
       it "can parse the result of quote" $
         stringIdentProperty $ \str -> parseM "Identifier" (quote str) == Just (ident # str)
 
 stringIdentProperty :: (String -> Bool) -> Property
 stringIdentProperty p = property $ \s ->
-  '\0' `notElem` s ==> p s
+  '\0' `notElem` s ==> classify (needsQuoting s) "need quoting" $ p s
+
+identProperty :: (Identifier -> Bool) -> Property
+identProperty p = property $ \i ->
+  classify (needsQuoting (from ident # i)) "need quoting" $ p i
