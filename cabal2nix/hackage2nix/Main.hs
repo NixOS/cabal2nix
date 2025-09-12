@@ -22,6 +22,7 @@ import Distribution.Nixpkgs.Haskell.Constraint
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Configuration as Config
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.FromCabal.Name (toNixName)
 import Distribution.Nixpkgs.Haskell.Platform ( parsePlatformFromSystemLenient )
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
@@ -152,8 +153,8 @@ main = do
           flagAssignment :: FlagAssignment                  -- We don't use the flags from Stackage Nightly here, because
           flagAssignment = configureCabalFlags pkgId        -- they are chosen specifically for GHC 7.10.2.
 
-          attr :: String
-          attr = if isInDefaultPackageSet then unPackageName name else mangle pkgId
+          attr :: Identifier
+          attr = if isInDefaultPackageSet then toNixName name else mangle pkgId
 
           drv :: Derivation
           drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
@@ -171,7 +172,7 @@ main = do
           overrides :: Doc
           overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
-        hang (doubleQuotes (text  attr) <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
+        hang (pPrint attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 
     return (intercalate "\n\n" defs)
 
@@ -215,5 +216,7 @@ resolveConstraint' (PackageVersionConstraint name vrange) hackage
   , not (Set.null vset)         = Just (Set.findMax vset)
   | otherwise                   = Nothing
 
-mangle :: PackageIdentifier -> String
-mangle (PackageIdentifier name v) = unPackageName name ++ '_' : [ if c == '.' then '_' else c | c <- display v ]
+mangle :: PackageIdentifier -> Identifier
+mangle (PackageIdentifier name v) =
+  -- Appending a legal Nix identifier to a legal identifier always produces another legal one.
+  toNixName name & ident %~ (++ '_' : [ if c == '.' then '_' else c | c <- display v ])
