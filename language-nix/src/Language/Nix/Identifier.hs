@@ -25,8 +25,8 @@ import Text.PrettyPrint.HughesPJClass as PP
 --
 -- Reasonable people restrict themselves to identifiers of the form
 -- @[a-zA-Z_][a-zA-Z0-9_'-]*@, because these don't need quoting. The
--- methods of the 'Text' class can be used to parse and pretty-print an
--- identifier with proper quoting:
+-- methods of the 'Pretty' class can be used to print an identifier with proper
+-- quoting:
 --
 -- >>> pPrint (ident # "test")
 -- test
