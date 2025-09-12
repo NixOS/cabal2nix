@@ -51,7 +51,15 @@ instance NFData Identifier where
   rnf (Identifier str) = rnf str
 
 instance Arbitrary Identifier where
-  arbitrary = Identifier <$> listOf1 (arbitraryUnicodeChar `suchThat` (/= '\0'))
+  arbitrary = Identifier <$> oneof
+    [ -- almost always needs quoting, unreasonable
+      listOf1 (nonNul arbitraryUnicodeChar)
+      -- almost always needs quoting, reasonable-ish
+    , listOf1 (nonNul arbitraryPrintableChar)
+      -- rarely needs quoting
+    , listOf1 (arbitraryASCIIChar `suchThat` isSimpleChar) ]
+    where nonNul g = g `suchThat` (/= '\0')
+          isSimpleChar c = isAlphaNum c || c `elem` "_-'"
   shrink (Identifier i) = map Identifier (shrink i)
 
 instance CoArbitrary Identifier
