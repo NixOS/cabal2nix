@@ -64,6 +64,11 @@ data Configuration = Configuration
   -- also disable their meta.hydraPlatforms attribute to avoid cluttering our
   -- Hydra job with lots of failure messages.
   , brokenPackages :: [Constraint]
+
+  -- |These packages have likely been broken for a long time and are unmaintained
+  -- upstream. To reduce the size of hackage-packages.nix, we don't even create
+  -- expressions for them.
+  , excludedPackages :: Set PackageName
   }
   deriving (Show, Generic)
 
@@ -79,6 +84,7 @@ instance Semigroup Configuration where
                          , unsupportedPlatforms = unsupportedPlatforms l <> unsupportedPlatforms r
                          , dontDistributePackages = dontDistributePackages l <> dontDistributePackages r
                          , brokenPackages = brokenPackages l <> brokenPackages r
+                         , excludedPackages = excludedPackages l <> excludedPackages r
                          }
 
 instance FromJSON Configuration where
@@ -92,6 +98,7 @@ instance FromJSON Configuration where
         <*> o .:? "unsupported-platforms" .!= mempty
         <*> o .:? "dont-distribute-packages" .!= mempty
         <*> o .:? "broken-packages" .!= mempty
+        <*> o .:? "excluded-packages" .!= mempty
   parseJSON _ = error "invalid Configuration"
 
 instance FromJSON Identifier where
@@ -114,7 +121,11 @@ assertConsistency :: MonadFail m => Configuration -> m Configuration
 assertConsistency cfg@Configuration {..} = do
   let report msg = fail ("*** configuration error: " ++ msg)
       maintainedPackages = Set.unions (Map.elems packageMaintainers)
-      disabledPackages = dontDistributePackages `Set.union` Set.fromList (constraintPkgName <$> brokenPackages)
+      disabledPackages = Set.unions
+        [ dontDistributePackages
+        , Set.fromList (constraintPkgName <$> brokenPackages)
+        , excludedPackages
+        ]
       disabledMaintainedPackages = maintainedPackages `Set.intersection` disabledPackages
   unless (Set.null disabledMaintainedPackages) $
     report ("disabled packages that have a maintainer: " ++ show disabledMaintainedPackages)
