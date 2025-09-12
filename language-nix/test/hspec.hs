@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Control.Lens
+import Control.Monad (forM_)
 import Data.String (fromString)
 import Language.Nix.Identifier
 import Test.Hspec
@@ -24,6 +25,11 @@ main = hspec $ do
         identProperty $ \i -> parseM "Identifier" (prettyShow i) == Just (i :: Identifier)
       it "can parse the result of quote" $
         stringIdentProperty $ \str -> parseM "Identifier" (quote str) == Just (ident # str)
+
+    describe "illegalSimpleIdentifiers" $ do
+      it "are quoted" $ forM_ illegalSimpleIdentifiers $ \str -> do
+        shouldSatisfy str needsQuoting
+        prettyShow (ident # str) `shouldBe` "\"" ++ str ++ "\""
 
 stringIdentProperty :: (String -> Bool) -> Property
 stringIdentProperty p = property $ \s ->
