@@ -44,4 +44,6 @@ test-suite hspec
                   , hspec
                   , QuickCheck
                   , lens
+                  , parsec-class
+                  , pretty
   default-language: Haskell2010

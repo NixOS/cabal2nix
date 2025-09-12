@@ -36,8 +36,6 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- __Warning__: Identifiers /may not/ contain @\'\\0\'@, but this is not
 -- checked during construction!
 --
--- prop> \str -> Just (ident # str) == parseM "Ident" (quote str)
--- prop> \i -> Just (i :: Identifier) == parseM "Ident" (prettyShow i)
 declareLenses [d| newtype Identifier = Identifier { ident :: String }
                     deriving (Show, Eq, Ord, IsString, Generic)
               |]
