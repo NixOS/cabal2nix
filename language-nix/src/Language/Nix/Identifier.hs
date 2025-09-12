@@ -33,6 +33,9 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- >>> pPrint (ident # "foo.bar")
 -- "foo.bar"
 --
+-- __Warning__: Identifiers /may not/ contain @\'\\0\'@, but this is not
+-- checked during construction!
+--
 -- prop> \str -> Just (ident # str) == parseM "Ident" (quote str)
 -- prop> \i -> Just (i :: Identifier) == parseM "Ident" (prettyShow i)
 declareLenses [d| newtype Identifier = Identifier { ident :: String }
@@ -49,7 +52,7 @@ instance NFData Identifier where
   rnf (Identifier str) = rnf str
 
 instance Arbitrary Identifier where
-  arbitrary = Identifier <$> listOf1 arbitraryUnicodeChar
+  arbitrary = Identifier <$> listOf1 (arbitraryUnicodeChar `suchThat` (/= '\0'))
   shrink (Identifier i) = map Identifier (shrink i)
 
 instance CoArbitrary Identifier
