@@ -33,6 +33,14 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- >>> pPrint (ident # "foo.bar")
 -- "foo.bar"
 --
+-- The 'HasParser' class allows parsing rendered identifiers even if they are
+-- quoted:
+--
+-- >>> parseM "Identifier" "hello" :: Maybe Identifier
+-- Just (Identifier "hello")
+-- >>> parseM "Identifier" "\"3rd party\"" :: Maybe Identifier
+-- Just (Identifier "3rd party")
+--
 -- __Warning__: Identifiers /may not/ contain @\'\\0\'@, but this is not
 -- checked during construction!
 --
