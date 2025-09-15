@@ -127,7 +127,7 @@ nixpkgsPlatformFromCabal (Platform arch os) = "\"" ++ nixArch ++ "-" ++ nixOs ++
 --   using 'nixpkgsPlatformFromString' and rendering them via the 'Pretty'
 --   instance of 'NixpkgsPlatform' should not change the system tuple
 --   for tuples accepted by nixpkgs. This has been tested for all known tuples
---   (from @lib.platforms@ and @lib.systems.examples@) as of 2024-12-01.
+--   (from @lib.platforms@ and @lib.systems.examples@) as of 2025-09-15.
 --   Please open an issue if any newly added ones are not recognized properly.
 --
 --   __Warning__: 'nixpkgsPlatformFromString' consequently tries to preserve all
