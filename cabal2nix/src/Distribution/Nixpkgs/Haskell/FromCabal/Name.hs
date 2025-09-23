@@ -8,10 +8,81 @@ import Distribution.Package
 import Distribution.Text
 import Language.Nix
 
--- | Map Cabal names to Nix attribute names.
+-- | Map Cabal names to Nix identifiers that don't need to be quoted.
+--
+--   Currently this only supports 'PackageName's that consist of nothing but ASCII
+--   characters (as needs to be the case with all Hackage packages).
+--   Cabal package names are not changed if they already are a Nix identifier
+--   that doesn't need quoting (with some notable exceptions). If they would need
+--   quoting, they are prefixed with an underscore.
+--
+--   >>> toNixName $ mkPackageName "cabal2nix"
+--   Identifier "cabal2nix"
+--   >>> toNixName $ mkPackageName "4Blocks"
+--   Identifier "_4Blocks"
+--   >>> toNixName $ mkPackageName "assert"
+--   Identifier "_assert"
+--
+--   Package names that clash with attribute names that have a special meaning
+--   to the Nix evaluator are also prefixed (e.g.
+--   [@type@ is evaluated eagerly]((https://github.com/NixOS/cabal2nix/issues/163)).
+--
+--   The mapping is intended to be reversible, but this isn't implemented by
+--   @cabal2nix@ yet (and untested). It also should not be considered
+--   stable yet, in particular the following may be changed:
+--
+--   - Future versions of @cabal2nix@ may prefix more 'PackageName's.
+--   - The mapping may be extended to support all possible 'PackageName's.
+--
+--   See also:
+--
+--   - [Cabal documentation on the package name field](https://cabal.readthedocs.io/en/stable/cabal-package-description-file.html#pkg-field-name)
+--   - "Language.Nix.Identifier"
+--   - [Nix documentation on identifiers](https://nix.dev/manual/nix/2.30/language/identifiers.html#identifier)
 toNixName :: PackageName -> Identifier
-toNixName "" = error "toNixName: invalid empty package name"
-toNixName n  = fromString (unPackageName n)
+toNixName n = fromString $
+  case unPackageName n of
+    "" -> error "toNixName: BUG: received empty package name"
+    '_':_ -> error "toNixName: BUG: PackageName starts with an underscore, but shouldn't"
+    name
+      -- From the Cabal documentation:
+      --
+      --   A valid package name comprises an alphanumeric ‘word’; or two or more
+      --   such words separated by a hyphen character (-). A word cannot be
+      --   comprised only of the digits 0 to 9.
+      --
+      -- Cabal also latin unicode characters while Hackage enforces that package
+      -- names are ASCII.
+      --
+      -- If the package name comes from Hackage, the set of legal characters
+      -- ([a-zA-Z0-9-]) is a subset of those permissible as a Nix identifier
+      -- without quoting ([a-zA-Z0-9_'-]). The main difference are the rules
+      -- governing what may go where. In the following cases a Hackage package
+      -- name is not a simple identifier and 'needsQuoting' returns True:
+      --
+      -- - if the first “word” of the package name starts with a number, e.g. 4Blocks.
+      -- - if the package name is the same one of the 'nixKeywords'.
+      --
+      -- If we prefix these strings with an underscore, they no longer need quoting.
+      -- Because Cabal 'PackageName's may not contain underscores this mapped name
+      -- can never clash. (Reversing the mapping is very simple at the moment as
+      -- a result.)
+      --
+      -- We additionally prefix perfectly usable identifiers like type and
+      -- recurseForDerivations if they have special meaning to the Nix evaluator
+      -- (or Hydra etc.) since it may cause evaluation failures if we expose a
+      -- package under haskellPackages instead of whatever value(s) Nix may
+      -- expect.
+      --
+      -- TODO: Add mapping for non-ASCII 'PackageName's, using __ prefix (?)
+      | needsQuoting name || name `elem` haveSpecialSemantics -> '_':name
+      | otherwise -> name
+  where
+    -- Special attributes that affect the behavior of the Nix evaluator in some way.
+    -- See https://github.com/NixOS/cabal2nix/issues/163.
+    -- We can ignore underscore prefixed attrs like __toString, __functor.
+    -- Only type is the name of a real package at the moment.
+    haveSpecialSemantics = [ "type", "outPath", "recurseForDerivations" ]
 
 -- | Map library names specified in Cabal files to Nix package identifiers.
 --
