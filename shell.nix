@@ -1,8 +1,8 @@
 { pkgs ?
     import (builtins.fetchTarball {
-      # nixos-unstable 2025-04-23
-      url = "https://github.com/nixos/nixpkgs/archive/96d30055a2215e5c5a545872376137a5d063e804.tar.gz";
-      sha256 = "0xvzkpgc8qy4q252c3x399c8ikrks970c877s4i7vppnhxp08p8n";
+      # nixos-unstable 2025-08-10
+      url = "https://github.com/nixos/nixpkgs/archive/c9b6fb798541223bbb396d287d16f43520250518.tar.gz";
+      sha256 = "sha256-vgPm2xjOmKdZ0xKA6yLXPJpjOtQPHfaZDRtH+47XEBo=";
     }) { }
 , ghcVersion ? pkgs.haskellPackages.ghc.version
   # Pass --arg minimal true to disable tools that are not strictly necessary
