@@ -78,8 +78,13 @@ main = do
               )
   CLI {..} <- execParser pinfo
 
+  let nixpkgsArgs = mconcat [ "{"
+                            , "overlays = [ (self: super: { haskellPackages = self.lib.dontRecurseIntoAttrs super.haskellPackages; }) ];"
+                            , "config.allowAliases = false;"
+                            , "}"
+                            ]
   config <- sconcat <$> mapM (\file -> readConfiguration (nixpkgsRepository </> file)) configFiles
-  nixpkgs <- readNixpkgPackageMap nixpkgsRepository (Just "{ config = { allowAliases = false; }; }")
+  nixpkgs <- readNixpkgPackageMap nixpkgsRepository (Just nixpkgsArgs)
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
   let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
             . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
