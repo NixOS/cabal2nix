@@ -9,7 +9,8 @@ module Distribution.Nixpkgs.Haskell.FromCabal.License
 import Data.List (intercalate)
 import Distribution.License ( License(..), knownLicenses )
 import Distribution.Nixpkgs.License
-import Distribution.Pretty (prettyShow)
+import qualified Distribution.Pretty as DPretty
+import Language.Nix.PrettyPrinting (prettyShow)
 import qualified Distribution.SPDX as SPDX
 import Distribution.Text (display)
 import Distribution.Version
@@ -46,22 +47,27 @@ fromCabalLicense (UnknownLicense "BSD3ClauseORApache20")   = Known "lib.licenses
 fromCabalLicense l                                         = error $ "Distribution.Nixpkgs.Haskell.FromCabal.License.fromCabalLicense: unknown license"
                                                                   ++ show l ++"\nChoose one of: " ++ intercalate ", " (map display knownLicenses)
 
+fromSPDXLicenseExpression :: SPDX.LicenseExpression -> Distribution.Nixpkgs.License.License
+fromSPDXLicenseExpression  (SPDX.ELicense simpl Nothing) =
+  case simpl of
+  SPDX.ELicenseId lid -> Known ("lib.licensesSpdx.\"" ++ DPretty.prettyShow lid ++ "\"")
+  _ ->
+    -- Not handed: the '+' suffix and user-defined licences references.
+    -- Use the SPDX expression as a free-form license string.
+    Unknown (Just $ DPretty.prettyShow simpl)
+fromSPDXLicenseExpression (SPDX.ELicense simpl (Just excep)) =
+  case simpl of
+  SPDX.ELicenseId lid -> Known ("lib.licensesSpdx.\"" ++ DPretty.prettyShow lid ++ "\" lib.licensesSpdx.\"" ++  DPretty.prettyShow excep ++ "\"")
+  _ ->
+    -- Not handed: the '+' suffix and user-defined licences references.
+    -- Use the SPDX expression as a free-form license string.
+    Known ("\"" ++ DPretty.prettyShow simpl ++ "\" lib.licensesSpdx.\"" ++  DPretty.prettyShow excep ++ "\"")
+fromSPDXLicenseExpression (SPDX.EAnd expres1 expres2) = Known (prettyShow (fromSPDXLicenseExpression expres1) ++ " " ++ prettyShow (fromSPDXLicenseExpression expres2))
+fromSPDXLicenseExpression (SPDX.EOr expres1 expres2) = Known (prettyShow (fromSPDXLicenseExpression expres1) ++ " " ++ prettyShow (fromSPDXLicenseExpression expres2))
+
 fromSPDXLicense :: SPDX.License -> Distribution.Nixpkgs.License.License
 fromSPDXLicense SPDX.NONE = Unknown Nothing
-fromSPDXLicense (SPDX.License expr) =
-  case expr of
-    SPDX.ELicense simpl Nothing ->
-      -- Not handled: license exceptions
-      case simpl of
-        SPDX.ELicenseId lid -> Known ("lib.licensesSpdx.\"" ++ prettyShow lid ++ "\"")
-        _ ->
-          -- Not handed: the '+' suffix and user-defined licences references.
-          -- Use the SPDX expression as a free-form license string.
-          Unknown (Just $ prettyShow expr)
-    _ ->
-      -- Not handled: compound expressions, not expressible in Nixpkgs.
-      -- Use the SPDX expression as a free-form license string.
-      Unknown (Just $ prettyShow expr)
+fromSPDXLicense (SPDX.License expr) = Known ("[ " ++ prettyShow (fromSPDXLicenseExpression expr) ++ " ]")
 
 -- "isFreeLicense" is used to determine whether we generate a "hydraPlatforms =
 -- none" in the hackage2nix output for a package with the given license.
