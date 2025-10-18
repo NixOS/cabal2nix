@@ -66,7 +66,7 @@ fromSPDXLicenseExpression (SPDX.EAnd expres1 expres2) = Known (prettyShow (fromS
 fromSPDXLicenseExpression (SPDX.EOr expres1 expres2) = Known (prettyShow (fromSPDXLicenseExpression expres1) ++ " " ++ prettyShow (fromSPDXLicenseExpression expres2))
 
 fromSPDXLicense :: SPDX.License -> Distribution.Nixpkgs.License.License
-fromSPDXLicense SPDX.NONE = Unknown Nothing
+fromSPDXLicense SPDX.NONE = Known "lib.licenses.free"
 fromSPDXLicense (SPDX.License expr) = Known ("[ " ++ prettyShow (fromSPDXLicenseExpression expr) ++ " ]")
 
 -- "isFreeLicense" is used to determine whether we generate a "hydraPlatforms =
