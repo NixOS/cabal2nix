@@ -18,5 +18,5 @@ mkDerivation {
   ];
   homepage = "http://github.com/jgm/highlighting-kate";
   description = "Syntax highlighting";
-  license = "GPL";
+  license = lib.licenses.gpl2Plus;
 }

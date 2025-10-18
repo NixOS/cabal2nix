@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base gogol-core ];
   homepage = "https://github.com/brendanhay/gogol";
   description = "Google Firebase Rules SDK";
-  license = "unknown";
+  license = lib.licenses.free;
 }

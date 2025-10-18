@@ -10,5 +10,5 @@ mkDerivation {
   ];
   testHaskellDepends = [ aeson base bytestring tasty tasty-hunit ];
   description = "Implementation of swagger data model";
-  license = "unknown";
+  license = lib.licenses.free;
 }

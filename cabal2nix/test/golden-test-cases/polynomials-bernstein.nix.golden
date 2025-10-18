@@ -5,5 +5,5 @@ mkDerivation {
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base vector ];
   description = "A solver for systems of polynomial equations in bernstein form";
-  license = "GPL";
+  license = lib.licenses.gpl2Plus;
 }

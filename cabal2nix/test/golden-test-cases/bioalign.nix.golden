@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base biocore bytestring ];
   homepage = "https://patch-tag.com/r/dfornika/biophd/home";
   description = "Data structures and helper functions for calculating alignments";
-  license = "GPL";
+  license = lib.licenses.gpl2Plus;
 }
