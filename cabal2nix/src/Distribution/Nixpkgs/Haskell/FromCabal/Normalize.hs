@@ -6,6 +6,7 @@ import Control.Lens
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Haskell
+import Distribution.Nixpkgs.Haskell.FromCabal.Name (toNixName)
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
 import Language.Nix hiding ( quote )
@@ -21,8 +22,8 @@ normalize drv = drv
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo pname bi = bi
-  & haskell %~ Set.filter (\b -> view localName b /= fromString (unPackageName pname))
-  & tool %~ Set.filter (\b -> view localName b /= fromString (unPackageName pname))
+  & haskell %~ Set.filter (\b -> view localName b /= toNixName pname)
+  & tool %~ Set.filter (\b -> view localName b /= toNixName pname)
 
 normalizeMeta :: Meta -> Meta
 normalizeMeta meta = meta
