@@ -4,9 +4,15 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Language.Nix.Identifier
-  ( Identifier, ident, quote, needsQuoting, nixKeywords
+  ( -- * Type-safe Identifiers
+    Identifier, ident
   , parseSimpleIdentifier, parseQuotedIdentifier
-  -- TODO: why do we expose quote?
+    -- * String Predicates
+  , needsQuoting
+    -- * Internals
+    -- TODO: only required by the language-nix test suite, unexport?
+  , nixKeywords
+  , quote
   )
   where
 
@@ -130,6 +136,7 @@ nixKeywords =
   [ "assert", "with", "if", "then", "else", "let", "in", "rec", "inherit", "or" ]
 
 -- | Helper function to quote a given identifier string if necessary.
+--   Usually, one should use the 'Pretty' instance of 'Identifier' instead.
 --
 -- >>> putStrLn (quote "abc")
 -- abc
