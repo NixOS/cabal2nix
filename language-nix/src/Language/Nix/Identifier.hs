@@ -24,10 +24,12 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- (and viewed) with the 'ident' isomorphism. For the sake of convenience,
 -- @Identifier@s are an instance of the 'IsString' class.
 --
--- Reasonable people restrict themselves to identifiers of the form
--- @[a-zA-Z_][a-zA-Z0-9_'-]*@, because these don't need quoting. The
--- methods of the 'Pretty' class can be used to print an identifier with proper
--- quoting:
+-- It is usually wise to only use identifiers of the form
+-- @[a-zA-Z_][a-zA-Z0-9_'-]*@, because these don't need quoting.
+-- Consequently, they can appear almost anywhere in a Nix expression
+-- (whereas quoted identifiers e.g. can't be used in function patterns).
+-- The methods of the 'Pretty' class can be used to print an identifier
+-- with proper quoting:
 --
 -- >>> pPrint (ident # "test")
 -- test
