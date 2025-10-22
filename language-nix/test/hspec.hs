@@ -1,10 +1,14 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main (main) where
 
+import Control.Exception
 import Control.Lens
 import Control.Monad (forM_)
 import Data.Char (isAscii, isSpace)
+import Data.List (dropWhileEnd)
 import Data.String (fromString)
 import Language.Nix.Identifier
+import System.Process (callProcess, readCreateProcess, proc)
 import Test.Hspec
 import Test.QuickCheck
 import Text.Parsec.Class (parseM)
@@ -51,6 +55,32 @@ main = hspec $ do
         any isSpace s ==> needsQuoting s
       it "if length is zero" $ shouldSatisfy "" needsQuoting
 
+    describe "nix-instantiate" $ do
+      nixInstantiate <- runIO $ do
+        (callProcess nixInstantiateBin [ "--version" ] >> pure (Just nixInstantiateBin))
+          `catch` (\(_ :: SomeException) -> pure Nothing)
+      let nix :: Example a => String -> (String -> a) -> SpecWith (Arg a)
+          nix str spec =
+            case nixInstantiate of
+              Nothing -> it str $ \_ ->
+                pendingWith (nixInstantiateBin ++ " could not be found or executed")
+              Just exec -> it str $ spec exec
+
+      nix "parses and produces result of quote" $ \exec -> stringIdentProperty $ \str -> ioProperty $ do
+        let expAttr = quote str
+            expr = "{" ++ expAttr ++ "=null;}"
+
+        out <- readCreateProcess (proc exec ["--eval", "--strict", "-E", expr]) ""
+        pure $ extractIdentSyntax out === expAttr
+
+      nix "produces parseM-able identifiers" $ \exec -> identProperty $ \i -> ioProperty $ do
+        let expr = "{" ++ prettyShow i ++ "=null;}"
+        out <- readCreateProcess (proc exec ["--eval", "--strict", "-E", expr]) ""
+        pure $ parseM "Identifier" (extractIdentSyntax out) == Just i
+
+nixInstantiateBin :: String
+nixInstantiateBin = "nix-instantiate"
+
 stringIdentProperty :: Testable prop => (String -> prop) -> Property
 stringIdentProperty p = property $ \s ->
   '\0' `notElem` s ==> classify (needsQuoting s) "need quoting" $ p s
@@ -58,3 +88,16 @@ stringIdentProperty p = property $ \s ->
 identProperty :: Testable prop => (Identifier -> prop) -> Property
 identProperty p = property $ \i ->
   classify (needsQuoting (from ident # i)) "need quoting" $ p i
+
+-- | Given the (pretty) printed representation of the Nix value produced by the
+--   expression @{ ${ident} = null; }@, for any value of @ident@, extract the
+--   part that represents the identifier.
+--
+--   Note that pretty printing is buggy in some versions of Nix and the result
+--   may not actually be valid Nix syntax.
+extractIdentSyntax :: String -> String
+extractIdentSyntax =
+  dropWhileEnd (`elem` "= \n\t")    -- remove "… = "
+  . dropWhileEnd (`elem` "null")    -- remove "null"
+  . dropWhileEnd (`elem` ";} \n\t") -- remove "…; }"
+  . dropWhile (`elem` "{ \n\t")     -- remove "{ …"
