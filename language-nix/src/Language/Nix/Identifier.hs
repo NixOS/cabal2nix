@@ -142,5 +142,24 @@ nixKeywords =
 -- abc
 -- >>> putStrLn (quote "abc.def")
 -- "abc.def"
+-- >>> putStrLn (quote "$foo")
+-- "$foo"
+-- >>> putStrLn (quote "${foo}")
+-- "\${foo}"
 quote :: String -> String
-quote s = if needsQuoting s then show s else s
+quote s = if needsQuoting s then '"' : quote' s else s
+  where
+    quote' (c1:c2:cs) = escapeChar c1 (Just c2) ++ quote' (c2:cs)
+    quote' (c:cs) = escapeChar c Nothing ++ quote' cs
+    quote' "" = "\""
+
+escapeChar :: Char -> Maybe Char -> String
+escapeChar c1 c2 =
+  case c1 of
+    '\n' -> "\\n"
+    '\t' -> "\\t"
+    '\r' -> "\\r"
+    '\\' -> "\\\\"
+    '"' -> "\\\""
+    '$' | c2 == Just '{' -> "\\$"
+    _ -> [c1]
