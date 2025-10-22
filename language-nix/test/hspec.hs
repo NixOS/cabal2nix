@@ -26,6 +26,18 @@ main = hspec $ do
         identProperty $ \i -> parseM "Identifier" (prettyShow i) == Just (i :: Identifier)
       it "can parse the result of quote" $
         stringIdentProperty $ \str -> parseM "Identifier" (quote str) == Just (ident # str)
+      it "parses redundant escape sequences" $
+        forM_
+          [ ("\"\\f\"", "f")
+          , ("\"echo \\$var\"", "echo $var")
+          , ("\"\\h\\e\\l\\l\\o\\ \\w\\or\\l\\d\"", "hello world")
+          -- \t and \n don't need to be escaped, though it's advisable
+          , ("\"only\\ttechnically\nredundant\"", "only\ttechnically\nredundant")
+          ]
+          $ \(i, e) -> do
+            let e' = Just (ident # e)
+            parseM "Identifier" i `shouldBe` e'
+            parseM "Identifier" ("\"" ++ e ++ "\"") `shouldBe` e'
 
     describe "nixKeywords" $ do
       it "are quoted" $ forM_ nixKeywords $ \str -> do

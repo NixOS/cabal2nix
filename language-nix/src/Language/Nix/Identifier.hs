@@ -87,6 +87,11 @@ instance Pretty Identifier where
 
 -- | Note that this parser is more lenient than Nix w.r.t. simple identifiers,
 --   since it will accept 'nixKeywords'.
+--
+--   Naturally, it does not support string interpolation, but does not reject
+--   strings that contain them. E.g. the string literal @"hello ${world}"@
+--   will contain @${world}@ verbatim after parsing. Do not rely on this
+--   behavior, as it may be changed in the future.
 instance HasParser Identifier where
   parser = parseQuotedIdentifier <|> parseSimpleIdentifier
 
@@ -108,17 +113,24 @@ parseQuotedIdentifier :: CharParser st tok m Identifier
 parseQuotedIdentifier = Identifier <$> qstring
   where
     qstring :: CharParser st tok m String
-    qstring = do txt <- between (P.char '"') (P.char '"') (many qtext)
-                 return (read ('"' : concat txt ++ ['"']))
+    qstring = between (P.char '"') (P.char '"') (many qtext)
 
-    qtext :: CharParser st tok m String
-    qtext = quotedPair <|> many1 (P.noneOf "\\\"")
+    qtext :: CharParser st tok m Char
+    qtext = quotedPair <|> P.noneOf "\\\""
 
-    quotedPair :: CharParser st tok m String
+    quotedPair :: CharParser st tok m Char
     quotedPair = do
-      c1 <- P.char '\\'
-      c2 <- anyChar
-      return [c1,c2]
+      _ <- P.char '\\'
+      c <- anyChar
+      -- See https://github.com/NixOS/nix/blob/2d83bc6b83763290e9bbf556209927ba469956aa/src/libexpr/lexer.l#L54-L60
+      return $ case c of
+                 'n' -> '\n'
+                 't' -> '\t'
+                 'r' -> '\r'
+                 -- Note that this handles actual escapes like \" and \\ and
+                 -- bogus cases like \f which Nix doesn't fail on (despite not
+                 -- supporting it), but simply maps to plain f
+                 _ -> c
 
 -- | Checks whether a given string needs quoting when interpreted as an
 -- 'Identifier'.
@@ -142,5 +154,28 @@ nixKeywords =
 -- abc
 -- >>> putStrLn (quote "abc.def")
 -- "abc.def"
+-- >>> putStrLn (quote "$foo")
+-- "$foo"
+-- >>> putStrLn (quote "${foo}")
+-- "\${foo}"
 quote :: String -> String
-quote s = if needsQuoting s then show s else s
+quote s = if needsQuoting s then '"' : quote' s else s
+  where
+    quote' (c1:c2:cs) = escapeChar c1 (Just c2) ++ quote' (c2:cs)
+    quote' (c:cs) = escapeChar c Nothing ++ quote' cs
+    quote' "" = "\""
+
+escapeChar :: Char -> Maybe Char -> String
+escapeChar c1 c2 =
+  case c1 of
+    -- supported escape sequences, see quotedPair above
+    -- N.B. technically, we only need to escape \r (since Nix converts raw \r to \n),
+    -- but it's nicer to escape what we can.
+    '\n' -> "\\n"
+    '\t' -> "\\t"
+    '\r' -> "\\r"
+    -- syntactically significant in doubly quoted strings
+    '\\' -> "\\\\"
+    '"' -> "\\\""
+    '$' | c2 == Just '{' -> "\\$"
+    _ -> [c1]
