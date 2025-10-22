@@ -109,16 +109,20 @@ parseQuotedIdentifier = Identifier <$> qstring
   where
     qstring :: CharParser st tok m String
     qstring = do txt <- between (P.char '"') (P.char '"') (many qtext)
-                 return (read ('"' : concat txt ++ ['"']))
+                 return txt
 
-    qtext :: CharParser st tok m String
-    qtext = quotedPair <|> many1 (P.noneOf "\\\"")
+    qtext :: CharParser st tok m Char
+    qtext = quotedPair <|> P.noneOf "\\\""
 
-    quotedPair :: CharParser st tok m String
+    quotedPair :: CharParser st tok m Char
     quotedPair = do
-      c1 <- P.char '\\'
-      c2 <- anyChar
-      return [c1,c2]
+      _ <- P.char '\\'
+      c <- anyChar
+      return $ case c of
+                 'n' -> '\n'
+                 't' -> '\t'
+                 'r' -> '\r'
+                 _ -> c
 
 -- | Checks whether a given string needs quoting when interpreted as an
 -- 'Identifier'.
