@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/UweSchmidt/hxt";
   description = "TagSoup parser for HXT";
-  license = "unknown";
+  license = lib.licenses.free;
 }

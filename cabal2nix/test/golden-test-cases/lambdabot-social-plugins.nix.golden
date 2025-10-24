@@ -10,5 +10,5 @@ mkDerivation {
   ];
   homepage = "https://wiki.haskell.org/Lambdabot";
   description = "Social plugins for Lambdabot";
-  license = "GPL";
+  license = lib.licenses.gpl2Plus;
 }

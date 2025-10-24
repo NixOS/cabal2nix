@@ -13,5 +13,5 @@ mkDerivation {
     vivid-osc
   ];
   description = "Implementation of SuperCollider server specifications";
-  license = "GPL";
+  license = lib.licenses.gpl2Plus;
 }

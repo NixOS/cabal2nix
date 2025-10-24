@@ -27,6 +27,6 @@ mkDerivation {
   ];
   homepage = "https://github.com/skogsbaer/HTF/";
   description = "The Haskell Test Framework";
-  license = "LGPL";
+  license = lib.licenses.lgpl2Plus;
   mainProgram = "htfpp";
 }

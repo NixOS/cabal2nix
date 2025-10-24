@@ -6,5 +6,5 @@ mkDerivation {
   libraryHaskellDepends = [ base process ];
   librarySystemDepends = [ ncurses readline ];
   description = "An interface to the GNU readline library";
-  license = "GPL";
+  license = lib.licenses.gpl2Plus;
 }
