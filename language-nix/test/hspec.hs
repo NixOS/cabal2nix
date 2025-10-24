@@ -2,6 +2,7 @@ module Main (main) where
 
 import Control.Lens
 import Control.Monad (forM_)
+import Data.Char (isAscii, isSpace)
 import Data.String (fromString)
 import Language.Nix.Identifier
 import Test.Hspec
@@ -31,10 +32,17 @@ main = hspec $ do
         shouldSatisfy str needsQuoting
         prettyShow (ident # str) `shouldBe` "\"" ++ str ++ "\""
 
-stringIdentProperty :: (String -> Bool) -> Property
+    describe "needsQuoting" $ do
+      it "if string contains non ASCII characters" $ stringIdentProperty $ \s ->
+        any (not . isAscii) s ==> needsQuoting s
+      it "if string contains spaces" $ stringIdentProperty $ \s ->
+        any isSpace s ==> needsQuoting s
+      it "if length is zero" $ shouldSatisfy "" needsQuoting
+
+stringIdentProperty :: Testable prop => (String -> prop) -> Property
 stringIdentProperty p = property $ \s ->
   '\0' `notElem` s ==> classify (needsQuoting s) "need quoting" $ p s
 
-identProperty :: (Identifier -> Bool) -> Property
+identProperty :: Testable prop => (Identifier -> prop) -> Property
 identProperty p = property $ \i ->
   classify (needsQuoting (from ident # i)) "need quoting" $ p i

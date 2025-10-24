@@ -90,8 +90,8 @@ instance HasParser Identifier where
 --   identifiers by Nix, see 'nixKeywords'.
 parseSimpleIdentifier :: CharParser st tok m Identifier
 parseSimpleIdentifier = do
-  c <- satisfy (\x -> x == '_' || isAlpha x)
-  cs <- many (satisfy (\x -> x `elem` "_'-" || isAlphaNum x))
+  c <- satisfy (\x -> x == '_' || (isAscii x && isAlpha x))
+  cs <- many (satisfy (\x -> x `elem` "_'-" || (isAscii x && isAlphaNum x)))
   return (Identifier (c:cs))
 
 -- | 'ReadP' parser for quoted identifiers, i.e. those that /do/ need
