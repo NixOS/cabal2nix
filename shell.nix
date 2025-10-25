@@ -22,13 +22,13 @@ let
     pkgs.haskellPackages.haskell-ci
     [
       (haskellLib.overrideSrc {
-        version = "0-unstable-2025-03-30";
+        version = "0-unstable-2025-06-04";
         src = pkgs.fetchFromGitHub rec {
           name = "haskell-ci-source-${lib.substring 0 7 rev}";
           owner = "haskell-CI";
           repo = "haskell-ci";
-          rev = "f0fd898ab14070fa46e9fd542a2b487a8146d88e";
-          sha256 = "1pzrnpwsamy8ld6gb7vf9acr873z5q35pixbkwxvji5y9si0x352";
+          rev = "bdc3cb2907c905fb35012c84d813c47223880aae";
+          sha256 = "sha256-Y1DccXXaRMYqZCV6s+9h2HfnNz69WGzH1QPLojUOqII=";
         };
       })
       # Make the build a bit less expensive
