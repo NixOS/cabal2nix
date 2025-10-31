@@ -109,16 +109,20 @@ parseQuotedIdentifier = Identifier <$> qstring
   where
     qstring :: CharParser st tok m String
     qstring = do txt <- between (P.char '"') (P.char '"') (many qtext)
-                 return (read ('"' : concat txt ++ ['"']))
+                 return txt
 
-    qtext :: CharParser st tok m String
-    qtext = quotedPair <|> many1 (P.noneOf "\\\"")
+    qtext :: CharParser st tok m Char
+    qtext = quotedPair <|> P.noneOf "\\\""
 
-    quotedPair :: CharParser st tok m String
+    quotedPair :: CharParser st tok m Char
     quotedPair = do
-      c1 <- P.char '\\'
-      c2 <- anyChar
-      return [c1,c2]
+      _ <- P.char '\\'
+      c <- anyChar
+      return $ case c of
+                 'n' -> '\n'
+                 't' -> '\t'
+                 'r' -> '\r'
+                 _ -> c
 
 -- | Checks whether a given string needs quoting when interpreted as an
 -- 'Identifier'.
@@ -142,5 +146,24 @@ nixKeywords =
 -- abc
 -- >>> putStrLn (quote "abc.def")
 -- "abc.def"
+-- >>> putStrLn (quote "$foo")
+-- "$foo"
+-- >>> putStrLn (quote "${foo}")
+-- "\${foo}"
 quote :: String -> String
-quote s = if needsQuoting s then show s else s
+quote s = if needsQuoting s then '"' : quote' s else s
+  where
+    quote' (c1:c2:cs) = escapeChar c1 (Just c2) ++ quote' (c2:cs)
+    quote' (c:cs) = escapeChar c Nothing ++ quote' cs
+    quote' "" = "\""
+
+escapeChar :: Char -> Maybe Char -> String
+escapeChar c1 c2 =
+  case c1 of
+    '\n' -> "\\n"
+    '\t' -> "\\t"
+    '\r' -> "\\r"
+    '\\' -> "\\\\"
+    '"' -> "\\\""
+    '$' | c2 == Just '{' -> "\\$"
+    _ -> [c1]

@@ -1,17 +1,31 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main (main) where
 
+import Control.Exception
 import Control.Lens
 import Control.Monad (forM_)
 import Data.Char (isAscii, isSpace)
+import Data.List (dropWhile, dropWhileEnd)
 import Data.String (fromString)
 import Language.Nix.Identifier
+import System.Exit (ExitCode (..))
+import System.Process (callProcess, readCreateProcess, proc)
 import Test.Hspec
 import Test.QuickCheck
 import Text.Parsec.Class (parseM)
 import Text.PrettyPrint.HughesPJClass (prettyShow)
 
 main :: IO ()
-main = hspec $ do
+main = do
+  let nixInstantiate = "nix-instantiate"
+  nixInstantiateWorks <- catch
+    (callProcess nixInstantiate [ "--version" ] >> pure True)
+    (\(e :: SomeException) -> pure False)
+
+  spec $ if nixInstantiateWorks then Just nixInstantiate else Nothing
+
+spec :: Maybe FilePath -> IO ()
+spec nixInstantiate = hspec $ do
   describe "Language.Nix.Identifier" $ do
     describe "ident" $ do
       it "is equivalent to fromString" $
@@ -38,6 +52,26 @@ main = hspec $ do
       it "if string contains spaces" $ stringIdentProperty $ \s ->
         any isSpace s ==> needsQuoting s
       it "if length is zero" $ shouldSatisfy "" needsQuoting
+
+    describe "nix-instantiate" $ do
+      let nit :: Example a => String -> (String -> a) -> SpecWith (Arg a)
+          nit str spec =
+            case nixInstantiate of
+              Nothing -> xit str  $ spec undefined
+              Just exec -> it str $ spec exec
+
+-- TODO: parseM (nix-instantiate (prettyShow i))
+      nit "test" $ \exec -> stringIdentProperty $ \str -> ioProperty $ do
+        let expAttr = quote str
+            extractAttr =
+              dropWhileEnd (`elem` "= \n\t")    -- remove "… = "
+              . dropWhileEnd (`elem` "null")    -- remove "null"
+              . dropWhileEnd (`elem` ";} \n\t") -- remove "…; }"
+              . dropWhile (`elem` "{ \n\t")     -- remove "{ …"
+            expr = "{" ++ expAttr ++ "=null;}"
+
+        out <- readCreateProcess (proc exec ["--eval", "--strict", "-E", expr]) ""
+        pure $ extractAttr out === expAttr
 
 stringIdentProperty :: Testable prop => (String -> prop) -> Property
 stringIdentProperty p = property $ \s ->
