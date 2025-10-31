@@ -324,11 +324,6 @@ buildToolNixName "gtk2hsC2hs"                   = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsHookGenerator"          = return "gtk2hs-buildtools"
 buildToolNixName "gtk2hsTypeGen"                = return "gtk2hs-buildtools"
 buildToolNixName "hsc2hs"                       = []
-buildToolNixName "nix-build"                    = return "nix"
-buildToolNixName "nix-env"                      = return "nix"
-buildToolNixName "nix-hash"                     = return "nix"
-buildToolNixName "nix-instantiate"              = return "nix"
-buildToolNixName "nix-store"                    = return "nix"
 buildToolNixName "utillinux"                    = return "util-linux"
 buildToolNixName x                              = return (fromString x)
 

@@ -16,6 +16,11 @@
   and `pkgs.devil` all of which have been removed from Nixpkgs for 25.11.
 * Removed expression post processing hooks for `pandoc`, `pandoc-citeproc`,
   `liquid-fixpoint` and `GlomeVec`.
+* Stop resolving the `nix-store`, `nix-hash` etc. executables in `build-tools`
+  to a `nix` package input. As of 2025-10-16, this clashes with a Hackage
+  package causing the input to stop working as intended. Users who relied
+  on this resolution, will need to pass in `pkgs.nix` manually via overrides
+  going forward.
 
 ## 2.20.1
 
