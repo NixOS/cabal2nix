@@ -174,6 +174,7 @@ libNixName "pangocairo"                         = return "pango"
 libNixName "pcap"                               = return "libpcap"
 libNixName "pfs-1.2"                            = return "pfstools"
 libNixName "png"                                = return "libpng"
+libNixName "poppler-cpp"                        = return "poppler"
 libNixName "poppler-glib"                       = return "poppler_gi"
 libNixName "pq"                                 = return "libpq"
 libNixName "pthread"                            = []
