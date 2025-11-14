@@ -66,17 +66,14 @@ main = hspec $ do
                 pendingWith (nixInstantiateBin ++ " could not be found or executed")
               Just exec -> it str $ spec exec
 
-      nix "parses and produces result of quote" $ \exec -> stringIdentProperty $ \str -> ioProperty $ do
-        let expAttr = quote str
+      nix "accepts our identifiers and reproduces them" $ \exec -> identProperty $ \i -> ioProperty $ do
+        let expAttr = prettyShow i
             expr = "{" ++ expAttr ++ "=null;}"
 
         out <- readCreateProcess (proc exec ["--eval", "--strict", "-E", expr]) ""
-        pure $ extractIdentSyntax out === expAttr
-
-      nix "produces parseM-able identifiers" $ \exec -> identProperty $ \i -> ioProperty $ do
-        let expr = "{" ++ prettyShow i ++ "=null;}"
-        out <- readCreateProcess (proc exec ["--eval", "--strict", "-E", expr]) ""
-        pure $ parseM "Identifier" (extractIdentSyntax out) == Just i
+        pure $
+          extractIdentSyntax out === expAttr
+          .&&. parseM "Identifier" (extractIdentSyntax out) === Just i
 
 nixInstantiateBin :: String
 nixInstantiateBin = "nix-instantiate"
