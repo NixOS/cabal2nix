@@ -45,4 +45,5 @@ test-suite hspec
                   , lens
                   , parsec-class
                   , pretty
+                  , process
   default-language: Haskell2010
