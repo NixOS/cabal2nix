@@ -81,12 +81,8 @@ main = do
   config <- sconcat <$> mapM (\file -> readConfiguration (nixpkgsRepository </> file)) configFiles
   nixpkgs <- readNixpkgPackageMap nixpkgsRepository (Just "{ config = { allowAliases = false; }; }")
   preferredVersions <- readPreferredVersions (fromMaybe (hackageRepository </> "preferred-versions") preferredVersionsFile)
-  let fixup = Map.delete "acme-everything"      -- TODO: https://github.com/NixOS/cabal2nix/issues/164
-            . Map.delete "type"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/163
-            . Map.delete "control-invariants"   -- TODO: depends on "assert"
-            . Map.delete "ConcurrentUtils"      -- TODO: depends on "assert"
-            . Map.delete "with"                 -- TODO: https://github.com/NixOS/cabal2nix/issues/164
-            . over (at "hermes") (fmap (set (contains "1.3.4.3") False))  -- TODO: https://github.com/haskell/hackage-server/issues/436
+  let fixup = Map.delete "acme-everything" -- TODO(@wolfgangwalther): remove after https://github.com/NixOS/cabal2nix/pull/667
+              . over (at "hermes") (fmap (set (contains "1.3.4.3") False))  -- TODO: https://github.com/haskell/hackage-server/issues/436
   hackage <- fixup <$> readHackage hackageRepository
   let
       hackagePackagesFile :: FilePath
