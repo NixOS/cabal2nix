@@ -1,6 +1,6 @@
 # Revision History for language-nix
 
-## 2.3.0 (unreleased)
+## 2.3.0
 
 * `Language.Nix.Identifier` now exports `nixKeywords` which lists
   keywords in Nix that are parseable as simple identifiers, but have
