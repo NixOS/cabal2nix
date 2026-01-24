@@ -78,7 +78,7 @@ hooks =
   , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
   , ("alex",  set (executableDepends . tool . contains (self "happy")) True)
   , ("alsa-core", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
-  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
+  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.libxext", bind "pkgs.libxfixes"])))
   , ("bindings-lxc", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("bustle", bustleOverrides)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
@@ -111,7 +111,7 @@ hooks =
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex >= 6.20170925 && < 6.20171214", set doCheck False)      -- some versions of git-annex require their test suite to be run inside of a git checkout
   , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
-  , ("GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.xorg.libXext", bind "pkgs.xorg.libXfixes"])))
+  , ("GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.libxext", bind "pkgs.libxfixes"])))
   , ("graphviz", set (testDepends . system . contains (pkg "graphviz")) True)
   , ("gtk3", gtk3Hook)
   , ("gtkglext", gtkglextHook)
@@ -171,7 +171,7 @@ hooks =
   , ("Win32-shortcut", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
   , ("wxc", wxcHook)
   , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
-  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.xorg.libXinerama","pkgs.xorg.libXext","pkgs.xorg.libXrender","pkgs.xorg.libXScrnSaver"])))
+  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.libxinerama","pkgs.libxext","pkgs.libxrender","pkgs.libxscrnsaver"])))
   , ("xmonad >= 0.14.2", set phaseOverrides xmonadPostInstall)
   , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (self "zip") (pkg "zip")))
   , ("zip-archive >= 0.3.1 && < 0.3.2.3", over (testDepends . tool) (Set.union (Set.fromList [pkg "zip", pkg "unzip"])))   -- https://github.com/jgm/zip-archive/issues/35
@@ -226,7 +226,7 @@ gfPhaseOverrides = unlines
   ]
 
 wxcHook :: Derivation -> Derivation
-wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "libGL", bind "pkgs.xorg.libX11"])
+wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "libGL", bind "pkgs.libx11"])
                   & libraryDepends . pkgconfig . contains (pkg "wxGTK") .~ True
                   & phaseOverrides .~ wxcPostInstall (packageVersion drv)
                   & runHaddock .~ False
@@ -332,10 +332,10 @@ gtkglextHook = over (libraryDepends . system) (Set.union (Set.fromList deps))
     deps :: [Binding]
     deps = bind <$> [ "pkgs.gtk2"
                     , "pkgs.libGLU"
-                    , "pkgs.xorg.libSM"
-                    , "pkgs.xorg.libICE"
-                    , "pkgs.xorg.libXt"
-                    , "pkgs.xorg.libXmu"
+                    , "pkgs.libsm"
+                    , "pkgs.libice"
+                    , "pkgs.libxt"
+                    , "pkgs.libxmu"
                     ]
 
 bustleOverrides :: Derivation -> Derivation
