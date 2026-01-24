@@ -168,7 +168,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     -- returns names that live in the top-level and to adapt the code in
     -- PostProcess.hs et all to that fact.
     goodScopes :: Set [Identifier]
-    goodScopes = Set.fromList (map ("pkgs":) [[], ["xlibs"], ["gnome2"], ["gnome"], ["gnome3"], ["kde4"]])
+    goodScopes = Set.fromList (map ("pkgs":) [[], ["gnome2"], ["gnome"]])
 
     resolveInNixpkgs :: Identifier -> Binding
     resolveInNixpkgs i
