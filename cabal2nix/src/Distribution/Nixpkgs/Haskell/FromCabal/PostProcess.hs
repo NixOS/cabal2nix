@@ -92,7 +92,7 @@ hooks =
   , ("dns", set testTargets ["spec"])      -- don't execute tests that try to access the network
   , ("eventstore", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64"))))
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${lib.getDev pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${lib.getLib pkgs.freenect}/lib"])))
-  , ("fltkhs", set (libraryDepends . system . contains (pkg "fltk14")) True . over (libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
+  , ("fltkhs", set (libraryDepends . system . contains (pkg "fltk_1_4")) True . over (libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("gi-cairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gdk", set runHaddock True )
