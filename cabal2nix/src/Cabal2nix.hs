@@ -43,6 +43,12 @@ import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi,
 
 {-# ANN module ("HLint: ignore Use Just" :: String) #-}
 
+data IncludeTests = IncludeTests | OmitTests
+  deriving (Eq, Show)
+
+data IncludeBenchmarks = IncludeBenchmarks | OmitBenchmarks
+  deriving (Eq, Show)
+
 data Options = Options
   { optSha256 :: Maybe String
   , optMaintainer :: [String]
@@ -68,6 +74,8 @@ data Options = Options
   , optNixpkgsIdentifier :: NixpkgsResolver
   , optUrl :: String
   , optFetchSubmodules :: FetchSubmodules
+  , optOmitTests :: IncludeTests
+  , optOmitBenchmarks :: IncludeBenchmarks
   }
 
 options :: Parser Options
@@ -126,6 +134,10 @@ options = do
     <- strArgument (metavar "URI")
   optFetchSubmodules
     <- flag FetchSubmodules DontFetchSubmodules  (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
+  optOmitTests
+    <- flag IncludeTests OmitTests (long "omit-tests" <> help "do not include test suites in the expression")
+  optOmitBenchmarks
+    <- flag IncludeBenchmarks OmitBenchmarks (long "omit-benchmarks" <> help "do not include benchmarks in the expression")
   pure Options{..}
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
@@ -231,6 +243,12 @@ processPackage Options{..} pkg = do
               & doCheck &&~ optDoCheck
               & doBenchmark ||~ optDoBenchmark
               & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
+              & testDepends %~ (\x -> case optOmitTests of
+                                      IncludeTests -> x
+                                      OmitTests -> mempty)
+              & benchmarkDepends %~ (\x -> case optOmitBenchmarks of
+                                      IncludeBenchmarks -> x
+                                      OmitBenchmarks -> mempty)
 
       shell :: Doc
       shell = vcat
