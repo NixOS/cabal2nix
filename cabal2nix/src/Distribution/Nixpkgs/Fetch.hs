@@ -65,6 +65,7 @@ data DerivationSource = DerivationSource
   , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
   , derivHash     :: String -- ^ The hash of the source.
   , derivSubmodule :: Maybe Bool -- ^ The fetchSubmodule setting (if any)
+  , derivCustomSrc :: Maybe String -- ^ Custom Nix expression to use for src attribute
   }
   deriving (Show, Generic)
 
@@ -76,24 +77,28 @@ instance FromJSON DerivationSource where
         <*> o .: "rev"
         <*> o .: "sha256"
         <*> o .: "fetchSubmodules"
+        <*> pure Nothing
   parseJSON _ = error "invalid DerivationSource"
 
 instance PP.Pretty DerivationSource where
   pPrint DerivationSource {..} =
-    let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
-    in if isHackagePackage then if derivHash /= "" then attr "sha256" $ string derivHash else mempty
-       else case derivKind of
-          Nothing ->  attr "src" $ text derivUrl
-          Just derivKind' -> vcat
-                 [ text "src" <+> equals <+> text (derivKindFunction derivKind') <+> lbrace
-                 , nest 2 $ vcat
-                   [ attr "url" $ string derivUrl
-                   , attr "sha256" $ string derivHash
-                   , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
-                   , boolattr "fetchSubmodules" (isJust derivSubmodule) (fromJust derivSubmodule)
-                   ]
-                 , rbrace PP.<> semi
-                 ]
+    case derivCustomSrc of
+      Just customExpr -> attr "src" $ text customExpr
+      Nothing ->
+        let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
+        in if isHackagePackage then if derivHash /= "" then attr "sha256" $ string derivHash else mempty
+           else case derivKind of
+              Nothing ->  attr "src" $ text derivUrl
+              Just derivKind' -> vcat
+                     [ text "src" <+> equals <+> text (derivKindFunction derivKind') <+> lbrace
+                     , nest 2 $ vcat
+                       [ attr "url" $ string derivUrl
+                       , attr "sha256" $ string derivHash
+                       , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
+                       , boolattr "fetchSubmodules" (isJust derivSubmodule) (fromJust derivSubmodule)
+                       ]
+                     , rbrace PP.<> semi
+                     ]
 
 
 urlDerivationSource :: String -> String -> DerivationSource
@@ -103,7 +108,8 @@ urlDerivationSource url hash =
     derivUrl = url,
     derivRevision = "",
     derivHash = hash,
-    derivSubmodule = Nothing
+    derivSubmodule = Nothing,
+    derivCustomSrc = Nothing
   }
 
 fromDerivationSource :: DerivationSource -> Source
@@ -177,7 +183,8 @@ fetch optSubModules f = runMaybeT . fetchers where
       derivUrl = p,
       derivRevision = "",
       derivHash = "",
-      derivSubmodule = Nothing
+      derivSubmodule = Nothing,
+      derivCustomSrc = Nothing
     }
 
 data DerivKind
@@ -265,11 +272,12 @@ fetchWith (supportsRev, kind) source = do
                                               , derivRevision = ""
                                               , derivHash = BS.unpack hash
                                               , derivSubmodule = Nothing
+                                              , derivCustomSrc = Nothing
                                               }
                             , BS.unpack l))
           _ -> case eitherDecode buf' of
                  Left err -> error ("invalid JSON: " ++ err ++ " in " ++ show buf')
-                 Right ds -> return (Just (ds { derivKind = Just kind }, BS.unpack l))
+                 Right ds -> return (Just (ds { derivKind = Just kind, derivCustomSrc = Nothing }, BS.unpack l))
 
 
 stripPrefix :: Eq a => [a] -> [a] -> [a]
