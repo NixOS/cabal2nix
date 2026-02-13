@@ -12,6 +12,7 @@ module Distribution.Nixpkgs.Fetch
   , derivKindFunction
   , FetchSubmodules(..)
   , UnpackArchive(..)
+  , fetchPackedUrl
   , fetch
   , fetchWith
   ) where
@@ -114,6 +115,9 @@ fromDerivationSource DerivationSource{..} =
     sourceHash = Certain derivHash,
     sourceCabalDir = "."
   }
+
+fetchPackedUrl :: (String -> MaybeT IO a) -> Source -> IO (Maybe (DerivationSource, a))
+fetchPackedUrl f = runMaybeT . (fetchWith (False, DerivKindUrl UnpackArchive) >=> \(derivSource, file) -> (,) derivSource <$> f file)
 
 -- | Fetch a source, trying any of the various nix-prefetch-* scripts.
 fetch :: forall a.
