@@ -68,6 +68,7 @@ data Options = Options
   , optNixpkgsIdentifier :: NixpkgsResolver
   , optUrl :: String
   , optFetchSubmodules :: FetchSubmodules
+  , optSrcArgument :: Maybe String
   }
 
 options :: Parser Options
@@ -126,6 +127,8 @@ options = do
     <- strArgument (metavar "URI")
   optFetchSubmodules
     <- flag FetchSubmodules DontFetchSubmodules  (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
+  optSrcArgument
+    <- optional (strOption $ long "src-argument" <> metavar "IDENT" <> help "argument to use for the Nix expression's `src` attribute; use this with `--extra-arguments` and an overlay to add a custom source derivation to the Haskell package set")
   pure Options{..}
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
@@ -211,6 +214,11 @@ processPackage Options{..} pkg = do
       flags :: FlagAssignment
       flags = configureCabalFlags (packageId (pkgCabal pkg)) `mappend` readFlagList optFlags
 
+      finalSource :: DerivationSource
+      finalSource = case optSrcArgument of
+        Nothing -> pkgSource pkg
+        Just customArg -> (pkgSource pkg) { derivCustomSrc = Just customArg }
+
       deriv :: Derivation
       deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
                                             optNixpkgsIdentifier
@@ -219,7 +227,7 @@ processPackage Options{..} pkg = do
                                             flags
                                             []
                                             (pkgCabal pkg)
-              & src .~ pkgSource pkg
+              & src .~ finalSource
               & subpath .~ fromMaybe "." optSubpath
               & runHaddock %~ (optHaddock &&)
               & jailbreak .~ optJailbreak
