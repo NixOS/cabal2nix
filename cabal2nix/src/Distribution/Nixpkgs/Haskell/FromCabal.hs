@@ -39,6 +39,12 @@ import Distribution.Utils.ShortText ( fromShortText )
 import Distribution.Version
 import Language.Nix
 
+#if MIN_VERSION_Cabal(3,16,0)
+import Distribution.Types.MissingDependency ( MissingDependency(MissingDependency) )
+import Distribution.Types.DependencySatisfaction ( DependencySatisfaction(..) )
+import Distribution.Types.MissingDependencyReason ( MissingDependencyReason(WrongVersion) )
+#endif
+
 type HaskellResolver = PackageVersionConstraint -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
@@ -54,8 +60,16 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     -- finalizePD incooperates the 'LibraryName' of a dependency
     -- which we always ignore, so the Cabal-compatible resolver
     -- is a simple wrapper around our 'HaskellResolver'
+#if MIN_VERSION_Cabal(3,16,0)
+    makeCabalResolver :: HaskellResolver -> Dependency -> DependencySatisfaction
+    makeCabalResolver r (Dependency n v _) =
+        if r (PackageVersionConstraint n v)
+           then Satisfied
+           else Unsatisfied (WrongVersion [])
+#else
     makeCabalResolver :: HaskellResolver -> Dependency -> Bool
     makeCabalResolver r (Dependency n v _) = r (PackageVersionConstraint n v)
+#endif
 
     -- the finalizePD API changed in Cabal 3.4.0.0, so we need to do some plumbing.
     -- See https://github.com/haskell/cabal/issues/5570
@@ -70,7 +84,14 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     -- We have to call the Cabal finalizer several times with different resolver
     -- functions, and this convenience function makes our code shorter.
     finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
-    finalize resolver = finalizePD flags requestedComponents (makeCabalResolver resolver) arch compiler (makeCabalConstraints constraints) genDesc
+    finalize resolver =
+        case finalizePD flags requestedComponents (makeCabalResolver resolver) arch compiler (makeCabalConstraints constraints) genDesc of
+#if MIN_VERSION_Cabal(3,16,0)
+            Left left -> Left (map (\(MissingDependency dependency _reason) -> dependency) left)
+#else
+            Left left -> Left left
+#endif
+            Right right -> Right right
 
     requestedComponents :: ComponentRequestedSpec
     requestedComponents = ComponentRequestedSpec
