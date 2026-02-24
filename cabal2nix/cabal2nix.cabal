@@ -52,7 +52,7 @@ library
   build-depends:      base                 > 4.11 && <5
                     -- When changing the Cabal version, ensure that it builds
                     -- with all installation methods mentioned in the README!
-                    , Cabal                >= 3.0
+                    , Cabal                >= 3.0 && < 3.18
                     , aeson                > 1
                     , ansi-terminal
                     , bytestring
