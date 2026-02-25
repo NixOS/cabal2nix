@@ -11,7 +11,6 @@ module Distribution.Hackage.DB.Parsed where
 import Distribution.Hackage.DB.Errors
 import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
-import Distribution.Hackage.DB.Utility
 
 import Codec.Archive.Tar
 import Control.Exception
@@ -25,7 +24,6 @@ import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parsec
 import Distribution.Text
-import Distribution.Types.PackageVersionConstraint
 import Distribution.Version
 import GHC.Generics ( Generic )
 
@@ -48,14 +46,9 @@ parseDB :: U.HackageDB -> HackageDB
 parseDB = Map.mapWithKey parsePackageData
 
 parsePackageData :: PackageName -> U.PackageData -> PackageData
-parsePackageData pn (U.PackageData pv vs') =
+parsePackageData pn (U.PackageData pv vs) =
   mapException (\e -> HackageDBPackageName pn (e :: SomeException)) $
-    Map.mapWithKey (parseVersionData pn) $
-      Map.filterWithKey (\v _ -> v `withinRange` vr) vs'
-  where
-    PackageVersionConstraint _ vr
-      | BSS.null pv = PackageVersionConstraint pn anyVersion
-      | otherwise = parseBS "preferred version range" pv
+    Map.mapWithKey (parseVersionData pn) vs
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
 parseVersionData pn v (U.VersionData cf m) =
