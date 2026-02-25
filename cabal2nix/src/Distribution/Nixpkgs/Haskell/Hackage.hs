@@ -1,6 +1,7 @@
 module Distribution.Nixpkgs.Haskell.Hackage
   ( HackageDB, PackageData, VersionData(..)
   , hackageTarball, readTarball, parsePackageData
+  , latestPreferredVersion
   )
   where
 
@@ -23,8 +24,17 @@ data VersionData = VersionData
   { cabalFile :: !GenericPackageDescription
   , cabalFileSha256 :: !String
   , tarballSha256 :: !(Maybe String)
+  , preferred :: !Bool
   }
   deriving (Show)
+
+-- Look up the latest preferred version. If there are no preferred versions, use the latest one.
+latestPreferredVersion :: PackageData -> Maybe VersionData
+latestPreferredVersion pd
+  | Map.null pd = Nothing -- TODO: shouldn't happen, more specific error?
+  | otherwise = Just $ snd $ Map.findMax (if Map.null ppd then pd else ppd)
+  where
+    ppd = Map.filter preferred pd
 
 readTarball :: Maybe UTCTime -> FilePath -> IO HackageDB
 readTarball ts p = do
@@ -40,6 +50,7 @@ parseVersionData pdu v vd = VersionData
                             { cabalFile = P.cabalFile vd
                             , cabalFileSha256 = printSHA256 (digest (digestByName "sha256") file)
                             , tarballSha256 = Map.lookup "sha256" (P.tarballHashes vd)
+                            , preferred = P.preferred vd
                             }
   where
     file = U.cabalFile (U.versions pdu ! v)
