@@ -18,7 +18,6 @@ import Control.Exception
 import Control.Monad.Catch
 import Data.ByteString as BSS
 import Data.ByteString.Lazy as BSL
-import Data.ByteString.UTF8 as BSS
 import Data.Map as Map
 import Data.Maybe
 import Data.Time.Clock
@@ -56,7 +55,7 @@ parsePackageData pn (U.PackageData pv vs') =
   where
     PackageVersionConstraint _ vr
       | BSS.null pv = PackageVersionConstraint pn anyVersion
-      | otherwise = parseText "preferred version range" (toString pv)
+      | otherwise = parseBS "preferred version range" pv
 
 parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
 parseVersionData pn v (U.VersionData cf m) =
