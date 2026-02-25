@@ -9,6 +9,7 @@
   # and may break when using non default GHC versions / other Nixpkgs revisions.
 , minimal ? false
 , withHls ? !minimal
+, withHoogle ? !minimal
 }:
 
 let
@@ -36,7 +37,7 @@ let
       haskellLib.disableLibraryProfiling
     ];
 
-  ghc = haskellPackages.ghcWithHoogle (hps: [
+  ghc = haskellPackages.${if withHoogle then "ghcWithHoogle" else "ghcWithPackages"} (hps: [
     hps.ansi-wl-pprint
     hps.hopenssl
     hps.hpack
