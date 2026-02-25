@@ -1,5 +1,10 @@
 # Revision History for cabal2nix
 
+## 2.21.2
+
+* Add support for Cabal `>= 3.16`, see
+  [#698](https://github.com/NixOS/cabal2nix/pull/698).
+
 ## 2.21.1
 
 * Update attribute names of X11 related libraries to prefer their top
