@@ -11,6 +11,7 @@ module Distribution.Hackage.DB.Parsed where
 import Distribution.Hackage.DB.Errors
 import qualified Distribution.Hackage.DB.MetaData as U
 import qualified Distribution.Hackage.DB.Unparsed as U
+import Distribution.Hackage.DB.Utility
 
 import Codec.Archive.Tar
 import Control.Exception
@@ -24,15 +25,20 @@ import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parsec
 import Distribution.Text
+import Distribution.Types.PackageVersionConstraint
 import Distribution.Version
 import GHC.Generics ( Generic )
 
 type HackageDB = Map PackageName PackageData
 
-type PackageData = Map Version VersionData
+data PackageData = PackageData { versions :: !(Map Version VersionData)
+                               , preferredVersions :: !VersionRange
+                               }
+  deriving (Show, Eq, Generic)
 
 data VersionData = VersionData { cabalFile :: !GenericPackageDescription
                                , tarballHashes :: !(Map String String)
+                               , preferred :: !Bool
                                }
   deriving (Show, Eq, Generic)
 
@@ -48,12 +54,16 @@ parseDB = Map.mapWithKey parsePackageData
 parsePackageData :: PackageName -> U.PackageData -> PackageData
 parsePackageData pn (U.PackageData pv vs) =
   mapException (\e -> HackageDBPackageName pn (e :: SomeException)) $
-    Map.mapWithKey (parseVersionData pn) vs
+    PackageData (Map.mapWithKey (parseVersionData pn vr) vs) vr
+  where
+    PackageVersionConstraint _ vr
+      | BSS.null pv = PackageVersionConstraint pn anyVersion
+      | otherwise = parseBS "preferred version range" pv
 
-parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
-parseVersionData pn v (U.VersionData cf m) =
+parseVersionData :: PackageName -> VersionRange -> Version -> U.VersionData -> VersionData
+parseVersionData pn vr v (U.VersionData cf m) =
    mapException (\e -> HackageDBPackageVersion v (e :: SomeException)) $
-     VersionData gpd (parseMetaData pn v m)
+     VersionData gpd (parseMetaData pn v m) (v `withinRange` vr)
   where
     gpd = fromMaybe (throw (InvalidCabalFile (show (pn,v)))) $
             parseGenericPackageDescriptionMaybe cf

@@ -61,7 +61,7 @@ library
                     , directory
                     , distribution-nixpkgs >= 1.7 && <1.8
                     , filepath
-                    , hackage-db           >= 2.0.1
+                    , hackage-db           >= 2.2.0
                     , hopenssl             >= 2
                     , hpack                >= 0.29.6
                     , language-nix

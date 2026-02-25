@@ -33,7 +33,7 @@ readTarball ts p = do
   return (mapWithKey (parsePackageData dbu) dbp)
 
 parsePackageData :: U.HackageDB -> PackageName -> P.PackageData -> PackageData
-parsePackageData dbu pn = mapWithKey (parseVersionData (dbu ! pn))
+parsePackageData dbu pn = mapWithKey (parseVersionData (dbu ! pn)) . P.versions
 
 parseVersionData :: U.PackageData -> Version -> P.VersionData -> VersionData
 parseVersionData pdu v vd = VersionData
