@@ -19,7 +19,7 @@ import Distribution.Hackage.DB.Errors
 
 import Control.Exception
 import Data.Aeson
-import Data.ByteString.Lazy.UTF8 as BS
+import Data.ByteString.Lazy (ByteString)
 import Data.Map as Map
 import GHC.Generics ( Generic )
 
