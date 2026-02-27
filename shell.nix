@@ -1,14 +1,15 @@
 { pkgs ?
     import (builtins.fetchTarball {
-      # nixos-unstable 2025-10-23
-      url = "https://github.com/nixos/nixpkgs/archive/01f116e4df6a15f4ccdffb1bcd41096869fb385c.tar.gz";
-      sha256 = "sha256-f/QCJM/YhrV/lavyCVz8iU3rlZun6d+dAiC3H+CDle4=";
+      # nixos-unstable 2026-02-24
+      url = "https://github.com/nixos/nixpkgs/archive/2fc6539b481e1d2569f25f8799236694180c0993.tar.gz";
+      sha256 = "sha256-0MAd+0mun3K/Ns8JATeHT1sX28faLII5hVLq0L3BdZU=";
     }) { }
 , ghcVersion ? pkgs.haskellPackages.ghc.version
   # Pass --arg minimal true to disable tools that are not strictly necessary
   # and may break when using non default GHC versions / other Nixpkgs revisions.
 , minimal ? false
 , withHls ? !minimal
+, withHoogle ? !minimal
 }:
 
 let
@@ -36,7 +37,7 @@ let
       haskellLib.disableLibraryProfiling
     ];
 
-  ghc = haskellPackages.ghcWithHoogle (hps: [
+  ghc = haskellPackages.${if withHoogle then "ghcWithHoogle" else "ghcWithPackages"} (hps: [
     hps.ansi-wl-pprint
     hps.hopenssl
     hps.hpack
