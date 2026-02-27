@@ -71,6 +71,7 @@ testLibrary cabalFile = do
                                   , derivRevision = ""
                                   , derivHash     = "deadbeef"
                                   , derivSubmodule = Nothing
+                                  , derivCustomSrc = Nothing
                                   }
                        & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
   goldenVsFileDiff
