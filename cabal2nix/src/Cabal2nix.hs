@@ -108,7 +108,7 @@ options = do
   optExtraArgs
     <- many (strOption $ long "extra-arguments" <> help "extra parameters required for the function body")
   optHackageDb
-    <- optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to the local hackage db in tar format")
+    <- optional (strOption $ long "hackage-db" <> metavar "PATH" <> help "path to Cabal's local hackage db in tar format. Default: ~/.cabal/packages/hackage.haskell.org/01-index.tar")
   optNixShellOutput
     <- switch (long "shell" <> help "generate output suitable for nix-shell")
   optFlags
