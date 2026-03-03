@@ -5,7 +5,7 @@
  -}
 
 module Distribution.Hackage.DB
-  ( HackageDB, PackageData, VersionData(..)
+  ( HackageDB, PackageData(..), VersionData(..)
   , readTarball, parseTarball, hackageTarball
   )
   where
