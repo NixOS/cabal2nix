@@ -57,6 +57,7 @@ nixpkgsSystemMapping =
   , ("aarch64-linux", Platform AArch64 Linux)
   , ("aarch64-netbsd", Platform AArch64 NetBSD)
   , ("aarch64-none", Platform AArch64 (OtherOS "none"))
+  , ("aarch64-uefi", Platform AArch64 (OtherOS "uefi"))
   , ("aarch64-windows", Platform AArch64 Windows)
   , ("aarch64_be-none", Platform (OtherArch "aarch64_be") (OtherOS "none"))
   , ("arm-none", Platform Arm (OtherOS "none"))
@@ -148,6 +149,7 @@ nixpkgsSystemMapping =
   , ("x86_64-openbsd", Platform X86_64 OpenBSD)
   , ("x86_64-redox", Platform X86_64 (OtherOS "redox"))
   , ("x86_64-solaris", Platform X86_64 Solaris)
+  , ("x86_64-uefi", Platform X86_64 (OtherOS "uefi"))
   , ("x86_64-windows", Platform X86_64 Windows)
   -- lib.systems.examples
   -- Currently no tuples are unique to the example list.
