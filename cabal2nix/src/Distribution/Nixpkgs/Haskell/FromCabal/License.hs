@@ -53,7 +53,8 @@ fromSPDXLicense (SPDX.License expr) =
     SPDX.ELicense simpl Nothing ->
       -- Not handled: license exceptions
       case simpl of
-        SPDX.ELicenseId lid -> Known ("lib.licensesSpdx.\"" ++ prettyShow lid ++ "\"")
+        -- FIXME(@sternenseemann): this is not exactly Known, but a best effort lookup
+        SPDX.ELicenseId lid -> Known ("lib.meta.getLicenseFromSpdxId \"" ++ prettyShow lid ++ "\"")
         _ ->
           -- Not handed: the '+' suffix and user-defined licences references.
           -- Use the SPDX expression as a free-form license string.
