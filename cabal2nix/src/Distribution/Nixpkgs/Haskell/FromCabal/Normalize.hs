@@ -1,4 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize ) where
 
@@ -19,7 +21,8 @@ normalize drv = drv
   & over metaSection normalizeMeta
   & jailbreak %~ (&& (packageName drv /= "jailbreak-cabal"))
   where
-    deps f = over f $ normalizeBuildInfo (packageName drv)
+    deps :: Lens' Derivation [(BuildInfo, Bool)] -> Derivation -> Derivation
+    deps f = over (focusBuildInfo f) $ normalizeBuildInfo (packageName drv)
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo pname bi = bi

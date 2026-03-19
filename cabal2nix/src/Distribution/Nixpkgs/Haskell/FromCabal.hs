@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TupleSections #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal
   ( HaskellResolver, NixpkgsResolver
@@ -163,8 +164,8 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.broken .~ not (null missingDeps)
                      )
   where
-    deps :: (a -> Cabal.BuildInfo) -> [a] -> Nix.BuildInfo
-    deps getBuildInfo = foldMap (convertBuildInfo . getBuildInfo)
+    deps :: (a -> Cabal.BuildInfo) -> [a] -> [(Nix.BuildInfo, Bool)]
+    deps getBuildInfo = map (convertBuildInfo . getBuildInfo)
 
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
@@ -211,9 +212,8 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                    | Just l <- library           = not (null (exposedModules l))
                    | otherwise                   = True
 
-    convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
-    convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
-    convertBuildInfo Cabal.BuildInfo {..} = mempty
+    convertBuildInfo :: Cabal.BuildInfo -> (Nix.BuildInfo, Bool)
+    convertBuildInfo Cabal.BuildInfo {..} = (, buildable) $ mempty
       & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, x `notElem` internalLibNames ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]

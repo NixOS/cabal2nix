@@ -1,4 +1,6 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
@@ -10,11 +12,15 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testFlags, testTargets, hyperlinkSource
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
+  , focusBuildInfo
   )
   where
 
 import Prelude hiding ((<>))
 
+#if !MIN_VERSION_base(4,18,0)
+import Control.Applicative (liftA2)
+#endif
 import Control.DeepSeq
 import Control.Lens
 import Data.List ( isPrefixOf )
@@ -47,10 +53,10 @@ data Derivation = MkDerivation
   , _extraFunctionArgs          :: Set Binding
   , _extraAttributes            :: Map String String
   , _setupDepends               :: BuildInfo
-  , _libraryDepends             :: BuildInfo
-  , _executableDepends          :: BuildInfo
-  , _testDepends                :: BuildInfo
-  , _benchmarkDepends           :: BuildInfo
+  , _libraryDepends             :: [(BuildInfo, Bool)]
+  , _executableDepends          :: [(BuildInfo, Bool)]
+  , _testDepends                :: [(BuildInfo, Bool)]
+  , _benchmarkDepends           :: [(BuildInfo, Bool)]
   , _configureFlags             :: Set String
   , _cabalFlags                 :: FlagAssignment
   , _runHaddock                 :: Bool
@@ -103,7 +109,14 @@ nullDerivation = MkDerivation
 
 makeLenses ''Derivation
 
-makeLensesFor (fmap (,"dependencies") ["_setupDepends", "_libraryDepends", "_executableDepends", "_testDepends", "_benchmarkDepends"]) ''Derivation
+makeLensesFor (fmap (,"nonSetupDependencies") ["_libraryDepends", "_executableDepends", "_testDepends", "_benchmarkDepends"]) ''Derivation
+
+dependencies :: Traversal' Derivation BuildInfo
+dependencies = traversal $ \focus drv ->
+  liftA2 (set setupDepends) (focus $ view setupDepends drv) ((nonSetupDependencies . traverse . _1) focus drv)
+
+focusBuildInfo :: Lens' Derivation [(BuildInfo, Bool)] -> Traversal' Derivation BuildInfo
+focusBuildInfo l = l . traverse . _1
 
 instance Package Derivation where
   packageId = view pkgid
@@ -125,10 +138,10 @@ instance Pretty Derivation where
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
       , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput _enableSeparateDataOutput
       , pPrintBuildInfo "setup" _setupDepends
-      , pPrintBuildInfo "library" _libraryDepends
-      , pPrintBuildInfo "executable" _executableDepends
-      , pPrintBuildInfo "test" _testDepends
-      , pPrintBuildInfo "benchmark" _benchmarkDepends
+      , pPrintBuildInfo' "library" _libraryDepends
+      , pPrintBuildInfo' "executable" _executableDepends
+      , pPrintBuildInfo' "test" _testDepends
+      , pPrintBuildInfo' "benchmark" _benchmarkDepends
       , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
       , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
       , boolattr "doHaddock" (not _runHaddock) _runHaddock
@@ -145,6 +158,9 @@ instance Pretty Derivation where
     , rbrace
     ]
     where
+      pPrintBuildInfo' :: String -> [(BuildInfo, Bool)] -> Doc
+      pPrintBuildInfo' name = pPrintBuildInfo name . foldMap fst . filter snd
+
       inputs :: Set String
       inputs = Set.unions [ Set.map (view (localName . ident)) _extraFunctionArgs
                           , setOf (dependencies . each . folded . localName . ident) drv
