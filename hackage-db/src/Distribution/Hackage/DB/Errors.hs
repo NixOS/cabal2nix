@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveAnyClass #-}
 
 {- |
    Maintainer:  simons@cryp.to
@@ -10,33 +10,23 @@ module Distribution.Hackage.DB.Errors where
 
 import Codec.Archive.Tar
 import Control.Exception
-import Data.Typeable ( Typeable )
 import Distribution.Package
 import Distribution.Version
 
-data HackageDBTarball a = HackageDBTarball FilePath a deriving (Show, Typeable)
-instance (Show a, Typeable a) => Exception (HackageDBTarball a)
+data HackageDBTarball a = HackageDBTarball FilePath a deriving (Show, Exception)
 
-data HackageDBPackageName a = HackageDBPackageName PackageName a deriving (Show, Typeable)
-instance (Show a, Typeable a) => Exception (HackageDBPackageName a)
+data HackageDBPackageName a = HackageDBPackageName PackageName a deriving (Show, Exception)
 
-data HackageDBPackageVersion a = HackageDBPackageVersion Version a deriving (Show, Typeable)
-instance (Show a, Typeable a) => Exception (HackageDBPackageVersion a)
+data HackageDBPackageVersion a = HackageDBPackageVersion Version a deriving (Show, Exception)
 
-newtype IncorrectTarfile = IncorrectTarfile FormatError deriving (Show, Typeable)
-instance Exception IncorrectTarfile
+newtype IncorrectTarfile = IncorrectTarfile FormatError deriving (Show, Exception)
 
-newtype UnsupportedTarEntry = UnsupportedTarEntry Entry deriving (Show, Typeable)
-instance Exception UnsupportedTarEntry
+newtype UnsupportedTarEntry = UnsupportedTarEntry Entry deriving (Show, Exception)
 
-newtype InvalidMetaFile = InvalidMetaFile String deriving (Show, Typeable)
-instance Exception InvalidMetaFile
+newtype InvalidMetaFile = InvalidMetaFile String deriving (Show, Exception)
 
-newtype InvalidCabalFile = InvalidCabalFile String deriving (Show, Typeable)
-instance Exception InvalidCabalFile
+newtype InvalidCabalFile = InvalidCabalFile String deriving (Show, Exception)
 
-data InvalidRepresentationOfType = InvalidRepresentationOfType String String deriving (Show, Typeable)
-instance Exception InvalidRepresentationOfType
+data InvalidRepresentationOfType = InvalidRepresentationOfType String String deriving (Show, Exception)
 
-data NoHackageTarballFound = NoHackageTarballFound deriving (Show, Typeable)
-instance Exception NoHackageTarballFound
+data NoHackageTarballFound = NoHackageTarballFound deriving (Show, Exception)
