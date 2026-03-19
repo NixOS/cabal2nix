@@ -124,10 +124,10 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
     & extraAttributes .~ mempty
-    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
-    & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
-    & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
-    & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
+    & libraryDepends .~ deps libBuildInfo (maybeToList library ++ subLibraries)
+    & executableDepends .~ deps buildInfo executables
+    & testDepends .~ deps testBuildInfo testSuites
+    & benchmarkDepends .~ deps benchmarkBuildInfo benchmarks
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags
@@ -163,6 +163,9 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.broken .~ not (null missingDeps)
                      )
   where
+    deps :: (a -> Cabal.BuildInfo) -> [a] -> Nix.BuildInfo
+    deps getBuildInfo = foldMap (convertBuildInfo . getBuildInfo)
+
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     nixLicense :: Nix.License

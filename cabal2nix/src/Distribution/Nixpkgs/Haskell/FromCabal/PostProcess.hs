@@ -4,7 +4,6 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess, pkg ) where
 
 import Control.Lens
-import Control.Monad.Trans.State
 import Data.List.Split
 import Data.Map ( Map )
 import qualified Data.Map as Map
@@ -58,17 +57,20 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 -- also work for Stack). Until that changes, we provide do this to work around
 -- those package's brokenness.
 fixBuildDependsForTools :: Derivation -> Derivation
-fixBuildDependsForTools = foldr (.) id
-  [ fmap snd $ runState $ do
-      needs <- use $ cloneLens c . haskell . contains p
-      cloneLens c . tool . contains p ||= needs
-  | (c :: ALens' Derivation BuildInfo) <- [ testDepends, benchmarkDepends ]
-  , p <- self <$> [ "hspec-discover"
-                  , "tasty-discover"
-                  , "hsx2hs"
-                  , "markdown-unlit"
-                  ]
-  ]
+fixBuildDependsForTools = foldr (.) id $ fmap go [ testDepends, benchmarkDepends ]
+  where
+    go c drv =
+      over (l . tool) (Set.union needed) drv
+      where
+        l :: Lens' Derivation BuildInfo
+        l = cloneLens c
+        needed = Set.intersection executables $ view (l . haskell) drv
+        executables = Set.fromList $ self <$>
+          [ "hspec-discover"
+          , "tasty-discover"
+          , "hsx2hs"
+          , "markdown-unlit"
+          ]
 
 hooks :: [(PackageVersionConstraint, Derivation -> Derivation)]
 hooks =

@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
@@ -102,7 +103,7 @@ nullDerivation = MkDerivation
 
 makeLenses ''Derivation
 
-makeLensesFor [("_setupDepends", "dependencies"), ("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies"), ("_benchmarkDepends", "dependencies")] ''Derivation
+makeLensesFor (fmap (,"dependencies") ["_setupDepends", "_libraryDepends", "_executableDepends", "_testDepends", "_benchmarkDepends"]) ''Derivation
 
 instance Package Derivation where
   packageId = view pkgid
@@ -123,11 +124,11 @@ instance Pretty Derivation where
       , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
       , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput _enableSeparateDataOutput
-      , onlyIf (_setupDepends /= mempty) $ pPrintBuildInfo "setup" _setupDepends
-      , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
-      , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
-      , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends
-      , onlyIf (_benchmarkDepends /= mempty) $ pPrintBuildInfo "benchmark" _benchmarkDepends
+      , pPrintBuildInfo "setup" _setupDepends
+      , pPrintBuildInfo "library" _libraryDepends
+      , pPrintBuildInfo "executable" _executableDepends
+      , pPrintBuildInfo "test" _testDepends
+      , pPrintBuildInfo "benchmark" _benchmarkDepends
       , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
       , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
       , boolattr "doHaddock" (not _runHaddock) _runHaddock
