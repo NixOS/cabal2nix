@@ -1,5 +1,24 @@
 # Revision History for cabal2nix
 
+## 2.21.3
+
+* Add `--src-expression` flag to `cabal2nix` which allows overriding
+  the Nix expression used for the `src` attribute of the generated
+  package expression. This can be useful when cabal2nix can't infer
+  the source expression correctly from the command line arguments,
+  the source is passed in via `--extra-arguments`, the source needs
+  to use `filterSource` etc.
+
+  See [#694](https://github.com/NixOS/cabal2nix/pull/694) and
+  [#684](https://github.com/NixOS/cabal2nix/issues/684).
+* Resolve expressions failing to evaluate if the package they're based
+  on uses an SPDX-identified license that isn't part of `lib.licenses`.
+  Note that missing licenses now generate an evaluation warning.
+  See [#707](https://github.com/NixOS/cabal2nix/issues/707) and
+  [#708](https://github.com/NixOS/cabal2nix/pull/708).
+* Update attribute name for the `odbc` library. Assumes Nixpkgs
+  with [nixpkgs#489676](https://github.com/NixOS/nixpkgs/pull/489676).
+
 ## 2.21.2
 
 * Add support for Cabal `>= 3.16`, see
