@@ -220,13 +220,17 @@ processPackage Options{..} pkg = do
         Just customExpr -> (pkgSource pkg) { derivCustomSrc = Just customExpr }
 
       deriv :: Derivation
-      deriv = withHpackOverrides $ fromGenericPackageDescription (const True)
-                                            optNixpkgsIdentifier
-                                            optSystem
-                                            (unknownCompilerInfo optCompiler NoAbiTag)
-                                            flags
-                                            []
-                                            (pkgCabal pkg)
+      deriv = withHpackOverrides $ modifiers finalized
+        where
+          finalized = fromGenericPackageDescription (const True)
+            optNixpkgsIdentifier
+            optSystem
+            (unknownCompilerInfo optCompiler NoAbiTag)
+            flags
+            []
+            (pkgCabal pkg)
+
+          modifiers d = d
               & src .~ finalSource
               & subpath .~ fromMaybe "." optSubpath
               & runHaddock %~ (optHaddock &&)
@@ -239,6 +243,7 @@ processPackage Options{..} pkg = do
               & doCheck &&~ optDoCheck
               & doBenchmark ||~ optDoBenchmark
               & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
+
 
       shell :: Doc
       shell = vcat

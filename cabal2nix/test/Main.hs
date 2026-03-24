@@ -57,23 +57,26 @@ testLibrary cabalFile = do
       goldenFile = nixFile `addExtension` "golden"
 
       cabal2nix :: GenericPackageDescription -> Derivation
-      cabal2nix gpd = fromGenericPackageDescription
-                         (const True)
-                         (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
-                         (Platform X86_64 Linux)
-                         (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
-                         (configureCabalFlags (packageId gpd))
-                         []
-                         gpd
-                       & src .~ DerivationSource
-                                  { derivKind     = Just (DerivKindUrl DontUnpackArchive )
-                                  , derivUrl      = "mirror://hackage/foo.tar.gz"
-                                  , derivRevision = ""
-                                  , derivHash     = "deadbeef"
-                                  , derivSubmodule = Nothing
-                                  , derivCustomSrc = Nothing
-                                  }
-                       & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
+      cabal2nix gpd = modifiers finalized
+        where
+          finalized = fromGenericPackageDescription
+            (const True)
+            (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
+            (Platform X86_64 Linux)
+            (unknownCompilerInfo (CompilerId GHC (mkVersion [8,2])) NoAbiTag)
+            (configureCabalFlags (packageId gpd))
+            []
+            gpd
+          modifiers d = d
+            & src .~ DerivationSource
+                      { derivKind     = Just (DerivKindUrl DontUnpackArchive )
+                      , derivUrl      = "mirror://hackage/foo.tar.gz"
+                      , derivRevision = ""
+                      , derivHash     = "deadbeef"
+                      , derivSubmodule = Nothing
+                      , derivCustomSrc = Nothing
+                      }
+            & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
   goldenVsFileDiff
     nixFile
     (\ref new -> ["diff", "-u", ref, new])

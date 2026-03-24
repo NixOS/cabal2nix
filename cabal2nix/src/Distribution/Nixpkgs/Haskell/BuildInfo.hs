@@ -43,8 +43,10 @@ instance NFData BuildInfo
 
 pPrintBuildInfo :: String -> BuildInfo -> Doc
 pPrintBuildInfo prefix bi = onlyIf (bi /= mempty) $ vcat
-  [ setattr (prefix++"HaskellDepends") empty (setOf (haskell.folded.localName.ident) bi)
-  , setattr (prefix++"SystemDepends")  empty (setOf (system.folded.localName.ident) bi)
-  , setattr (prefix++"PkgconfigDepends") empty (setOf (pkgconfig.folded.localName.ident) bi)
-  , setattr (prefix++"ToolDepends") empty (setOf (tool.folded.localName.ident) bi)
+  [ pp haskell   "HaskellDepends"
+  , pp system    "SystemDepends"
+  , pp pkgconfig "PkgconfigDepends"
+  , pp tool      "ToolDepends"
   ]
+  where
+    pp fld suffix = setattr (prefix++suffix) empty $ setOf (fld.folded.localName.ident) bi

@@ -153,17 +153,20 @@ main = do
           attr = if isInDefaultPackageSet then toNixName name else mangle pkgId
 
           drv :: Derivation
-          drv = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
-                  & src .~ urlDerivationSource ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") tarballSHA256
-                  & editedCabalFile .~ cabalSHA256
-                  -- If a list of platforms is set in the hackage2nix configuration file, prefer that.
-                  -- Otherwise a list defined by PostProcess or Nothing is used.
-                  & metaSection.platforms %~ (Map.lookup name (supportedPlatforms config) <|>)
-                  & metaSection.badPlatforms %~ (Map.lookup name (unsupportedPlatforms config) <|>)
-                  & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const (Just Set.empty))
-                  & metaSection.broken ||~ isBroken
-                  & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
-                  & metaSection.homepage .~ ""
+          drv = modifiers finalized
+            where
+              finalized = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
+              modifiers d = d
+                & src .~ urlDerivationSource ("mirror://hackage/" ++ display pkgId ++ ".tar.gz") tarballSHA256
+                & editedCabalFile .~ cabalSHA256
+                -- If a list of platforms is set in the hackage2nix configuration file, prefer that.
+                -- Otherwise a list defined by PostProcess or Nothing is used.
+                & metaSection.platforms %~ (Map.lookup name (supportedPlatforms config) <|>)
+                & metaSection.badPlatforms %~ (Map.lookup name (unsupportedPlatforms config) <|>)
+                & metaSection.hydraPlatforms %~ (if isHydraEnabled then id else const (Just Set.empty))
+                & metaSection.broken ||~ isBroken
+                & metaSection.maintainers .~ Map.findWithDefault Set.empty name globalPackageMaintainers
+                & metaSection.homepage .~ ""
 
           overrides :: Doc
           overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
