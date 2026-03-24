@@ -50,13 +50,13 @@ type HaskellResolver = PackageVersionConstraint -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
 fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
-fromGenericPackageDescription haskellResolver nixpkgsResolver arch compiler flags constraints genDesc =
+fromGenericPackageDescription haskellResolver nixpkgsResolver platform compiler flags constraints genDesc =
   fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
     where
-      (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc
+      (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver platform compiler flags constraints genDesc
 
 finalizeGenericPackageDescription :: HaskellResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> (PackageDescription, [Dependency])
-finalizeGenericPackageDescription haskellResolver arch compiler flags constraints genDesc =
+finalizeGenericPackageDescription haskellResolver platform compiler flags constraints genDesc =
   let
     -- finalizePD incooperates the 'LibraryName' of a dependency
     -- which we always ignore, so the Cabal-compatible resolver
@@ -86,7 +86,7 @@ finalizeGenericPackageDescription haskellResolver arch compiler flags constraint
     -- functions, and this convenience function makes our code shorter.
     finalize :: HaskellResolver -> Either [Dependency] (PackageDescription,FlagAssignment)
     finalize resolver =
-        case finalizePD flags requestedComponents (makeCabalResolver resolver) arch compiler (makeCabalConstraints constraints) genDesc of
+        case finalizePD flags requestedComponents (makeCabalResolver resolver) platform compiler (makeCabalConstraints constraints) genDesc of
 #if MIN_VERSION_Cabal(3,16,0)
             Left left -> Left (map (\(MissingDependency dependency _reason) -> dependency) left)
 #else
