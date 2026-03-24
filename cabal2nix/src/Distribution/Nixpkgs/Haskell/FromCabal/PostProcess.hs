@@ -14,6 +14,7 @@ import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Meta
 import Distribution.Nixpkgs.License
 import Distribution.Package
+import Distribution.PackageDescription (CondTree, ConfVar)
 import Distribution.Types.PackageVersionConstraint
 import Distribution.Text
 import Distribution.Version
@@ -59,7 +60,7 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 fixBuildDependsForTools :: Derivation -> Derivation
 fixBuildDependsForTools = foldr (.) id $ fmap go [ testDepends, benchmarkDepends ]
   where
-    go :: ALens' Derivation [(BuildInfo, Bool)] -> Derivation -> Derivation
+    go :: ALens' Derivation [CondTree ConfVar [Dependency] (BuildInfo, Bool)] -> Derivation -> Derivation
     go c drv =
       over (l . tool) (Set.union needed) drv
       where

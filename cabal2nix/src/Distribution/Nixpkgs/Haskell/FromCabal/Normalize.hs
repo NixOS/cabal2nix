@@ -10,6 +10,7 @@ import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal.Name (toNixName)
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
+import Distribution.PackageDescription (CondTree, ConfVar)
 import Language.Nix hiding ( quote )
 
 normalize :: Derivation -> Derivation
@@ -21,7 +22,7 @@ normalize drv = drv
   & over metaSection normalizeMeta
   & jailbreak %~ (&& (packageName drv /= "jailbreak-cabal"))
   where
-    deps :: Lens' Derivation [(BuildInfo, Bool)] -> Derivation -> Derivation
+    deps :: Lens' Derivation [CondTree ConfVar [Dependency] (BuildInfo, Bool)] -> Derivation -> Derivation
     deps f = over (focusBuildInfo f) $ normalizeBuildInfo (packageName drv)
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
