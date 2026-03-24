@@ -152,8 +152,8 @@ main = do
           attr :: Identifier
           attr = if isInDefaultPackageSet then toNixName name else mangle pkgId
 
-          drv :: Derivation
-          drv = modifiers finalized
+          drv :: FinalizedDerivation
+          drv = over finalized_derivation modifiers finalized
             where
               finalized = fromGenericPackageDescription haskellResolver nixpkgsResolver targetPlatform (compilerInfo config) flagAssignment [] descr
               modifiers d = d
@@ -169,7 +169,7 @@ main = do
                 & metaSection.homepage .~ ""
 
           overrides :: Doc
-          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (dependencies . each) drv `Set.union` view extraFunctionArgs drv), not (isFromHackage b) ]
+          overrides = fcat $ punctuate space [ pPrint b <> semi | b <- Set.toList (view (finalized_derivation . dependencies . each) drv `Set.union` view (finalized_derivation . extraFunctionArgs) drv), not (isFromHackage b) ]
       return $ render $ nest 2 $
         hang (pPrint attr <+> equals <+> text "callPackage") 2 (parens (pPrint drv)) <+> (braces overrides <> semi)
 

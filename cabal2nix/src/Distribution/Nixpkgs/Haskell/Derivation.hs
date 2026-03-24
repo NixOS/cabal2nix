@@ -7,7 +7,8 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
-  ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
+  ( FinalizedDerivation(..), finalized_compiler, finalized_derivation, finalized_flags, finalized_platform
+  , Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testFlags, testTargets, hyperlinkSource
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
@@ -29,12 +30,14 @@ import qualified Data.Map as Map
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Set.Lens
+import Distribution.Compiler (CompilerInfo)
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell.BuildInfo
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.PackageDescription ( FlagAssignment, unFlagName, unFlagAssignment )
+import Distribution.PackageDescription ( FlagAssignment, unFlagName, unFlagAssignment)
+import Distribution.System (Platform (..))
 import GHC.Generics ( Generic )
 import Language.Nix
 import Language.Nix.PrettyPrinting
@@ -42,6 +45,12 @@ import Language.Nix.PrettyPrinting
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
 -- 'PackageDescription' from Cabal.
+data FinalizedDerivation = FinalizedDerivation
+  { _finalized_flags :: FlagAssignment
+  , _finalized_platform :: Platform
+  , _finalized_compiler :: CompilerInfo
+  , _finalized_derivation :: Derivation
+  }
 
 data Derivation = MkDerivation
   { _pkgid                      :: PackageIdentifier
@@ -107,6 +116,8 @@ nullDerivation = MkDerivation
   , _metaSection = error "undefined Derivation.metaSection"
   }
 
+makeLenses ''FinalizedDerivation
+
 makeLenses ''Derivation
 
 makeLensesFor (fmap (,"nonSetupDependencies") ["_libraryDepends", "_executableDepends", "_testDepends", "_benchmarkDepends"]) ''Derivation
@@ -123,8 +134,8 @@ instance Package Derivation where
 
 instance NFData Derivation
 
-instance Pretty Derivation where
-  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+instance Pretty FinalizedDerivation where
+  pPrint (FinalizedDerivation _ _ _ (drv@MkDerivation {..})) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ pPrint (packageName _pkgid)

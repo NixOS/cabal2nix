@@ -56,8 +56,8 @@ testLibrary cabalFile = do
   let nixFile = cabalFile `replaceExtension` "nix"
       goldenFile = nixFile `addExtension` "golden"
 
-      cabal2nix :: GenericPackageDescription -> Derivation
-      cabal2nix gpd = modifiers finalized
+      cabal2nix :: GenericPackageDescription -> FinalizedDerivation
+      cabal2nix gpd = over finalized_derivation modifiers finalized
         where
           finalized = fromGenericPackageDescription
             (const True)

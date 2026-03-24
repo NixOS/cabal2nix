@@ -49,9 +49,9 @@ import Distribution.Types.MissingDependencyReason ( MissingDependencyReason(Wron
 type HaskellResolver = PackageVersionConstraint -> Bool
 type NixpkgsResolver = Identifier -> Maybe Binding
 
-fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> Derivation
+fromGenericPackageDescription :: HaskellResolver -> NixpkgsResolver -> Platform -> CompilerInfo -> FlagAssignment -> [Constraint] -> GenericPackageDescription -> FinalizedDerivation
 fromGenericPackageDescription haskellResolver nixpkgsResolver platform compiler flags constraints genDesc =
-  fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
+  FinalizedDerivation flags platform compiler $ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags descr
     where
       (descr, missingDeps) = finalizeGenericPackageDescription haskellResolver platform compiler flags constraints genDesc
 

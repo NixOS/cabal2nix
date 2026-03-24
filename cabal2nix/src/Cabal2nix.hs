@@ -177,7 +177,7 @@ hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
                . set (focusBuildInfo libraryDepends . tool . contains (PP.pkg "hpack")) True
 
-cabal2nix' :: Options -> IO (Either Doc Derivation)
+cabal2nix' :: Options -> IO (Either Doc FinalizedDerivation)
 cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
          Source {
@@ -190,7 +190,7 @@ cabal2nix' opts@Options{..} = do
          }
   processPackage opts pkg
 
-cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc Derivation)
+cabal2nixWithDB :: DB.HackageDB -> Options -> IO (Either Doc FinalizedDerivation)
 cabal2nixWithDB db opts@Options{..} = do
   when (isJust optHackageDb) $ colorStderrLn warningColor "WARN: HackageDB provided directly; ignoring --hackage-db"
   when (isJust optHackageSnapshot) $ colorStderrLn warningColor "WARN: HackageDB provided directly; ignoring --hackage-snapshot"
@@ -205,7 +205,7 @@ cabal2nixWithDB db opts@Options{..} = do
          }
   processPackage opts pkg
 
-processPackage :: Options -> Package -> IO (Either Doc Derivation)
+processPackage :: Options -> Package -> IO (Either Doc FinalizedDerivation)
 processPackage Options{..} pkg = do
   let
       withHpackOverrides :: Derivation -> Derivation
@@ -219,8 +219,8 @@ processPackage Options{..} pkg = do
         Nothing -> pkgSource pkg
         Just customExpr -> (pkgSource pkg) { derivCustomSrc = Just customExpr }
 
-      deriv :: Derivation
-      deriv = withHpackOverrides $ modifiers finalized
+      deriv :: FinalizedDerivation
+      deriv = over finalized_derivation (withHpackOverrides . modifiers) finalized
         where
           finalized = fromGenericPackageDescription (const True)
             optNixpkgsIdentifier
