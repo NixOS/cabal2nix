@@ -1,3 +1,4 @@
+cabal-version:      2.2
 name:               cabal2nix
 version:            2.21.3
 synopsis:           Convert Cabal files into Nix build instructions.
@@ -6,7 +7,7 @@ description:
   version by running:
   .
   > nix-env -i cabal2nix
-license:            BSD3
+license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Peter Simons <simons@cryp.to>
 -- list all contributors: git log --pretty='%an' | sort | uniq
@@ -21,7 +22,6 @@ extra-doc-files:    README.md
                     CHANGELOG.md
 extra-source-files: test/golden-test-cases/*.cabal
                     test/golden-test-cases/*.nix.golden
-cabal-version:      1.24
 
 source-repository head
   type:     git
@@ -47,6 +47,7 @@ library
                       Distribution.Nixpkgs.Haskell.OrphanInstances
                       Distribution.Nixpkgs.Haskell.PackageSourceSpec
                       Distribution.Nixpkgs.Haskell.Platform
+  autogen-modules:    Paths_cabal2nix
   other-modules:      Paths_cabal2nix
   hs-source-dirs:     src
   build-depends:      base                 > 4.11 && <5
@@ -94,6 +95,7 @@ executable cabal2nix
 
 executable hackage2nix
   main-is:            Main.hs
+  autogen-modules:    Paths_cabal2nix
   other-modules:      HackageGit
                       Paths_cabal2nix
   hs-source-dirs:     hackage2nix
@@ -134,5 +136,5 @@ test-suite regression-test
                     , tasty
                     , tasty-golden
   default-language:   Haskell2010
-  build-tools:        cabal2nix
+  build-tool-depends: cabal2nix:cabal2nix
   ghc-options:        -threaded -with-rtsopts=-K64K
