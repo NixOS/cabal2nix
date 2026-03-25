@@ -1,3 +1,4 @@
+cabal-version: 2.2
 name:          hackage-db
 version:       2.1.3
 synopsis:      Access cabal-install's Hackage database via Data.Map
@@ -5,7 +6,7 @@ description:   This library provides convenient access to the local copy of the 
                database that \"cabal update\" creates. Check out
                <https://github.com/NixOS/hackage-db/tree/master/example/> for a collection
                of simple example programs that demonstrate how to use this code.
-license:       BSD3
+license:       BSD-3-Clause
 license-file:  LICENSE
 author:        Peter Simons, Alexander Altman, Ben James, Kevin Quick
 maintainer:    sternenseemann <sternenseemann@systemli.org>
@@ -14,7 +15,6 @@ category:      Distribution
 homepage:      https://github.com/NixOS/cabal2nix/tree/master/hackage-db#readme
 bug-reports:   https://github.com/NixOS/cabal2nix/issues
 build-type:    Simple
-cabal-version: 1.18
 extra-doc-files:    README.md
                     CHANGELOG.md
 
@@ -36,7 +36,6 @@ library
                     Distribution.Hackage.DB.Path
                     Distribution.Hackage.DB.Unparsed
                     Distribution.Hackage.DB.Utility
-  other-modules:    Paths_hackage_db
   hs-source-dirs:   src
   build-depends:    base        >= 4.9 && < 5
                   , Cabal       >= 3.4
