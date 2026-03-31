@@ -91,8 +91,9 @@ fetchOrFromDB :: HpackUse
               -> IO DB.HackageDB
               -> Source
               -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
-fetchOrFromDB optHpack optSubmodules hackageDB src
+fetchOrFromDB optHpack optSubmodules hackageDBIO src
   | "cabal://" `isPrefixOf` sourceUrl src = do
+      hackageDB <- hackageDBIO
       (msrc, pkgDesc) <- fromDB hackageDB . drop (length "cabal://") $ sourceUrl src
       return (msrc, False, pkgDesc)
   | otherwise                             = do
@@ -113,11 +114,10 @@ loadHackageDB optHackageDB optHackageSnapshot = do
     Just hackageDb -> return hackageDb
   DB.readTarball optHackageSnapshot dbPath
 
-fromDB :: IO DB.HackageDB
+fromDB :: DB.HackageDB
        -> String
        -> IO (Maybe DerivationSource, Cabal.GenericPackageDescription)
-fromDB hackageDBIO pkg = do
-  hackageDB <- hackageDBIO
+fromDB hackageDB pkg = do
   vd <- case DB.lookup name hackageDB >>= lookupVersion of
     Nothing -> unknownPackageError
     Just versionData -> pure versionData
