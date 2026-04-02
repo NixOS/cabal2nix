@@ -13,5 +13,5 @@ main = do
   db <- hackageTarball >>= readTarball Nothing
   pkgs <- getArgs
   forM_ pkgs $ \pkg -> do
-    let vs = maybe [] Map.keys (Map.lookup (mkPackageName pkg) db)
+    let vs = maybe [] (Map.keys . versions) (Map.lookup (mkPackageName pkg) db)
     putStrLn $ pkg ++ ": " ++ unwords (fmap display vs)
