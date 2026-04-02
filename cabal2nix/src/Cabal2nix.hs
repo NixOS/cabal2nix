@@ -54,6 +54,8 @@ data Options = Options
   , optDoBenchmark :: Bool
   , optRevision :: Maybe String
   , optHyperlinkSource :: Bool
+  , optCabalFileSha256 :: Maybe String
+  , optCabalRevision :: Maybe Int
   , optEnableLibraryProfiling :: Bool
   , optEnableExecutableProfiling :: Bool
   , optEnableProfiling :: Maybe Bool
@@ -99,6 +101,10 @@ options = do
     <- optional (strOption $ long "revision" <> help "revision to use when fetching from VCS")
   optHyperlinkSource
     <- flag True False (long "no-hyperlink-source" <> help "don't generate pretty-printed source code for the documentation")
+  optCabalFileSha256
+    <- optional (strOption $ long "cabal-file-sha256" <> metavar "HASH" <> help "sha256 hash of the revised .cabal file (sets editedCabalFile in output)")
+  optCabalRevision
+    <- optional (option auto $ long "cabal-file-revision" <> metavar "N" <> help "revision number of the .cabal file (sets revision in output)")
   optEnableLibraryProfiling
     <- switch (long "enable-library-profiling" <> help "enable library profiling in the generated build")
   optEnableExecutableProfiling
@@ -239,6 +245,8 @@ processPackage Options{..} pkg = do
               & doCheck &&~ optDoCheck
               & doBenchmark ||~ optDoBenchmark
               & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
+              & maybe id (set editedCabalFile) optCabalFileSha256
+              & maybe id (set revision) optCabalRevision
 
       shell :: Doc
       shell = vcat
