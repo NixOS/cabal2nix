@@ -4,7 +4,6 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.PostProcess ( postProcess, pkg ) where
 
 import Control.Lens
-import Control.Monad.Trans.State
 import Data.List.Split
 import Data.Map ( Map )
 import qualified Data.Map as Map
@@ -58,27 +57,31 @@ fixGtkBuilds drv = drv & dependencies . pkgconfig %~ Set.filter (not . collidesW
 -- also work for Stack). Until that changes, we provide do this to work around
 -- those package's brokenness.
 fixBuildDependsForTools :: Derivation -> Derivation
-fixBuildDependsForTools = foldr (.) id
-  [ fmap snd $ runState $ do
-      needs <- use $ cloneLens c . haskell . contains p
-      cloneLens c . tool . contains p ||= needs
-  | (c :: ALens' Derivation BuildInfo) <- [ testDepends, benchmarkDepends ]
-  , p <- self <$> [ "hspec-discover"
-                  , "tasty-discover"
-                  , "hsx2hs"
-                  , "markdown-unlit"
-                  ]
-  ]
+fixBuildDependsForTools = foldr (.) id $ fmap go [ testDepends, benchmarkDepends ]
+  where
+    go :: ALens' Derivation [(BuildInfo, Bool)] -> Derivation -> Derivation
+    go c drv =
+      over (l . tool) (Set.union needed) drv
+      where
+        l :: Traversal' Derivation BuildInfo
+        l = focusBuildInfo (cloneLens c)
+        needed = Set.intersection executables $ view (l . haskell) drv
+        executables = Set.fromList $ self <$>
+          [ "hspec-discover"
+          , "tasty-discover"
+          , "hsx2hs"
+          , "markdown-unlit"
+          ]
 
 hooks :: [(PackageVersionConstraint, Derivation -> Derivation)]
 hooks =
-  [ ("Agda < 2.5", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
-  , ("Agda >= 2.5 && < 2.6", set (executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
-  , ("Agda >= 2.6", set (executableDepends . tool . contains (pkg "emacs")) True)
-  , ("alex < 3.1.5",  set (testDepends . tool . contains (pkg "perl")) True)
-  , ("alex",  set (executableDepends . tool . contains (self "happy")) True)
+  [ ("Agda < 2.5", set (focusBuildInfo executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agdaPostInstall)
+  , ("Agda >= 2.5 && < 2.6", set (focusBuildInfo executableDepends . tool . contains (pkg "emacs")) True . set phaseOverrides agda25PostInstall)
+  , ("Agda >= 2.6", set (focusBuildInfo executableDepends . tool . contains (pkg "emacs")) True)
+  , ("alex < 3.1.5",  set (focusBuildInfo testDepends . tool . contains (pkg "perl")) True)
+  , ("alex",  set (focusBuildInfo executableDepends . tool . contains (self "happy")) True)
   , ("alsa-core", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
-  , ("bindings-GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.libxext", bind "pkgs.libxfixes"])))
+  , ("bindings-GLFW", over (focusBuildInfo libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.libxext", bind "pkgs.libxfixes"])))
   , ("bindings-lxc", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("bustle", bustleOverrides)
   , ("Cabal", set doCheck False) -- test suite doesn't work in Nix
@@ -92,7 +95,7 @@ hooks =
   , ("dns", set testTargets ["spec"])      -- don't execute tests that try to access the network
   , ("eventstore", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64"))))
   , ("freenect < 1.2.1", over configureFlags (Set.union (Set.fromList ["--extra-include-dirs=${lib.getDev pkgs.freenect}/include/libfreenect", "--extra-lib-dirs=${lib.getLib pkgs.freenect}/lib"])))
-  , ("fltkhs", set (libraryDepends . system . contains (pkg "fltk_1_4")) True . over (libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
+  , ("fltkhs", set (focusBuildInfo libraryDepends . system . contains (pkg "fltk_1_4")) True . over (focusBuildInfo libraryDepends . pkgconfig) (Set.union (pkgs ["libGLU", "libGL"]))) -- TODO: fltk14 belongs into the *setup* dependencies.
   , ("gf", set phaseOverrides gfPhaseOverrides . set doCheck False)
   , ("gi-cairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-gdk", set runHaddock True )
@@ -107,75 +110,75 @@ hooks =
   , ("gi-pango", set runHaddock True )
   , ("gi-pangocairo", giCairoPhaseOverrides)                     -- https://github.com/haskell-gi/haskell-gi/issues/36
   , ("gi-vte", set runHaddock True )
-  , ("gio", set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
+  , ("gio", set (focusBuildInfo libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True)
   , ("git", set doCheck False)          -- https://github.com/vincenthz/hit/issues/33
   , ("git-annex >= 6.20170925 && < 6.20171214", set doCheck False)      -- some versions of git-annex require their test suite to be run inside of a git checkout
-  , ("github-backup", set (executableDepends . tool . contains (pkg "git")) True)
-  , ("GLFW", over (libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.libxext", bind "pkgs.libxfixes"])))
-  , ("graphviz", set (testDepends . system . contains (pkg "graphviz")) True)
+  , ("github-backup", set (focusBuildInfo executableDepends . tool . contains (pkg "git")) True)
+  , ("GLFW", over (focusBuildInfo libraryDepends . system) (Set.union (Set.fromList [bind "pkgs.libxext", bind "pkgs.libxfixes"])))
+  , ("graphviz", set (focusBuildInfo testDepends . system . contains (pkg "graphviz")) True)
   , ("gtk3", gtk3Hook)
   , ("gtkglext", gtkglextHook)
-  , ("hakyll", set (testDepends . tool . contains (pkg "util-linux")) True) -- test suite depends on "rev"
+  , ("hakyll", set (focusBuildInfo testDepends . tool . contains (pkg "util-linux")) True) -- test suite depends on "rev"
   , ("haskell-src-exts", set doCheck False)
   , ("hfsevents", hfseventsOverrides)
   , ("HFuse", set phaseOverrides hfusePreConfigure)
-  , ("hlibgit2 >= 0.18.0.14", set (testDepends . tool . contains (pkg "git")) True)
+  , ("hlibgit2 >= 0.18.0.14", set (focusBuildInfo testDepends . tool . contains (pkg "git")) True)
   , ("hmatrix < 0.18.1.1", set phaseOverrides "preConfigure = \"sed -i hmatrix.cabal -e '/\\\\/usr\\\\//D'\";")
   , ("holy-project", set doCheck False)         -- attempts to access the network
   , ("hoogle", set testFlags ["--no-net"])
   , ("hsignal < 0.2.7.4", set phaseOverrides "prePatch = \"rm -v Setup.lhs\";") -- https://github.com/amcphail/hsignal/issues/1
-  , ("hslua < 0.9.3", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_1")))
-  , ("hslua >= 0.9.3 && < 2.0.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
+  , ("hslua < 0.9.3", over (focusBuildInfo libraryDepends . system) (replace (pkg "lua") (pkg "lua5_1")))
+  , ("hslua >= 0.9.3 && < 2.0.0", over (focusBuildInfo libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
   , ("hspec-core >= 2.4.4", hspecCoreOverrides)
   , ("http-client", set doCheck False)          -- attempts to access the network
   , ("http-client-openssl >= 0.2.0.1", set doCheck False) -- attempts to access the network
   , ("http-client-tls >= 0.2.2", set doCheck False) -- attempts to access the network
   , ("http-conduit", set doCheck False)         -- attempts to access the network
-  , ("imagemagick", set (libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
-  , ("include-file <= 0.1.0.2", set (libraryDepends . haskell . contains (self "random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
+  , ("imagemagick", set (focusBuildInfo libraryDepends . pkgconfig . contains (pkg "imagemagick")) True) -- https://github.com/NixOS/cabal2nix/issues/136
+  , ("include-file <= 0.1.0.2", set (focusBuildInfo libraryDepends . haskell . contains (self "random")) True) -- https://github.com/Daniel-Diaz/include-file/issues/1
   , ("js-jquery", set doCheck False)            -- attempts to access the network
-  , ("libconfig", over (libraryDepends . system) (replace "config = null" (pkg "libconfig")))
+  , ("libconfig", over (focusBuildInfo libraryDepends . system) (replace "config = null" (pkg "libconfig")))
   , ("libxml", set (configureFlags . contains "--extra-include-dir=${lib.getDev libxml2}/include/libxml2") True)
-  , ("liquidhaskell", set (testDepends . system . contains (pkg "z3")) True)
-  , ("lua >= 2.0.0 && < 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
-  , ("lua >= 2.2.0", over (libraryDepends . system) (replace (pkg "lua") (pkg "lua5_4")))
-  , ("lzma-clib", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))) . set (libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
-  , ("MFlow < 4.6", set (libraryDepends . tool . contains (self "cpphs")) True)
+  , ("liquidhaskell", set (focusBuildInfo testDepends . system . contains (pkg "z3")) True)
+  , ("lua >= 2.0.0 && < 2.2.0", over (focusBuildInfo libraryDepends . system) (replace (pkg "lua") (pkg "lua5_3")))
+  , ("lua >= 2.2.0", over (focusBuildInfo libraryDepends . system) (replace (pkg "lua") (pkg "lua5_4")))
+  , ("lzma-clib", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))) . set (focusBuildInfo libraryDepends . haskell . contains (self "only-buildable-on-windows")) False)
+  , ("MFlow < 4.6", set (focusBuildInfo libraryDepends . tool . contains (self "cpphs")) True)
   , ("mwc-random", set doCheck False)
-  , ("mysql", set (libraryDepends . system . contains (pkg "libmysqlclient")) True)
+  , ("mysql", set (focusBuildInfo libraryDepends . system . contains (pkg "libmysqlclient")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
   , ("purescript", set doCheck False) -- test suite doesn't cope with Nix build env
-  , ("proto-lens-protobuf-types", set (libraryDepends . tool . contains (pkg "protobuf")) True)
-  , ("proto-lens-protoc", set (libraryDepends . tool . contains (pkg "protobuf")) True)
-  , ("qtah-cpp-qt5", set (libraryDepends . system . contains (bind "pkgs.qt5.qtbase")) True)
-  , ("qtah-qt5", set (libraryDepends . tool . contains (bind "pkgs.qt5.qtbase")) True)
-  , ("readline", over (libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
+  , ("proto-lens-protobuf-types", set (focusBuildInfo libraryDepends . tool . contains (pkg "protobuf")) True)
+  , ("proto-lens-protoc", set (focusBuildInfo libraryDepends . tool . contains (pkg "protobuf")) True)
+  , ("qtah-cpp-qt5", set (focusBuildInfo libraryDepends . system . contains (bind "pkgs.qt5.qtbase")) True)
+  , ("qtah-qt5", set (focusBuildInfo libraryDepends . tool . contains (bind "pkgs.qt5.qtbase")) True)
+  , ("readline", over (focusBuildInfo libraryDepends . system) (Set.union (pkgs ["readline", "ncurses"])))
   , ("req", set doCheck False)  -- test suite requires network access
-  , ("rest-rewrite", over (testDepends . system) (Set.union (pkgs ["graphviz", "z3"])))
-  , ("sbv > 7", set (testDepends . system . contains (pkg "z3")) True)
+  , ("rest-rewrite", over (focusBuildInfo testDepends . system) (Set.union (pkgs ["graphviz", "z3"])))
+  , ("sbv > 7", set (focusBuildInfo testDepends . system . contains (pkg "z3")) True)
   , ("sdr", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "x86_64")))) -- https://github.com/adamwalker/sdr/issues/2
   , ("shake-language-c", set doCheck False) -- https://github.com/samplecount/shake-language-c/issues/26
   , ("ssh", set doCheck False) -- test suite runs forever, probably can't deal with our lack of network access
   , ("stack", set phaseOverrides stackOverrides . set doCheck False)
   , ("stripe-http-streams", set doCheck False . set (metaSection . broken) False)
-  , ("target", set (testDepends . system . contains (pkg "z3")) True)
-  , ("terminfo", set (libraryDepends . system . contains (pkg "ncurses")) True)
+  , ("target", set (focusBuildInfo testDepends . system . contains (pkg "z3")) True)
+  , ("terminfo", set (focusBuildInfo libraryDepends . system . contains (pkg "ncurses")) True)
   , ("text", set doCheck False)         -- break infinite recursion
-  , ("tensorflow-proto", set (libraryDepends . tool . contains (pkg "protobuf")) True)
-  , ("thyme", set (libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
+  , ("tensorflow-proto", set (focusBuildInfo libraryDepends . tool . contains (pkg "protobuf")) True)
+  , ("thyme", set (focusBuildInfo libraryDepends . tool . contains (self "cpphs")) True) -- required on Darwin
   , ("twilio", set doCheck False)         -- attempts to access the network
   , ("udev", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "linux"))))
   , ("websockets", set doCheck False)   -- https://github.com/jaspervdj/websockets/issues/104
   , ("Win32", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
   , ("Win32-shortcut", set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "windows"))))
   , ("wxc", wxcHook)
-  , ("wxcore", set (libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
-  , ("X11", over (libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.libxinerama","pkgs.libxext","pkgs.libxrender","pkgs.libxscrnsaver"])))
+  , ("wxcore", set (focusBuildInfo libraryDepends . pkgconfig . contains (pkg "wxGTK")) True)
+  , ("X11", over (focusBuildInfo libraryDepends . system) (Set.union (Set.fromList $ map bind ["pkgs.libxinerama","pkgs.libxext","pkgs.libxrender","pkgs.libxscrnsaver"])))
   , ("xmonad >= 0.14.2", set phaseOverrides xmonadPostInstall)
-  , ("zip-archive < 0.3.1", over (testDepends . tool) (replace (self "zip") (pkg "zip")))
-  , ("zip-archive >= 0.3.1 && < 0.3.2.3", over (testDepends . tool) (Set.union (Set.fromList [pkg "zip", pkg "unzip"])))   -- https://github.com/jgm/zip-archive/issues/35
-  , ("zip-archive >= 0.4", set (testDepends . tool . contains (pkg "which")) True)
+  , ("zip-archive < 0.3.1", over (focusBuildInfo testDepends . tool) (replace (self "zip") (pkg "zip")))
+  , ("zip-archive >= 0.3.1 && < 0.3.2.3", over (focusBuildInfo testDepends . tool) (Set.union (Set.fromList [pkg "zip", pkg "unzip"])))   -- https://github.com/jgm/zip-archive/issues/35
+  , ("zip-archive >= 0.4", set (focusBuildInfo testDepends . tool . contains (pkg "which")) True)
   ]
 
 pkg :: Identifier -> Binding
@@ -201,8 +204,8 @@ replace :: Binding -> Binding -> Set Binding -> Set Binding
 replace old new = Set.map (\x -> if x == old then new else x)
 
 gtk3Hook :: Derivation -> Derivation    -- https://github.com/NixOS/cabal2nix/issues/145
-gtk3Hook = set (libraryDepends . pkgconfig . contains (pkg "gtk3")) True
-         . over (libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
+gtk3Hook = set (focusBuildInfo libraryDepends . pkgconfig . contains (pkg "gtk3")) True
+         . over (focusBuildInfo libraryDepends . pkgconfig) (Set.filter (\b -> view localName b /= "gtk3"))
 
 hfusePreConfigure :: String
 hfusePreConfigure = unlines
@@ -226,8 +229,8 @@ gfPhaseOverrides = unlines
   ]
 
 wxcHook :: Derivation -> Derivation
-wxcHook drv = drv & libraryDepends . system %~ Set.union (Set.fromList [pkg "libGL", bind "pkgs.libx11"])
-                  & libraryDepends . pkgconfig . contains (pkg "wxGTK") .~ True
+wxcHook drv = drv & focusBuildInfo libraryDepends . system %~ Set.union (Set.fromList [pkg "libGL", bind "pkgs.libx11"])
+                  & focusBuildInfo libraryDepends . pkgconfig . contains (pkg "wxGTK") .~ True
                   & phaseOverrides .~ wxcPostInstall (packageVersion drv)
                   & runHaddock .~ False
   where
@@ -297,11 +300,11 @@ stackOverrides = unlines
 -- Replace a binding for <package> to one to pkgs.gst_all_1.<package>
 giGstLibOverrides :: String -> Derivation -> Derivation
 giGstLibOverrides package
-  = over (libraryDepends . pkgconfig) (replace (nullBinding (ident # package)) (binding # (ident # package, path # ["pkgs","gst_all_1", ident # package])))
+  = over (focusBuildInfo libraryDepends . pkgconfig) (replace (nullBinding (ident # package)) (binding # (ident # package, path # ["pkgs","gst_all_1", ident # package])))
 
 giCairoPhaseOverrides :: Derivation -> Derivation
 giCairoPhaseOverrides = over phaseOverrides (++txt)
-                      . set (libraryDepends . pkgconfig . contains (pkg "cairo")) True
+                      . set (focusBuildInfo libraryDepends . pkgconfig . contains (pkg "cairo")) True
   where
     txt = unlines [ "preCompileBuildDriver = ''"
                   , "  PKG_CONFIG_PATH+=\":${lib.getDev cairo}/lib/pkgconfig\""
@@ -313,7 +316,7 @@ hfseventsOverrides :: Derivation -> Derivation
 hfseventsOverrides
   = set isLibrary True
   . set (metaSection . platforms) (Just $ Set.singleton (NixpkgsPlatformGroup (ident # "darwin")))
-  . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
+  . over (focusBuildInfo libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
 hspecCoreOverrides = set testFlags [ "--skip", "'Test.Hspec.Core.Runner.hspecResult runs specs in parallel'" ]
@@ -327,7 +330,7 @@ cabal2nixOverrides = set phaseOverrides $ unlines
   ]
 
 gtkglextHook :: Derivation -> Derivation
-gtkglextHook = over (libraryDepends . system) (Set.union (Set.fromList deps))
+gtkglextHook = over (focusBuildInfo libraryDepends . system) (Set.union (Set.fromList deps))
   where
     deps :: [Binding]
     deps = bind <$> [ "pkgs.gtk2"
@@ -339,8 +342,8 @@ gtkglextHook = over (libraryDepends . system) (Set.union (Set.fromList deps))
                     ]
 
 bustleOverrides :: Derivation -> Derivation
-bustleOverrides = set (libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True
-                . set (executableDepends . pkgconfig . contains "gio-unix = null") False
+bustleOverrides = set (focusBuildInfo libraryDepends . pkgconfig . contains "system-glib = pkgs.glib") True
+                . set (focusBuildInfo executableDepends . pkgconfig . contains "gio-unix = null") False
                 . set (metaSection . license) (Known "lib.licenses.lgpl21Plus")
                 . set (metaSection . hydraPlatforms) Nothing
 
