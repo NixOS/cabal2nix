@@ -10,7 +10,7 @@
 module Distribution.Nixpkgs.Haskell.Derivation
   ( FinalizedDerivation(..), finalized_compiler, finalized_derivation, finalized_flags, finalized_platform
   , Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
-  , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
+  , Component, Components, extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testFlags, testTargets, hyperlinkSource
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
@@ -56,6 +56,8 @@ data FinalizedDerivation = FinalizedDerivation
   , _finalized_derivation :: Derivation
   }
 
+type Components = [Component]
+type Component = CondTree ConfVar [Dependency] (BuildInfo, Bool)
 data Derivation = MkDerivation
   { _pkgid                      :: PackageIdentifier
   , _revision                   :: Int
@@ -66,10 +68,10 @@ data Derivation = MkDerivation
   , _extraFunctionArgs          :: Set Binding
   , _extraAttributes            :: Map String String
   , _setupDepends               :: BuildInfo
-  , _libraryDepends             :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
-  , _executableDepends          :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
-  , _testDepends                :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
-  , _benchmarkDepends           :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
+  , _libraryDepends             :: Components
+  , _executableDepends          :: Components
+  , _testDepends                :: Components
+  , _benchmarkDepends           :: Components
   , _configureFlags             :: Set String
   , _cabalFlags                 :: FlagAssignment
   , _runHaddock                 :: Bool
@@ -130,7 +132,7 @@ dependencies :: Traversal' Derivation BuildInfo
 dependencies = traversal $ \focus drv ->
   liftA2 (set setupDepends) (focus $ view setupDepends drv) ((nonSetupDependencies . traverse . traverse . _1) focus drv)
 
-focusBuildInfo :: Lens' Derivation [CondTree ConfVar [Dependency] (BuildInfo, Bool)] -> Traversal' Derivation BuildInfo
+focusBuildInfo :: Lens' Derivation Components -> Traversal' Derivation BuildInfo
 focusBuildInfo l = l . traverse . traverse . _1
 
 instance Package Derivation where
@@ -190,17 +192,17 @@ instance Pretty FinalizedDerivation where
 
       postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"
 
-      eval :: CondTree ConfVar c (BuildInfo, Bool) -> BuildInfo
+      eval :: Component -> BuildInfo
       eval = fold . evalTree
 
-      evalTree :: CondTree ConfVar c (BuildInfo, Bool) -> Maybe BuildInfo
+      evalTree :: Component -> Maybe BuildInfo
       evalTree (CondNode (bi, buildable) _ branches) = case buildable of
         False -> Nothing
         True -> do
           bs <- traverse evalBranch branches
           pure $ fold $ bi : bs
 
-      evalBranch :: CondBranch ConfVar c (BuildInfo, Bool) -> Maybe BuildInfo
+      evalBranch :: CondBranch ConfVar [Dependency] (BuildInfo, Bool) -> Maybe BuildInfo
       evalBranch (CondBranch c t mf) =
         if evalCondition c
           then evalTree t
