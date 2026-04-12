@@ -9,6 +9,7 @@ module Distribution.Nixpkgs.Haskell.FromCabal
   ) where
 
 import Control.Lens
+import Data.Bifunctor
 import Data.Maybe
 import Data.Set ( Set )
 import qualified Data.Set as Set
@@ -125,10 +126,10 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Generi
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
     & extraAttributes .~ mempty
-    & libraryDepends .~ deps libBuildInfo (maybeToList condLibrary ++ fmap snd condSubLibraries)
-    & executableDepends .~ deps buildInfo (fmap snd condExecutables)
-    & testDepends .~ deps testBuildInfo (fmap snd condTestSuites)
-    & benchmarkDepends .~ deps benchmarkBuildInfo (fmap snd condBenchmarks)
+    & libraryDepends .~ deps libBuildInfo (maybeToList (fmap (Nothing,) condLibrary) ++ fmap (first Just) condSubLibraries)
+    & executableDepends .~ deps buildInfo (fmap (first Just) condExecutables)
+    & testDepends .~ deps testBuildInfo (fmap (first Just) condTestSuites)
+    & benchmarkDepends .~ deps benchmarkBuildInfo (fmap (first Just) condBenchmarks)
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags
@@ -164,8 +165,8 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags (Generi
                      & Nix.broken .~ not (null missingDeps)
                      )
   where
-    deps :: Functor f => (a -> Cabal.BuildInfo) -> [f a] -> [f (Nix.BuildInfo, Bool)]
-    deps getBuildInfo = (fmap . fmap) (convertBuildInfo . getBuildInfo)
+    deps :: Functor f => (a -> Cabal.BuildInfo) -> [(Maybe name, f a)] -> [(Maybe name, f (Nix.BuildInfo, Bool))]
+    deps getBuildInfo = (fmap . second . fmap) (convertBuildInfo . getBuildInfo)
 
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 

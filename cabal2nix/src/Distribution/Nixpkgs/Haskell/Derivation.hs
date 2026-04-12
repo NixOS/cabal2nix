@@ -38,7 +38,7 @@ import Distribution.Nixpkgs.Haskell.BuildInfo
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.PackageDescription (CondBranch (..), CondTree (..), Condition (..), ConfVar (..), FlagAssignment, FlagName, lookupFlagAssignment, unFlagAssignment, unFlagName)
+import Distribution.PackageDescription (CondBranch (..), CondTree (..), Condition (..), ConfVar (..), FlagAssignment, FlagName, UnqualComponentName, lookupFlagAssignment, unFlagAssignment, unFlagName)
 import Distribution.System (Platform (..))
 import GHC.Generics ( Generic )
 import Language.Nix
@@ -56,7 +56,7 @@ data FinalizedDerivation = FinalizedDerivation
   , _finalized_derivation :: Derivation
   }
 
-type Components = [Component]
+type Components = [(Maybe UnqualComponentName, Component)]
 type Component = CondTree ConfVar [Dependency] (BuildInfo, Bool)
 data Derivation = MkDerivation
   { _pkgid                      :: PackageIdentifier
@@ -130,10 +130,10 @@ makeLensesFor (fmap (,"nonSetupDependencies") ["_libraryDepends", "_executableDe
 
 dependencies :: Traversal' Derivation BuildInfo
 dependencies = traversal $ \focus drv ->
-  liftA2 (set setupDepends) (focus $ view setupDepends drv) ((nonSetupDependencies . traverse . traverse . _1) focus drv)
+  liftA2 (set setupDepends) (focus $ view setupDepends drv) ((nonSetupDependencies . traverse . _2 . traverse . _1) focus drv)
 
 focusBuildInfo :: Lens' Derivation Components -> Traversal' Derivation BuildInfo
-focusBuildInfo l = l . traverse . traverse . _1
+focusBuildInfo l = l . traverse . _2 . traverse . _1
 
 instance Package Derivation where
   packageId = view pkgid
@@ -183,7 +183,7 @@ instance Pretty FinalizedDerivation where
                               Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
                           ]
 
-      (lib, exe, test, bench) = over each (foldMap eval)
+      (lib, exe, test, bench) = over each (foldMap $ eval . snd)
         (_libraryDepends, _executableDepends, _testDepends, _benchmarkDepends)
 
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]
