@@ -3,6 +3,7 @@
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize ) where
 
 import Control.Lens
+import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Data.String
 import Distribution.Nixpkgs.Haskell
@@ -17,6 +18,7 @@ normalize drv = drv
   & over executableDepends (normalizeBuildInfo (packageName drv))
   & over testDepends (normalizeBuildInfo (packageName drv))
   & over benchmarkDepends (normalizeBuildInfo (packageName drv))
+  & over subLibraryDepends (Map.map (normalizeBuildInfo (packageName drv)))
   & over metaSection normalizeMeta
   & jailbreak %~ (&& (packageName drv /= "jailbreak-cabal"))
 

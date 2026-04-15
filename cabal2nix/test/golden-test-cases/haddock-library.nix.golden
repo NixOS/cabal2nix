@@ -6,6 +6,11 @@ mkDerivation {
   version = "1.4.5";
   sha256 = "deadbeef";
   libraryHaskellDepends = [ base bytestring deepseq transformers ];
+  subLibraryDepends = {
+    "attoparsec" = {
+      HaskellDepends = [ base bytestring deepseq ];
+    };
+  };
   testHaskellDepends = [
     base base-compat bytestring deepseq hspec QuickCheck transformers
   ];

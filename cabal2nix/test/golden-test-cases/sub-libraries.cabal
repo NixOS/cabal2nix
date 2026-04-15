@@ -1,0 +1,28 @@
+cabal-version:       3.0
+name:                sub-libraries
+version:             0.1.0.0
+synopsis:            Test case for sub-library support
+license:             BSD-3-Clause
+build-type:          Simple
+
+library
+  exposed-modules:     MyLib
+  build-depends:       base >=4.14
+  default-language:    Haskell2010
+
+library public-sub
+  visibility:          public
+  exposed-modules:     PublicSub
+  build-depends:       base, deepseq
+  default-language:    Haskell2010
+
+library private-sub
+  visibility:          private
+  exposed-modules:     PrivateSub
+  build-depends:       base, containers
+  default-language:    Haskell2010
+
+executable demo
+  main-is:             Main.hs
+  build-depends:       base, sub-libraries, sub-libraries:public-sub
+  default-language:    Haskell2010
