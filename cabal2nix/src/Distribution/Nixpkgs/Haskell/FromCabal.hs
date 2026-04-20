@@ -157,7 +157,7 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.license .~ nixLicense
                      & Nix.platforms .~ Nothing
                      & Nix.badPlatforms .~ Nothing
-                     & Nix.hydraPlatforms .~ (if isFreeLicense nixLicense then Nothing else Just Set.empty)
+                     & Nix.hydraPlatforms .~ Nothing
                      & Nix.mainProgram .~ nixMainProgram
                      & Nix.maintainers .~ mempty
                      & Nix.broken .~ not (null missingDeps)
