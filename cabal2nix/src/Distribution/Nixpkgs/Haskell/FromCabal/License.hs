@@ -41,7 +41,7 @@ fromCabalLicense AllRightsReserved                         = Known "lib.licenses
 fromCabalLicense (Apache Nothing)                          = Known "lib.licenses.asl20"
 fromCabalLicense (Apache (Just (versionNumbers -> [2,0]))) = Known "lib.licenses.asl20"
 fromCabalLicense ISC                                       = Known "lib.licenses.isc"
-fromCabalLicense OtherLicense                              = Unknown Nothing
+fromCabalLicense OtherLicense                              = Known "[ ]"
 fromCabalLicense (UnknownLicense "CC0-1.0")                = Known "lib.licenses.cc0"
 fromCabalLicense (UnknownLicense "BSD3ClauseORApache20")   = Known "lib.licenses.bsd3"
 fromCabalLicense l                                         = error $ "Distribution.Nixpkgs.Haskell.FromCabal.License.fromCabalLicense: unknown license"
@@ -63,7 +63,7 @@ fromSPDXExpression (SPDX.EAnd expres1 expres2) = Known ("lib.licenses.AND [ (" +
 fromSPDXExpression (SPDX.EOr expres1 expres2) = Known ("lib.licenses.AND [ (" ++ NPP.prettyShow (fromSPDXExpression expres1) ++ ") (" ++ NPP.prettyShow (fromSPDXExpression expres2) ++ ") ]")
 
 fromSPDXLicense :: SPDX.License -> Distribution.Nixpkgs.License.License
-fromSPDXLicense SPDX.NONE = Unknown Nothing
+fromSPDXLicense SPDX.NONE = Known "[ ]"
 fromSPDXLicense (SPDX.License expr) = fromSPDXExpression expr
 
 -- "isFreeLicense" is used to determine whether we generate a "hydraPlatforms =
