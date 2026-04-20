@@ -18,16 +18,16 @@ import Distribution.Version
 -- TODO: Programmatically strip trailing zeros from license version numbers.
 
 fromCabalLicense :: Distribution.License.License -> Distribution.Nixpkgs.License.License
-fromCabalLicense (GPL Nothing)                             = Unknown (Just "GPL")
+fromCabalLicense (GPL Nothing)                             = Known "lib.licenses.free"
 fromCabalLicense (GPL (Just (versionNumbers -> [2])))      = Known "lib.licenses.gpl2Only"
 fromCabalLicense (GPL (Just (versionNumbers -> [3])))      = Known "lib.licenses.gpl3Only"
 fromCabalLicense (GPL (Just (versionNumbers -> [3,0])))    = Known "lib.licenses.gpl3Only"
-fromCabalLicense (LGPL Nothing)                            = Unknown (Just "LGPL")
+fromCabalLicense (LGPL Nothing)                            = Known "lib.licenses.free"
 fromCabalLicense (LGPL (Just (versionNumbers -> [2,1])))   = Known "lib.licenses.lgpl21Only"
 fromCabalLicense (LGPL (Just (versionNumbers -> [2])))     = Known "lib.licenses.lgpl2Only"
 fromCabalLicense (LGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.lgpl3Only"
 fromCabalLicense (LGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.lgpl3Only"
-fromCabalLicense (AGPL Nothing)                            = Unknown (Just "AGPL")
+fromCabalLicense (AGPL Nothing)                            = Known "lib.licenses.free"
 fromCabalLicense (AGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.agpl3Only"
 fromCabalLicense (AGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.agpl3Only"
 fromCabalLicense (MPL (versionNumbers ->  [2,0]))          = Known "lib.licenses.mpl20"
