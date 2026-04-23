@@ -43,7 +43,7 @@ fromCabalLicense (Apache (Just (versionNumbers -> [2,0]))) = Known "lib.licenses
 fromCabalLicense ISC                                       = Known "lib.licenses.isc"
 fromCabalLicense OtherLicense                              = Known "[ ]"
 fromCabalLicense (UnknownLicense "CC0-1.0")                = Known "lib.licenses.cc0"
-fromCabalLicense (UnknownLicense "BSD3ClauseORApache20")   = Known "lib.licenses.bsd3"
+fromCabalLicense (UnknownLicense "BSD3ClauseORApache20")   = Known "lib.licenses.OR [ lib.licenses.bsd3 lib.licenses.asl20 ]"
 fromCabalLicense l                                         = error $ "Distribution.Nixpkgs.Haskell.FromCabal.License.fromCabalLicense: unknown license"
                                                                   ++ show l ++"\nChoose one of: " ++ intercalate ", " (map display knownLicenses)
 
