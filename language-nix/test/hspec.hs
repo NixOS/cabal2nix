@@ -54,6 +54,10 @@ main = hspec $ do
       it "if string contains spaces" $ stringIdentProperty $ \s ->
         any isSpace s ==> needsQuoting s
       it "if length is zero" $ shouldSatisfy "" needsQuoting
+      -- c.f. https://github.com/NixOS/cabal2nix/issues/718
+      it "if string contains a NUL byte" $ do
+        shouldSatisfy "hello\NUL world" needsQuoting
+        shouldSatisfy "\NUL" needsQuoting
 
     describe "nix-instantiate" $ do
       nixInstantiate <- runIO $ do
