@@ -96,11 +96,18 @@ fetchOrFromDB optHpack optSubmodules hackageDB src
       (msrc, pkgDesc) <- fromDB hackageDB . drop (length "cabal://") $ sourceUrl src
       return (msrc, False, pkgDesc)
   | otherwise                             = do
-    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
+    let fetcher =
+          if checkAny isPrefixOf ["http://", "https://"] (sourceUrl src) &&
+             checkAny isSuffixOf ["tar.gz", ".tgz", ".zip"] (sourceUrl src)
+            then fetchPackedUrl
+            else fetch optSubmodules
+    r <- fetcher (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
     case r of
       Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
         return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
+  where
+    checkAny f xs s = or $ (`f` s) <$> xs
 
 loadHackageDB :: Maybe FilePath
               -- ^ The path to the Hackage database.
