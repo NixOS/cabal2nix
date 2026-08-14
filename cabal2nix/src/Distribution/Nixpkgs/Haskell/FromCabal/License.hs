@@ -9,7 +9,8 @@ module Distribution.Nixpkgs.Haskell.FromCabal.License
 import Data.List (intercalate)
 import Distribution.License ( License(..), knownLicenses )
 import Distribution.Nixpkgs.License
-import Distribution.Pretty (prettyShow)
+import Distribution.Pretty as DP
+import Language.Nix.PrettyPrinting as NPP
 import qualified Distribution.SPDX as SPDX
 import Distribution.Text (display)
 import Distribution.Version
@@ -17,16 +18,16 @@ import Distribution.Version
 -- TODO: Programmatically strip trailing zeros from license version numbers.
 
 fromCabalLicense :: Distribution.License.License -> Distribution.Nixpkgs.License.License
-fromCabalLicense (GPL Nothing)                             = Unknown (Just "GPL")
+fromCabalLicense (GPL Nothing)                             = Known "lib.licenses.free"
 fromCabalLicense (GPL (Just (versionNumbers -> [2])))      = Known "lib.licenses.gpl2Only"
 fromCabalLicense (GPL (Just (versionNumbers -> [3])))      = Known "lib.licenses.gpl3Only"
 fromCabalLicense (GPL (Just (versionNumbers -> [3,0])))    = Known "lib.licenses.gpl3Only"
-fromCabalLicense (LGPL Nothing)                            = Unknown (Just "LGPL")
+fromCabalLicense (LGPL Nothing)                            = Known "lib.licenses.free"
 fromCabalLicense (LGPL (Just (versionNumbers -> [2,1])))   = Known "lib.licenses.lgpl21Only"
 fromCabalLicense (LGPL (Just (versionNumbers -> [2])))     = Known "lib.licenses.lgpl2Only"
 fromCabalLicense (LGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.lgpl3Only"
 fromCabalLicense (LGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.lgpl3Only"
-fromCabalLicense (AGPL Nothing)                            = Unknown (Just "AGPL")
+fromCabalLicense (AGPL Nothing)                            = Known "lib.licenses.free"
 fromCabalLicense (AGPL (Just (versionNumbers -> [3])))     = Known "lib.licenses.agpl3Only"
 fromCabalLicense (AGPL (Just (versionNumbers -> [3,0])))   = Known "lib.licenses.agpl3Only"
 fromCabalLicense (MPL (versionNumbers ->  [2,0]))          = Known "lib.licenses.mpl20"
@@ -40,29 +41,30 @@ fromCabalLicense AllRightsReserved                         = Known "lib.licenses
 fromCabalLicense (Apache Nothing)                          = Known "lib.licenses.asl20"
 fromCabalLicense (Apache (Just (versionNumbers -> [2,0]))) = Known "lib.licenses.asl20"
 fromCabalLicense ISC                                       = Known "lib.licenses.isc"
-fromCabalLicense OtherLicense                              = Unknown Nothing
+fromCabalLicense OtherLicense                              = Known "[ ]"
 fromCabalLicense (UnknownLicense "CC0-1.0")                = Known "lib.licenses.cc0"
-fromCabalLicense (UnknownLicense "BSD3ClauseORApache20")   = Known "lib.licenses.bsd3"
+fromCabalLicense (UnknownLicense "BSD3ClauseORApache20")   = Known "lib.licenses.OR [ lib.licenses.bsd3 lib.licenses.asl20 ]"
 fromCabalLicense l                                         = error $ "Distribution.Nixpkgs.Haskell.FromCabal.License.fromCabalLicense: unknown license"
                                                                   ++ show l ++"\nChoose one of: " ++ intercalate ", " (map display knownLicenses)
 
+-- FIXME(@sternenseemann): this is not exactly Known, but a best effort lookup
+fromSPDXExpression :: SPDX.LicenseExpression -> Distribution.Nixpkgs.License.License
+fromSPDXExpression (SPDX.ELicense simpl Nothing) =
+  case simpl of
+    SPDX.ELicenseId lid -> Known ("lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow lid ++ "\"")
+    SPDX.ELicenseIdPlus lid -> Known ("lib.licenses.PLUS (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow lid ++ "\")")
+    SPDX.ELicenseRef lid -> Known ("lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow lid ++ "\"")
+fromSPDXExpression (SPDX.ELicense simpl (Just excep)) = 
+  case simpl of
+    SPDX.ELicenseId lid -> Known ("lib.licenses.WITH (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow lid ++ "\") (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow excep ++ "\")")
+    SPDX.ELicenseIdPlus lid -> Known ("lib.licenses.WITH (lib.licenses.PLUS (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow lid ++ "\")) (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow excep ++ "\")")
+    SPDX.ELicenseRef lid -> Known ("lib.licenses.WITH (lib.licenses.PLUS (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow lid ++ "\")) (lib.meta.getLicenseFromSpdxId \"" ++ DP.prettyShow excep ++ "\")")
+fromSPDXExpression (SPDX.EAnd expres1 expres2) = Known ("lib.licenses.AND [ (" ++ NPP.prettyShow (fromSPDXExpression expres1) ++ ") (" ++ NPP.prettyShow (fromSPDXExpression expres2) ++ ") ]")
+fromSPDXExpression (SPDX.EOr expres1 expres2) = Known ("lib.licenses.AND [ (" ++ NPP.prettyShow (fromSPDXExpression expres1) ++ ") (" ++ NPP.prettyShow (fromSPDXExpression expres2) ++ ") ]")
+
 fromSPDXLicense :: SPDX.License -> Distribution.Nixpkgs.License.License
-fromSPDXLicense SPDX.NONE = Unknown Nothing
-fromSPDXLicense (SPDX.License expr) =
-  case expr of
-    SPDX.ELicense simpl Nothing ->
-      -- Not handled: license exceptions
-      case simpl of
-        -- FIXME(@sternenseemann): this is not exactly Known, but a best effort lookup
-        SPDX.ELicenseId lid -> Known ("lib.meta.getLicenseFromSpdxId \"" ++ prettyShow lid ++ "\"")
-        _ ->
-          -- Not handed: the '+' suffix and user-defined licences references.
-          -- Use the SPDX expression as a free-form license string.
-          Unknown (Just $ prettyShow expr)
-    _ ->
-      -- Not handled: compound expressions, not expressible in Nixpkgs.
-      -- Use the SPDX expression as a free-form license string.
-      Unknown (Just $ prettyShow expr)
+fromSPDXLicense SPDX.NONE = Known "[ ]"
+fromSPDXLicense (SPDX.License expr) = fromSPDXExpression expr
 
 -- "isFreeLicense" is used to determine whether we generate a "hydraPlatforms =
 -- none" in the hackage2nix output for a package with the given license.

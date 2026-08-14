@@ -1,5 +1,10 @@
 # Revision History for cabal2nix
 
+## Upcomming
+
+* Complex licenses now make use of the compound license system added in [nixpkgs#468378](https://github.com/NixOS/nixpkgs/pull/468378).
+* Most licenses that where previously represented as strings are now show as a generic free license.
+
 ## 2.21.3
 
 * Add `--src-expression` flag to `cabal2nix` which allows overriding
