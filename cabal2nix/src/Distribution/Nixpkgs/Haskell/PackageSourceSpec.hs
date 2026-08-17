@@ -139,7 +139,7 @@ fromDB hackageDBIO pkg = do
 
   lookupVersion :: DB.Map Version DB.VersionData -> Maybe DB.VersionData
   -- No version is specified, pick latest one
-  lookupVersion m | version == nullVersion  = fmap snd (listToMaybe (DB.toDescList m))
+  lookupVersion m | version == nullVersion  = DB.latestPreferredVersion m
   lookupVersion m                           = DB.lookup version m
 
 readFileMay :: FilePath -> IO (Maybe String)

@@ -31,10 +31,14 @@ import GHC.Generics ( Generic )
 
 type HackageDB = Map PackageName PackageData
 
-type PackageData = Map Version VersionData
+data PackageData = PackageData { versions :: !(Map Version VersionData)
+                               , preferredVersions :: !VersionRange
+                               }
+  deriving (Show, Eq, Generic)
 
 data VersionData = VersionData { cabalFile :: !GenericPackageDescription
                                , tarballHashes :: !(Map String String)
+                               , preferred :: !Bool
                                }
   deriving (Show, Eq, Generic)
 
@@ -48,19 +52,18 @@ parseDB :: U.HackageDB -> HackageDB
 parseDB = Map.mapWithKey parsePackageData
 
 parsePackageData :: PackageName -> U.PackageData -> PackageData
-parsePackageData pn (U.PackageData pv vs') =
+parsePackageData pn (U.PackageData pv vs) =
   mapException (\e -> HackageDBPackageName pn (e :: SomeException)) $
-    Map.mapWithKey (parseVersionData pn) $
-      Map.filterWithKey (\v _ -> v `withinRange` vr) vs'
+    PackageData (Map.mapWithKey (parseVersionData pn vr) vs) vr
   where
     PackageVersionConstraint _ vr
       | BSS.null pv = PackageVersionConstraint pn anyVersion
       | otherwise = parseBS "preferred version range" pv
 
-parseVersionData :: PackageName -> Version -> U.VersionData -> VersionData
-parseVersionData pn v (U.VersionData cf m) =
+parseVersionData :: PackageName -> VersionRange -> Version -> U.VersionData -> VersionData
+parseVersionData pn vr v (U.VersionData cf m) =
    mapException (\e -> HackageDBPackageVersion v (e :: SomeException)) $
-     VersionData gpd (parseMetaData pn v m)
+     VersionData gpd (parseMetaData pn v m) (v `withinRange` vr)
   where
     gpd = fromMaybe (throw (InvalidCabalFile (show (pn,v)))) $
             parseGenericPackageDescriptionMaybe cf

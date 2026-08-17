@@ -1,5 +1,22 @@
 # Revision history for hackage-db
 
+## 2.2.0 (unreleased)
+
+* `Distribution.Hackage.DB.Parsed.parsePackageData` no longer filters out
+  package versions that are not preferred. This means that the list of
+  available versions will no longer differ between the `Parsed` and
+  `Unparsed` modules. This is a **breaking change**.
+  To restore the old behavior, use the `preferred` field of `VersionData`
+  to filter the `versions` map (see below).
+* `Distribution.Hackage.DB.Parsed.PackageData` has been changed from a type
+  alias to a sum type. Its previous content is the new `versions` field.
+  This is an **API breaking change**.
+* `Distribution.Hackage.DB.Parsed.VersionData` gains a new field, `preferred`
+  which describes whether the package version in question matches the
+  `preferred-versions` range given also exposed via the `preferredVersions`
+  field of `Distribution.Hackage.DB.Parsed.PackageData`.
+  This is an **API breaking change**.
+
 ## 2.1.3
 
 * `hackageTarball` / `cabalStateDir` now support overriding the cabal directory
