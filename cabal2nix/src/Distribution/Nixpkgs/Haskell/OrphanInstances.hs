@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 
 module Distribution.Nixpkgs.Haskell.OrphanInstances ( ) where
 
@@ -20,7 +21,9 @@ import Distribution.Version
 import Language.Nix.PrettyPrinting as Nix
 
 instance NFData CompilerInfo
+#if !MIN_VERSION_Cabal(3,18,0)
 instance NFData AbiTag
+#endif
 
 instance IsString Version where
   fromString = text2isString "Version"
