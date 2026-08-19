@@ -1,40 +1,60 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
 module Distribution.Nixpkgs.Haskell.Derivation
-  ( Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
+  ( FinalizedDerivation(..), finalized_compiler, finalized_derivation, finalized_flags, finalized_platform
+  , Derivation, nullDerivation, pkgid, revision, src, subpath, isLibrary, isExecutable
   , extraFunctionArgs, libraryDepends, executableDepends, testDepends, configureFlags
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testFlags, testTargets, hyperlinkSource
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
+  , focusBuildInfo
   )
   where
 
 import Prelude hiding ((<>))
 
+#if !MIN_VERSION_base(4,18,0)
+import Control.Applicative (liftA2)
+#endif
 import Control.DeepSeq
 import Control.Lens
+import Data.Foldable
 import Data.List ( isPrefixOf )
 import Data.Map ( Map )
 import qualified Data.Map as Map
 import Data.Set ( Set )
 import qualified Data.Set as Set
 import Data.Set.Lens
+import Distribution.Compiler (CompilerInfo)
 import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell.BuildInfo
 import Distribution.Nixpkgs.Haskell.OrphanInstances ( )
 import Distribution.Nixpkgs.Meta
 import Distribution.Package
-import Distribution.PackageDescription ( FlagAssignment, unFlagName, unFlagAssignment )
+import Distribution.PackageDescription (CondBranch (..), CondTree (..), Condition (..), ConfVar (..), FlagAssignment, FlagName, lookupFlagAssignment, unFlagAssignment, unFlagName)
+import Distribution.System (Platform (..))
 import GHC.Generics ( Generic )
 import Language.Nix
 import Language.Nix.PrettyPrinting
+import Data.Maybe (fromMaybe)
+import Distribution.PackageDescription.Configuration (simplifyWithSysParams)
 
 -- | A represtation of Nix expressions for building Haskell packages.
 -- The data type correspond closely to the definition of
 -- 'PackageDescription' from Cabal.
+data FinalizedDerivation = FinalizedDerivation
+  { _finalized_flags :: FlagAssignment
+  , _finalized_platform :: Platform
+  , _finalized_compiler :: CompilerInfo
+  , _finalized_derivation :: Derivation
+  }
 
 data Derivation = MkDerivation
   { _pkgid                      :: PackageIdentifier
@@ -46,10 +66,10 @@ data Derivation = MkDerivation
   , _extraFunctionArgs          :: Set Binding
   , _extraAttributes            :: Map String String
   , _setupDepends               :: BuildInfo
-  , _libraryDepends             :: BuildInfo
-  , _executableDepends          :: BuildInfo
-  , _testDepends                :: BuildInfo
-  , _benchmarkDepends           :: BuildInfo
+  , _libraryDepends             :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
+  , _executableDepends          :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
+  , _testDepends                :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
+  , _benchmarkDepends           :: [CondTree ConfVar [Dependency] (BuildInfo, Bool)]
   , _configureFlags             :: Set String
   , _cabalFlags                 :: FlagAssignment
   , _runHaddock                 :: Bool
@@ -100,17 +120,26 @@ nullDerivation = MkDerivation
   , _metaSection = error "undefined Derivation.metaSection"
   }
 
+makeLenses ''FinalizedDerivation
+
 makeLenses ''Derivation
 
-makeLensesFor [("_setupDepends", "dependencies"), ("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies"), ("_benchmarkDepends", "dependencies")] ''Derivation
+makeLensesFor (fmap (,"nonSetupDependencies") ["_libraryDepends", "_executableDepends", "_testDepends", "_benchmarkDepends"]) ''Derivation
+
+dependencies :: Traversal' Derivation BuildInfo
+dependencies = traversal $ \focus drv ->
+  liftA2 (set setupDepends) (focus $ view setupDepends drv) ((nonSetupDependencies . traverse . traverse . _1) focus drv)
+
+focusBuildInfo :: Lens' Derivation [CondTree ConfVar [Dependency] (BuildInfo, Bool)] -> Traversal' Derivation BuildInfo
+focusBuildInfo l = l . traverse . traverse . _1
 
 instance Package Derivation where
   packageId = view pkgid
 
 instance NFData Derivation
 
-instance Pretty Derivation where
-  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+instance Pretty FinalizedDerivation where
+  pPrint (FinalizedDerivation flags (Platform arch os) compiler  (MkDerivation {..})) = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ pPrint (packageName _pkgid)
@@ -123,11 +152,11 @@ instance Pretty Derivation where
       , boolattr "isLibrary" (not _isLibrary || _isExecutable) _isLibrary
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
       , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput _enableSeparateDataOutput
-      , onlyIf (_setupDepends /= mempty) $ pPrintBuildInfo "setup" _setupDepends
-      , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
-      , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
-      , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends
-      , onlyIf (_benchmarkDepends /= mempty) $ pPrintBuildInfo "benchmark" _benchmarkDepends
+      , pPrintBuildInfo "setup" _setupDepends
+      , pPrintBuildInfo "library" lib
+      , pPrintBuildInfo "executable" exe
+      , pPrintBuildInfo "test" test
+      , pPrintBuildInfo "benchmark" bench
       , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
       , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
       , boolattr "doHaddock" (not _runHaddock) _runHaddock
@@ -146,14 +175,44 @@ instance Pretty Derivation where
     where
       inputs :: Set String
       inputs = Set.unions [ Set.map (view (localName . ident)) _extraFunctionArgs
-                          , setOf (dependencies . each . folded . localName . ident) drv
+                          , setOf (each . folded . localName . ident) $ fold [_setupDepends, lib, exe, test, bench]
                           , case derivKind _src of
                               Nothing -> mempty
                               Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
                           ]
+
+      (lib, exe, test, bench) = over each (foldMap eval)
+        (_libraryDepends, _executableDepends, _testDepends, _benchmarkDepends)
 
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
 
       postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"
+
+      eval :: CondTree ConfVar c (BuildInfo, Bool) -> BuildInfo
+      eval = fold . evalTree
+
+      evalTree :: CondTree ConfVar c (BuildInfo, Bool) -> Maybe BuildInfo
+      evalTree (CondNode (bi, buildable) _ branches) = case buildable of
+        False -> Nothing
+        True -> do
+          bs <- traverse evalBranch branches
+          pure $ fold $ bi : bs
+
+      evalBranch :: CondBranch ConfVar c (BuildInfo, Bool) -> Maybe BuildInfo
+      evalBranch (CondBranch c t mf) =
+        if evalCondition c
+          then evalTree t
+          else maybe (Just mempty) evalTree mf
+
+      evalCondition :: Condition ConfVar -> Bool
+      evalCondition = go . fst . simplifyWithSysParams os arch compiler
+        where
+          go :: Condition FlagName -> Bool
+          go = \case
+            Lit b -> b
+            CNot c -> not $ go c
+            COr  a b -> go a || go b
+            CAnd a b -> go a && go b
+            Var fn -> fromMaybe False $ lookupFlagAssignment fn flags
