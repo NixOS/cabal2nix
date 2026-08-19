@@ -175,7 +175,7 @@ main = bracket (return ()) (\() -> hFlush stdout >> hFlush stderr) $ \() ->
 
 hpackOverrides :: Derivation -> Derivation
 hpackOverrides = over phaseOverrides (++ "prePatch = \"hpack\";")
-               . set (libraryDepends . tool . contains (PP.pkg "hpack")) True
+               . set (focusBuildInfo libraryDepends . tool . contains (PP.pkg "hpack")) True
 
 cabal2nix' :: Options -> IO (Either Doc Derivation)
 cabal2nix' opts@Options{..} = do
