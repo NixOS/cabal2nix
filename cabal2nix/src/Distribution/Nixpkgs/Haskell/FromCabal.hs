@@ -9,8 +9,10 @@ module Distribution.Nixpkgs.Haskell.FromCabal
 
 import Control.Lens
 import Data.Maybe
+import qualified Data.Map as Map
 import Data.Set ( Set )
 import qualified Data.Set as Set
+import qualified Distribution.Compat.NonEmptySet as NES
 import Distribution.Compiler
 import Distribution.Nixpkgs.Haskell
 import qualified Distribution.Nixpkgs.Haskell as Nix
@@ -29,6 +31,7 @@ import Distribution.System
 import Distribution.Types.PackageVersionConstraint
 import Distribution.Text ( display )
 import Distribution.Types.ComponentRequestedSpec as Cabal
+import Distribution.Types.LibraryVisibility
 #if !MIN_VERSION_Cabal(3,8,1)
 import Distribution.Types.ExeDependency as Cabal
 import Distribution.Types.LegacyExeDependency as Cabal
@@ -124,10 +127,22 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
     & extraAttributes .~ mempty
-    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
+    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library)
+    & subLibraryDepends .~ Map.fromList
+        [ (unUnqualComponentName n, convertBuildInfo (libBuildInfo l))
+        | l <- subLibraries
+        , LSubLibName n <- [libName l]
+        ]
     & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
     & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
     & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
+    & subLibraryDependencies .~ collectSubLibDeps
+        (  concatMap (targetBuildDepends . libBuildInfo) (maybeToList library)
+        ++ concatMap (targetBuildDepends . libBuildInfo) subLibraries
+        ++ concatMap (targetBuildDepends . buildInfo) executables
+        ++ concatMap (targetBuildDepends . testBuildInfo) testSuites
+        ++ concatMap (targetBuildDepends . benchmarkBuildInfo) benchmarks
+        )
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags
@@ -201,12 +216,30 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                                   | otherwise = resolveInNixpkgs i
 
     internalLibNames :: [PackageName]
-    internalLibNames = [ unqualComponentNameToPackageName n | LSubLibName n <- libName <$> subLibraries ]
+    internalLibNames = [ unqualComponentNameToPackageName n
+                       | l <- subLibraries
+                       , LSubLibName n <- [libName l]
+                       , libVisibility l /= LibraryVisibilityPublic
+                       ]
 
     doHaddockPhase :: Bool
     doHaddockPhase | not (null internalLibNames) = False
                    | Just l <- library           = not (null (exposedModules l))
                    | otherwise                   = True
+
+    -- | Collect sub-library qualifiers from dependencies on external packages.
+    -- For each external dependency that specifies sub-library names (not just
+    -- LMainLibName), record which sub-libraries are being depended upon.
+    collectSubLibDeps :: [Dependency] -> Map.Map String [String]
+    collectSubLibDeps deps = Map.fromListWith (\a b -> Set.toAscList (Set.fromList (a ++ b)))
+      [ (unPackageName x, subLibNames)
+      | Dependency x _ libs <- deps
+      , x `notElem` internalLibNames
+      , x /= pkgName package  -- exclude self-referential sub-library deps
+      , let subLibNames = [ unUnqualComponentName n | LSubLibName n <- NES.toList libs ]
+      , not (null subLibNames)
+      ]
+    pkgName (PackageIdentifier n _) = n
 
     convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
     convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty

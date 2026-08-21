@@ -9,6 +9,7 @@ module Distribution.Nixpkgs.Haskell.Derivation
   , cabalFlags, runHaddock, jailbreak, doCheck, doBenchmark, testFlags, testTargets, hyperlinkSource
   , enableLibraryProfiling, enableExecutableProfiling, phaseOverrides, editedCabalFile, metaSection
   , dependencies, setupDepends, benchmarkDepends, enableSeparateDataOutput, extraAttributes
+  , subLibraryDepends, subLibraryDependencies
   )
   where
 
@@ -50,6 +51,8 @@ data Derivation = MkDerivation
   , _executableDepends          :: BuildInfo
   , _testDepends                :: BuildInfo
   , _benchmarkDepends           :: BuildInfo
+  , _subLibraryDepends          :: Map String BuildInfo
+  , _subLibraryDependencies     :: Map String [String]
   , _configureFlags             :: Set String
   , _cabalFlags                 :: FlagAssignment
   , _runHaddock                 :: Bool
@@ -83,6 +86,8 @@ nullDerivation = MkDerivation
   , _executableDepends = error "undefined Derivation.executableDepends"
   , _testDepends = error "undefined Derivation.testDepends"
   , _benchmarkDepends = error "undefined Derivation.benchmarkDepends"
+  , _subLibraryDepends = mempty
+  , _subLibraryDependencies = mempty
   , _configureFlags = error "undefined Derivation.configureFlags"
   , _cabalFlags = error "undefined Derivation.cabalFlags"
   , _runHaddock = error "undefined Derivation.runHaddock"
@@ -102,7 +107,18 @@ nullDerivation = MkDerivation
 
 makeLenses ''Derivation
 
-makeLensesFor [("_setupDepends", "dependencies"), ("_libraryDepends", "dependencies"), ("_executableDepends", "dependencies"), ("_testDepends", "dependencies"), ("_benchmarkDepends", "dependencies")] ''Derivation
+-- | Traversal over all 'BuildInfo' values in a 'Derivation', including
+-- the setup, library, executable, test, benchmark, and sub-library depends.
+dependencies :: Traversal' Derivation BuildInfo
+dependencies f drv =
+  (\s l e t b sl -> drv { _setupDepends = s, _libraryDepends = l, _executableDepends = e
+                        , _testDepends = t, _benchmarkDepends = b, _subLibraryDepends = sl })
+    <$> f (_setupDepends drv)
+    <*> f (_libraryDepends drv)
+    <*> f (_executableDepends drv)
+    <*> f (_testDepends drv)
+    <*> f (_benchmarkDepends drv)
+    <*> traverse f (_subLibraryDepends drv)
 
 instance Package Derivation where
   packageId = view pkgid
@@ -110,7 +126,7 @@ instance Package Derivation where
 instance NFData Derivation
 
 instance Pretty Derivation where
-  pPrint drv@MkDerivation {..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
+  pPrint drv@MkDerivation {_subLibraryDepends = subLibDeps, _subLibraryDependencies = subLibConsumerDeps, ..} = funargs (map text ("mkDerivation" : toAscList inputs)) $$ vcat
     [ text "mkDerivation" <+> lbrace
     , nest 2 $ vcat
       [ attr "pname"   $ doubleQuotes $ pPrint (packageName _pkgid)
@@ -124,10 +140,12 @@ instance Pretty Derivation where
       , boolattr "isExecutable" (not _isLibrary || _isExecutable) _isExecutable
       , boolattr "enableSeparateDataOutput" _enableSeparateDataOutput _enableSeparateDataOutput
       , onlyIf (_setupDepends /= mempty) $ pPrintBuildInfo "setup" _setupDepends
-      , onlyIf (_libraryDepends /= mempty) $ pPrintBuildInfo "library" _libraryDepends
+      , onlyIf (mergedLibraryDepends /= mempty) $ pPrintBuildInfo "library" mergedLibraryDepends
+      , onlyIf (not (Map.null subLibDeps)) $ pPrintSubLibraryDepends subLibDeps
       , onlyIf (_executableDepends /= mempty) $ pPrintBuildInfo "executable" _executableDepends
       , onlyIf (_testDepends /= mempty) $ pPrintBuildInfo "test" _testDepends
       , onlyIf (_benchmarkDepends /= mempty) $ pPrintBuildInfo "benchmark" _benchmarkDepends
+      , onlyIf (not (Map.null subLibConsumerDeps)) $ pPrintSubLibraryDependencies subLibConsumerDeps
       , boolattr "enableLibraryProfiling" _enableLibraryProfiling _enableLibraryProfiling
       , boolattr "enableExecutableProfiling" _enableExecutableProfiling _enableExecutableProfiling
       , boolattr "doHaddock" (not _runHaddock) _runHaddock
@@ -152,8 +170,39 @@ instance Pretty Derivation where
                               Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
                           ]
 
+      -- For backwards compatibility, libraryHaskellDepends is emitted as the
+      -- union of the main library deps and all sub-library deps. New consumers
+      -- should prefer the separate subLibraryDepends attrset.
+      mergedLibraryDepends = _libraryDepends `mappend` foldMap id (Map.elems subLibDeps)
+
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]
                       ++ map text (toAscList _configureFlags)
       isHackagePackage = "mirror://hackage/" `isPrefixOf` derivUrl _src
 
       postUnpack = string $ "sourceRoot+=/" ++ _subpath ++ "; echo source root reset to $sourceRoot"
+
+pPrintSubLibraryDepends :: Map String BuildInfo -> Doc
+pPrintSubLibraryDepends libs = vcat
+  [ text "subLibraryDepends" <+> equals <+> lbrace
+  , nest 2 $ vcat entries
+  , rbrace <> semi
+  ]
+  where
+    entries = [ vcat [ text (show name) <+> equals <+> lbrace
+                     , nest 2 $ pPrintBuildInfo "" bi
+                     , rbrace <> semi
+                     ]
+              | (name, bi) <- Map.toAscList libs
+              , bi /= mempty
+              ]
+
+pPrintSubLibraryDependencies :: Map String [String] -> Doc
+pPrintSubLibraryDependencies deps = vcat
+  [ text "subLibraryDependencies" <+> equals <+> lbrace
+  , nest 2 $ vcat entries
+  , rbrace <> semi
+  ]
+  where
+    entries = [ listattrDoc (show pkgName) empty (map (doubleQuotes . text) subLibs)
+              | (pkgName, subLibs) <- Map.toAscList deps
+              ]

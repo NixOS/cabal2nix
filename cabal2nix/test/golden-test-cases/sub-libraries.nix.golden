@@ -1,0 +1,22 @@
+{ mkDerivation, base, containers, deepseq, lib }:
+mkDerivation {
+  pname = "sub-libraries";
+  version = "0.1.0.0";
+  sha256 = "deadbeef";
+  isLibrary = true;
+  isExecutable = true;
+  libraryHaskellDepends = [ base containers deepseq ];
+  subLibraryDepends = {
+    "private-sub" = {
+      HaskellDepends = [ base containers ];
+    };
+    "public-sub" = {
+      HaskellDepends = [ base deepseq ];
+    };
+  };
+  executableHaskellDepends = [ base ];
+  doHaddock = false;
+  description = "Test case for sub-library support";
+  license = lib.meta.getLicenseFromSpdxId "BSD-3-Clause";
+  mainProgram = "demo";
+}
