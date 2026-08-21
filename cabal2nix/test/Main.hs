@@ -80,11 +80,18 @@ testLibrary cabalFile = do
     goldenFile
     nixFile
 #if MIN_VERSION_Cabal(3,14,0)
-    (readGenericPackageDescription silent Nothing (makeSymbolicPath cabalFile)
+    (readGenericPackageDescription silentCompat Nothing (makeSymbolicPath cabalFile)
 #else
-    (readGenericPackageDescription silent cabalFile
+    (readGenericPackageDescription silentCompat cabalFile
 #endif
      >>= writeFileLn nixFile . prettyShow . cabal2nix)
+
+silentCompat :: Verbosity
+#if MIN_VERSION_Cabal(3,18,0)
+silentCompat = mkVerbosity defaultVerbosityHandles silent
+#else
+silentCompat = silent
+#endif
 
 -- | TODO:
 --

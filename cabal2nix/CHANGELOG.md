@@ -1,5 +1,10 @@
 # Revision History for cabal2nix
 
+## TBD
+
+* Support building against Cabal `>= 3.18`, see
+  [#721](https://github.com/NixOS/cabal2nix/pull/721).
+
 ## 2.21.3
 
 * Add `--src-expression` flag to `cabal2nix` which allows overriding

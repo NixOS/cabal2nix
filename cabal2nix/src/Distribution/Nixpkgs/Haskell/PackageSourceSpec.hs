@@ -1,4 +1,5 @@
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE CPP #-}
 module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ( HpackUse(..), Package(..), getPackage, getPackage', loadHackageDB, sourceFromHackage
   ) where
@@ -307,10 +308,15 @@ runParseGenericPackageDescription
   -> BS.ByteString
   -> Either String Cabal.GenericPackageDescription
 runParseGenericPackageDescription fpath
-  = first (unlines . map (showPError fpath) . toList . snd)
+  = first (unlines . map showPErrorCompat . toList . snd)
   . snd . runParseResult
   . parseGenericPackageDescription
-
+  where
+#if MIN_VERSION_Cabal(3,18,0)
+    showPErrorCompat = showPErrorWithSource
+#else
+    showPErrorCompat = showPError fpath
+#endif
 setCabalFileHash :: String -> GenericPackageDescription -> GenericPackageDescription
 setCabalFileHash sha256 gpd = gpd { packageDescription = (packageDescription gpd) {
                                       customFieldsPD = ("X-Cabal-File-Hash", sha256) : customFieldsPD (packageDescription gpd)
