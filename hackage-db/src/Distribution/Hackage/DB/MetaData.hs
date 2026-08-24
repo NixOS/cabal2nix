@@ -35,7 +35,7 @@ parseMetaData :: ByteString -> MetaData
 parseMetaData = either (throw . InvalidMetaFile) id . eitherDecode
 
 data MetaData = MetaData { signed :: SignedMetaData
-                         , signatures :: [String]
+                         , signatures :: [Signature]
                          }
   deriving (Show, Generic)
 
@@ -56,3 +56,10 @@ data TargetData = TargetData { length :: Int
   deriving (Show, Generic)
 
 instance FromJSON TargetData
+
+data Signature = Signature { keyid :: String
+                           , method :: String
+                           , sig :: String }
+  deriving (Show, Generic)
+
+instance FromJSON Signature
