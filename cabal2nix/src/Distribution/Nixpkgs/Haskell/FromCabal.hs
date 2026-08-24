@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TupleSections #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal
   ( HaskellResolver, NixpkgsResolver
@@ -124,10 +125,10 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
     & isExecutable .~ not (null executables)
     & extraFunctionArgs .~ mempty
     & extraAttributes .~ mempty
-    & libraryDepends .~ foldMap (convertBuildInfo . libBuildInfo) (maybeToList library ++ subLibraries)
-    & executableDepends .~ mconcat (map (convertBuildInfo . buildInfo) executables)
-    & testDepends .~ mconcat (map (convertBuildInfo . testBuildInfo) testSuites)
-    & benchmarkDepends .~ mconcat (map (convertBuildInfo . benchmarkBuildInfo) benchmarks)
+    & libraryDepends .~ deps libBuildInfo (maybeToList library ++ subLibraries)
+    & executableDepends .~ deps buildInfo executables
+    & testDepends .~ deps testBuildInfo testSuites
+    & benchmarkDepends .~ deps benchmarkBuildInfo benchmarks
     & Nix.setupDepends .~ maybe mempty convertSetupBuildInfo setupBuildInfo
     & configureFlags .~ mempty
     & cabalFlags .~ flags
@@ -163,6 +164,9 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                      & Nix.broken .~ not (null missingDeps)
                      )
   where
+    deps :: (a -> Cabal.BuildInfo) -> [a] -> [(Nix.BuildInfo, Bool)]
+    deps getBuildInfo = map (convertBuildInfo . getBuildInfo)
+
     xrev = maybe 0 read (lookup "x-revision" customFieldsPD)
 
     nixLicense :: Nix.License
@@ -208,9 +212,8 @@ fromPackageDescription haskellResolver nixpkgsResolver missingDeps flags Package
                    | Just l <- library           = not (null (exposedModules l))
                    | otherwise                   = True
 
-    convertBuildInfo :: Cabal.BuildInfo -> Nix.BuildInfo
-    convertBuildInfo Cabal.BuildInfo {..} | not buildable = mempty
-    convertBuildInfo Cabal.BuildInfo {..} = mempty
+    convertBuildInfo :: Cabal.BuildInfo -> (Nix.BuildInfo, Bool)
+    convertBuildInfo Cabal.BuildInfo {..} = (, buildable) $ mempty
       & haskell .~ Set.fromList [ resolveInHackage (toNixName x) | (Dependency x _ _) <- targetBuildDepends, x `notElem` internalLibNames ]
       & system .~ Set.fromList [ resolveInNixpkgs y | x <- extraLibs, y <- libNixName x ]
       & pkgconfig .~ Set.fromList [ resolveInNixpkgs y | PkgconfigDependency x _ <- pkgconfigDepends, y <- libNixName (unPkgconfigName x) ]
