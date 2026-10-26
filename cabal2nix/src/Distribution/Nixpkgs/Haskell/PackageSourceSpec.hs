@@ -5,6 +5,7 @@ module Distribution.Nixpkgs.Haskell.PackageSourceSpec
   ) where
 
 import qualified Control.Exception as Exception
+import Control.Lens ( _1, _Left, (.~) )
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
@@ -33,7 +34,7 @@ import qualified Hpack.Render as Hpack
 import OpenSSL.Digest ( digest, digestByName )
 import System.Directory ( doesDirectoryExist, doesFileExist, createDirectoryIfMissing, getHomeDirectory, getDirectoryContents )
 import System.Exit ( exitFailure )
-import System.FilePath ( (</>), (<.>) )
+import System.FilePath ( takeFileName, (</>), (<.>) )
 import System.IO
 import Text.PrettyPrint.HughesPJClass hiding ( first )
 
@@ -100,8 +101,9 @@ fetchOrFromDB optHpack optSubmodules hackageDB src
     r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (foldl' (</>) dir (sourceCabalDir src))) src
     case r of
       Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
-      Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
-        return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
+      Just (derivSource, (externalSource, ranHpack, (pkgFile, pkgDesc))) -> do
+        let derivSource' = derivSource <$ guard externalSource
+        return (fmap (derivKindLens . _Left . _1 .~ pkgFile) derivSource', ranHpack, pkgDesc)
 
 loadHackageDB :: Maybe FilePath
               -- ^ The path to the Hackage database.
@@ -212,7 +214,7 @@ showPackageIdentifier pkgDesc = name ++ "-" ++ prettyShow version where
   version = Cabal.packageVersion pkgId
 
 cabalFromPath :: HpackUse -- ^ the way hpack should be used
-              -> FilePath -> MaybeT IO (Bool, Bool, Cabal.GenericPackageDescription)
+              -> FilePath -> MaybeT IO (Bool, Bool, (FilePath, Cabal.GenericPackageDescription))
 cabalFromPath optHpack path = do
   d <- liftIO $ doesDirectoryExist path
   if d
@@ -222,7 +224,7 @@ cabalFromPath optHpack path = do
   else (,,) d False <$> cabalFromFile False path
 
 cabalFromDirectory :: HpackUse -- ^ the way hpack should be used
-                   -> FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+                   -> FilePath -> MaybeT IO (Bool, (FilePath, Cabal.GenericPackageDescription))
 cabalFromDirectory ForceHpack dir = hpackDirectory dir
 cabalFromDirectory NoHpack dir = onlyCabalFromDirectory dir "*** No .cabal file was found. Exiting."
 cabalFromDirectory PackageYamlHpack dir = do
@@ -233,7 +235,7 @@ cabalFromDirectory PackageYamlHpack dir = do
       hpackDirectory dir
     else onlyCabalFromDirectory dir "*** Found neither a .cabal file nor package.yaml. Exiting."
 
-onlyCabalFromDirectory :: FilePath -> String -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+onlyCabalFromDirectory :: FilePath -> String -> MaybeT IO (Bool, (FilePath, Cabal.GenericPackageDescription))
 onlyCabalFromDirectory dir errMsg = do
   cabals <- liftIO $ findCabalFiles dir
   case cabals of
@@ -265,7 +267,7 @@ handleIO = Exception.handle
 encodeUtf8 :: String -> BS.ByteString
 encodeUtf8 = T.encodeUtf8 . T.pack
 
-hpackDirectory :: FilePath -> MaybeT IO (Bool, Cabal.GenericPackageDescription)
+hpackDirectory :: FilePath -> MaybeT IO (Bool, (FilePath, Cabal.GenericPackageDescription))
 hpackDirectory dir = do
   mPackage <- liftIO $ Hpack.readPackageConfig Hpack.defaultDecodeOptions {
       Hpack.decodeOptionsProgramName = Hpack.ProgramName "cabal2nix"
@@ -286,9 +288,9 @@ hpackDirectory dir = do
           colorStderrLn errorColor "*** cannot parse hpack output:"
           colorStderrLn errorColor msg
           fail "*** Exiting."
-        Right pkg -> MaybeT $ return $ Just $ (,) True $ setCabalFileHash hash pkg
+        Right pkg -> MaybeT $ return $ Just (True, (Hpack.packageConfig, setCabalFileHash hash pkg))
 
-cabalFromFile :: Bool -> FilePath -> MaybeT IO Cabal.GenericPackageDescription
+cabalFromFile :: Bool -> FilePath -> MaybeT IO (FilePath, Cabal.GenericPackageDescription)
 cabalFromFile failHard file =
   -- hGetContents throws an error if it's used on files which contain sequences
   -- that do not represent valid characters. To catch that exception, we need to
@@ -302,7 +304,7 @@ cabalFromFile failHard file =
           colorStderrLn errorColor msg
           fail "*** Exiting."
       Left _ -> return Nothing
-      Right pkg -> return $ Just $ setCabalFileHash hash pkg
+      Right pkg -> return $ Just (takeFileName file, setCabalFileHash hash pkg)
 
 runParseGenericPackageDescription
   :: FilePath

@@ -22,6 +22,7 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.FromCabal.SourceFiles
 import Distribution.Nixpkgs.Haskell.Platform
 import qualified Distribution.Nixpkgs.Haskell.FromCabal.PostProcess as PP (pkg)
 import qualified Distribution.Nixpkgs.Haskell.Hackage as DB
@@ -70,6 +71,7 @@ data Options = Options
   , optUrl :: String
   , optFetchSubmodules :: FetchSubmodules
   , optSrcExpression :: Maybe String
+  , optFileset :: Bool
   }
 
 options :: Parser Options
@@ -130,6 +132,8 @@ options = do
     <- flag FetchSubmodules DontFetchSubmodules  (long "dont-fetch-submodules" <> help "do not fetch git submodules from git sources")
   optSrcExpression
     <- optional (strOption $ long "src-expression" <> metavar "EXPR" <> help "custom Nix expression to use for src attribute")
+  optFileset
+    <- flag True False (long "no-fileset" <> help "don't generate a lib.fileset expression for src attribute")
   pure Options{..}
 
 -- | A parser for the date. Hackage updates happen maybe once or twice a month.
@@ -243,6 +247,9 @@ processPackage Options{..} pkg = do
               & doBenchmark ||~ optDoBenchmark
               & extraFunctionArgs %~ Set.union (Set.fromList ("inherit lib":map (fromString . ("inherit " ++)) optExtraArgs))
 
+  deriv' <- (if optFileset then insertFilesetItems (derivUrl $ pkgSource pkg) (pkgCabal pkg) else pure) deriv
+
+  let
       shell :: Doc
       shell = vcat
               [ text "{ nixpkgs ? import <nixpkgs> {}, compiler ? \"default\", doBenchmark ? false, inNixShell ? false }:"
@@ -251,7 +258,7 @@ processPackage Options{..} pkg = do
               , text ""
               , text "  inherit (nixpkgs) pkgs;"
               , text ""
-              , hcat [ text "  f = ", pPrint deriv, semi ]
+              , hcat [ text "  f = ", pPrint deriv', semi ]
               , text ""
               , text "  haskellPackages = if compiler == \"default\""
               , text "                       then pkgs.haskellPackages"
@@ -265,7 +272,7 @@ processPackage Options{..} pkg = do
               , text ""
               , text "  if inNixShell then drv.env else drv"
               ]
-  pure $ if optNixShellOutput then Left shell else Right deriv
+  pure $ if optNixShellOutput then Left shell else Right deriv'
 
 cabal2nix :: [String] -> IO ()
 cabal2nix = parseArgs >=> cabal2nix' >=> putStrLn . either render prettyShow
