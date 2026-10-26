@@ -148,8 +148,8 @@ instance Pretty Derivation where
       inputs = Set.unions [ Set.map (view (localName . ident)) _extraFunctionArgs
                           , setOf (dependencies . each . folded . localName . ident) drv
                           , case derivKind _src of
-                              Nothing -> mempty
-                              Just derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
+                              Left _ -> mempty
+                              Right derivKind' -> Set.fromList [derivKindFunction derivKind' | not isHackagePackage]
                           ]
 
       renderedFlags = [ text "-f" <> (if enable then empty else char '-') <> text (unFlagName f) | (f, enable) <- unFlagAssignment _cabalFlags ]

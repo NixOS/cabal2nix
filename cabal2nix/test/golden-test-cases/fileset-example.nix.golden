@@ -1,0 +1,39 @@
+{ mkDerivation, lib }:
+mkDerivation {
+  pname = "fileset-example";
+  version = "0.0.0.0";
+  src = lib.fileset.toSource {
+    root = test/golden-test-cases/fileset-example;
+    fileset = lib.fileset.unions [
+      test/golden-test-cases/fileset-example/Setup.hs
+      test/golden-test-cases/fileset-example/SetupHooks.lhs
+      test/golden-test-cases/fileset-example/fileset-example.cabal
+      test/golden-test-cases/fileset-example/x/alfa
+      test/golden-test-cases/fileset-example/x/bravo
+      test/golden-test-cases/fileset-example/x/charlie
+      test/golden-test-cases/fileset-example/x/delta
+      (lib.fileset.fileFilter (file: file.name == "index.txt" || file.hasExt "md") test/golden-test-cases/fileset-example/x/echo/doc)
+      (lib.fileset.fileFilter (file: file.hasExt "js") test/golden-test-cases/fileset-example/x/echo/script)
+      test/golden-test-cases/fileset-example/x/foxtrot
+      test/golden-test-cases/fileset-example/x/golf
+      test/golden-test-cases/fileset-example/x/hotel.c
+      test/golden-test-cases/fileset-example/x/india.cxx
+      test/golden-test-cases/fileset-example/x/juliett.cmm
+      test/golden-test-cases/fileset-example/x/kilo.asm
+      test/golden-test-cases/fileset-example/x/lima.js
+      test/golden-test-cases/fileset-example/x/mike.h
+      test/golden-test-cases/fileset-example/x/november
+      test/golden-test-cases/fileset-example/x/oscar
+      test/golden-test-cases/fileset-example/x/papa
+      test/golden-test-cases/fileset-example/x/quebec
+      test/golden-test-cases/fileset-example/x/romeo
+      test/golden-test-cases/fileset-example/x/sierra
+      test/golden-test-cases/fileset-example/x/tango
+    ];
+  };
+  isLibrary = true;
+  isExecutable = true;
+  enableSeparateDataOutput = true;
+  doHaddock = false;
+  license = "unknown";
+}
