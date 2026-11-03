@@ -10,7 +10,6 @@ import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 
 import Control.Lens
-import Control.Monad
 import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.Package
@@ -45,7 +44,7 @@ main = do
   cabal2nix <- findExecutable "cabal2nix" >>= \case
     Nothing -> fail "cannot find 'cabal2nix' in $PATH"
     Just exe -> pure exe
-  testCases <- listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases"
+  testCases <- findByExtension [ ".cabal" ] "test/golden-test-cases"
   defaultMain $ testGroup "regression-tests"
     [ testGroup "cabal2nix library" (map testLibrary testCases)
     , testGroup "cabal2nix executable" (map (testExecutable cabal2nix) testCases)
@@ -124,22 +123,6 @@ testExecutable exe cabalFile = do
 -------------------------------------------------------------------------------
 -- * Helper functions
 -------------------------------------------------------------------------------
-
--- | Find all *files* in the given directory that end with the given suffix.
--- This function does not recurse, nor does it include the special entries
--- @'.'@ or @'..'@ in the result.
---
--- "Test.Tasty.Golden" offers 'findByExtension', which does something similar
--- (and arguably more general) as those two functions, but unfortunately that
--- function recurses through the directory hierarchy and in the process needs
--- plenty of stack space. There might be a space leak in that code, I am not
--- sure. Anyhow, since our test suite is supposed to run with 1K stack space,
--- we prefer our own simpler code.
-
-listDirectoryFilesBySuffix :: String -> FilePath -> IO [FilePath]
-listDirectoryFilesBySuffix suff dirPath = do
-  entries <- listDirectory dirPath
-  filterM doesFileExist [ dirPath </> e | e <- entries, takeExtension e == suff ]
 
 -- | A variant of 'writeFile' that appends a newline to the end of the buffer
 -- before writing.
