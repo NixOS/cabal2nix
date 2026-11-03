@@ -225,7 +225,7 @@ derivKindFunction = \case
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: (Bool, DerivKind) -> Source -> MaybeT IO (DerivationSource, FilePath)
 fetchWith (supportsRev, kind) source = do
-  unless ((sourceRevision source /= "") || isUnknown (sourceHash source) || not supportsRev) $
+  when (sourceRevision source == "" && not (isUnknown (sourceHash source)) && supportsRev) $
     colorStderrLn warningColor "** need a revision for VCS when the hash is given. skipping." >> mzero
 
   let (script, extraArgs) = case kind of
