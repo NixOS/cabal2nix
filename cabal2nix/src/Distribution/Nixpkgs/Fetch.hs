@@ -36,8 +36,8 @@ import System.Process
 -- | A source is a location from which we can fetch, such as a HTTP URL, a GIT URL, ....
 data Source = Source
   { sourceUrl       :: String       -- ^ URL to fetch from.
-  , sourceRevision  :: String       -- ^ Revision to use. For protocols where this doesn't make sense (such as HTTP), this
-                                    --   should be the empty string.
+  , sourceRevision  :: Maybe String -- ^ Revision to use. For protocols where this doesn't make sense (such as HTTP), this
+                                    --   should be 'Nothing'.
   , sourceHash      :: Hash         -- ^ The expected hash of the source, if available.
   , sourceCabalDir  :: String       -- ^ Directory where Cabal file is found.
   } deriving (Show, Eq, Ord, Generic)
@@ -57,13 +57,14 @@ hashToList :: Hash -> [String]
 hashToList (Certain s) = [s]
 hashToList _           = []
 
--- | A source for a derivation. It always needs a hash and also has a protocol attached to it (url, git, svn, ...).
+-- | A source for a derivation that can be rendered as a Nixpkgs compatible Nix expression
+--   (i.e. a call to a fetcher from Nixpkgs).
 -- A @DerivationSource@ also always has it's revision fully resolved (not relative revisions like @master@, @HEAD@, etc).
 data DerivationSource = DerivationSource
   { derivKind     :: Maybe DerivKind -- ^ The kind of the source. If Nothing, it is a local derivation.
-  , derivUrl      :: String -- ^ URL to fetch from.
-  , derivRevision :: String -- ^ Revision to use. Leave empty if the fetcher doesn't support revisions.
-  , derivHash     :: String -- ^ The hash of the source.
+  , derivUrl      :: String -- ^ URL to fetch from
+  , derivRevision :: Maybe String -- ^ Revision to use. Should be 'Nothing' if the fetcher doesn't support revisions.
+  , derivHash     :: Maybe String -- ^ The hash of the source (if any)
   , derivSubmodule :: Maybe Bool -- ^ The fetchSubmodule setting (if any)
   , derivCustomSrc :: Maybe String -- ^ Custom Nix expression to use for src attribute
   }
@@ -86,15 +87,15 @@ instance PP.Pretty DerivationSource where
       Just customExpr -> attr "src" $ text customExpr
       Nothing ->
         let isHackagePackage = "mirror://hackage/" `L.isPrefixOf` derivUrl
-        in if isHackagePackage then if derivHash /= "" then attr "sha256" $ string derivHash else mempty
+        in if isHackagePackage then maybe mempty (attr "sha256" . string) derivHash
            else case derivKind of
               Nothing ->  attr "src" $ text derivUrl
               Just derivKind' -> vcat
                      [ text "src" <+> equals <+> text (derivKindFunction derivKind') <+> lbrace
                      , nest 2 $ vcat
                        [ attr "url" $ string derivUrl
-                       , attr "sha256" $ string derivHash
-                       , if derivRevision /= "" then attr "rev" (string derivRevision) else PP.empty
+                       , maybe mempty (attr "sha256" . string) derivHash
+                       , maybe mempty (attr "rev" . string) derivRevision
                        , boolattr "fetchSubmodules" (isJust derivSubmodule) (fromJust derivSubmodule)
                        ]
                      , rbrace PP.<> semi
@@ -106,8 +107,8 @@ urlDerivationSource url hash =
   DerivationSource {
     derivKind = Just (DerivKindUrl DontUnpackArchive),
     derivUrl = url,
-    derivRevision = "",
-    derivHash = hash,
+    derivRevision = Nothing,
+    derivHash = Just hash,
     derivSubmodule = Nothing,
     derivCustomSrc = Nothing
   }
@@ -117,7 +118,10 @@ fromDerivationSource DerivationSource{..} =
   Source {
     sourceUrl = derivUrl,
     sourceRevision = derivRevision,
-    sourceHash = Certain derivHash,
+    sourceHash =
+      case derivHash of
+        Just hash -> Certain hash
+        Nothing -> UnknownHash,
     sourceCabalDir = "."
   }
 
@@ -168,7 +172,7 @@ fetch optSubModules f = runMaybeT . fetchers where
           (DerivKindUrl UnpackArchive)
           (Source {
             sourceUrl = "file://" ++ absolutePath,
-            sourceRevision = "",
+            sourceRevision = Nothing,
             sourceHash = UnknownHash,
             sourceCabalDir = "."
           })
@@ -181,8 +185,8 @@ fetch optSubModules f = runMaybeT . fetchers where
     DerivationSource {
       derivKind = Nothing,
       derivUrl = p,
-      derivRevision = "",
-      derivHash = "",
+      derivRevision = Nothing,
+      derivHash = Nothing,
       derivSubmodule = Nothing,
       derivCustomSrc = Nothing
     }
@@ -231,9 +235,6 @@ supportsRev DerivKindBzr     = True
 -- | Like 'fetch', but allows to specify which script to use.
 fetchWith :: DerivKind -> Source -> MaybeT IO (DerivationSource, FilePath)
 fetchWith kind source = do
-  when (sourceRevision source == "" && not (isUnknown (sourceHash source)) && supportsRev kind) $
-    colorStderrLn warningColor "** need a revision for VCS when the hash is given. skipping." >> mzero
-
   let (script, extraArgs) = case kind of
         DerivKindUrl UnpackArchive ->  ("nix-prefetch-url", ["--unpack"])
         DerivKindUrl DontUnpackArchive ->  ("nix-prefetch-url", [])
@@ -243,10 +244,22 @@ fetchWith kind source = do
         DerivKindSvn -> ("nix-prefetch-svn", [])
         DerivKindBzr -> ("nix-prefetch-bzr", [])
 
+  (revArgs :: [String]) <- case (supportsRev kind, sourceRevision source) of
+    (False, Just _) -> do
+      colorStderrLn warningColor "** fetcher doesn't support revisions, ignoring"
+      return []
+    (True, Just rev) -> return [rev]
+    (True, Nothing)
+      | not (isUnknown (sourceHash source)) -> do
+          colorStderrLn warningColor "** need a revision for VCS when the hash is given. skipping."
+          mzero
+      | otherwise -> return []
+    (False, Nothing) -> return []
+
   let args :: [String] =
             extraArgs
-         ++ sourceUrl source
-         : [ sourceRevision source | supportsRev kind ]
+         ++ [ sourceUrl source ]
+         ++ revArgs
          ++ hashToList (sourceHash source)
 
   colorStderrLn commandColor $ "$ " ++ unwords (script:args)
@@ -275,8 +288,8 @@ fetchWith kind source = do
           [] -> return Nothing
           [hash] -> return (Just (DerivationSource { derivKind = Just kind
                                               , derivUrl = sourceUrl source
-                                              , derivRevision = ""
-                                              , derivHash = BS.unpack hash
+                                              , derivRevision = Nothing
+                                              , derivHash = Just $ BS.unpack hash
                                               , derivSubmodule = Nothing
                                               , derivCustomSrc = Nothing
                                               }

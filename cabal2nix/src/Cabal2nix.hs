@@ -182,7 +182,7 @@ cabal2nix' opts@Options{..} = do
   pkg <- getPackage optHpack optFetchSubmodules optHackageDb optHackageSnapshot $
          Source {
            sourceUrl = optUrl,
-           sourceRevision = fromMaybe "" optRevision,
+           sourceRevision = optRevision,
            sourceHash = case optSha256 of
              Nothing -> UnknownHash
              Just hash -> Guess hash,
@@ -197,7 +197,7 @@ cabal2nixWithDB db opts@Options{..} = do
   pkg <- getPackage' optHpack optFetchSubmodules (return db) $
          Source {
            sourceUrl = optUrl,
-           sourceRevision = fromMaybe "" optRevision,
+           sourceRevision = optRevision,
            sourceHash = case optSha256 of
              Nothing -> UnknownHash
              Just hash -> Guess hash,

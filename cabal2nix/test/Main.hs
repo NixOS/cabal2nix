@@ -68,8 +68,8 @@ testLibrary cabalFile = do
                        & src .~ DerivationSource
                                   { derivKind     = Just (DerivKindUrl DontUnpackArchive )
                                   , derivUrl      = "mirror://hackage/foo.tar.gz"
-                                  , derivRevision = ""
-                                  , derivHash     = "deadbeef"
+                                  , derivRevision = Nothing
+                                  , derivHash     = Just "deadbeef"
                                   , derivSubmodule = Nothing
                                   , derivCustomSrc = Nothing
                                   }

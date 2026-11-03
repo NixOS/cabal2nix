@@ -4,6 +4,10 @@
 
 * Support building against Cabal `>= 3.18`, see
   [#721](https://github.com/NixOS/cabal2nix/pull/721).
+* `Distribution.Nixpkgs.Fetch`: Use `Maybe` in `DerivationSource`
+  and `Source` instead of giving the empty string special meaning,
+  see [#724](https://github.com/NixOS/cabal2nix/pull/724).
+  **API breaking change**.
 
 ## 2.21.3
 
