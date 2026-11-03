@@ -136,12 +136,12 @@ fetch :: forall a.
 fetch optSubModules f = runMaybeT . fetchers where
   fetchers :: Source -> MaybeT IO (DerivationSource, a)
   fetchers source = msum . (fetchLocal source :) $ map (\fetcher -> fetchWith fetcher source >>= process)
-    [ (False, DerivKindUrl DontUnpackArchive)
-    , (False, DerivKindUrl UnpackArchive)
-    , (True, DerivKindGit optSubModules)
-    , (True, DerivKindHg)
-    , (True, DerivKindSvn)
-    , (True, DerivKindBzr)
+    [ DerivKindUrl DontUnpackArchive
+    , DerivKindUrl UnpackArchive
+    , DerivKindGit optSubModules
+    , DerivKindHg
+    , DerivKindSvn
+    , DerivKindBzr
     ]
 
   -- | Remove '/' from the end of the path. Nix doesn't accept paths that
@@ -165,7 +165,7 @@ fetch optSubModules f = runMaybeT . fetchers where
     unpacked <-
       snd <$>
         fetchWith
-          (False, DerivKindUrl UnpackArchive)
+          (DerivKindUrl UnpackArchive)
           (Source {
             sourceUrl = "file://" ++ absolutePath,
             sourceRevision = "",
@@ -221,11 +221,17 @@ derivKindFunction = \case
   DerivKindSvn -> "fetchsvn"
   DerivKindBzr -> "fetchbzr"
 
+supportsRev :: DerivKind -> Bool
+supportsRev (DerivKindUrl _) = False
+supportsRev (DerivKindGit _) = True
+supportsRev DerivKindHg      = True
+supportsRev DerivKindSvn     = True
+supportsRev DerivKindBzr     = True
 
 -- | Like 'fetch', but allows to specify which script to use.
-fetchWith :: (Bool, DerivKind) -> Source -> MaybeT IO (DerivationSource, FilePath)
-fetchWith (supportsRev, kind) source = do
-  when (sourceRevision source == "" && not (isUnknown (sourceHash source)) && supportsRev) $
+fetchWith :: DerivKind -> Source -> MaybeT IO (DerivationSource, FilePath)
+fetchWith kind source = do
+  when (sourceRevision source == "" && not (isUnknown (sourceHash source)) && supportsRev kind) $
     colorStderrLn warningColor "** need a revision for VCS when the hash is given. skipping." >> mzero
 
   let (script, extraArgs) = case kind of
@@ -240,7 +246,7 @@ fetchWith (supportsRev, kind) source = do
   let args :: [String] =
             extraArgs
          ++ sourceUrl source
-         : [ sourceRevision source | supportsRev ]
+         : [ sourceRevision source | supportsRev kind ]
          ++ hashToList (sourceHash source)
 
   colorStderrLn commandColor $ "$ " ++ unwords (script:args)
