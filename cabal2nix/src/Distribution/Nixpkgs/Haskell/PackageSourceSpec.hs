@@ -97,7 +97,7 @@ fetchOrFromDB optHpack optSubmodules hackageDB src
       (msrc, pkgDesc) <- fromDB hackageDB . drop (length "cabal://") $ sourceUrl src
       return (msrc, False, pkgDesc)
   | otherwise                             = do
-    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
+    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (foldl' (</>) dir (sourceCabalDir src))) src
     case r of
       Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
@@ -157,7 +157,7 @@ hashCachePath pid = do
   createDirectoryIfMissing True cacheDir
   return $ cacheDir </> pid <.> "sha256"
 
-sourceFromHackage :: Hash -> String -> FilePath -> IO DerivationSource
+sourceFromHackage :: Hash -> String -> Maybe FilePath -> IO DerivationSource
 sourceFromHackage optHash pkgId cabalDir = do
   cacheFile <- hashCachePath pkgId
   cachedHash <-

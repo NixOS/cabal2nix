@@ -39,7 +39,8 @@ data Source = Source
   , sourceRevision  :: Maybe String -- ^ Revision to use. For protocols where this doesn't make sense (such as HTTP), this
                                     --   should be 'Nothing'.
   , sourceHash      :: Hash         -- ^ The expected hash of the source, if available.
-  , sourceCabalDir  :: String       -- ^ Directory where Cabal file is found.
+  , sourceCabalDir  :: Maybe String -- ^ Directory (within the source) where Cabal file is found.
+                                    --   'Nothing' implies topmost directory of the source.
   } deriving (Show, Eq, Ord, Generic)
 
 instance NFData Source
@@ -122,7 +123,7 @@ fromDerivationSource DerivationSource{..} =
       case derivHash of
         Just hash -> Certain hash
         Nothing -> UnknownHash,
-    sourceCabalDir = "."
+    sourceCabalDir = Nothing
   }
 
 -- | Fetch a source, trying any of the various nix-prefetch-* scripts.
@@ -174,7 +175,7 @@ fetch optSubModules f = runMaybeT . fetchers where
             sourceUrl = "file://" ++ absolutePath,
             sourceRevision = Nothing,
             sourceHash = UnknownHash,
-            sourceCabalDir = "."
+            sourceCabalDir = Nothing
           })
     process (localDerivationSource absolutePath, unpacked)
 
