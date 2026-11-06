@@ -10,6 +10,7 @@ import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
 
 import Control.Lens
+import Data.Aeson (decodeFileStrict)
 import qualified Data.Set as Set
 import Distribution.Compiler
 import Distribution.Package
@@ -32,6 +33,7 @@ import System.FilePath
 import System.Process
 import Test.Tasty
 import Test.Tasty.Golden
+import Test.Tasty.HUnit
 import Text.PrettyPrint.HughesPJClass
 
 main :: IO ()
@@ -46,8 +48,11 @@ main = do
     Just exe -> pure exe
   testCases <- findByExtension [ ".cabal" ] "test/golden-test-cases"
   defaultMain $ testGroup "regression-tests"
-    [ testGroup "cabal2nix library" (map testLibrary testCases)
-    , testGroup "cabal2nix executable" (map (testExecutable cabal2nix) testCases)
+    [ unitTests
+    , testGroup "golden tests"
+        [ testGroup "cabal2nix library" (map testLibrary testCases)
+        , testGroup "cabal2nix executable" (map (testExecutable cabal2nix) testCases)
+        ]
     ]
 
 testLibrary :: String -> TestTree
@@ -119,6 +124,25 @@ testExecutable exe cabalFile = do
     goldenFile
     nixFile
     (callCommand (unwords ["env LANG=C.UTF-8", exe, "--sha256=deadbeef", "--system=x86_64-linux", "--compiler=ghc-8.2", "--", cabalFile, ">"++nixFile]))
+
+unitTests :: TestTree
+unitTests = testGroup "unit tests"
+  [ testGroup "Distribution.Nixpkgs.Fetch" [ parseNixPrefetchGitJson ]
+  ]
+
+parseNixPrefetchGitJson :: TestTree
+parseNixPrefetchGitJson = testCase "FromJSON DerivationSource parses sample nix-prefetch-git output" $ do
+  decoded <- fmap (\drv -> drv { derivKind = Nothing })
+    <$> decodeFileStrict "test/nix-prefetch-git.json"
+  decoded @?= Just
+    (DerivationSource {
+      derivKind = Nothing,
+      derivUrl = "https://github.com/nixos/cabal2nix.git",
+      derivRevision = Just "422b50d0e6fdd033f20ae1f0e013cb5c0674f731",
+      derivHash = Just "0dfis02hsh44h9k95mfsp4v422zw94w2pfz6dk43yx3dvqisv72c",
+      derivSubmodule = Just False,
+      derivCustomSrc = Nothing
+    })
 
 -------------------------------------------------------------------------------
 -- * Helper functions

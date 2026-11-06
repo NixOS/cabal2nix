@@ -22,6 +22,7 @@ extra-doc-files:    README.md
                     CHANGELOG.md
 extra-source-files: test/golden-test-cases/*.cabal
                     test/golden-test-cases/*.nix.golden
+                    test/nix-prefetch-git.json
 
 source-repository head
   type:     git
@@ -125,6 +126,7 @@ test-suite regression-test
   hs-source-dirs:     test
   build-depends:      base
                     , Cabal
+                    , aeson
                     , cabal2nix
                     , containers
                     , directory
@@ -135,6 +137,7 @@ test-suite regression-test
                     , process      > 1.2
                     , tasty
                     , tasty-golden
+                    , tasty-hunit
   default-language:   Haskell2010
   build-tool-depends: cabal2nix:cabal2nix
   ghc-options:        -threaded -rtsopts "-with-rtsopts=-K64K -N"

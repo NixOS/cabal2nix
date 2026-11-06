@@ -70,7 +70,7 @@ data DerivationSource = DerivationSource
   , derivSubmodule :: Maybe Bool -- ^ The fetchSubmodule setting (if any)
   , derivCustomSrc :: Maybe String -- ^ Custom Nix expression to use for src attribute
   }
-  deriving (Show, Generic)
+  deriving (Show, Eq, Generic)
 
 instance NFData DerivationSource
 
@@ -199,20 +199,20 @@ data DerivKind
   | DerivKindHg
   | DerivKindSvn
   | DerivKindBzr
-  deriving (Show, Generic)
+  deriving (Show, Eq, Generic)
 
 instance NFData DerivKind
 
 -- | Whether to fetch submodules (git).
 data FetchSubmodules = FetchSubmodules | DontFetchSubmodules
-  deriving (Show, Generic)
+  deriving (Show, Eq, Generic)
 
 instance NFData FetchSubmodules
 
 
 -- | Whether to unpack an archive after fetching, before putting it into the nix store.
 data UnpackArchive = UnpackArchive | DontUnpackArchive
-  deriving (Show, Generic)
+  deriving (Show, Eq, Generic)
 
 instance NFData UnpackArchive
 
