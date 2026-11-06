@@ -37,6 +37,7 @@ import Language.Nix
 import Options.Applicative
 import Paths_cabal2nix ( version )
 import System.Environment ( getArgs )
+import System.FilePath ( dropDrive )
 import System.IO ( hFlush, stdout, stderr )
 import qualified Prettyprinter as P2
 import Text.PrettyPrint.HughesPJClass ( Doc, Pretty(..), text, vcat, hcat, semi, render, prettyShow )
@@ -118,7 +119,7 @@ options = do
   optSystem
     <- option (maybeReader parsePlatformLenient) (long "system" <> help "host system (in either short Nix format or full LLVM style) to use when evaluating the Cabal file" <> value buildPlatform <> showDefaultWith prettyShow)
   optSubpath
-    <- optional (strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
+    <- optional (fmap dropDrive . strOption $ long "subpath" <> metavar "PATH" <> help "Path to Cabal file's directory relative to the URI (default is root directory)")
   optHackageSnapshot
     <- optional (option utcTimeReader (long "hackage-snapshot" <> help "hackage snapshot time, ISO format"))
   optNixpkgsIdentifier
@@ -186,7 +187,8 @@ cabal2nix' opts@Options{..} = do
            sourceHash = case optSha256 of
              Nothing -> UnknownHash
              Just hash -> Guess hash,
-           sourceCabalDir = fromMaybe "" optSubpath
+           -- isRelative thanks to dropDrive in option parser
+           sourceCabalDir = optSubpath
          }
   processPackage opts pkg
 
@@ -201,7 +203,8 @@ cabal2nixWithDB db opts@Options{..} = do
            sourceHash = case optSha256 of
              Nothing -> UnknownHash
              Just hash -> Guess hash,
-           sourceCabalDir = fromMaybe "" optSubpath
+           -- isRelative thanks to dropDrive in option parser
+           sourceCabalDir = optSubpath
          }
   processPackage opts pkg
 

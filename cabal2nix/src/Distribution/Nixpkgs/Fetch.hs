@@ -41,6 +41,7 @@ data Source = Source
   , sourceHash      :: Hash         -- ^ The expected hash of the source, if available.
   , sourceCabalDir  :: Maybe String -- ^ Directory (within the source) where Cabal file is found.
                                     --   'Nothing' implies topmost directory of the source.
+                                    --   Path __must__ be relative.
   } deriving (Show, Eq, Ord, Generic)
 
 instance NFData Source

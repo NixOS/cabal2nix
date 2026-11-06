@@ -10,7 +10,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Bifunctor
 import qualified Data.ByteString.Char8 as BS
-import Data.Foldable ( toList )
+import Data.Foldable ( toList, foldl' )
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
