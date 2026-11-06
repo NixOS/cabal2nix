@@ -10,7 +10,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Data.Bifunctor
 import qualified Data.ByteString.Char8 as BS
-import Data.Foldable ( toList )
+import Data.Foldable ( toList, foldl' )
 import Data.List ( isSuffixOf, isPrefixOf )
 import qualified Data.Map as DB
 import Data.Maybe
@@ -97,7 +97,7 @@ fetchOrFromDB optHpack optSubmodules hackageDB src
       (msrc, pkgDesc) <- fromDB hackageDB . drop (length "cabal://") $ sourceUrl src
       return (msrc, False, pkgDesc)
   | otherwise                             = do
-    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (dir </> sourceCabalDir src)) src
+    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (foldl' (</>) dir (sourceCabalDir src))) src
     case r of
       Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
       Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
@@ -157,7 +157,7 @@ hashCachePath pid = do
   createDirectoryIfMissing True cacheDir
   return $ cacheDir </> pid <.> "sha256"
 
-sourceFromHackage :: Hash -> String -> FilePath -> IO DerivationSource
+sourceFromHackage :: Hash -> String -> Maybe FilePath -> IO DerivationSource
 sourceFromHackage optHash pkgId cabalDir = do
   cacheFile <- hashCachePath pkgId
   cachedHash <-
@@ -179,16 +179,17 @@ sourceFromHackage optHash pkgId cabalDir = do
       seq (length hash) $
       urlDerivationSource url hash <$ writeFile cacheFile hash
     UnknownHash -> do
-      maybeHash <- runMaybeT
-        $ derivHash . fst
-        <$> fetchWith
-              (False, DerivKindUrl DontUnpackArchive)
-              (Source {
-                sourceUrl = url,
-                sourceRevision = "",
-                sourceHash = UnknownHash,
-                sourceCabalDir = cabalDir
-              })
+      maybeHash <- fmap join $ runMaybeT
+          $ derivHash . fst
+          <$> fetchWith
+                (DerivKindUrl DontUnpackArchive)
+                (Source {
+                  sourceUrl = url,
+                  sourceRevision = Nothing,
+                  sourceHash = UnknownHash,
+                  sourceCabalDir = cabalDir
+                })
+
       case maybeHash of
         Just hash ->
           seq (length hash) $
