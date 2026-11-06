@@ -50,6 +50,7 @@ let
     hps.monad-par-extras
     hps.tasty
     hps.tasty-golden
+    hps.tasty-hunit
     hps.utf8-string
     hps.tar
     hps.hspec
