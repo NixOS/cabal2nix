@@ -76,10 +76,10 @@ instance NFData DerivationSource
 
 instance FromJSON DerivationSource where
   parseJSON (Object o) = DerivationSource (error "undefined DerivationSource.kind")
-        <$> o .: "url"
-        <*> o .: "rev"
-        <*> o .: "sha256"
-        <*> o .: "fetchSubmodules"
+        <$> o .:  "url"
+        <*> o .:? "rev"
+        <*> o .:? "sha256"
+        <*> o .:? "fetchSubmodules"
         <*> pure Nothing
   parseJSON _ = fail "invalid DerivationSource"
 
