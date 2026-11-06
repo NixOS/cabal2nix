@@ -35,6 +35,7 @@ configureCabalFlags' (PackageIdentifier name version)
                                   , enable "pairing"
                                   , enable "production"
                                   , enable "torrentparser"
+                                  , enable "Botan"
                                   ]
  | name == "haskeline"          = [enable "terminfo"]
  | name == "haste-compiler"     = [enable "portable"]
