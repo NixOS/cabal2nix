@@ -81,7 +81,7 @@ instance FromJSON DerivationSource where
         <*> o .: "sha256"
         <*> o .: "fetchSubmodules"
         <*> pure Nothing
-  parseJSON _ = error "invalid DerivationSource"
+  parseJSON _ = fail "invalid DerivationSource"
 
 instance PP.Pretty DerivationSource where
   pPrint DerivationSource {..} =
