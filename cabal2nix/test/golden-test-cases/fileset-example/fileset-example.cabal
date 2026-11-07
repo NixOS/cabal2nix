@@ -1,0 +1,75 @@
+cabal-version: 3.0
+name: fileset-example
+version: 0.0.0.0
+license-file: x/alfa
+data-dir: x/bravo
+data-files:
+  x/ignored.dat
+extra-source-files:
+  x/charlie
+  x/delta
+extra-doc-files:
+  x/echo/doc/**/*.md
+  x/echo/doc/**/index.txt
+  x/echo/script/*.js
+extra-tmp-files:
+  x/not-this
+
+flag dummy
+
+library
+  hs-source-dirs:
+    x/foxtrot
+    x/golf
+  c-sources:
+    x/hotel.c
+  cxx-sources:
+    x/india.cxx
+  cmm-sources:
+    x/juliett.cmm
+  asm-sources:
+    x/kilo.asm
+  js-sources:
+    x/lima.js
+  install-includes:
+    x/mike.h
+    x/autogen.h
+  autogen-includes:
+    x/autogen.h
+
+library sublib
+  hs-source-dirs:
+    x/foxtrot/shared
+    x/november
+  include-dirs:
+    x/oscar
+  install-includes:
+    x/ignored.h
+
+  if !flag(dummy)
+    hs-source-dirs:
+      x/papa
+
+executable app
+  hs-source-dirs:
+    x/quebec
+
+  if flag(dummy)
+    buildable: False
+
+foreign-library foreignlib
+  type: native-shared
+  hs-source-dirs:
+    x/romeo
+
+test-suite tests
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+    x/sierra
+
+benchmark bench
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+    x/tango

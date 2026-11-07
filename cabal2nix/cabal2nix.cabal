@@ -44,6 +44,8 @@ library
                       Distribution.Nixpkgs.Haskell.FromCabal.Name
                       Distribution.Nixpkgs.Haskell.FromCabal.Normalize
                       Distribution.Nixpkgs.Haskell.FromCabal.PostProcess
+                      Distribution.Nixpkgs.Haskell.FromCabal.SourceFiles
+                      Distribution.Nixpkgs.Haskell.FromCabal.SourceFiles.Compat
                       Distribution.Nixpkgs.Haskell.Hackage
                       Distribution.Nixpkgs.Haskell.OrphanInstances
                       Distribution.Nixpkgs.Haskell.PackageSourceSpec
@@ -77,6 +79,9 @@ library
                     , time
                     , transformers
                     , yaml
+  if impl(ghc < 9.6)
+    build-depends:
+                      foldable1-classes-compat
   default-language:   Haskell2010
   other-extensions:   MultiParamTypeClasses
                       ScopedTypeVariables
