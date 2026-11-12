@@ -11,7 +11,7 @@ import Control.Monad.Trans.Maybe
 import Data.Bifunctor
 import qualified Data.ByteString.Char8 as BS
 import Data.Foldable ( toList, foldl' )
-import Data.List ( isSuffixOf, isPrefixOf )
+import Data.List ( isSuffixOf, stripPrefix )
 import qualified Data.Map as DB
 import Data.Maybe
 import qualified Data.Text as T
@@ -92,16 +92,17 @@ fetchOrFromDB :: HpackUse
               -> IO DB.HackageDB
               -> Source
               -> IO (Maybe DerivationSource, Bool, Cabal.GenericPackageDescription)
-fetchOrFromDB optHpack optSubmodules hackageDB src
-  | "cabal://" `isPrefixOf` sourceUrl src = do
-      (msrc, pkgDesc) <- fromDB hackageDB . drop (length "cabal://") $ sourceUrl src
+fetchOrFromDB optHpack optSubmodules hackageDB src =
+  case stripPrefix "cabal://" (sourceUrl src) of
+    Just pkg -> do
+      (msrc, pkgDesc) <- fromDB hackageDB pkg
       return (msrc, False, pkgDesc)
-  | otherwise                             = do
-    r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (foldl' (</>) dir (sourceCabalDir src))) src
-    case r of
-      Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
-      Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
-        return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
+    Nothing -> do
+      r <- fetch optSubmodules (\dir -> cabalFromPath optHpack (foldl' (</>) dir (sourceCabalDir src))) src
+      case r of
+        Nothing -> fail $ "Failed to fetch source. Does this source exist? " ++ show src
+        Just (derivSource, (externalSource, ranHpack, pkgDesc)) ->
+          return (derivSource <$ guard externalSource, ranHpack, pkgDesc)
 
 loadHackageDB :: Maybe FilePath
               -- ^ The path to the Hackage database.
