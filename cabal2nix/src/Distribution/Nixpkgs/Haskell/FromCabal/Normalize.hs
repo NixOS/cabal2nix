@@ -1,10 +1,11 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Distribution.Nixpkgs.Haskell.FromCabal.Normalize ( normalize ) where
 
 import Control.Lens
 import qualified Data.Set as Set
-import Data.String
 import Distribution.Nixpkgs.Haskell
 import Distribution.Nixpkgs.Haskell.FromCabal.Name (toNixName)
 import Distribution.Nixpkgs.Meta
@@ -13,12 +14,15 @@ import Language.Nix hiding ( quote )
 
 normalize :: Derivation -> Derivation
 normalize drv = drv
-  & over libraryDepends (normalizeBuildInfo (packageName drv))
-  & over executableDepends (normalizeBuildInfo (packageName drv))
-  & over testDepends (normalizeBuildInfo (packageName drv))
-  & over benchmarkDepends (normalizeBuildInfo (packageName drv))
+  & deps libraryDepends
+  & deps executableDepends
+  & deps testDepends
+  & deps benchmarkDepends
   & over metaSection normalizeMeta
   & jailbreak %~ (&& (packageName drv /= "jailbreak-cabal"))
+  where
+    deps :: Lens' Derivation [(BuildInfo, Bool)] -> Derivation -> Derivation
+    deps f = over (focusBuildInfo f) $ normalizeBuildInfo (packageName drv)
 
 normalizeBuildInfo :: PackageName -> BuildInfo -> BuildInfo
 normalizeBuildInfo pname bi = bi
