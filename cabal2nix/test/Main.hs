@@ -8,8 +8,10 @@ import Distribution.Nixpkgs.Fetch
 import Distribution.Nixpkgs.Haskell.Derivation
 import Distribution.Nixpkgs.Haskell.FromCabal
 import Distribution.Nixpkgs.Haskell.FromCabal.Flags
+import Distribution.Nixpkgs.Haskell.FromCabal.SourceFiles
 
 import Control.Lens
+import Control.Monad
 import Data.Aeson (decodeFileStrict)
 import qualified Data.Set as Set
 import Distribution.Compiler
@@ -46,7 +48,10 @@ main = do
   cabal2nix <- findExecutable "cabal2nix" >>= \case
     Nothing -> fail "cannot find 'cabal2nix' in $PATH"
     Just exe -> pure exe
-  testCases <- findByExtension [ ".cabal" ] "test/golden-test-cases"
+  testCases <- concat <$> sequence
+    [ listDirectoryFilesBySuffix ".cabal" "test/golden-test-cases"
+    , listDirectories "test/golden-test-cases"
+    ]
   defaultMain $ testGroup "regression-tests"
     [ unitTests
     , testGroup "golden tests"
@@ -56,11 +61,13 @@ main = do
     ]
 
 testLibrary :: String -> TestTree
-testLibrary cabalFile = do
-  let nixFile = cabalFile `replaceExtension` "nix"
+testLibrary cabalFileOrDir = do
+  let nixFile = cabalFileOrDir `replaceExtension` "nix"
+      isLocal = not $ "cabal" `isExtensionOf` cabalFileOrDir
+      cabalFile = if isLocal then cabalFileOrDir </> takeFileName cabalFileOrDir `addExtension` "cabal" else cabalFileOrDir
       goldenFile = nixFile `addExtension` "golden"
 
-      cabal2nix :: GenericPackageDescription -> Derivation
+      cabal2nix :: GenericPackageDescription -> IO Derivation
       cabal2nix gpd = fromGenericPackageDescription
                          (const True)
                          (\i -> Just (binding # (i, path # [ident # "pkgs", i])))
@@ -70,14 +77,15 @@ testLibrary cabalFile = do
                          []
                          gpd
                        & src .~ DerivationSource
-                                  { derivKind     = Just (DerivKindUrl DontUnpackArchive )
-                                  , derivUrl      = "mirror://hackage/foo.tar.gz"
+                                  { derivKind     = if isLocal then Left (takeFileName cabalFile, []) else Right (DerivKindUrl DontUnpackArchive)
+                                  , derivUrl      = if isLocal then cabalFileOrDir else "mirror://hackage/foo.tar.gz"
                                   , derivRevision = Nothing
                                   , derivHash     = Just "deadbeef"
                                   , derivSubmodule = Nothing
                                   , derivCustomSrc = Nothing
                                   }
                        & extraFunctionArgs %~ Set.union (Set.singleton "inherit lib")
+                       & insertFilesetItems cabalFileOrDir gpd
   goldenVsFileDiff
     nixFile
     (\ref new -> ["diff", "-u", ref, new])
@@ -88,7 +96,7 @@ testLibrary cabalFile = do
 #else
     (readGenericPackageDescription silentCompat cabalFile
 #endif
-     >>= writeFileLn nixFile . prettyShow . cabal2nix)
+     >>= cabal2nix >>= writeFileLn nixFile . prettyShow)
 
 silentCompat :: Verbosity
 #if MIN_VERSION_Cabal(3,18,0)
@@ -132,11 +140,11 @@ unitTests = testGroup "unit tests"
 
 parseNixPrefetchGitJson :: TestTree
 parseNixPrefetchGitJson = testCase "FromJSON DerivationSource parses sample nix-prefetch-git output" $ do
-  decoded <- fmap (\drv -> drv { derivKind = Nothing })
+  decoded <- fmap (\drv -> drv { derivKind = Left ("dummy.cabal", []) })
     <$> decodeFileStrict "test/nix-prefetch-git.json"
   decoded @?= Just
     (DerivationSource {
-      derivKind = Nothing,
+      derivKind = Left ("dummy.cabal", []),
       derivUrl = "https://github.com/nixos/cabal2nix.git",
       derivRevision = Just "422b50d0e6fdd033f20ae1f0e013cb5c0674f731",
       derivHash = Just "0dfis02hsh44h9k95mfsp4v422zw94w2pfz6dk43yx3dvqisv72c",
@@ -147,6 +155,29 @@ parseNixPrefetchGitJson = testCase "FromJSON DerivationSource parses sample nix-
 -------------------------------------------------------------------------------
 -- * Helper functions
 -------------------------------------------------------------------------------
+
+-- | Find all *files* in the given directory that end with the given suffix.
+-- This function does not recurse, nor does it include the special entries
+-- @'.'@ or @'..'@ in the result.
+--
+-- "Test.Tasty.Golden" offers 'findByExtension', which does something similar
+-- (and arguably more general) as those two functions, but unfortunately that
+-- function recurses through the directory hierarchy and in the process needs
+-- plenty of stack space. There might be a space leak in that code, I am not
+-- sure. Anyhow, since our test suite is supposed to run with 1K stack space,
+-- we prefer our own simpler code.
+
+listDirectoryFilesBySuffix :: String -> FilePath -> IO [FilePath]
+listDirectoryFilesBySuffix suff dirPath = do
+  entries <- listDirectory dirPath
+  filterM doesFileExist [ dirPath </> e | e <- entries, takeExtension e == suff ]
+
+-- | Find all *directories* in the given directory.
+
+listDirectories ::  FilePath -> IO [FilePath]
+listDirectories dirPath = do
+  entries <- listDirectory dirPath
+  filterM doesDirectoryExist [ dirPath </> e | e <- entries ]
 
 -- | A variant of 'writeFile' that appends a newline to the end of the buffer
 -- before writing.
