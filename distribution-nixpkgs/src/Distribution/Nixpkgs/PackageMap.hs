@@ -16,6 +16,7 @@ import Data.Set ( Set )
 import qualified Data.Set as Set
 import Language.Nix
 import Paths_distribution_nixpkgs (getDataFileName)
+import System.Exit (ExitCode(..))
 import System.Process
 
 type PackageMap = Map Identifier (Set Path)
@@ -52,10 +53,15 @@ readNixpkgSet nixpkgsPath nixpkgsArgs = do
         , "--arg", "nixpkgsPath", nixpkgsPath
         , "--arg", "nixpkgsArgs", fromMaybe "{}" nixpkgsArgs
         ]
-  (_, Just h, _, _) <- -- TODO: ensure that overrides don't screw up our results
+  (_, Just h, _, ph) <- -- TODO: ensure that overrides don't screw up our results
     createProcess nixInstantiate { std_out = CreatePipe, env = Nothing }
   buf <- LBS.hGetContents h
-  either fail return $ JSON.eitherDecode buf
+  exitCode <- waitForProcess ph
+  case exitCode of
+    ExitSuccess ->
+      either fail return $ JSON.eitherDecode buf
+    ExitFailure code ->
+      fail $ "nix-instantiate failed with exit code " ++ show code
 
 identifierSet2PackageMap :: Set [String] -> PackageMap
 identifierSet2PackageMap = foldr insertIdentifier Map.empty
