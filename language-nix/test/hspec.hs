@@ -7,7 +7,9 @@ import Control.Monad (forM_)
 import Data.Char (isAscii, isSpace)
 import Data.List (dropWhileEnd)
 import Data.String (fromString)
+import Language.Nix.Binding
 import Language.Nix.Identifier
+import Language.Nix.Path
 import System.Process (callProcess, readCreateProcess, proc)
 import Test.Hspec
 import Test.QuickCheck
@@ -16,20 +18,25 @@ import Text.PrettyPrint.HughesPJClass (prettyShow)
 
 main :: IO ()
 main = hspec $ do
+  describe "Language.Nix.Binding" $ do
+    describe "HasParser Binding" $ do
+      it "can parse the output of prettyShow" $
+        property $ \b -> parseM "Binding" (prettyShow b) === Just (b :: Binding)
+
   describe "Language.Nix.Identifier" $ do
     describe "ident" $ do
       it "is equivalent to fromString" $
-        stringIdentProperty $ \str -> fromString str == ident # str
+        stringIdentProperty $ \str -> fromString str === ident # str
       it "allows recovering the original string after conversion to Identifier" $
-        stringIdentProperty $ \str -> view ident (review ident str) == str
+        stringIdentProperty $ \str -> view ident (review ident str) === str
       it "can be used as a setter" $
-        stringIdentProperty $ \str -> set ident str undefined == ident # str
+        stringIdentProperty $ \str -> set ident str undefined === ident # str
 
     describe "HasParser Identifier" $ do
       it "can parse the result of prettyShow" $
-        identProperty $ \i -> parseM "Identifier" (prettyShow i) == Just (i :: Identifier)
+        identProperty $ \i -> parseM "Identifier" (prettyShow i) === Just (i :: Identifier)
       it "can parse the result of quote" $
-        stringIdentProperty $ \str -> parseM "Identifier" (quote str) == Just (ident # str)
+        stringIdentProperty $ \str -> parseM "Identifier" (quote str) === Just (ident # str)
       it "parses redundant escape sequences" $
         forM_
           [ ("\"\\f\"", "f")
@@ -78,6 +85,11 @@ main = hspec $ do
         pure $
           extractIdentSyntax out === expAttr
           .&&. parseM "Identifier" (extractIdentSyntax out) === Just i
+
+  describe "Language.Nix.Path" $ do
+    describe "HasParser Path" $ do
+      it "can parse the output of prettyShow" $
+        property $ \p -> parseM "Path" (prettyShow p) === Just (p :: Path)
 
 nixInstantiateBin :: String
 nixInstantiateBin = "nix-instantiate"
