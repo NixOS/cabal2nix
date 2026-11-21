@@ -19,17 +19,17 @@ main = hspec $ do
   describe "Language.Nix.Identifier" $ do
     describe "ident" $ do
       it "is equivalent to fromString" $
-        stringIdentProperty $ \str -> fromString str == ident # str
+        stringIdentProperty $ \str -> fromString str === ident # str
       it "allows recovering the original string after conversion to Identifier" $
-        stringIdentProperty $ \str -> view ident (review ident str) == str
+        stringIdentProperty $ \str -> view ident (review ident str) === str
       it "can be used as a setter" $
-        stringIdentProperty $ \str -> set ident str undefined == ident # str
+        stringIdentProperty $ \str -> set ident str undefined === ident # str
 
     describe "HasParser Identifier" $ do
       it "can parse the result of prettyShow" $
-        identProperty $ \i -> parseM "Identifier" (prettyShow i) == Just (i :: Identifier)
+        identProperty $ \i -> parseM "Identifier" (prettyShow i) === Just (i :: Identifier)
       it "can parse the result of quote" $
-        stringIdentProperty $ \str -> parseM "Identifier" (quote str) == Just (ident # str)
+        stringIdentProperty $ \str -> parseM "Identifier" (quote str) === Just (ident # str)
       it "parses redundant escape sequences" $
         forM_
           [ ("\"\\f\"", "f")
