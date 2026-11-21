@@ -33,8 +33,6 @@ import Text.PrettyPrint.HughesPJClass as PP
 -- >>> pPrint (parse "Path" "foo.\"foo\".\"bar\".bar" :: Path)
 -- foo.foo.bar.bar
 --
--- prop> \p -> Just (p :: Path) == parseM "Path" (prettyShow p)
---
 -- Paths are instances of strings and can be implicitly converted:
 --
 -- >>> :set -XOverloadedStrings

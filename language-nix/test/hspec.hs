@@ -7,7 +7,9 @@ import Control.Monad (forM_)
 import Data.Char (isAscii, isSpace)
 import Data.List (dropWhileEnd)
 import Data.String (fromString)
+import Language.Nix.Binding
 import Language.Nix.Identifier
+import Language.Nix.Path
 import System.Process (callProcess, readCreateProcess, proc)
 import Test.Hspec
 import Test.QuickCheck
@@ -16,6 +18,11 @@ import Text.PrettyPrint.HughesPJClass (prettyShow)
 
 main :: IO ()
 main = hspec $ do
+  describe "Language.Nix.Binding" $ do
+    describe "HasParser Binding" $ do
+      it "can parse the output of prettyShow" $
+        property $ \b -> parseM "Binding" (prettyShow b) === Just (b :: Binding)
+
   describe "Language.Nix.Identifier" $ do
     describe "ident" $ do
       it "is equivalent to fromString" $
@@ -78,6 +85,11 @@ main = hspec $ do
         pure $
           extractIdentSyntax out === expAttr
           .&&. parseM "Identifier" (extractIdentSyntax out) === Just i
+
+  describe "Language.Nix.Path" $ do
+    describe "HasParser Path" $ do
+      it "can parse the output of prettyShow" $
+        property $ \p -> parseM "Path" (prettyShow p) === Just (p :: Path)
 
 nixInstantiateBin :: String
 nixInstantiateBin = "nix-instantiate"
