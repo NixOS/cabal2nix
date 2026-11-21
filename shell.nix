@@ -55,6 +55,7 @@ let
     hps.tar
     hps.hspec
     hps.parsec-class
+    hps.doctest-parallel
   ]);
 
 in pkgs.mkShell {

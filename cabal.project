@@ -2,6 +2,7 @@
 
 packages: ./*/*.cabal
 tests: True
+write-ghc-environment-files: always
 
 package *
   ghc-options:        -Wall -Wcompat -Wincomplete-uni-patterns -Wincomplete-record-updates

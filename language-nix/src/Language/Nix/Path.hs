@@ -14,6 +14,11 @@ import Text.PrettyPrint.HughesPJClass as PP
 
 -- $setup
 -- >>> import Control.Exception as Excpt
+-- >>> import Control.Lens
+-- >>> import Language.Nix.Identifier
+-- >>> import Text.Parsec.Class (parse, parseM)
+-- >>> import Text.PrettyPrint.HughesPJClass (pPrint)
+-- >>> :set -XScopedTypeVariables
 
 -- | Paths are non-empty lists of identifiers in Nix.
 --
@@ -22,7 +27,6 @@ import Text.PrettyPrint.HughesPJClass as PP
 --
 -- Any attempt to construct the empty path throws an 'error':
 --
--- >>> :set -XScopedTypeVariables
 -- >>> either (\(_::SomeException) -> "empty paths are illegal") show <$> Excpt.try (evaluate (path # []))
 -- "empty paths are illegal"
 --

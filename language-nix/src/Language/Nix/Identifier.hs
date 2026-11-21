@@ -26,6 +26,12 @@ import Test.QuickCheck
 import Text.Parsec.Class as P
 import Text.PrettyPrint.HughesPJClass as PP
 
+-- $setup
+-- >>> import Control.Lens
+-- >>> import Data.String (fromString)
+-- >>> import Text.Parsec.Class (parseM)
+-- >>> import Text.PrettyPrint.HughesPJClass (pPrint)
+
 -- | Identifiers in Nix are essentially strings. They can be constructed
 -- (and viewed) with the 'ident' isomorphism. For the sake of convenience,
 -- @Identifier@s are an instance of the 'IsString' class.
